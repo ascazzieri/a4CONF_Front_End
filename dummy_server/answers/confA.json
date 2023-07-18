@@ -1,0 +1,111 @@
+{
+  "timestamp": 1687768380,
+
+  "system": {
+    "antivirus": {
+      "SmartAppControlExpiration": null,
+      "SmartAppControlState": "Off",
+      "TamperProtectionSource": "N/A",
+      "TDTMode": "N/A",
+      "TDTSiloType": "N/A",
+      "TDTStatus": "N/A",
+      "TDTTelemetry": "N/A",
+      "TroubleShootingDailyMaxQuota": "",
+      "TroubleShootingDailyQuotaLeft": "",
+      "TroubleShootingEndTime": "",
+      "TroubleShootingExpirationLeft": "",
+      "TroubleShootingMode": "",
+      "TroubleShootingModeSource": "",
+      "TroubleShootingQuotaResetTime": "",
+      "TroubleShootingStartTime": "",
+
+      "PSComputerName": null
+    },
+    "a4updater_version": {
+      "industrial": "20220301"
+    },
+
+    "hostname": {
+      "industrial": "A207020000-0030"
+    },
+
+    "network": {
+      "industrial": {
+        "ip": [
+          "192.168.17.50/24",
+          "192.168.100.110/24",
+          "192.168.100.111/24",
+          "192.168.112.33/24",
+          "192.168.112.133/24"
+        ],
+        "dhcp": false,
+
+        "routes": {
+          "192.168.100.0/24": "192.0.2.1",
+          "192.168.17.0/24": "192.0.2.1",
+          "192.168.112.0/24": "192.0.2.1"
+        },
+
+        "net_scan": ["198.51.100.1"]
+      }
+    }
+  },
+
+  "services": {
+    "kepware": {
+      "trial": true
+    },
+
+    "backchannel": {
+      "files": [
+        "fromB.json",
+        "tf_http_xfer_channels_a.json",
+        "tf_http_xfer_a.json",
+        "default.opf",
+        "qa",
+        "filename.json",
+        "kepware.json",
+        "a4confB.json",
+        "kepware0.json",
+        "kepware1.json",
+        "kepware2.json",
+        "kepware3.json",
+        "kepware4.json",
+        "kepware5.json",
+        "kepware6.json",
+        "kepware7.json",
+        "kepware8.json",
+        "kepware9.json",
+        "pippo.json",
+        "none.json",
+        "bls_0.json",
+        "bls_1.json",
+        "bls_2.json",
+        "bls_3.json",
+        "bls_4.json",
+        "bls_5.json",
+        "bls_6.json",
+        "bls_7.json",
+        "bls_8.json",
+        "bls_9.json"
+      ],
+
+      "topics": [
+        "bchnld/cpfile",
+        "bchnld/keepalive",
+        "bchnld/timesync",
+        "conf/keepalive",
+        "conf/set",
+        "fastdata/keepalive",
+        "ftp/conf/get",
+        "ftp/keepalive",
+        "monitor/hwsw/json",
+        "monitor/tailgate",
+        "monitor/tf",
+        "pippo/pluto",
+        "rep/rep/monitor/tf"
+      ]
+    }
+  },
+  "version": "20220616.15-1"
+}

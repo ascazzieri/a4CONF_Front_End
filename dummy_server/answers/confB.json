@@ -1,0 +1,231 @@
+{
+  "timestamp": 1687765996,
+
+  "system": {
+    "hostname": {
+      "customer": "A207020000-0030"
+    },
+
+    "a4updater_version": {
+      "customer": "20220208"
+    },
+
+    "network": {
+      "customer": {
+        "dhcp": false,
+
+        "static": {
+          "ip": ["192.168.111.33/24"],
+
+          "dns": ["10.10.90.40"],
+          "gateway": "192.168.111.1",
+          "connected": true,
+          "mac": "00:60:e9:29:c1:01"
+        },
+        "if_wan_medium": "ethernet",
+        "nat": true,
+        "machine_to_internet": true,
+
+        "ntp": ["127.123.123.123"],
+
+        "routes": {
+          "192.168.100.0/24": "192.0.2.1",
+          "192.168.17.0/24": "192.0.2.1",
+          "192.168.112.0/24": "192.0.2.1"
+        },
+
+        "wireless": {
+          "Galaxy A40AD26": "punq6219"
+        },
+        "IF_WAN": "eth1",
+        "firewall_enabled": true,
+
+        "PORTS_TCP_SERVER_WAN": {
+          "3389": ["any_ip"],
+
+          "PORT_ALTSSH": ["any_ip"],
+
+          "PORT_OPCUA": ["any_ip"],
+
+          "vscode_server": ["any_ip"],
+
+          "PORT_OPCUA_TLS": ["any_ip"],
+
+          "PORT_SSH": ["any_ip"]
+        },
+
+        "PORTS_UDP_SERVER_WAN": {},
+
+        "PORTS_UDP_CLIENT_WAN": {
+          "PORT_DNS": ["any_ip"],
+
+          "PORT_NTP": ["any_ip"]
+        },
+
+        "IPS_PING_SERVER_WAN": ["any_ip"],
+
+        "PORTS_UDP_CLIENT_WAN_ONLY_OUTPUT": {},
+
+        "INPUT_NAT": [
+          {
+            "IP_EXT": "",
+            "PORT_EXT": 3389,
+            "IP_DST": "192.0.2.1",
+            "PORT_DST": "",
+
+            "SOURCE": ["any_ip"]
+          }
+        ],
+        "IF_MACHINE": "eth0",
+        "IF_MACHINE_NET": "192.0.2.0/24",
+        "IF_MACHINE_IP": "192.0.2.2",
+        "IF_MACHINE_IP_A": "192.0.2.1",
+        "IF_GUEST": "wlan0",
+        "IF_GUEST_NET": "192.168.8.0/24",
+        "IF_GUEST_IP": "192.168.8.1",
+
+        "ALIAS": {
+          "any_ip": "0.0.0.0/0",
+          "syslog_server": "",
+          "PORT_SSH": 22,
+          "PORT_DNS": 53,
+          "PORT_DHCP": 67,
+          "PORT_BOOTP": 68,
+          "PORT_HTTP": 80,
+          "PORT_NTP": 123,
+          "PORT_HTTPS": 443,
+          "PORT_SMB": 445,
+          "PORT_SYSLOG": 514,
+          "PORT_ALTSSH": 1022,
+          "PORT_OPCUA": 4840,
+          "PORT_ALTHTTP": 8080,
+          "PORT_ALTHTTPS": 8443,
+          "PORT_OPCUA_TLS": 4843,
+          "vscode_server": 8765
+        },
+
+        "PORTS_UDP_SERVER_TRANSPORT": ["PORT_DNS", "PORT_NTP"],
+
+        "PORTS_UDP_SERVER_BROADCAST_TRANSPORT": [
+          "PORT_ALTHTTP",
+          51101,
+          51102,
+          "PORT_SYSLOG"
+        ],
+        "essid": false
+      }
+    }
+  },
+
+  "services": {
+    "thingworx": {
+      "host": "development.iotdataroom.com",
+      "appkey": "31aa0349-6f2b-4275-ae5a-cf665ac3bf96",
+      "thing_names": [
+        "rt_testFede",
+        "rt_testFede1",
+        "rt_testFede2",
+        "rt_testFede3"
+      ],
+
+      "things": {
+        "rt_testFede": {
+          "test_opcua": "fromkepware/rt_testFede"
+        }
+      },
+
+      "proxy": {
+        "enabled": true,
+        "host": "192.168.111.1",
+        "port": 3128,
+        "username": "",
+        "password": ""
+      },
+      "enabled": false,
+      "connected": false
+    },
+
+    "sitemanager": {
+      "connected": false,
+      "server": "gm.ima.it 10.10.83.66 81.208.52.93",
+      "domain": "Talea.Devices.A4Gate",
+      "name": "A207020000-0030",
+
+      "agents": {
+        "Agent1": {
+          "agent": "GENERIC:Desktop PC",
+          "name": "Full Access",
+          "sn": "#A1",
+          "cfg": "PC"
+        },
+
+        "Agent2": {
+          "agent": "GENERIC:All ports, 1-way NAT",
+          "name": "PC A",
+          "sn": "#02",
+          "cfg": "192.0.2.1"
+        },
+
+        "Agent3": {
+          "agent": "GENERIC:Desktop PC",
+          "name": "sysprep",
+          "sn": "#03",
+          "cfg": "10.2.10.17"
+        }
+      },
+      "onlybidir": false,
+      "enabled": true,
+      "nameashostname": true,
+      "usentp": true
+    },
+
+    "opcua": {
+      "file_from_kepware": "from_kepware.csv.simulate",
+      "file_to_kepware": "to_kepware.csv",
+      "shift_property_from_kepware": "0",
+      "shift_property_to_kepware": "0",
+
+      "security": {
+        "tls": false,
+        "cert_file": "server.crt.pem",
+        "key_file": "server.key.pem",
+        "user_auth": false,
+
+        "users": {
+          "pippo": "pippo",
+          "pluto": "pluto"
+        }
+      },
+
+      "opcua": {
+        "custom_port_enable": false,
+        "custom_port": 4841
+      },
+
+      "http": {
+        "port": 48400
+      },
+      "server_name": "OPC-UA-SERVER",
+      "namespace": "A4Gate",
+      "enabled": false
+    },
+
+    "ftp": {
+      "cloud_provider": "microsoft",
+      "http_port": 11002,
+      "installed": true,
+      "enabled": false,
+
+      "iotedge": {
+        "installed": true,
+
+        "services": {
+          "edgeAgent": true,
+          "edgeBlobs": false,
+          "edgeHub": true
+        }
+      },
+      "ptc_file_transfer": false
+    }
+  }
+}

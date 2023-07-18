@@ -1,0 +1,165 @@
+import * as helper from "./utils";
+
+export const get_version = async () => {
+  try {
+    const res = await helper.fetchData("/version", "GET");
+    const version = res.replace("\n", "").replace("\r", "");
+    const version_string = "Version: " + version;
+    console.log(version_string);
+    return version_string;
+  } catch (error) {
+    console.error(error);
+    // Gestisci l'errore come desiderato
+  }
+};
+export const get_ready = async () => {
+  //aggiungi il timer al componente che la chiama
+  try {
+    const res = await helper.fetchData("/ready", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_confA = async () => {
+  try {
+    const res = await helper.fetchData("/confA", "GET");
+    const conf = helper.confToHTML(res);
+    console.log(res);
+    return conf;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_confB = async () => {
+  //ricordati di far chiamare questa funzione con un delay
+  try {
+    const res = await helper.fetchData("/confB", "GET");
+    const conf = helper.confToHTML(res);
+    console.log(res);
+    return conf;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_confFD = async () => {
+  //ricordati di far chiamare questa funzione con un delay
+  try {
+    const res = await helper.fetchData("/FD/conf", "GET");
+    const conf = helper.confToHTML(res);
+    console.log(res);
+    return conf;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const send_conf = async (data) => {
+  //aggiungi un controllo su cambio della network per avvertire che l'utente potrebbe perdere la sessione
+  try {
+    const res = await helper.fetchData("/post", "POST", data);
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const createiotgw = async (type, channel, device, thingName) => {
+  try {
+    const res = await helper.fetchData(
+      `/createiotgw?channel=${channel}&device=${device}&type=http`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const loadiotgws = async (direction) => {
+  try {
+    if (direction === "from") {
+      const res = await helper.fetchData("/iotgwhttp", "GET");
+      console.log(res);
+      return res;
+    } else {
+      const res = await helper.fetchData("/iotgwhttpserver", "GET");
+      console.log(res);
+      return res;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const uploadKepwareProject = async (file) => {
+  //upload file from an input
+  try {
+    const res = await helper.fetchData("/kepware/upload", "POST", file);
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_a4monitor_logs = async () => {
+  try {
+    const res_isWorking = await helper.fetchData(
+      "/monitor/logs/isWorking",
+      "GET"
+    );
+    const res_table = await helper.fetchData("/monitor/logs/table", "GET");
+    const a4logs = { is_working: res_isWorking, table: res_table };
+    console.log(a4logs);
+    return a4logs;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const a4monitorStatus = async () => {
+  try {
+    const res = await helper.fetchData("/monitor/logs/status", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const reloadA4monitor = async () => {
+  try {
+    const res = await helper.fetchData("/monitor/logs/reload", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const loadChannels = async () => {
+  try {
+    const res = await helper.fetchData("/kepwaredevices", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_bidir_info = async () => {
+  try {
+    const res = await helper.fetchData("/a4gate/bidir", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const reload_kepware = async () => {
+  try {
+    const res = await helper.fetchData("/reload_kepware_now", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};

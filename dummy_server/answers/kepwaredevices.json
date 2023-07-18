@@ -1,0 +1,10 @@
+{
+  "A4G_221": ["Kepware"],
+  "A4Gate": ["A", "a4GATE_writes", "QA", "SiteManager", "U2U"],
+  "Channel1": ["Device1"],
+  "Data Type Examples": ["16 Bit Device", "8 Bit Device"],
+  "MQTTlocalhost7883": ["a4GATE"],
+  "OPCUA": ["Local"],
+  "Rockwell_90575": ["PLC"],
+  "Simulation Examples": ["Functions"]
+}
