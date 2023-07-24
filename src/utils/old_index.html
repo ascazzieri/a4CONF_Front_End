@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html id="my_html" lang="en">
+
+<head>
+    <title>a4CONF</title>
+    <link rel="stylesheet" href="./index.css">
+    <script src="./index.js"></script>
+
+
+    <!--     <meta http-equiv="refresh" content="-1"> -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> -->
+    <meta charset="UTF-8">
+</head>
+
+<body onload="onload_js()">
+    <main class="main">
+        <section class="hero">
+
+            <img style=" margin-left: 30%;" src="a4GATE-logo.png" alt="a4GATE logo" width="350em">
+            <!--These buttons will be visible only when the PCB configuration has come-->
+            <div class="btn-group" id="main_btn_group">
+
+                <button
+                    title="APPLY CHANGES:
+                                Every time you edit any section of a4CONF, if there is a checkbox inside the area, remember to check it.
+                                Once you have finished, you can click this button to send the information to a4GATE.
+                                Be aware that only the sections with the checkbox active will be sent!"
+                    id="apply" onclick="sendconf();">Apply Changes</button>
+                <button
+                    title="DOWNLOAD CONFIGURATION:
+                                Once you have edited all the section of a4CONF you need,
+                                you can create a JSON backup configuration file in order to re-use it in the future or to protect your work."
+                    id="createfile" onclick="conftofile();">Download Config</button>
+                <button title="UPLOAD CONFIGURATION:
+                                By clicking this button, you can load a customize JSON file to configure your a4GATE device.
+                                If you have created a backup JSON from a4CONF you can re-use it" id="uploadfile"
+                    onclick="conffromfile();">Upload Config</button>
+
+            </div>
+
+
+
+
+
+
+
+
+        </section>
+
+        <section id="content" class="content">
+
+
+            <div id="HomeSection" class="hidden">
+
+
+                <article id="Home" class="article">
+
+
+
+                    <!-- Serial Number -->
+                    <div id="system.div">
+
+
+                        <p>Fill the field below with device serial number.
+                            It will be used as host name for both PCs.</p>
+
+
+
+
+
+                        <div id="system.hostname.div" class="update_class_last">
+
+                            <label for="system.hostname"
+                                title="HOST NAME:
+                                    Write the serial number (S/N) of your a4GATE device. The serial number is on the left side of your a4GATE."
+                                id="host_name_info_section" style="padding-bottom: 10px;" for="system.hostname"
+                                class="form__label">Host
+                                name:</label>
+                            <input type="text" id="system.hostname" title="" class="form__input"
+                                placeholder="'Host Name'">
+
+
+                        </div>
+
+                    </div>
+                    <div style="text-align: center;" id="dashboards">
+                        <!-- <button id="dashboard_1_info" class="info_page_button" onclick="IDashBoard_1()">?</button> -->
+                        <table title="STATUS TABLE 1:
+                            External PC: If the pointer's color is red, there are some problems inside a4GATE settings wich needs to be configured.
+                            External PC network status: If the PCB is connected to a network, a green 'CONNECTED' will appear on the right.
+                            SiteManager connection status: Here the information about connection with SiteManager.
+                            Bidirectionality: If the bidirectionality is open, you will see a green pointer with the number of minutes left.
+                            Thingworx: If Thingworx is connected, a green sign will appear." class="home_dashboard"
+                            style="height: 360px;">
+                            <thead>
+                                <tr>
+                                    <th>SERVICE</th>
+                                    <th>STATUS</th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="ready.label"></td>
+                                    <td id="ready">&#11044;</td>
+
+                                </tr>
+                                <tr>
+                                    <td>External PC Network status:</td>
+                                    <td id="system.network.customer.static.external.is_connected">Checking...
+
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>SiteManager connection status:</td>
+                                    <td id="services.sitemanager.is_connected">Checking...
+
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td id="bidir_text">
+                                        Bidirectionality:
+                                    </td>
+                                    <td id="bidir_info">Checking...
+
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Thingworx:</td>
+                                    <td id="services.thingworx.is_connected.div">Checking...</td>
+
+
+
+
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table
+                            title="STATUS TABLE 2:
+                            A4MONITOR: If A4ONITOR service is correctly working, you will see a green pointer appearing on the right of the first section.
+                            The other 4 services below are strictly dependant from A4MONITOR service state.
+                            So if he doesn't work correctly, the other services's status will appear as '???' until A4MONITOR will return operative.
+                            In > Monitor Logs  main menu section, there is a diplay with A4MONITOR's logs,
+                            you can restart the service by clicking the button 'Reload A4MONITOR',
+                            wait about 30 to 45 seconds and if the services flags do not return operative, try to reload the page."
+                            class="home_dashboard" style="height: 360px;">
+                            <thead>
+                                <tr>
+                                    <th>SERVICE</th>
+                                    <th>STATUS</th>
+
+                                </tr>
+
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>a4MONITOR</td>
+                                    <td id="a4monitor_status">Checking...</td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Back channel:</td>
+                                    <td id="home_table_bc">Checking...</td>
+
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Data transfer:</td>
+                                    <td id="http_xfer">Checking...</td>
+
+                                    </td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Configuration service:</td>
+                                    <td id="cfgmng">Checking...</td>
+
+
+                                </tr>
+                                <tr>
+                                    <td>Broker:</td>
+                                    <td id="mosquitto">Checking...</td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+
+
+                </article>
+            </div>
+
+            <div id="PCASection" class="hidden">
+
+                <article id="PCA" class="article">
+
+
+                    <h2 title="In this section we can modify the network parameters and manage KepwareEx, as soon as the web page opens the fields are populated with the current configurations of the internal PC"
+                        class="inline">Internal PC</h2>
+                    <h4 class="inline" id="loaded.internal">configuration not loaded</h4>
+                    <button
+                        title="REFRESH EXTERNAL PC SETTINGS:
+                    By clicking this button you can pull settings from only PCA.
+                    This is helpful if something has changed in PCA and you want to retrieve datas without reloading the full a4CONF page. "
+                        style="display: inline-block; width: 350px;" role="button" class="button-19" id="loadinternalpc"
+                        onclick="get_confA();">Refresh internal PC settings</button> <br><br>
+
+
+                    <!-- NavBar PCA-->
+                    <div class="topnav">
+                        <a id="NetWorkPCABtn" class="active" onclick="showNetWorkPCA()">Network</a>
+                        <a id="KepwarePCABtn" onclick="showKepWarePCA()">Kepware</a>
+                        <a id="MorePCABtn" onclick="showMorePCA()">Advanced</a>
+                        <a id="InfoPCABtn" onclick="showInfoPCA()">Documentation</a>
+
+                    </div>
+
+                    <!--End NavBarPCA-->
+
+
+
+
+
+
+
+
+                    <div id="NetWorkPCA">
+                        <!-- NETWORK _secure -->
+
+                        <div id="system.network.industrial.div">
+                            <!--checkbox-->
+                            <div></div>
+
+                            <h3 title="It is possible to configure the network parameters of the PCA by setting the DHCP function or by setting a fixed IP and its mask; furthermore, in the section immediately below it is possible to enter one or more gateways."
+                                class="inline">Network configuration</h3>
+                            <br>
+
+
+
+                            <div id="system.network.industrial.dhcp.div" class="update_class_last">
+                                <!-- STATIC/DINAMIC -->
+
+                                <label for="IP_industrial_configuration" class="form__label">IP configuration:
+                                    (Choose between DHCP and Static IP)</label> <br>
+                                <div id="IP_industrial_configuration">
+                                    <label class="container_radio">Static
+                                        <input onchange="dhcp_industrial(false)" type="radio"
+                                            id="system.network.industrial.staticIP">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container_radio">DHCP
+                                        <input onchange="dhcp_industrial(true)" type="radio"
+                                            id="system.network.industrial.dhcp" name="system.network.industrial.dhcp">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+
+
+                            </div>
+                            <br>
+
+                            <div id="system.network.industrial.ip.div" class="update_class_last">
+
+                                <label for="system.network.industrial.ip" class="form__label">IP/MASK :</label>
+                                <input style="width: 330px; " type="text" id="system.network.industrial.ip"
+                                    class="form__input"
+                                    title="Insert Ip/subnet mask, separate different IPs with commas.&#010;Example:&#010;192.168.1.1/24&#010;or&#010;192.168.1.1/24,10.10.1.1/24"
+                                    placeholder="Separate IP and Subnet with comma">
+
+                            </div>
+                            <br>
+
+
+                            <p> IMPORTANT: after every change of IP address on the internal
+                                side, you can still reconnect to a4GATE via IP address 198.51.100.1/24</p>
+                            <br>
+
+
+                            <div id="system.network.industrial.routes.div" class="update_class_second just_the_border">
+
+                                <div></div>
+                                <h4 class="inline">Routes</h4>
+
+                                <table id="system.network.industrial.routes">
+                                    <!-- headers -->
+                                    <thead>
+                                        <tr>
+                                            <th>Subnet</th>
+                                            <th>Gateway</th>
+                                            <th class="row_adder" id="system.network.industrial.routes.add"
+                                                onclick="addEmptyToTable(this)"> + </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <br>
+
+                            <div id="system.network.industrial.netwroksscan.div" class="update_class_second just_the_border">
+
+                                <div></div>
+                                <h4 title="NETWORK SCAN EXCEPTION:
+                                These networks will not be capture by the network scan, periodically and automatically programmamed." class="inline">Networks Scan Exception</h4>
+                                <table id="system.network.industrial.netwroksscan">
+                                    <!-- headers -->
+                                    <thead>
+                                        <tr>
+                                            <th>Subnet</th>
+                                            <th class="row_adder" id="system.network.industrial.netwroksscan.add"
+                                                onclick="addEmptyToTable(this)"> + </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                        <!-- NETWORK _secure -->
+                    </div>
+
+
+                    <div name="KepwarePCA" id="KepwarePCA" class="hidden">
+
+                        <!-- <button style="display: inline-flex;" id="kepware_pca_info" class="info_page_button"
+                                onclick="IkepwareA()">?</button> -->
+                        <div id="services.kepware.div">
+                            <div></div>
+                            <h3 class="inline">Kepware configuration</h3>
+                            <br>
+
+                            <div id="services.kepware.trial.div" class="update_class_last">
+                                <p>Trial mode (if enabled, Kepware runtime will be reloaded periodically):</p>
+                                <label for="services.kepware.trial" class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.kepware.trial">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                                <!-- <input type="checkbox" id="services.kepware.trial">
+                                        <label for="services.kepware.trial">Trial mode (if enabled, kepware will be reloaded)</label> -->
+                            </div>
+                            <br>
+
+                        </div>
+
+
+                        <!--  <div id="KepwarePCA.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="KepwarePCA.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="KepwarePCA.manage">
+                            <!-- class="hidden" -->
+                            <br>
+                            <h4>Kepware IoT Gateway generation</h4>
+                            <p>IMPORTANT: if an IoT Gateway already exists for the same
+                                Channel/Device, it will not be modified. If items are already present in the IoT
+                                Gateway, they will not be modified. IoT items are added as disabled, they must
+                                be enabled manually.</p>
+                            <div class="just_the_border">
+                                <label class="form__label" for="services.kepware.createiotgw">Choose a Channel or Device
+                                    from Kepware:</label>
+                                <br>
+                                <br>
+                                <select class="form__input reload" id="services.kepware.createiotgw" disabled></select>
+
+                                <button title="REFRESH" class="button-19 inline dropdown__btn " role="button"
+                                    id="services.kepware.createiotgw.refresh" onclick="loaddevices()">&#8635;</button>
+                                <br>
+                                <br>
+
+                                <button style="width: 300px; margin:auto 11%;" class="button-19" role="button"
+                                    id="services.kepware.createiotgw.button" onclick="createiotgw('twa')">Create Iot for
+                                    Thingworx</button>
+                                <button style="width: 300px;" class="button-19" role="button"
+                                    id="services.kepware.createiotgw_opcua.button" onclick="createiotgw('opcua')">Create
+                                    Iot for OPCUA</button>
+                            </div>
+                            <br>
+                            <div id="services.kepware.projects" class="just_the_border">
+                                <p>Kepware Project:</p>
+                                <button title="DOWNLOAD KEPWARE PROJECT:
+                                By clicking this button, you can save a JSON of your Kepware layout."
+                                    style="width: 150px;" class="button-19" role="button"
+                                    id="services.kepware.div.backup" onclick="saveKepwareProject();">Download</button>
+
+                                <button
+                                    title="UPLOAD KEPWARE PROJECT:
+                                By clicking this button you can use a JSON Kepware project to configure your Kepware settings."
+                                    style="width: 150px;" class="button-19" role="button"
+                                    id="services.kepware.div.upload" onclick="uploadKepwareProject();">Upload</button>
+
+                            </div>
+                            <br>
+
+
+
+                            <div id="services.kepware.reload.div" class="just_the_border">
+                                <p>Reload Kepware runtime:</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.kepware.reload" onchange="reload_kepware()">
+                                    <div id="reload_kepware" class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                                <!-- <input type="checkbox" id="services.kepware.reload" >
+                                        <label for="services.kepware.reload">Reload Kepware</label> -->
+
+
+                            </div>
+                            <br>
+                        </div>
+
+
+                        <!-- KEPWARE -->
+
+                    </div>
+                    <div id="MorePCA" class="hidden">
+                        <h3 class="inline">More options:</h3>
+                        <br>
+                        <br>
+                        <!--  <div id="MorePCA.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="MorePCA.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="MorePCA.manage">
+                          <div class="just_the_border">
+                            <p title=" It is possible to disable access to the configuration application from outside the PCA by simply checking 'Hide this service from industrial network'.">
+                                Hide this service from industrial network:</p>
+                            <label class="toggler-wrapper style-23">
+                                <input type="checkbox" id="system.toProduction">
+                                <div class="toggler-slider">
+                                    <div class="toggler-knob"></div>
+                                </div>
+                            </label>
+
+                            <br>
+
+                            <p> Only configure Internal PC. If checked, configurations for External PC will not be sent.
+                                If not checked, network configurations on Internal PC will not be applied if External PC
+                                does.</p>
+                            <label class="toggler-wrapper style-23">
+                                <input type="checkbox" id="system.onlyinternal">
+                                <div class="toggler-slider">
+                                    <div class="toggler-knob"></div>
+                                </div>
+                            </label>
+
+                            <br>
+
+                          </div>
+
+                        </div>
+
+                    </div>
+
+                    <div id="InfoPCA" class="hidden">
+                        <p>
+                            <iframe name="infoPCA_iframe" width="100%" height="500px"
+                                src="./libs/Configuration-of-PCA.html" frameborder="10"></iframe>
+                        </p>
+                    </div>
+                </article>
+            </div>
+
+            <div id="PCBSection" class="hidden">
+
+                <article id="PCB" class="article">
+                    <!-- <button id="HomeInfo" class="info_page_button" onclick="IPCB()">?</button> -->
+                    <h2 class="inline">External PC</h2>
+                    <h4 class="inline" id="loaded.external">configuration not loaded</h4>
+                    <button
+                        title="REFRESH EXTERNAL PC SETTINGS:
+                    By clicking this button you can pull settings from only PCB.
+                    This is helpful if something has changed in PCB and you want to retrieve datas without reloading the full a4CONF page. "
+                        style="display: inline-block; width: 350px;" role="button" class="button-19" id="loadexternalpc"
+                        onclick="get_confB();">Refresh external PC settings</button> <br><br>
+
+                    <script>
+                        get_confB_auto()
+                    </script>
+
+                    <div class="topnav">
+                        <a id="NewWorkPCBBtn" class="active" onclick="showNetWorkPCB()">Network</a>
+                        <a id="SiteManagerPCBBtn" onclick="showSiteManagerPCB()">SiteManager</a>
+                        <a id="ThingWorxPCBBtn" onclick="showThingWorxPCB()">Thingworx</a>
+                        <a id="FireWallPCBBtn" onclick="showFireWallPCB()">Firewall</a>
+                        <a id="OPCUAPCBBtn" onclick="showOPCUAPCB()">OPCUA Server</a>
+                        <a id="MorePCBBtn" onclick="showMorePCB()">Advanced</a>
+                        <a id="InfoPCBBtn" onclick="showInfoPCB()">Documentation</a>
+
+                    </div>
+
+                    <!-- EXTERNAL PC -->
+
+                    <!-- NETWORK insecure -->
+                    <div id="NetWorkPCB">
+
+                        <div id="system.network.customer.div">
+
+                            <div></div>
+                            <h3 class="inline">Network configuration</h3>
+
+                            <!-- <h4 id="system.network.customer.static.external.is_connected"></h4> -->
+
+                            <!-- STATIC/DINAMIC -->
+                            <div id="system.network.customer.dhcp.div" class="update_class_last">
+                                <!--_second-->
+                                <!-- STATIC/DINAMIC -->
+
+                                <label for="IP_customer_configuration" class="form__label">IP configuration:
+                                    (Choose between DHCP and Static IP)</label> <br>
+                                <div id="IP_customer_configuration">
+                                    <label class="container_radio" for="system.network.customer.static">Static
+                                        <input onchange="dhcp_customer(false)" type="radio"
+                                            id="system.network.customer.static">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                    <label class="container_radio" for="system.network.customer.dhcp">DHCP
+                                        <input onchange="dhcp_customer(true)" type="radio"
+                                            id="system.network.customer.dhcp" name="system.network.customer.dhcp">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+
+                            </div>
+                            <br>
+
+
+
+                            <div id="system.network.customer.static.ip.div" class="update_class_last">
+
+                                <label for="system.network.customer.static.ip" class="form__label">IP/MASK :</label>
+                                <input style="width: 330px;" class="form__input" type="text"
+                                    id="system.network.customer.static.ip"
+                                    title="Insert Ip/subnet mask, separate different IPs with commas.&#010;Example:&#010;192.168.1.1/24&#010;or&#010;192.168.1.1/24,10.10.1.1/24"
+                                    placeholder="Separate IP and Subnet with comma">
+                            </div>
+                            <br>
+
+
+
+                            <div id="system.network.customer.static.dgw.div" class="update_class_last">
+
+                                <label class="form__label" for="system.network.customer.static.dgw">Default
+                                    Gateway:</label>
+                                <input class="form__input" type="text" id="system.network.customer.static.dgw"
+                                    title="Default Gateway IP address">
+                            </div>
+                            <br>
+
+
+                            <div id="system.network.customer.static.dns.div" class="update_class_last">
+
+                                <label class="form__label" for="system.network.customer.static.dns">Server DNS:</label>
+                                <input class="form__input" type="text" id="system.network.customer.static.dns"
+                                    title="Insert IP separated by commas">
+                                <!-- <br> -->
+                                <!-- STATIC -->
+                            </div>
+                            <!-- STATIC/DINAMIC -->
+
+                            <br>
+
+
+                            <!-- UPLINK INTERFACE'S MAC ADDRESS -->
+                            <p>
+                                <label id="system.network.customer.static.mac.label">MAC address => </label>
+                                <label id="system.network.customer.static.mac.value"></label>
+                            </p>
+                            <!-- UPLINK INTERFACE'S MAC ADDRESS -->
+
+                            <br>
+
+
+
+                            <!-- ETHERNET / WIFI -->
+                            <div id="system.network.customer.connection.div" class="update_class_last">
+                                <!--_second-->
+                                <p>Connection:</p>
+                                <label class="container_radio">Ethernet
+                                    <input onselect="cutmargins()" type="radio"
+                                        name="system.network.customer.connection"
+                                        id="system.network.customer.connection.ethernet" onchange="ethernet_enabled();">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Wireless
+                                    <input type="radio" id="system.network.customer.connection.wireless"
+                                        name="system.network.customer.connection" onchange="ethernet_enabled();">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <br>
+
+
+
+                                <div id="system.network.customer.connection.wireless.aerial.enabled"></div>
+
+                                <div id="system.network.customer.connection.wireless.networks.essid.list"></div>
+
+
+
+
+                                <p id="system.network.customer.connection.wireless.networks.essid.select.label">
+                                    IMPORTANT: In this list will not be shown hidden SSID. So if you need to connect to
+                                    hidden wi-fi network, you have to insert SSID manually</p> <br>
+
+                                <select class="form__input"
+                                    id="system.network.customer.connection.wireless.networks.essid.select"
+                                    onchange="enableESSID_button()" disabled>
+
+                                    <option selected disabled>Select SSID</option>
+
+                                </select>
+
+
+
+                                <button id="system.network.customer.connection.wireless.networks.essid.button"
+                                    class="button-19" onclick="addESSID();" disabled>Add SSID</button>
+
+
+
+
+
+
+
+
+
+
+                                <table style="margin-bottom: 70px;"
+                                    id="system.network.customer.connection.wireless.networks">
+
+
+
+                                    <thead>
+
+                                        <tr>
+
+                                            <th>SSID</th>
+
+                                            <th>Password</th>
+
+                                            <th class="row_adder"
+                                                id="system.network.customer.connection.wireless.networks.add"
+                                                onclick="addLine_ESSID_Table(this)"> + </th>
+
+                                        </tr>
+
+                                    </thead>
+
+                                    <tbody>
+
+
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+                            <br>
+
+
+                            <!-- ETHERNET / WIFI -->
+
+                            <!-- NTP -->
+                            <h4 class="inline">NTP</h4>
+
+                            <div title="NTP SERVER:
+                            You can choose to use NTP service from GateManager,
+                            otherwise you can configure your custom NTP Server by fill the section below with IP address."
+                                style="padding-bottom: 20px;" id="system.network.customer.ntp.gatemanager.div"
+                                class="update_class_last">
+                                <!--second-->
+                                <p>Use "NTP" alias from GateManager as NTP server:</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="system.network.customer.ntp.gatemanager"
+                                        onclick="ntpserverswitch(this)">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+                            </div>
+                            <br>
+
+
+                            <!-- <span>
+                                            <input type="checkbox" id="system.network.customer.ntp.gatemanager" onclick="ntpserverswitch(this)">
+                                            <label for="system.network.customer.ntp.gatemanager">Use "NTP" alias from GateManager as NTP server </label>
+                                        </span> -->
+
+                            <div id="system.network.customer.ntp.server.div" class="update_class_last">
+                                <label class="form__label" for="system.network.customer.ntp.server">Server:</label>
+                                <input class=" form__input" type="text" id="system.network.customer.ntp.server"
+                                    title="Separate IP with commas">
+                            </div>
+                            <br>
+
+
+
+
+                            <!-- </div> -->
+                            <!-- NTP -->
+                        </div>
+                    </div>
+
+                    <!-- SITEMANAGER -->
+                    <div id="SiteManagerPCB" class="hidden">
+
+                        <div id="services.sitemanager.div">
+                            <div></div>
+                            <h3 class="inline">SiteManager configuration</h3>
+
+                            <!-- enable/disable -->
+                            <div id="services.sitemanager.enabled.div" class="update_class_last">
+
+                                <p>SiteManager service:</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.sitemanager.enabled" checked="checked"
+                                        onchange="sme_enabled();">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+                            </div>
+                            <br>
+
+                            <!-- enable/disable -->
+
+                            <!-- DOMAIN -->
+                            <div id="services.sitemanager.domain.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <label class="form__label" for="services.sitemanager.domain">Domain :</label>
+                                <input class="form__input" type="text" id="services.sitemanager.domain"
+                                    value="Talea.Devices.a4GATE" class="largerinput">
+                            </div>
+
+
+                            <!-- DOMAIN -->
+                            <br>
+
+
+                            <!-- SERVER -->
+                            <div id="services.sitemanager.server.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <label class="form__label" for="services.sitemanager.server">Server :</label>
+                                <input class="form__input" type="text" id="services.sitemanager.server"
+                                    value="gm.ima.it 10.10.83.66 81.208.52.93" class="largerinput">
+                            </div>
+
+                            <!-- SERVER -->
+                            <br>
+
+
+                            <!-- onlybidir -->
+                            <div id="services.sitemanager.onlybidir.div" class="update_class_last">
+                                <p>Active only while in bidirectional mode:</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.sitemanager.onlybidir">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                                <!-- <input type="checkbox" id="services.sitemanager.onlybidir">
+                                        <label for="services.sitemanager.onlybidir">Active only while in bidirectional mode</label> -->
+                            </div>
+                            <br>
+                            <!-- onlybidir -->
+
+
+
+                            <div title="By checking this input you will see a4GATE's host name in Site Manager's tree domain.
+                            You can also uncheck it and use a custom Site Manager name "
+                                id="services.sitemanager.nameashostname.div" class="update_class_last">
+                                <p>Set SiteManager name as a4GATE's hostname</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.sitemanager.nameashostname" checked="checked"
+                                        onclick="sme_nameashostname();">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                            </div>
+                            <br>
+
+
+
+                            <!-- <span>
+                                            <input type="checkbox" id="services.sitemanager.nameashostname" checked="checked"
+                                                onclick="sme_nameashostname(this)">
+                                            <label for="services.sitemanager.nameashostname">Set SiteManager Name as hostname</label>
+                                        </span> -->
+
+                            <div id="services.sitemanager.name.div" class="update_class_last">
+
+                                <label class="form__label" for="services.sitemanager.name">Name:</label>
+                                <input class="form__input" type="text" id="services.sitemanager.name" value="" disabled>
+                            </div>
+                            <br>
+
+
+
+
+                            <!-- agents -->
+                            <div id="services.sitemanager.agents.div" class="update_class_second just_the_border">
+                                <div></div>
+                                <h4 class="inline">SME Agents</h4>
+                                <br>
+
+
+                                <div>
+                                    <select class="form__input" id="services.sitemanager.agents.vendor.select"
+                                        onchange="loadDeviceType();" disabled>
+                                        <option selected disabled>Choose a device vendor</option>
+                                    </select>
+                                    <br><br>
+
+                                    <select class="form__input" id="services.sitemanager.agents.type.select" disabled>
+                                        <option selected disabled>Choose a device type</option>
+                                    </select>
+                                    <button style="width: max-content;" class="button-19" role="button"
+                                        id="services.sitemanager.agents.type.button" onclick="addSmeAgent()"
+                                        disabled>Add Agent</button>
+
+
+
+                                </div>
+                                <br>
+
+                                <table id="services.sitemanager.agents">
+                                    <thead>
+                                        <tr>
+                                            <th>Agent</th>
+                                            <th>S/N</th>
+                                            <th>Device Name</th>
+                                            <th>Device Type</th>
+                                            <th>Device IP & Parameters</th>
+                                            <th class="row_adder" id="services.sitemanager.agents.add"
+                                                onclick="addEmptyToTable(this)"> +  </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <p>IMPORTANT: every agent on machine network will be visible on
+                                    GateManager after the first time a4GATE will reach it</p>
+                            </div>
+                            <!-- agents -->
+
+                        </div>
+
+                        <!--SiteManager Management-->
+
+
+                        <!--   <div id="SiteManagerPCB.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="SiteManagerPCB.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="SiteManagerPCB.manage">
+
+                            <div id="services.sitemanager.command.div" class="just_the_border">
+
+                                <p>SiteManager commands:</p>
+
+                                <label class="container_radio">Start
+                                    <input type="radio" id="services.sitemanager.command.start"
+                                        name="services.sitemanager.command" class="service-radio" value="SMEstart">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Stop
+                                    <input type="radio" id="services.sitemanager.command.stop"
+                                        name="services.sitemanager.command" class="service-radio" value="SMEstop">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Restart
+                                    <input type="radio" id="services.sitemanager.command.restart"
+                                        name="services.sitemanager.command" class="service-radio" value="SMErestart">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </div>
+
+                            <br>
+                            <br>
+                            <div title="RESET UID:
+                            If this a4GATE image is cloned from another device ( for example by a disaster recovery ),
+                            at the moment you activate connection with Site Manager, it could happen a conflict,
+                            between MAC Address saved and another a4GATE connected to Site Manager,
+                            with the same MAC Address. By checking this input,
+                            you will save the correct MAC Address of this device configuration
+                            in order to resolve the conflict. Be aware that if license is already assigned it will be lost!"
+                                id="services.sitemanager.resetuid.div" class="update_class_last">
+                                <!--second-->
+                                <p>Reset UID (if license is already assigned, it will be lost).</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.sitemanager.resetuid">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+                            </div>
+
+
+
+
+
+                            <!--SiteManager Management-->
+                        </div>
+
+
+
+
+                        <!-- SITEMANAGER -->
+                    </div>
+
+
+                    <!-- TW -->
+                    <div id="ThingWorxPCB" class="hidden">
+
+                        <div id="services.thingworx.div">
+                            <div></div>
+                            <h3 class="inline">Thingworx Agent configuration</h3>
+                            <em class="inline thingworx_agent" id="services.thingworx.version.div"></em>
+                            <br>
+
+
+
+                            <!-- enable/disable -->
+                            <div id="services.thingworx.enabled.div" class="update_class_last">
+                                <p>Thingworx service:</p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.thingworx.enabled" checked="checked"
+                                        onchange="tgw_enabled()">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+
+                                <!-- Service:
+                                    <input  type="checkbox" id="services.thingworx.enabled" checked="checked">
+                                    <label  for="services.thingworx.enabled">Enabled</label> -->
+                            </div>
+                            <!-- enable/disable -->
+                            <br>
+
+
+
+                            <!-- HOST -->
+
+                            <div id="services.thingworx.host.div" class="update_class_last">
+
+                                <label class="form__label" for="services.thingworx.host">Server Thingworx:</label>
+                                <input style="width: 300px;" class="form__input" type="text"
+                                    id="services.thingworx.host" value="ima-qa.cloud.thingworx.com" class="largerinput">
+                            </div>
+                            <!-- HOST -->
+                            <br>
+
+
+                            <!-- APPKEY -->
+
+                            <div id="services.thingworx.appkey.div" class="update_class_last">
+
+                                <label class="form__label" for="services.thingworx.appkey">App Key:</label>
+                                <input class="form__input" type="text" id="services.thingworx.appkey"
+                                    class="largerinput">
+                            </div>
+                            <!-- APPKEY -->
+                            <br>
+
+
+
+
+                            <!-- things -->
+
+                        </div>
+                        <!-- <div id="ThingWorxPCB.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="ThingWorxPCB.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="ThingWorxPCB.manage">
+
+                            <!-- things HTTP -->
+                            <div id="services.thingworx.things.http.div" class="update_class_second just_the_border">
+                                <div></div>
+                                <!--This empty div is used to move the checkbox on the left of the title-->
+                                <h4 class="inline">Things</h4>
+
+                                <br>
+                                <label class="form__label" for="services.thingworx.things.http.select">Choose an IoT
+                                    Gateway HTTP from Kepware:</label> <br> <br>
+                                <select class="form__input reload" id="services.thingworx.things.http.select"
+                                    disabled="true"> </select>
+                                <button title="ADD TO TABLE" id="services.thingworx.addiotgw" role="button"
+                                    class="button-19 dropdown__btn" onclick="addiotgw_opcua('twa')">+</button>
+                                <button title="REFRESH" id="services.thingworx.loadiotgws" role="button"
+                                    class="button-19 dropdown__btn" onclick="loadiotgws_opcua('from')">&#8635;</button>
+                                <br>
+                                <br>
+
+                                <table id="services.thingworx.things.http">
+                                    <!-- headers -->
+                                    <thead>
+                                        <tr>
+                                            <th>IoT Gateway</th>
+                                            <th>Thing name</th>
+                                            <th class="row_adder" id="services.thingworx.things.http.add"
+                                                onclick="addEmptyToTable(this)"> + </th>
+                                        </tr>
+                                    </thead>
+                                    <!-- headers -->
+                                    <!-- body -->
+                                    <tbody>
+
+                                    </tbody>
+                                    <!-- body -->
+                                </table>
+                            </div>
+                            <!-- things HTTP -->
+                            <br>
+                            <!-- command -->
+                            <div id="services.thingworx.command.div" class="just_the_border">
+                                <p>Thingworx commands:</p>
+                                <label class="container_radio">Start
+                                    <input type="radio" id="services.thingworx.command.start"
+                                        name="services.thingworx.command" class="service-radio" value="TWXstart">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Stop
+                                    <input type="radio" id="services.thingworx.command.stop"
+                                        name="services.thingworx.command" class="service-radio" value="TWXstop">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Restart
+                                    <input type="radio" id="services.thingworx.command.restart"
+                                        name="services.thingworx.command" class="service-radio" value="TWXrestart">
+                                    <span class="checkmark"></span>
+                                </label>
+
+                            </div>
+                            <!-- command -->
+                            <br>
+                        </div>
+
+
+                        <!-- TW -->
+
+                    </div>
+
+       <!-- FIREWALL -->
+                    <div id="FireWallPCB" class="hidden">
+
+                        <div id="system.network.customer.firewall.div">
+                            <div></div>
+                            <h3 class="inline">Firewall configuration</h3>
+
+                            <div id="system.network.customer.firewall.enabled.div" class="update_class_last">
+
+                                <p>Firewall service:</p>
+
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="system.network.customer.firewall.enabled"
+                                        checked="checked" onchange="fw_enabled()">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+                            </div>
+                            <br>
+
+
+
+                            <!-- ALIAS -->
+                            <div id="system.network.customer.alias.div" class="update_class_second just_the_border">
+                                <div></div>
+                                <h4 class="inline">Alias</h4>
+                                <table id="system.network.customer.alias">
+                                    <thead>
+                                        <tr>
+                                            <th>Alias</th>
+                                            <th>Value</th>
+                                            <th class="row_adder" id="system.network.customer.alias.add"
+                                                onclick="addEmptyToTable(this)">
+                                                + </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <p>Value can be an integer, an IP address or a network in CIDR
+                                    notation.</p>
+
+                            </div>
+                            <!-- ALIAS -->
+
+                            <br>
+
+                            <!-- INPUT TCP -->
+                            <div id="system.network.customer.input.wan.tcp.div"
+                                class="update_class_second just_the_border">
+                                <div></div>
+                                <h4 class="inline">TCP ports allowed in input on WAN</h4>
+                                <table id="system.network.customer.input.wan.tcp">
+                                    <thead>
+                                        <tr>
+                                            <th>External TCP port</th>
+                                            <th>Source</th>
+                                            <th class="row_adder" id="system.network.customer.input.wan.tcp.add"
+                                                onclick="addEmptyToTable(this)"> + </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- INPUT TCP -->
+
+                            <br>
+
+                            <!-- NAT -->
+                            <div id="system.network.customer.nat.div" class="just_the_border">
+
+                                <h4 class="inline">NAT</h4>
+                                <br>
+
+                                <div id="system.network.customer.nat.enabled.div" class="update_class_last">
+                                    <p>Enable NAT feature (in outgoing connections internal IPs are replaced with a4GATE
+                                        external IP)</p>
+                                    <label class="toggler-wrapper style-23">
+                                        <input type="checkbox" id="system.network.customer.nat.enabled"
+                                            checked="checked">
+                                        <div class="toggler-slider">
+                                            <div class="toggler-knob"></div>
+                                        </div>
+                                    </label>
+                                    <br><br>
+                                    <!-- <input type="checkbox" id="system.network.customer.nat.enabled" checked="checked"> -->
+
+                                </div>
+                                <br>
+
+
+
+                                <!-- MachineToInternet -->
+
+                                <div id="system.network.customer.mtoi.div" class="update_class_last">
+                                    <p>Machine network can reach External networks (NAT must be enabled)</p>
+                                    <label class="toggler-wrapper style-23">
+                                        <input type="checkbox" id="system.network.customer.mtoi">
+                                        <div class="toggler-slider">
+                                            <div class="toggler-knob"></div>
+                                        </div>
+                                    </label>
+
+                                    <!-- <input type="checkbox" id="system.network.customer.mtoi"> -->
+
+                                </div>
+                                <!-- MachineToInternet -->
+                                <br>
+
+                                <div id="system.network.customer.nat.forward.div"
+                                    class="update_class_second just_the_border">
+                                    <div></div>
+                                    <h4 class="inline">Forward TCP ports from External to Machine network (NAT must be
+                                        enabled)</h4>
+                                    <!-- forward NAT -->
+                                    <table id="system.network.customer.nat.forward">
+                                        <thead>
+                                            <tr>
+                                                <th>External IP [optional]</th>
+                                                <th>External port</th>
+                                                <th>Destination IP </th>
+                                                <th>Destination port [optional]</th>
+                                                <th>Source</th>
+                                                <th class="row_adder" id="system.network.customer.nat.forward.add"
+                                                    onclick="addEmptyToTable(this)"> + </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                    <!-- forward NAT -->
+                                    <p>If "External IP" field is left empty, NAT will be
+                                        created on all external IP addresses
+                                        If "Destination port" field is left empty, "External port" value will be used as
+                                        "Destination port"</p>
+                                </div>
+                            </div>
+                            <!-- NAT -->
+
+                        </div>
+
+                    </div>
+               <!-- OPCUA -->
+                    <div id="OPCUAPCB" class="hidden">
+
+                        <div id="services.opcua.div">
+                            <div></div>
+                            <h3 class="inline">OPCUA Server configuration</h3>
+
+                            <!-- enable/disable -->
+
+                            <div id="services.opcua.enabled.div" class="update_class_last">
+
+                                <span>
+                                    <p> OPCUA Server service: </p>
+                                    <label class="toggler-wrapper style-23">
+                                        <input type="checkbox" id="services.opcua.enabled" checked="checked"
+                                            onchange="opcua_enabled()">
+                                        <div class="toggler-slider">
+                                            <div class="toggler-knob"></div>
+                                        </div>
+                                    </label> <br> <br>
+                                </span>
+
+
+
+
+                            </div>
+                            <!-- enable/disable -->
+                            <br>
+
+
+
+
+
+                            <!-- SHIFT_FROM -->
+                            <div id="services.opcua.shift_property_from_kepware.div" class="update_class_last">
+
+                                <label title="If you are working with a lot of tags that share the same path, you can tag's tree node to the left or to the right in order to simplify variable's name. For example: tag_1 = 'Channelx.Devicex.Collectionx.Registerx.Variable1' and tag_2 = 'Channelx.Devicex.Collectionx.Registerx.Variable2'. If you want to reduce the lenght name you can Shift from Kepware of 3 to get tag_1 = 'Variable1' and tag_2 = 'Variable2'." class="form__label" for="services.opcua.shift_property_from_kepware">Shift from
+                                    Kepware (Client):</label>
+                                <input class="form__input" type="number" id="services.opcua.shift_property_from_kepware"
+                                    min="0" value="0">
+                            </div>
+                            <!-- SHIFT_FROM -->
+                            <br>
+
+
+                            <!-- SHIFT_TO -->
+                            <div id="services.opcua.shift_property_to_kepware.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <label title="If you are working with a lot of tags that share the same path, you can tag's tree node to the left or to the right in order to simplify the variable's name. For example: tag_1 = 'Channelx.Devicex.Collectionx.Registerx.Variable1' and tag_2 = 'Channelx.Devicex.Collectionx.Registerx.Variable2'. If you want to reduce lenght of name you can Shift To Kepware of 3 to get tag_1 = 'Variable1' and tag_2 = 'Variable2'." class="form__label" for="services.opcua.shift_property_to_kepware">Shift to
+                                    Kepware (Server):</label>
+                                <input class="form__input" type="number" id="services.opcua.shift_property_to_kepware"
+                                    min="0" value="0">
+                            </div>
+                            <!-- SHIFT_TO -->
+                            <br>
+
+
+                            <!-- custom_port_enable -->
+                            <div id="services.opcua.custom_port_enable.div" class="update_class_last">
+
+
+                                <p> Custom TCP Port </p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.opcua.custom_port_enable"
+                                        onchange="opcua_custom_tcp_port();">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+
+                            </div>
+
+                            <!-- custom_port_enable -->
+                            <br>
+
+
+                            <!-- <span>
+                                        Custom TCP Port:
+                                        <input type="checkbox" id="services.opcua.custom_port_enable"
+                                            onchange="opcua_custom_port();">
+                                        <label for="services.opcua.custom_port_enable">Enabled </label>
+                                    </span> -->
+
+                            <!-- custom_port -->
+                            <div id="services.opcua.custom_port.div" class="update_class_last">
+
+                                <label class="form__label" for="services.opcua.custom_port">Port Number:</label>
+                                <input class="form__input" type="number" id="services.opcua.custom_port" min="0"
+                                    value="4840" max="65535" disabled="true">
+                            </div>
+                            <!-- custom_port -->
+                            <br>
+
+
+
+                            <!-- custom_port_enable -->
+
+                            <!-- users_auth -->
+                            <div id="services.opcua.user_auth.div" class="update_class_last">
+
+
+                                <p> Users Authentication </p>
+                                <label class="toggler-wrapper style-23">
+                                    <input type="checkbox" id="services.opcua.user_auth" checked="checked"
+                                        onchange="usersAuth()">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <br>
+
+
+
+                            <!-- users -->
+                            <div id="services.opcua.users.div" class="update_class_second just_the_border">
+                                <div></div>
+                                <h4 class="inline">Users</h4>
+                                <table id="services.opcua.users">
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Password</th>
+                                            <th class="row_adder" id="services.opcua.users.add"
+                                                onclick="addEmptyToTable(this)"> + </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                            <!-- users -->
+
+
+                            <!-- users_auth -->
+
+
+                        </div>
+                        <!--  <div id="OPCUAPCB.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="OPCUAPCB.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="OPCUAPCB.manage">
+                            <!-- class="hidden" -->
+                            <!-- command -->
+                            <!-- iot gw -->
+
+                            <div id="services.opcua.things.div" class="update_class_second just_the_border">
+                                <div></div>
+
+                                <h4 class="inline">IoT Gateway</h4>
+                                <br>
+                                <div class="just_the_border">
+                                    <label class="form__label" for="services.opcua.fromkepware.select">Choose an IoT
+                                        Gateway from Kepware:</label> <br> <br>
+                                    <select class="form__input reload" id="services.opcua.fromkepware.select" disabled="true">
+                                    </select>
+                                    <button title="ADD TO TABLE" id="services.opcua.fromkepware.addBtn" role="button"
+                                        class="button-19 dropdown__btn" onclick="addiotgw_opcua('from')">+</button>
+                                    <button title="REFRESH" id="services.opcua.fromkepware.refreshBtn" role="button"
+                                        class="button-19 dropdown__btn"
+                                        onclick="loadiotgws_opcua('from')">&#8635;</button>
+                                    <br>
+                                    <br>
+                                    <table id="services.opcua.things.fromkepware">
+                                        <!-- headers -->
+                                        <thead>
+                                            <tr>
+                                                <th>IoT Gateway From Kepware</th>
+                                                <th class="row_adder" id="services.opcua.things.fromkepware.add"
+                                                    onclick="addEmptyToTable(this)"> + </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- headers -->
+                                        <!-- body -->
+                                        <tbody>
+
+                                        </tbody>
+                                        <!-- body -->
+                                    </table>
+
+                                </div>
+                                <br>
+                                <br>
+                                <div class="just_the_border">
+                                    <label class="form__label" for="services.opcua.tokepware.select">Choose an IoT
+                                        Gateway to Kepware:</label> <br> <br>
+                                    <select style="width: 300px; margin-left: 32.5%;" class="form__input reload"
+                                        id="services.opcua.tokepware.select"> </select>
+                                    <button title="ADD TO TABLE" id="services.opcua.tokepware.addBtn" role="button"
+                                        class="button-19 dropdown__btn" onclick="addiotgw_opcua('to')">+</button>
+                                    <button title="REFRESH" id="services.opcua.tokepware.refreshBtn" role="button"
+                                        class="button-19 dropdown__btn"
+                                        onclick="loadiotgws_opcua('to')">&#8635;</button>
+                                    <br>
+                                    <br>
+
+
+
+
+                                    <table id="services.opcua.things.tokepware">
+                                        <!-- headers -->
+                                        <thead>
+                                            <tr>
+                                                <th>IoT Gateway To Kepware</th>
+                                                 <th class="row_adder" id="services.opcua.things.tokepware.add"
+                                                    onclick="addEmptyToTable(this)"> + </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- headers -->
+                                        <!-- body -->
+                                        <tbody>
+
+                                        </tbody>
+                                        <!-- body -->
+                                    </table>
+
+                                </div>
+                                <!-- iot gw -->
+                                <br>
+                                <br>
+
+                            </div>
+
+                            <br>
+                            <br>
+
+
+
+                        </div>
+
+                        <div id="services.opcua.command.div" class="just_the_border">
+                            <p>OPCUA Server commands:</p>
+                            <label class="container_radio">Start
+                                <input type="radio" id="services.opcua.command.start" name="services.opcua.command" class="service-radio" value="OPCUAstart">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="container_radio">Stop
+                                <input type="radio" id="services.opcua.command.stop" name="services.opcua.command" class="service-radio" value="OPCUAstop">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="container_radio">Restart
+                                <input type="radio" id="services.opcua.command.restart" name="services.opcua.command" class="service-radio" value="OPCUArestart"
+                                   >
+                                <span class="checkmark"></span>
+                            </label>
+
+                            <!--  &nbsp;&nbsp;&nbsp;&nbsp; Command:
+                               <input type="radio" id="services.opcua.command.start" name="services.opcua.command">
+                               <label for="services.opcua.command.start">Start</label>
+                               <input type="radio" id="services.opcua.command.stop" name="services.opcua.command">
+                               <label for="services.opcua.command.stop">Stop</label>
+                               <input type="radio" id="services.opcua.command.restart" name="services.opcua.command" checked="checked">
+                               <label for="services.opcua.command.restart">Restart</label> -->
+
+                        </div>
+                        <!-- command -->
+                        <br>
+                        <!-- OPCUA -->
+                    </div>
+                    <div id="MorePCB" class="hidden">
+                        <h3 class="inline">More options:</h3>
+                        <br>
+                        <!-- <div id="MorePCB.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="MorePCB.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+                        <div id="MorePCB.manage">
+                          <div class="update_class_last">
+                            <p>Reboot External PC:</p>
+                            <label class="toggler-wrapper style-23">
+                                <input type="checkbox" id="system.reboot">
+                                <div class="toggler-slider">
+                                    <div class="toggler-knob"></div>
+                                </div>
+                            </label>
+                            <br>
+                          </div>
+
+                        </div>
+
+                    </div>
+                    <div id="InfoPCB" class="hidden">
+                        <iframe name="InfoPCB_iframe" width="100%" height="500px" src="./libs/Configuration-of-PCB.html"
+                            frameborder="0"></iframe>
+                    </div>
+
+                </article>
+            </div>
+
+            <div id="FastDataSection" class="hidden">
+                <article id="Fast-Data" class="article">
+                    <h2 class="inline">Fast Data</h2>
+                    <h4 class="inline" id="loaded.ftp">configuration not loaded</h4>
+                    <br>
+                    <!-- enable/disable -->
+                    <div id="services.ftp.A.enabled.div" class="update_class_last">
+                        <p> Service on PCA</p>
+                        <label class="toggler-wrapper style-23" for="services.ftp.A.enabled">
+                            <input type="checkbox" id="services.ftp.A.enabled" checked="checked">
+                            <div class="toggler-slider">
+                                <div class="toggler-knob"></div>
+                            </div>
+                        </label>
+
+                    </div>
+                    <br>
+
+                    <div id="services.ftp.B.enabled.div" class="update_class_last">
+                        <p> Service on PCB</p>
+                        <label class="toggler-wrapper style-23" for="services.ftp.B.enabled">
+                            <input type="checkbox" id="services.ftp.B.enabled" checked="checked">
+                            <div class="toggler-slider">
+                                <div class="toggler-knob"></div>
+                            </div>
+                        </label>
+
+                    </div>
+                    <!-- enable/disable -->
+                    <br>
+                    <div id="services.ftp.cloud.div" class="update_class_last">
+
+                        <label for="cloud-provider" class="form__label">Cloud provider:</label> <br>
+                        <div id="cloud-provider">
+                            <label class="container_radio">PTC (Thingworx)
+                                <input onchange="ptc_enabled()" type="radio" id="services.ftp.cloud.ptc"
+                                    name="cloud_provider" checked="checked">
+                                <span class="checkmark"></span>
+                            </label>
+                            <label class="container_radio">Microsoft (Azure)
+                                <input onchange="ptc_enabled()" type="radio" id="services.ftp.cloud.microsoft"
+                                    name="cloud_provider">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <br>
+
+                    <div style="text-align: center;">
+                        <!-- IoTEdge services running -->
+                        <div class="hidden" id="services.ftp.iotedge.info.div">
+                            <!-- <button id="dashboard_1_info" class="info_page_button" onclick="IDashBoard_1()">?</button> -->
+                            <table class="home_dashboard">
+                                <thead>
+                                    <tr>
+                                        <th>IoT Edge Services</th>
+                                        <th>STATUS</th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Edge Agent</td>
+                                        <td id="services.ftp.iotedge.info.agent">Waiting B side config...</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>Edge Blobs</td>
+                                        <td id="services.ftp.iotedge.info.blobs">Waiting B side config...
+
+                                        </td>
+
+
+                                    </tr>
+                                    <tr>
+                                        <td>Edge Hub</td>
+                                        <td id="services.ftp.iotedge.info.hub">Waiting B side config...
+
+                                        </td>
+
+
+                                    </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- IoTEdge services running -->
+
+                        <!-- PTC services running -->
+
+                        <div class="hidden" id="services.ftp.ptc.info.div">
+                            <table class="home_dashboard">
+                                <thead>
+                                    <tr>
+                                        <th>PTC Services</th>
+                                        <th>STATUS</th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PTC Agent</td>
+                                        <td id="services.ftp.ptc.info.twagent.enabled">Waiting B side config...</td>
+
+                                    </tr>
+                                    <tr>
+                                        <td>File Transfer</td>
+                                        <td id="services.ftp.ptc.info.twagent.fileTransfer">Waiting B side config...
+
+                                        </td>
+
+
+                                    </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                    <br>
+
+
+                    <!-- HTTP Port -->
+                    <div id="services.ftp.http_port.div" class="update_class_last">
+
+                        <p>HTTP Port:</p>
+                        <input class="form__input" type="number" id="services.ftp.http_port">
+                        <label class="form__label" for="services.ftp.http_port"> </label>
+
+                    </div>
+                    <!-- HTTP Port -->
+                    <br>
+
+
+
+                    <!-- Microsoft connection params -->
+                    <div id="services.ftp.microsoft.sas.div" class="update_class_last">
+
+
+                        <p>Shared Access Signature:</p>
+                        <input style="width: 600px;" class="form__input no_limit_width" type="password"
+                            id="services.ftp.microsoft.sas" onfocus="show_access_signature()"
+                            onblur="hide_access_signature()">
+
+                        <!-- <input class="form__input" type="password" id="pswd" value=""> -->
+
+                        <label class="form__label" for="services.ftp.microsoft.sas"></label>
+                    </div>
+
+                    <br>
+
+                    <div id="services.ftp.microsoft.lsa.div" class="update_class_last">
+                        <p> Local Storage Account:</p>
+
+                        <input class="form__input" type="text" id="services.ftp.microsoft.lsa">
+                        <label class="form__label" for="services.ftp.microsoft.lsa"></label>
+
+                    </div>
+
+                    <br>
+
+                    <div id="services.ftp.microsoft.blob_container.div" class="update_class_last">
+                        <p>Blob Container:</p>
+
+                        <input class="form__input" type="text" id="services.ftp.microsoft.blob_container">
+                        <label class="form__label" for="services.ftp.microsoft.blob_container"></label>
+
+                    </div>
+                    <!-- Microsoft connection params -->
+
+                    <br>
+                    <!-- custom_port_enable -->
+
+                    <div class="topnav">
+                        <a id="FTPServer_li" class="active" onclick="showFTPServerFastData()">FTP Server</a>
+                        <a id="Users_li" onclick="showUsersFastData()">Users</a>
+
+                    </div>
+
+                    <div id="FTPServer">
+                        <div id="services.ftp.server.div">
+                            <div></div>
+                            <h3 class="inline">FTP Server</h3>
+                            <br>
+                            <div id="services.ftp.custom_port_enable.div" class="update_class_last">
+                                <p> Custom TCP Port:</p>
+                                <label class="toggler-wrapper style-23" for="services.ftp.custom_port_enable">
+                                    <input type="checkbox" id="services.ftp.custom_port_enable"
+                                        onchange="ftp_server_custom_port();">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                            </div>
+                            <br>
+
+
+
+
+                            <!--  <span>
+                                    Custom TCP Port:
+                                    <input type="checkbox" id="services.ftp.custom_port_enable"
+                                        onchange="ftp_server_custom_port();">
+                                    <label for="services.ftp.custom_port_enable">Enabled </label>
+                                </span> -->
+
+                            <!-- custom_port -->
+                            <div id="services.ftp.custom_port.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <p>Port number:</p>
+                                <label class="form__label" for="services.ftp.custom_port"></label>
+                                <input class="form__input" type="number" id="services.ftp.custom_port" min="0"
+                                    value="21" max="65535" disabled="true">
+                            </div>
+                            <!-- custom_port -->
+
+
+                            <!-- custom_port_enable -->
+
+                            <br>
+
+                            <!-- max_cons -->
+                            <div id="services.ftp.max_cons.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <label class="form__label" for="services.ftp.max_cons">Max connections:</label>
+                                <input class="form__input" type="number" id="services.ftp.max_cons" min="1" value="25"
+                                    max="65535">
+                            </div>
+                            <!-- max_cons -->
+                            <br>
+                            <!-- max_cons_per_ip -->
+                            <div id="services.ftp.max_cons_per_ip.div" class="update_class_last">
+                                <!-- &nbsp;&nbsp;&nbsp;&nbsp; -->
+                                <label class="form__label" for="services.ftp.max_cons_per_ip">Max connection per
+                                    IP:</label>
+                                <input class="form__input" type="number" id="services.ftp.max_cons_per_ip" min="1"
+                                    value="5" max="65535">
+                            </div>
+                            <!-- max_cons_per_ip -->
+
+                            <br>
+
+                            <!-- Handle folder dimension -->
+
+                            <!-- History -->
+                            <div id="services.ftp.folders.history.size.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.history.size">"Received file"
+                                    folder max bytes size [Bytes]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.history.size"
+                                    value="1048576">
+
+
+                            </div>
+                            <br>
+                            <div id="services.ftp.folders.history.days.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.history.days">"Received file" old
+                                    days limit [Days]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.history.days" min="0"
+                                    value="1">
+
+
+                            </div>
+
+                            <br>
+
+                            <!-- Sent -->
+                            <div id="services.ftp.folders.sent.size.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.sent.size">"Sent file" folder max
+                                    bytes size [Bytes]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.sent.size"
+                                    value="1048576">
+
+
+                            </div>
+                            <br>
+                            <div id="services.ftp.folders.sent.days.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.sent.day">"Sent file" old days
+                                    limit [Days]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.sent.days" min="0"
+                                    value="1">
+
+
+                            </div>
+
+                            <br>
+
+                            <!-- Not Sent -->
+                            <div id="services.ftp.folders.not_sent.size.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.not_sent.size">"NOT Sent file"
+                                    folder max bytes size [Bytes]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.not_sent.size"
+                                    value="1048576">
+
+
+                            </div>
+                            <br>
+                            <div id="services.ftp.folders.not_sent.days.div" class="update_class_last">
+                                <label class="form__label" for="services.ftp.folders.not_sent.days">"NOT Sent file" old
+                                    days limit [Days]:</label>
+                                <input class="form__input" type="number" id="services.ftp.folders.not_sent.days" min="0"
+                                    value="1">
+
+
+                            </div>
+                            <br>
+                            <!-- Handle folder dimension -->
+                            <!-- Process existing files -->
+                            <div id="services.ftp.processExisting.div" class="update_class_last">
+
+                                <p> Process existing files</p>
+                                <label class="toggler-wrapper style-23" for="services.ftp.processExisting">
+                                    <input type="checkbox" id="services.ftp.processExisting" checked="checked">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                                <!--  <span>
+                                    Process existing files:
+                                    <input type="checkbox" id="services.ftp.processExisting" checked="checked">
+                                    <label for="services.ftp.processExisting">Enabled </label>
+                                </span> -->
+                            </div>
+                            <!-- Process existing files -->
+
+                            <br>
+
+                            <!-- Add timestamp to filenames on B -->
+                            <div id="services.ftp.add_timestamp.div" class="update_class_last">
+
+                                <p> Add timestamp to filenames</p>
+                                <label class="toggler-wrapper style-23" for="services.ftp.add_timestamp">
+                                    <input type="checkbox" id="services.ftp.add_timestamp" checked="checked">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+                                <!-- <span>
+                                    Add timestamp to filenames:
+                                    <input type="checkbox" id="services.ftp.add_timestamp" checked="checked">
+                                    <label for="services.ftp.add_timestamp">Enabled </label>
+                                </span> -->
+                            </div>
+                            <!-- Add timestamp to filenames on B -->
+
+                            <br>
+
+
+
+
+
+                        </div>
+
+
+
+
+
+                        <!-- FTP Server -->
+                        <!-- <div id="FTPServer.gear" class="h-divider">
+                                <div class="shadow"></div>
+                                <div class="text2"> <a style="cursor: pointer;" onclick="manageGears(this)"><img
+                                            src="./libs/gear.png" alt=""></a> </div>
+                            </div> -->
+                        <div id="FTPServer.gear" class="h-divider-active">
+                            <div class="shadow"></div>
+                            <div class="text2"><img src="./libs/gear.png" alt=""></div>
+                        </div>
+                        <br>
+                        <br>
+
+                        <div id="FTPServer.manage">
+                            <!-- class="hidden" -->
+                            <br>
+                            <!-- command -->
+                            <div id="services.ftp.command.div" class="just_the_border">
+
+
+                                <p>FTP Server commands:</p>
+                                <label class="container_radio">Start
+                                    <input type="radio" id="services.ftp.command.start" name="services.ftp.command" value="FTPstart">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Stop
+                                    <input type="radio" id="services.ftp.command.stop" name="services.ftp.command" value="FTPstop">
+                                    <span class="checkmark"></span>
+                                </label>
+                                <label class="container_radio">Restart
+                                    <input type="radio" id="services.ftp.command.restart" name="services.ftp.command" value="FTPrestart"
+                                        >
+                                    <span class="checkmark"></span>
+                                </label>
+
+
+
+
+                                <!--   Command:
+                                <input type="radio" id="services.ftp.command.start" name="services.ftp.command">
+                                <label for="services.ftp.command.start">Start</label>
+                                <input type="radio" id="services.ftp.command.stop" name="services.ftp.command">
+                                <label for="services.ftp.command.stop">Stop</label>
+                                <input type="radio" id="services.ftp.command.restart" name="services.ftp.command"
+                                    checked="checked">
+                                <label for="services.ftp.command.restart">Restart</label> -->
+
+                            </div>
+                            <!-- command -->
+
+                        </div>
+                    </div>
+
+                    <div id="Fast_Data_Users" class="hidden">
+                        <!-- users_auth -->
+                        <div id="services.ftp.users.div">
+                            <div></div>
+
+                            <h3 class="inline">Users</h3>
+
+                            <!-- Anonymus authenication -->
+                            <div id="services.ftp.users.anonymus.div" class="update_class_last">
+                                <p> Anonymus Authentication:</p>
+
+                                <label class="toggler-wrapper style-23" for="services.ftp.users.anonymus">
+                                    <input type="checkbox" id="services.ftp.users.anonymus"
+                                        onchange="ftp_anonymus_cfg()">
+                                    <div class="toggler-slider">
+                                        <div class="toggler-knob"></div>
+                                    </div>
+                                </label>
+
+                                <!-- <input type="checkbox" id="services.ftp.users.anonymus" onchange="ftp_anonymus_cfg()">
+                                <label for="services.ftp.users.anonymus">Enabled </label> -->
+
+
+                            </div>
+                            <br>
+                            <div id="services.ftp.users.anonymus.folder.div" class="update_class_last">
+                                <p>Anonymus folder: </p>
+                                <!-- <label for="services.ftp.users.anonymus.folder">Anonymus folder: </label> -->
+                                <input class="form__input" type="text" id="services.ftp.users.anonymus.folder">
+                            </div>
+                            <!-- Anonymus authenication -->
+
+                            <br>
+
+                            <!-- users -->
+                            <table id="services.ftp.users">
+                                <thead>
+                                    <tr>
+                                        <th>Username</th>
+                                        <th>Password</th>
+                                        <th>Shared folder</th>
+                                        <th id="services.ftp.users.add" onclick="addEmptyToTable(this)"> + </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <!-- users -->
+
+                            <br>
+                            <br>
+
+
+
+
+
+
+
+
+
+                            <!-- IoTEdge services running -->
+
+                            <!-- PTC services running -->
+                            <!-- <div id="services.ftp.ptc.info.div">
+
+                                <br>
+
+                                PTC File Transfer Services:
+                                <br>
+                                <label type="radio" id="services.ftp.ptc.info.twagent.enabled" style="color: blue;">PTC
+                                    Agent =>
+                                    Waiting B side config... </label> <br>
+                                <label type="radio" id="services.ftp.ptc.info.twagent.fileTransfer"
+                                    style="color: blue;">File
+                                    transfer => Waiting B side config... </label> <br>
+
+                            </div> -->
+                            <!-- PTC services running -->
+
+                            <!-- Thingworx PTC FileTransfer services running -->
+                            <!-- <div id="services.ftp.iotedge.info.div">
+
+                            <br>
+
+                            IoT Edge Services:
+                            <br>
+                            <label type="radio" id="services.ftp.iotedge.info.agent" style="color: blue;">Edge Agent => Waiting B side config... </label> <br>
+                            <label type="radio" id="services.ftp.iotedge.info.blobs" style="color: blue;">Edge Blobs => Waiting B side config... </label> <br>
+                            <label type="radio" id="services.ftp.iotedge.info.hub" style="color: blue;">Edge Hub => Waiting B side... </label>
+
+                        </div> -->
+                            <!-- Thingworx PTC FileTransfer services running -->
+
+
+
+                        </div>
+
+                        <!-- users_auth -->
+                    </div>
+
+
+
+
+                    <!-- FTP Server -->
+
+                    <!-- FTP -->
+
+                    <!-- FAST DATA TO CLOUD  -->
+
+                </article>
+            </div>
+
+            <div id="PasswGateSection" class="hidden">
+
+                <!-- <div class="page_name">Admins</div> -->
+                <article class="article">
+
+                    <h2 style="color:rgb(26, 114, 247)">a4GATE DEVELOPERS</h2>
+
+                    <h4 class="inline"> This section is for a4GATE developers only! </h4>
+                    <img src="./libs/forbidden_icon.png" alt="">
+
+
+
+
+                    <!-- Enter Password -->
+                    <p>Enter password:</p>
+                    <input class="form__input" type="password" id="pswd" value="">
+                    <span id="message" style="color:red"> </span> <br><br>
+
+                    <!-- Click to verify valid password -->
+
+                    <button style="float:right" onclick="verifyPassword()" role="button"
+                        class="button-19">Submit</button>
+                    <!-- <button style="float:right" id="HomeInfo" class="info_page_button" onclick="IBC()">?</button> -->
+
+                    <!-- Click to reset fields -->
+
+
+                </article>
+            </div>
+
+            <div id="BackChannelSection" class="hidden">
+                <!-- <div class="page_name">Back &nbsp; Channel</div> -->
+
+                <article class="article" id="Back_Channel">
+                    <!-- backchannel -->
+                    <div id="services.backchannel.div">
+                        <div></div>
+
+                        <h3 class="inline">Back Channel</h3>
+
+                        <!-- topics table -->
+
+                        <div id="services.backchannel.topics.div" class="update_class_second">
+                            <div></div>
+                            <h4 class="inline">Topics</h4>
+
+                            <table id="services.backchannel.topics">
+                                <!-- headers -->
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th class="row_adder" onclick="addEmptyToTable(this)"
+                                            id="services.backchannel.topics.add"> +
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <!-- headers -->
+                                <!-- body -->
+                                <tbody>
+
+                                </tbody>
+                                <!-- body -->
+                            </table>
+                        </div>
+                        <!-- topics -->
+
+                        <!-- files table -->
+
+                        <div id="services.backchannel.files.div" class="update_class_second">
+                            <div></div>
+                            <h4 class="inline">Files</h4>
+                            <table id="services.backchannel.files">
+                                <!-- headers -->
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th class="row_adder" onclick="addEmptyToTable(this)"
+                                            id="services.backchannel.files.add"> + </th>
+                                    </tr>
+                                </thead>
+                                <!-- headers -->
+                                <!-- body -->
+                                <tbody>
+
+                                </tbody>
+                                <!-- body -->
+                            </table>
+                        </div>
+                        <!-- topics -->
+
+                    </div>
+
+
+
+
+                </article>
+            </div>
+
+            <div id="Logs" class="hidden">
+                <h4>A4MONITOR</h4>
+                <article class="monitor">
+                    <div id="logsDiv"></div>
+                </article>
+                <br>
+
+                <div class="btn-group-console">
+                    <button class="button-19" onclick="refreshLogs()">Clear</button>
+                    <button style="width: 250px;" class="button-19" onclick="reloadA4monitor()">Reload
+                        A4MONITOR</button>
+                </div>
+
+            </div>
+
+        </section>
+    </main>
+
+
+    <!--Main Menu-->
+    <nav class="nav">
+        <div class="nav__title">
+
+            <div class="nav__lines"></div>
+            <h1>
+                <span><img id="title_menu_logo" src="./libs/applied_logo_icon-50x50.png" alt="applied logo floating">
+                    a4CONF</span>
+            </h1>
+            <h2>Menu</h2>
+            <!--Text that will appear only in debug mode-->
+            <p id="debug_mode_title" class="hidden">DEBUG MODE</p>
+        </div>
+        <div id="loading">
+            <div id="loaderSection">
+
+                <div title="LOADING:
+                    Please wait until the page gets fully load.
+                    When the loading is finished, it will appear an alert that will output the result of the communication between PCA and PCB,
+                    click 'OK' to make the loader disappear and you will be free to use a4CONF." class="loader"
+                    id="loader"><img src="./libs/loader.png" alt="">
+                </div>
+
+            </div>
+            <!--Loader for IE Explorer-->
+            <div id="IE_loader">
+                <img src="./libs/loader.png" height="280px">
+            </div>
+            <!--Loader for IE Explorer-->
+            <p id="InnovationMakers">Innovation Makers</p>
+            <div id="loading_text_div" class="loading_text_div">
+                <br>
+                <br>
+                <br>
+                <br>
+
+                <div class="loading_text">
+                    <span style="--i:1">L</span>
+                    <span style="--i:2">o</span>
+                    <span style="--i:3">a</span>
+                    <span style="--i:4">d</span>
+                    <span style="--i:5">i</span>
+                    <span style="--i:6">n</span>
+                    <span style="--i:7">g</span>
+                    <span style="--i:8">.</span>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+        <ul id="nav__list" class="nav__list">
+
+
+            <li id="Home_li" class="nav__item__active"><a onclick="showHome()"> <img
+                        src="./libs/applied_logo_icon-20x20.png"></img> a4GATE</a></li>
+            <li id="PCA_li" class="nav__item"><a onclick="showPCA()"><img src="./libs/applied_logo_icon-20x20.png">
+                    Internal PC</a>
+                <p class="version" id="internal.version"> </p>
+            </li>
+            <li id="PCB_li" class="nav__item"><a onclick="showPCB()"><img src="./libs/applied_logo_icon-20x20.png">
+                    External PC</a>
+                <p class="version" id="external.version"></p>
+            </li>
+            <li id="FastData_li" class="nav__item"><a onclick="showFastData()"><img
+                        src="./libs/applied_logo_icon-20x20.png"> Fast Data</a></li>
+            <li id="BackChannel_li" class="nav__item"><a onclick="showPasswGate()"><img
+                        src="./libs/applied_logo_icon-20x20.png"> Back Channel</a></li>
+            <li id="Logs_li" class="nav__item"><a onclick="showLogs()"><img src="./libs/applied_logo_icon-20x20.png">
+                    Monitor Logs</a></li>
+            <li id="Manual_li" class="nav__item"><a onclick=openManual()><img src="./libs/applied_logo_icon-20x20.png">
+                    Manual</a></li>
+
+
+            <div style="text-align:center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    font-size:small; color:cornsilk;font-weight: bold; display: none;" id="version.div"></div>
+
+
+        </ul>
+
+
+    </nav>
+    <!--Main Menu-->
+
+
+
+    </div>
+
+
+</body>
+
+
+</html>

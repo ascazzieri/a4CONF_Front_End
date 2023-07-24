@@ -2,7 +2,7 @@ import { useState, Fragment, useContext } from "react";
 import ReactDownloadLink from "react-download-link";
 import { useSelector, useDispatch } from "react-redux";
 import { updateKepware } from "../../../utils/redux/reducers";
-import * as helper from "../../../utils/utils"
+import * as helper from "../../../utils/utils";
 import {
   loadChannels,
   createiotgw,
@@ -116,7 +116,7 @@ const Row = (props) => {
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
     setRowData(updatedRowData);
   };
-  const handleCreate = (event, device) => {
+  const handleCreate = async (event, device) => {
     if (!device?.endpoint) {
       handleButtonClickFeedback({
         vertical: "bottom",
@@ -126,21 +126,30 @@ const Row = (props) => {
       });
       return;
     }
-    if (event?.target?.name === "thingworx") {
-      //createiotgw("http", device?.name, device?.endpoint, device?.choose_tags);
+
+    const response = await createiotgw(
+      "twa",
+      row?.name,
+      device?.name,
+      device?.endpoint
+    );
+    if (response?.iotgw && response?.time && response?.thing_name)
       handleButtonClickFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
-        message: `IoT gateway for device: ${device?.name} for Thingworx has been created`,
+        message: `IoT gateway ${response.iotgw} of device: ${
+          device?.name
+        } for ${
+          event?.target?.name === "thingworx" ? "Thingworx" : "OPCUA"
+        } has been created in ${response.time}`,
       });
-    } else if (event?.target?.name === "opcua") {
-      //createiotgw("http", device?.name, device?.endpoint, device?.choose_tags);
+    else {
       handleButtonClickFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
-        message: `IoT gateway for device: ${device?.name} for OPCUA server has been created`,
+        message: `An error occurred during creation of Iot Gateway`,
       });
     }
   };
@@ -389,7 +398,7 @@ export default function Kepware() {
     loaderContext[1](true);
     try {
       const res = await helper.fetchData("kepware/backup", "GET");
-      console.log(res)
+      console.log(res);
       const now = new Date()
         .toISOString()
         .split(".")[0]
@@ -397,7 +406,7 @@ export default function Kepware() {
         .replaceAll(":", "")
         .replace("T", "_");
       const file_name = "Kepware_" + now + ".json";
-  
+
       return (
         <ReactDownloadLink
           filename={file_name}

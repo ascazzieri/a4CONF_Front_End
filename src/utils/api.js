@@ -64,11 +64,10 @@ export const send_conf = async (data) => {
     console.error(e);
   }
 };
-
 export const createiotgw = async (type, channel, device, thingName) => {
   try {
     const res = await helper.fetchData(
-      `/createiotgw?channel=${channel}&device=${device}&type=http`,
+      `/createiotgw?channel=${channel}&device=${device}&type=${type}&thing_name=${thingName}`,
       "GET"
     );
     console.log(res);

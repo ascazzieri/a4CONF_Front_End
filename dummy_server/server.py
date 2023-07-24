@@ -16,6 +16,9 @@ app.add_middleware(
 
 @app.get("/{request_name}")
 async def get_json(request_name: str):
+    if "?" in request_name:
+        index = request_name.index("?")
+        request_name = request_name[:index]
     json_path = f"answers/{request_name}.json"
     if os.path.exists(json_path):
         with open(json_path, "r") as json_file:
