@@ -1,7 +1,5 @@
 import MiniDrawer from "../components/Menu";
-import { useEffect, useState, useContext, useRef } from "react";
-import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, CameraControls } from '@react-three/drei'
+import { useEffect, useState, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { updateAll } from "../utils/redux/reducers";
 import { get_confA, get_confB } from "../utils/api"
@@ -10,6 +8,7 @@ import { Box } from "@mui/material";
 import { Snackbar, Alert } from "@mui/material"
 import { SnackbarContext } from "../utils/context/SnackbarContext"
 import Checklist from "../components/Checklist_2";
+import THREED from "../components/THREED/THREED";
 import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
 import MainButtons from "../components/MainButtons/MainButtons";
@@ -28,34 +27,9 @@ const applied_background = {
 };
 
 
-
-function THREEDBox(props) {
-  // This reference gives us direct access to the THREE.Mesh object
-  const ref = useRef()
-  // Hold state for hovered and clicked events
-  const [hovered, hover] = useState(false)
-  const [clicked, click] = useState(false)
-  // Subscribe this component to the render-loop, rotate the mesh every frame
-  useFrame((state, delta) => (ref.current.rotation.x += delta))
-  // Return the view, these are regular Threejs elements expressed in JSX
-  return (
-    <mesh
-      {...props}
-      ref={ref}
-      scale={clicked ? 1.5 : 1}
-      onClick={(event) => click(!clicked)}
-      onPointerOver={(event) => hover(true)}
-      onPointerOut={(event) => hover(false)}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-    </mesh>
-  )
-}
-
-
 const Layout = () => {
 
-  const [bReady, setBReady] = useState(false)
+  const [bReady, setBReady] = useState(true)
 
   const dispatch = useDispatch()
 
@@ -118,21 +92,9 @@ const Layout = () => {
   }, []);
 
   if (!bReady) {
-    
-    return (
-      <Canvas style={{ height: '100vh', width: '100vw' }}>
-        {/* <ambientLight />
-        <pointLight position={[10, 10, 10]} /> */}
-        <THREEDBox position={[-1.2, 0, 0]} />
-        <THREEDBox position={[1.2, 0, 0]} />
-        <Environment
-          background={true} // can be true, false or "only" (which only sets the background) (default: false)
-          blur={0} // blur factor between 0 and 1 (default: 0, only works with three 0.146 and up)
-          files='/img/test.hdr'
 
-        />
-        <CameraControls makeDefault />
-      </Canvas>
+    return (
+      <THREED />
     )
   }
 

@@ -7,6 +7,7 @@ import {
   loadChannels,
   createiotgw,
   saveKepwareProject,
+  get_device_tags,
 } from "../../../utils/api";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
@@ -39,6 +40,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
+import TagsSelectionDialog from "../../../components/TagsSelectionDialog/TagsSelectionDialog";
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
 
@@ -64,6 +66,11 @@ const Row = (props) => {
   const { row, thingNames, handleButtonClickFeedback } = props;
   const [open, setOpen] = useState(false);
   const [rowData, setRowData] = useState(row);
+  const [tagsSelectionDialog, setTagsSelectionDialog] = useState(false);
+  const [channelDevice, setChannelDevice] = useState({});
+  const [provider, setProvider] = useState();
+  const [endPoint, setEndPoint] = useState();
+  const [deviceTags, setDeviceTags] = useState({});
 
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
@@ -127,34 +134,60 @@ const Row = (props) => {
       return;
     }
 
-    const response = await createiotgw(
-      "twa",
-      row?.name,
-      device?.name,
-      device?.endpoint
-    );
-    if (response?.iotgw && response?.time && response?.thing_name)
-      handleButtonClickFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `IoT gateway ${response.iotgw} of device: ${
-          device?.name
-        } for ${
-          event?.target?.name === "thingworx" ? "Thingworx" : "OPCUA"
-        } has been created in ${response.time}`,
-      });
-    else {
-      handleButtonClickFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `An error occurred during creation of Iot Gateway`,
-      });
+    if (device?.choose_tags) {
+      const tags = await get_device_tags(row?.name, device?.name);
+      const channel = row?.name;
+      const deviceName = device?.name;
+      setEndPoint(device?.endpoint);
+      setProvider(event?.target?.name);
+      setDeviceTags(tags);
+      setChannelDevice({ [channel]: deviceName });
+      setTagsSelectionDialog(true);
+    } else {
+      const response = await createiotgw(
+        event?.target?.name,
+        row?.name,
+        device?.name,
+        device?.endpoint,
+        []
+      );
+      if (response?.iotgw && response?.time && response?.thing_name)
+        handleButtonClickFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `IoT gateway ${response.iotgw} of device: ${
+            device?.name
+          } for ${
+            event?.target?.name === "twa"
+              ? "Thingworx"
+              : event?.target?.name === "opcua_from"
+              ? "OPCUA (reading)"
+              : "OPCUA (writing)"
+          } has been created in ${response.time} s`,
+        });
+      else {
+        handleButtonClickFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred during creation of Iot Gateway`,
+        });
+      }
     }
   };
   return (
     <Fragment>
+      {tagsSelectionDialog && (
+        <TagsSelectionDialog
+          open={tagsSelectionDialog}
+          setOpen={setTagsSelectionDialog}
+          deviceName={channelDevice}
+          provider={provider}
+          endPoint={endPoint}
+          tags={deviceTags}
+        />
+      )}
       <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
         <TableCell>
           <IconButton
@@ -184,10 +217,13 @@ const Row = (props) => {
                     <TableCell align="center">Endpoint</TableCell>
                     <TableCell align="center">Custom Endpoint</TableCell>
                     <TableCell align="center">
-                      Create IoT gateway for Sentinel
+                      IoT gateway for Sentinel
                     </TableCell>
                     <TableCell align="center">
-                      Create IoT gateway for OPCUA
+                      IoT gateway for OPCUA(reading)
+                    </TableCell>
+                    <TableCell align="center">
+                      IoT gateway for OPCUA(writing)
                     </TableCell>
                     <TableCell align="center">Choose tags</TableCell>
                   </TableRow>
@@ -246,7 +282,7 @@ const Row = (props) => {
                           <Button
                             onClick={(event) => handleCreate(event, device)}
                             variant="contained"
-                            name="thingworx"
+                            name="twa"
                           >
                             Create
                           </Button>
@@ -255,7 +291,16 @@ const Row = (props) => {
                           <Button
                             onClick={(event) => handleCreate(event, device)}
                             variant="contained"
-                            name="opcua"
+                            name="opcua_from"
+                          >
+                            Create
+                          </Button>
+                        </TableCell>
+                        <TableCell align="center">
+                          <Button
+                            onClick={(event) => handleCreate(event, device)}
+                            variant="contained"
+                            name="opcua_to"
                           >
                             Create
                           </Button>
@@ -285,7 +330,6 @@ export default function Kepware() {
   const thing_names = useSelector(
     (state) => state.services?.thingworx?.thing_names
   );
-
   /* const industrialIP = useSelector(
     (state) => state.json.config.system.network.industrial.ip
   ); */
@@ -398,7 +442,6 @@ export default function Kepware() {
     loaderContext[1](true);
     try {
       const res = await helper.fetchData("kepware/backup", "GET");
-      console.log(res);
       const now = new Date()
         .toISOString()
         .split(".")[0]

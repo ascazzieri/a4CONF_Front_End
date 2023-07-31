@@ -64,10 +64,30 @@ export const send_conf = async (data) => {
     console.error(e);
   }
 };
-export const createiotgw = async (type, channel, device, thingName) => {
+export const createiotgw = async (
+  type,
+  channel,
+  device,
+  thingName,
+  tags_list
+) => {
   try {
     const res = await helper.fetchData(
       `/createiotgw?channel=${channel}&device=${device}&type=${type}&thing_name=${thingName}`,
+      "POST",
+      tags_list
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const get_device_tags = async (channel, device) => {
+  try {
+    const res = await helper.fetchData(
+      `/channel/device/tags/tree?channel=${channel}&device=${device}`,
       "GET"
     );
     console.log(res);

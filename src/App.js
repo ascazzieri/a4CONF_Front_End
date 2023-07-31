@@ -7,7 +7,6 @@ import Home from "./pages/Home";
 import NoPage from "./pages/NoPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Header from "./pages/Header";
 import InternalPC from "./pages/internal-pc/page";
 import ExternalPC from "./pages/external-pc/page";
 import FastData from "./pages/fast-data/page";
@@ -33,7 +32,6 @@ export default function App({ Component, pageProps }) {
 
   return (
     <>
-      <Header />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
