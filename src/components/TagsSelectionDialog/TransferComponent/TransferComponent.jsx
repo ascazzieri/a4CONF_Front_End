@@ -13,7 +13,6 @@ export default function SelectAllTransferList(props) {
 
     const { tags, iotGatewayCart, setIotGatewayCart } = props
 
-    console.log(tags)
     const [channelCart, setChannelCart] = useState([])
 
     const customList = (title) => (
@@ -42,7 +41,38 @@ export default function SelectAllTransferList(props) {
         </Card>
     );
 
-    console.log(channelCart)
+    const filterImplicitComponents = (array) => {
+        const inputArray = [...new Set(array)];
+        const shallowArray = [...inputArray];
+
+        for (let i = inputArray.length - 1; i >= 0; i--) {
+            const element = inputArray[i];
+            const part = element.split('.');
+            const lastLeaf = part[part.length - 1];
+            //console.log("element: " + element)
+            //console.log("last leaf: " + lastLeaf)
+
+            for (let j = 0; j < inputArray.length; j++) {
+                if (i !== j) {
+                    const item = inputArray[j];
+                    //console.log("item: " + item)
+                    const splittedItem = item.split('.');
+                    for (let k = 0; k < splittedItem.length - 1; k++) {
+
+                        if (splittedItem[k] === lastLeaf) {
+                            //console.log(splittedItem[k] + " uguale a: " + lastLeaf + ", cancello: " + shallowArray[shallowArray.indexOf(item)])
+                            shallowArray.splice(shallowArray.indexOf(item), 1)
+                        } else {
+                            //console.log(splittedItem[k] + " diverso da: " + lastLeaf)
+                        }
+                    }
+                }
+            }
+        }
+
+        return shallowArray;
+    };
+
 
     return (
         <Grid container spacing={2} justifyContent="center" alignItems="center">
@@ -53,7 +83,7 @@ export default function SelectAllTransferList(props) {
                         sx={{ my: 0.5 }}
                         variant="outlined"
                         size="small"
-                        onClick={() => { setIotGatewayCart((prevState) => [...prevState, ...channelCart]) }}
+                        onClick={() => { setIotGatewayCart((prevState) => filterImplicitComponents([...prevState, ...channelCart])) }}
                         disabled={channelCart.length === 0}
                         aria-label="move selected right"
                     >

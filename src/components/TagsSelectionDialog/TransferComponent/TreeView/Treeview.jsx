@@ -191,7 +191,6 @@ const createStyledTreeItems = (data, parentPath, channelCart, setChannelCart) =>
 export default function IconTreeView(props) {
 
     const { tags, channelCart, setChannelCart } = props
-    console.log(tags)
     return (
         <TreeView
             aria-label="icon"

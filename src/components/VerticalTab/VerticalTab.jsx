@@ -20,8 +20,15 @@ import {
   updateOPCServerEnable,
 } from "../../utils/redux/reducers";
 
+/* window.addEventListener('resize', function (event) {
+  const viewportWidth = window.innerWidth
+  console.log(viewportWidth)
+}, true); */
+
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
+
+
 
   return (
     <div
@@ -32,9 +39,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box style={{ width: 50 }} sx={{ p: 5 }}>
-          <React.Fragment>{children}</React.Fragment>
-        </Box>
+        <React.Fragment>{children}</React.Fragment>
       )}
     </div>
   );
@@ -128,7 +133,7 @@ export default function VerticalTabs(props) {
         value={value}
         onChange={handleChange}
         aria-label="Vertical tabs example"
-        /* style={{minWidth: 100}} */
+        style={{ minWidth: 100 }}
         sx={{ borderRight: 1, borderColor: "divider" }}
       >
         {tabsData.map((item, index) => (

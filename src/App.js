@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
 import Layout from "./pages/Layout";
-import Home from "./pages/Home";
+import Dashboard from "./pages/dashboard/page"
 import NoPage from "./pages/NoPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -35,7 +35,7 @@ export default function App({ Component, pageProps }) {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
-            <Route path="/dashboard" element={<NoPage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/internal-pc" element={<InternalPC />}>
               <Route path="network" element={<InternalNetwork />} />
               <Route

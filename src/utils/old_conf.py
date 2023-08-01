@@ -36,8 +36,10 @@ HTTP_SERVICES = [   "/version", "/confA", "/confB" , "/iotgwmqtt" ,
                     "/kepware/backup", "/ready", "/iotgwhttpserver",
                     "/a4gate/bidir" , "/kepware/upload", "/monitor/logs/isWorking",
                     "/monitor/logs/table", "/monitor/logs/reload",
-                    "/monitor/logs/status", "/reload_kepware_now"
-                      "/enableiotgw", "/iotgwhttp/disabled" ]
+                    "/monitor/logs/status", "/reload_kepware_now", "/conf/twx/diagnostic",
+                    "/enableiotgw", "/iotgw/http/client/disabled", "/channel/device/tags/tree",
+                    "/iotgws/http/endpoint", "/post", "/post/debug", "/iotgw/http/server/disabled", "/ftp/conf" # da eliminare !!!!!!
+                    ]
 # HTTP SERVER INFO
 
 TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH = 67
@@ -69,6 +71,12 @@ MQTT_TOPIC_TW_TEMPLATE = ["rep/conf/file/", "/tw_template/"]
 MQTT_TOPIC_OPC_FROM_TEMPLATE = ["rep/conf/file/", "/opcua_from_template/"]
 MQTT_TOPIC_OPC_TO_TEMPLATE = ["rep/conf/file/", "/opcua_to_template/"]
 
+# topic sul quale inviare le richieste per ricevere un feedback sulla connessione a twx
+MQTT_TOPIC_TWX_CONN_CHECK = "rep/conf/twx/diagnostic"
+
+# file nel quale scrivere info da far arrivare al PC A senza necessità di fare una get di tutta la configurazione. ESEMPIO: da a4conf su A mi viene richiesta lo stato della connessione verso twx
+BCHNLD_FILENAME_FOR_INFO = "/srv/fromB.json"
+
 MQTT_BROKER_CONNECTION_TIMEOUT = 1
 MQTT_BROKER_KEEPALIVE = 60
 MQTT_SECONDS_BEFORE_RETRY_CONN = 2
@@ -96,9 +104,15 @@ MQTT_BYTE_LIMIT_PER_MESSAGE = 60000
 
 METHODAB = "http" # "mqtt|http"
 
+WAITING_B_CONF_TIME = 15    # tempo massimo in secondi entro il quale ci si aspetta che arrivi la configurazione da B oppure le info
+
+SLEEP_TIME_BETWEEN_HTTP_REQUESTS = 0.5
 HTTP_PORT_TO_B_SIDE = 11006
 HTTP_PATH_TO_B_SIDE_SET = "/conf/set"
 HTTP_PATH_TO_B_SIDE_GET = "/conf/get"
+HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_TWA = "/conf/file/tw_template/"
+HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_FROM = "/conf/file/opcua_from_template/"
+HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_TO = "/conf/file/opcua_to_template/"
 
 # older name, might be ambiguous, everything in /srv should be "FROMB"...
 # a4confB.json should be more clear on the content of the file
@@ -136,57 +150,94 @@ class S(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.replace("%20", " ").split("?")
-        
 
         if path[0] in HTTP_SERVICES:
             #check if service or file
 
             # start services section
             try:
-                if path[0] == "/version": resp = pca.getversion()
+                if path[0] == "/version":
+                    """ GET per ottenere la versione di a4conf """
+                    resp = pca.getversion()
 
-                elif path[0] == "/confA": resp = ( common.dumpjsonnospaces( pca.getConf() ))
+                elif path[0] == "/confA":
+                    """ GET per ottenere la confgurazione di A """
+                    resp = common.dumpjsonnospaces(pca.get_conf())
 
-                elif path[0] == "/iotgwmqtt": resp = ( common.dumpjsonnospaces( kepware.getIotGW() ))
+                elif path[0] == "/iotgwmqtt":
+                    """ GET per ottenedere gli iot gw di tipo mqtt client """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("mqtt"))
 
-                elif path[0] == "/iotgwhttp": resp = ( common.dumpjsonnospaces( kepware.getIotGW("http") ))
+                elif path[0] == "/iotgwhttp":
+                    """ GET per ottenedere gli iot gw di tipo http client """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_client"))
 
-                elif path[0] == "/iotgwhttpserver": resp = ( common.dumpjsonnospaces( kepware.getIotGW("http_server") ))
+                elif path[0] == "/iotgwhttpserver":
+                    """ GET per ottenedere gli iot gw di tipo http server """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_server"))
 
-                elif path[0] == "/kepwaredevices":  resp = ( common.dumpjsonnospaces( kepware.getAllDevices() ))
+                elif path[0] == "/kepwaredevices":
+                    """ GET per ottenere tutti i Device presenti su Kepware """
+                    resp = common.dumpjsonnospaces(kepware.get_all_devices())
 
-                elif path[0] == "/kepware/backup": resp = kepware.kepwareBackup()
+                elif path[0] == "/kepware/backup":
+                    """ GET per ottenere il bckup del progetto Kepware """
+                    resp = kepware.kepwareBackup()
 
-                elif path[0] == "/confB": resp = confB()
+                elif path[0] == "/confB":
+                    """ GET per ottenere le configurazione di B """
+                    resp = confB()
 
-                elif path[0] == "/ready": resp = common.dumpjsonnospaces( { "ready" : isBready() } )
+                elif path[0] == "/conf/twx/diagnostic":
+                    """ GET per ottenere un feedback sullo stato di connessione a twx """
+                    resp = get_twx_conn_diagnostic()
 
-                elif path[0] == "/a4gate/bidir": resp = common.dumpjsonnospaces( { "a4GATE.U2U.RT" : bidir_rt, "a4GATE.U2U.BIDIR" : bidir_enabled } )
+                elif path[0] == "/ready":
+                    """ GET per ottendere se i due pc riescono correttamente a scambiarsi messaggi. Se così fosse, allora il pc B sarebbe in stato "ready" per ricevere nuove configurazioni """
+                    resp = common.dumpjsonnospaces({"ready" : isBready()})
 
-                elif path[0] == "/iotgwhttp/disabled": resp = common.dumpjsonnospaces( kepware.get_iotgws_http_disabled() )
+                elif path[0] == "/a4gate/bidir":
+                    """ GET per ottenere lo stato della bidirezionalità e l'eventuale tempo rimanente  """
+                    resp = common.dumpjsonnospaces({"a4GATE.U2U.RT" : bidir_rt, "a4GATE.U2U.BIDIR" : bidir_enabled})
+
+                elif path[0] == "/iotgw/http/client/disabled":
+                    """ GET degli iot gw di tipo http client disabilitati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_disabled())
+
+                elif path[0] == "/iotgw/http/server/disabled":
+                    """ GET degli iot gw di tipo http server disabilitati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_server_disabled())
 
                 elif path[0] == "/reload_kepware_now":
-
-                    #TODO restituire un dizionario del tipo "{res : True / False}" e poi da interfaccia scrivere in base al boolean se il comando di riavvio è andato a buon fine oppure no
-
-                    reload_result = pca.reloadKepware()
-                    resp = "Kepware runtime has been correctly reloaded."
+                    """ GET per riavviare il runtime di Kepware """
+                    reload_result = kepware.reloadKepware()
+                    #DONE restituire un dizionario del tipo "{res : True / False}" e poi da interfaccia scrivere in base al boolean se il comando di riavvio è andato a buon fine oppure no
+                    resp = common.dumpjsonnospaces({"res" : reload_result})
                 
-                elif path[0] == "/monitor/logs/isWorking": resp = str(monitor_logs_isWorking)
+                elif path[0] == "/monitor/logs/isWorking":
+                    """ GET per ottenere quali servizi di a4monitor_tf stanno funzionando """
+                    resp = str(monitor_logs_isWorking)
 
-                elif path[0] == "/monitor/logs/table": resp = str(monitor_logs_table)
+                elif path[0] == "/monitor/logs/table":
+                    """ GET per ottenere il JSON dai log di a4monitor_tf dove sono mostrati gli stati di monitoraggio dei diversi servizi di Terafence """
+                    resp = str(monitor_logs_table)
 
                 elif path[0] == "/monitor/logs/reload":
+                    """ GET per riavviare a4monitor_tf """
                     
                     resp = "Reloading A4MONITOR... the operation will take a while. A4MONITOR will resume at around 15-20 s, the other services around 45 s to 1 min."
                     os.system('sudo monit restart a4monitor_tf')
 
-                elif path[0] == "/monitor/logs/status" : 
+                elif path[0] == "/monitor/logs/status":
+                    """ GET per ottenere lo stato del servizio di a4monitor_tf """
+
                     global monitor_logs_status
-                    monitor_logs_status = os.popen(''' monit status a4monitor_tf | grep status | grep -v monitoring |awk '{print $2  " " $3}' ''').read().strip()
+                    monitor_logs_status = os.popen('''monit status a4monitor_tf | grep status | grep -v monitoring |awk '{print $2  " " $3}' ''').read().strip()
                     resp = monitor_logs_status
 
                 elif path[0] == "/enableiotgw":
+                    """ GET per abilitare un iotgw """
+
                     parameters = dict()
                     for line in path[1].split("&"):
                         temp = line.split("=")
@@ -194,9 +245,14 @@ class S(BaseHTTPRequestHandler):
                     
                     iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
 
-                    resp = common.dumpjsonnospaces( kepware.enable_iot_gw(iotgw_name) )
+                    resp = common.dumpjsonnospaces(kepware.enable_iotgw_http_client(iotgw_name))
+
+                elif path[0] == "/iotgws/http/endpoint":
+                    """ GET per ottenere gli iotgw di tipo http e i relativi endpoint sulla quale inviano i dati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_with_endpoint())
 
                 elif path[0] == "/createiotgw":
+                    """ GET per creare un iotgw con tutti i tag presenti in un canale/canale+device """
 
                     parameters = dict()
                     for line in path[1].split("&"):
@@ -208,7 +264,26 @@ class S(BaseHTTPRequestHandler):
                     type_name = parameters["type"] if "type" in parameters else "twa"
                     thing_name = parameters["thing_name"] if "thing_name" in parameters else None
 
-                    resp = common.dumpjsonnospaces( kepware.channeldevicetoiotgw(type_name, channelname, devicename, thing_name) )
+                    resp = common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name))
+
+                elif path[0] == "/channel/device/tags/tree":
+                    """ GET per ottenere l'alberatura dei tags dentro un device di uno specifico channel """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+
+                    if "channel" and "device" in parameters:
+                        channel = parameters["channel"]
+                        device = parameters["device"]
+                        resp = common.dumpjsonnospaces(kepware.get_device_and_tags_tree(channel, device))
+                    else:
+                        resp = json.dumps({})
+
+                # DA ELIMINARE!!!!!!
+                elif path[0] == "/ftp/conf":
+                    resp = "{}"
 
                 # if service is here, no exception have been raised, so http code is 200
                 self.send_response(200)
@@ -226,7 +301,7 @@ class S(BaseHTTPRequestHandler):
             self.end_headers()
             
             if resp:
-                self.wfile.write( resp )
+                self.wfile.write(resp)
             
             return
 
@@ -265,6 +340,8 @@ class S(BaseHTTPRequestHandler):
             with open(filename, 'rb') as filecontent:
                 self.wfile.write(filecontent.read())
         else:
+
+            #print(f"{log_prefix()}{mycolors.FAIL}Path {path[0]} not defined", flush = True)
             self._set_headers_notfound()
         # end file section
         
@@ -276,32 +353,113 @@ class S(BaseHTTPRequestHandler):
     def do_POST(self):
         self.data_string = self.rfile.read(int(self.headers["Content-Length"]))
 
-        if self.path == "/post" or self.path == "/post/debug":
+        path = self.path.replace("%20", " ").split("?")
 
-            try:
-                checkJSONandsend( self.data_string )
-                print(f"{log_prefix()}configuration parsed with no error", flush = True)
+        if path[0] in HTTP_SERVICES:
+
+            if path[0] == "/post" or path[0] == "/post/debug":
+                """ POST per settare le configurazioni su A e per inviare le configurazioni su B """
+
+                try:
+                    checkJSONandsend(self.data_string)
+                    print(f"{log_prefix()}configuration parsed with no error", flush = True)
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(bytearray('{"status":"data forwarded"}', "utf8"))
+                except Exception as e:
+                    # try went bad
+                    print( f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e}", flush = True)
+                    self.send_response(503)
+                    self.end_headers()
+                    self.wfile.write(bytearray('{"status":"error forwarding data"}', "utf8"))
+            
+            elif path[0] == "/kepware/upload":
+                """ POST per fare l'upload del proegetto Kepware """
+
+                res = kepware.kepwareUpload(self.data_string)
                 self.send_response(200)
                 self.end_headers()
-                self.wfile.write(bytearray('{"status":"data forwarded"}', "utf8"))
-            except Exception as e:
-                # try went bad
-                print( f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e}", flush = True)
-                self.send_response(503)
+                self.wfile.write(str(res).encode("utf-8"))
+
+            elif path[0] == "/createiotgw":
+                """ POST per creare un iot gw con i tag specificati """
+
+                try:
+
+                    parameters = dict()
+                    for line in self.path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+
+                    channelname = parameters["channel"] if "channel" in parameters else ""
+                    devicename = parameters["device"] if "device" in parameters else None
+                    type_name = parameters["type"] if "type" in parameters else "twa"
+                    thing_name = parameters["thing_name"] if "thing_name" in parameters else None
+
+                    tag_list = json.loads(self.data_string)
+
+                    res = common.dumpjsonnospaces(kepware.create_iot_gw_custom_tags(channelname, devicename, tag_list, type_name, thing_name)) if len(tag_list) > 0 else common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name))
+
+                    self.send_response(200)
+                    self.end_headers()
+                    self.wfile.write(str(res).encode("utf-8"))
+
+                except Exception as e:
+                    # try went bad
+                    print( f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e}", flush = True)
+                    self.send_response(503)
+                    self.end_headers()
+                    self.wfile.write(bytearray('{"status":"error forwarding data"}', "utf8"))
+
+            else:
+                self.send_response(404)
                 self.end_headers()
-                self.wfile.write(bytearray('{"status":"error forwarding data"}', "utf8"))
-        
-        elif self.path == "/kepware/upload":
-            res = kepware.kepwareUpload(self.data_string)
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(str(res).encode("utf-8"))
+                self.wfile.write(bytearray('{"status":"wrong path"}', "utf8"))
+                print(f"{log_prefix()}{mycolors.FAIL}path unknown", flush = True)
 
         else:
             self.send_response(404)
             self.end_headers()
-            self.wfile.write(bytearray('{"status":"wrong path"}', "utf8"))
+            self.wfile.write(bytearray('service not into HTTP_SERVICES', "utf8"))
             print(f"{log_prefix()}{mycolors.FAIL}path unknown", flush = True)
+
+def get_twx_conn_diagnostic():
+
+    # check esistenza vecchio file di info nella cartella. se esiste, lo elimino
+    if os.path.exists(BCHNLD_FILENAME_FOR_INFO):
+        print(f"{log_prefix()}{mycolors.WARNING} old file '{BCHNLD_FILENAME_FOR_INFO}' detected. Deleting it ")
+        os.remove(BCHNLD_FILENAME_FOR_INFO)
+
+    # richiesta del test di connessione via MQTT
+    send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = MQTT_TOPIC_TWX_CONN_CHECK, mqtt_msg = "twx", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
+
+    data = "{}"
+    counter = 0
+
+    while not os.path.exists(BCHNLD_FILENAME_FOR_INFO) and counter < WAITING_B_CONF_TIME:
+        time.sleep(1)
+        counter += 1
+
+    if os.path.exists(BCHNLD_FILENAME_FOR_INFO):
+        try:
+            with fromB_lock:
+                # if necessary, give bchnld some time to complete creation of file.
+                time.sleep(1)
+                with open(BCHNLD_FILENAME_FOR_INFO, 'r') as file:
+                    data = file.read()
+                    
+                print(f"{log_prefix()}FROMB INFO ->", flush = True)
+                print(f"{log_prefix()}{data}", flush = True)
+                
+                os.remove(BCHNLD_FILENAME_FOR_INFO)
+        
+        except Exception as e:
+            print(f"{log_prefix()}{mycolors.FAIL}Exception (type = {type(e)}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
+
+    else:
+        print(f"{log_prefix()}{mycolors.FAIL}FIle '{BCHNLD_FILENAME_FOR_INFO}' does not exists")
+    
+    return data
 
 def checkJSONandsend(text):
     """
@@ -314,14 +472,12 @@ def checkJSONandsend(text):
         raise Exception(f"{log_prefix()}{mycolors.FAIL}Error while parsing JSON") from e
 
     try:
-        now_string = mytime.now_second_pretty()
-        fromA_name = "./history/a4conf_" + now_string + ".json"
+        fromA_name = f"./history/a4conf_{mytime.now_second_pretty()}.json"
 
-        print(f"{log_prefix()}fromA -> ", flush = True)
-        print(F"{log_prefix()}{common.dumpjsonpretty(fromA)}", flush = True)
+        # print(F"{log_prefix()}fromA ->\n{common.dumpjsonpretty(fromA)}", flush = True)
 
         with open(fromA_name, 'w') as file_object:
-            file_object.write( common.dumpjsonpretty(fromA) )
+            file_object.write(common.dumpjsonpretty(fromA))
 
         # parameter set in web interface. Sets if configuration is limited to PC A, or data must reach also PC B
         onlyinternal = False
@@ -338,204 +494,14 @@ def checkJSONandsend(text):
         if "services" in fromA:
             services = fromA["services"]
 
-            if "kepware" in services:
-
-                #if "reload" in services["kepware"]:
-                    #reload = services["kepware"]["reload"]
-                    #if reload: pca.reloadKepware()
-                    
-                if "trial" in services["kepware"]:
-                    pca.setKepwareTrial(services["kepware"]["trial"])
-            
-            if "backchannel" in services:
-                if "topics" in services["backchannel"]:
-                    topics = list(set(services["backchannel"]["topics"]))
-                    pca.set_backchannel_topics_to_db(topics)
-                if "files" in services["backchannel"]:
-                    files = list(set(services["backchannel"]["files"]))
-                    pca.set_backchannel_files_to_db(files)
-
-        #fast data configuration --> se anche viene selezionato la configurazione per il pc A e basta, per questo servizio dato che deve essere funzionante 
-        #su entrambi i pc per svolgere la sua funzione, viene inviata la config anche su B
-
-            """ if "ftp" in services:
-                if "A" in services["ftp"]:
-                    conf = services["ftp"]["A"]
-                    ftp.set(conf) """
-
-        #fast data configuration --> se anche viene selezionato la configurazione per il pc A e basta, per questo servizio dato che deve essere funzionante 
-        #su entrambi i pc per svolgere la sua funzione, viene inviata la config anche su B
+            kepware_conf(services)
+            back_channel_conf(services)    
 
         any_news_from_external = False
         # all code that must be run to send data to a4conf B
         if not onlyinternal:
-            if isBready():
-                # start SEND THINGWORX AGENT CONFIGURATION
-                iotgws_twa = list()
-                if "services" in fromA:
-                    if "thingworx" in fromA["services"]:
-                        if "things" in fromA["services"]["thingworx"]:
-                            things_obj = fromA["services"]["thingworx"]["things"]
-                            #print("things_obj ->", dumpjsonpretty(things_obj))
-                            for thing in things_obj:
-                                #print("in first foreach, thingname is", thing)
-                                for iotgw in things_obj[thing]:
-                                    #print("in second foreach, iotgw is", iotgw)
-                                    iotgws_twa.append(iotgw)
-                
-                #print( len(iotgws_twa))
-                if len(iotgws_twa) > 0:
-                    proto = "http" # "mqtt" || "http"
-                    iotgw_avaiable = kepware.getIotGW(proto)
-                    #print( "iotgw_avaiable are", dumpjsonpretty(iotgw_avaiable))
-                    for iotgw in iotgws_twa:
-                        #print("going to check if" , iotgw, "is defined in kepware")
-                        if iotgw in iotgw_avaiable:
-                            #print(iotgw, "is defined in kepware! Doing stuff")
-                            vars = kepware.iot_gw_to_template_twa(iotgw, proto)
-                            text = common.dumpjsonnospaces(vars)
-
-                            topic_temp = MQTT_TOPIC_TW_TEMPLATE[0] + "create" + MQTT_TOPIC_TW_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-                            
-                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
-                            time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
-
-                            topic_temp = MQTT_TOPIC_TW_TEMPLATE[0] + "append" + MQTT_TOPIC_TW_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-
-                            for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
-                                send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
-                                #mqtt_client.publish( topic_temp , text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i])
-                                time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
-
-                # end SEND THINGWORX AGENT CONFIGURATION
-
-                # start SEND OPCUA Server CONFIGURATION
-                from_opcua = list()
-                to_opcua = list()
-                if "services" in fromA:
-                    if "opcua" in fromA["services"]:
-                        if "iotgw" in fromA["services"]["opcua"]:
-                            iotgws_opcua = fromA["services"]["opcua"]["iotgw"]
-                            #print("iotgws_opcua ->", common.dumpjsonpretty(iotgws_opcua))
-                            if 'from' in iotgws_opcua:
-                                from_opcua = iotgws_opcua['from']
-                            if 'to' in iotgws_opcua:
-                                to_opcua = iotgws_opcua['to']
-                            
-                #print( len(iotgws_opcua))
-                if len(from_opcua) > 0:
-                    proto = "http" # "mqtt" || "http"
-                    iotgw_avaiable = kepware.getIotGW(proto)
-                    #print( "iotgw_avaiable are", common.dumpjsonpretty(iotgw_avaiable))
-                    for iotgw in from_opcua:
-                        #print("going to check if" , iotgw, "is defined in kepware")
-                        if iotgw in iotgw_avaiable:
-                            #print(iotgw, "is defined in kepware! Doing stuff")
-                            vars = kepware.iot_gw_to_template_opcua(iotgw, proto)
-                            text = common.dumpjsonnospaces(vars)
-
-                            topic_temp = MQTT_TOPIC_OPC_FROM_TEMPLATE[0] + "create" + MQTT_TOPIC_OPC_FROM_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-
-                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
-                            #mqtt_client.publish( topic_temp , " ") 
-                            time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
-                            
-                            topic_temp = MQTT_TOPIC_OPC_FROM_TEMPLATE[0] + "append" + MQTT_TOPIC_OPC_FROM_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-
-                            for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
-                                send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
-                                #mqtt_client.publish( topic_temp , text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i])
-                                time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
-
-                if len(to_opcua) > 0:
-                    proto = "http_server" # "mqtt" || "http"
-                    iotgw_avaiable = kepware.getIotGW(proto)
-                    #print( "iotgw_avaiable are", common.dumpjsonpretty(iotgw_avaiable))
-                    for iotgw in to_opcua:
-                        #print("going to check if" , iotgw, "is defined in kepware")
-                        if iotgw in iotgw_avaiable:
-                            #print(iotgw, "is defined in kepware! Doing stuff")
-                            vars = kepware.iot_gw_to_template_opcua(iotgw, proto)
-                            text = common.dumpjsonnospaces(vars)
-
-                            topic_temp = MQTT_TOPIC_OPC_TO_TEMPLATE[0] + "create" + MQTT_TOPIC_OPC_TO_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-
-                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
-                            time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
-
-                            topic_temp = MQTT_TOPIC_OPC_TO_TEMPLATE[0] + "append" + MQTT_TOPIC_OPC_TO_TEMPLATE[1] + iotgw + ".json"
-                            if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
-                                print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
-
-                            for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
-                                send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
-                                time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
-
-            # end SEND OPCUA Server CONFIGURATION
-
-            #### STATIC ROUTES FOR EXTERNAL PC
-            # network on internal pc is set only if external pc has received messagge correctly
-            # here we create the list of routes for external pc
-            """
-            Use following variable to store if routes from pc A need to be sent again to pc B.
-            It is needed if reoutes set before are no longer valid. It could be because on internal pc user has changed:
-            - static routes;
-            - static ips;
-            - dhcp configuration.
-            """
-            need_send_routes_to_B = False
-            routes_to_B = {}
-
-            if "system" in fromA:
-                if "network" in fromA["system"]:
-                    if "industrial" in fromA["system"]["network"]:
-                        network_industrial = fromA["system"]["network"]["industrial"]
-                        if "routes" in network_industrial:
-                            routes = network_industrial["routes"]
-                            # pca.updateStaticRoutes(routes) # do not apply here. At this point, we don't know if routes are going on the other side
-                            # _old_ routes_to_B += routes.keys()
-                            for route in routes:
-                                routes_to_B[route] = IP_ROUTER_PC_A
-                            need_send_routes_to_B = True
-                        else:
-                            for route in pca.getStaticRoutes():
-                                routes_to_B[route] = IP_ROUTER_PC_A
-
-                        if "ip" in network_industrial:
-                            for route in pca.ips_to_nets_cidr(network_industrial["ip"]):
-                                routes_to_B[route] = IP_ROUTER_PC_A
-                            need_send_routes_to_B = True
-
-                        if "dhcp" in network_industrial:
-                            need_send_routes_to_B = True
-
-            if need_send_routes_to_B:
-                print(f"{log_prefix()}Following routes are going to External pc\n{routes_to_B}", flush = True)
-
-                if "system" not in fromA:
-                    fromA["system"] = {}
-                if "network" not in fromA["system"]:
-                    fromA["system"]["network"] = {}
-                if "customer" not in fromA["system"]["network"]:
-                    fromA["system"]["network"]["customer"] = dict()
-
-                fromA["system"]["network"]["customer"]["routes"] = routes_to_B
-            #### STATIC ROUTES FOR EXTERNAL PC
-
-            # save if mqtt has received a response
-            # if METHODAB == "mqtt":
+            fromA = not_only_internal_conf(fromA)
             any_news_from_external = sendtoBmqtt(fromA)
-
         else:
             print(f"{log_prefix()}{mycolors.WARNING}Configuration is just for PC A, ignoring code to create and send configuration to PC B", flush = True)
         
@@ -551,41 +517,315 @@ def checkJSONandsend(text):
                 if "toProduction" in system:
                     toProduction = system["toProduction"]
                     if toProduction:
-                        pca.setToProduction()
+                        pca.set_to_production()
 
                 # apply newer hostname
                 if "hostname" in system:
                     if "industrial" in system["hostname"]:
                         hostname = system["hostname"]["industrial"]
-                        pca.sethostname(hostname)
+                        pca.set_hostname(hostname)
 
                 if "network" in system:
                     # UPDATE IP A
                     if "industrial" in system["network"]:
                         if "routes" in system["network"]["industrial"]:
                             routes = system["network"]["industrial"]["routes"]
-                            pca.updateStaticRoutes(routes)
+                            pca.update_static_routes(routes)
                         if "dhcp" in system["network"]["industrial"]:
                         
                             dhcp = system["network"]["industrial"]["dhcp"]
 
                             if dhcp:
-                                pca.setnetworkonPCA(dhcp = True)
+                                pca.set_pcA_network(dhcp = True)
                             else:
                                 if "ip" in system["network"]["industrial"]:
                                     ips_A = system["network"]["industrial"]["ip"]
-
                                     ips_A[:] = (ip for ip in ips_A if pca.check_ip(ip))
 
-                                    pca.setnetworkonPCA(ips = ips_A)
+                                    pca.set_pcA_network(ips = ips_A)
+    
     except Exception as e:
         print(f"{log_prefix()}{mycolors.FAIL}Exception (type = {type(e)}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
         raise Exception from e
 
+def kepware_conf(services: dict):
+
+    if "kepware" in services:
+
+        #if "reload" in services["kepware"]:
+            #reload = services["kepware"]["reload"]
+            #if reload: pca.reloadKepware()
+            
+        if "trial" in services["kepware"]:
+            pca.set_kepware_trial(services["kepware"]["trial"])
+    
+def back_channel_conf(services: dict):
+
+    if "backchannel" in services:
+        if "topics" in services["backchannel"]:
+            topics = list(set(services["backchannel"]["topics"]))
+            pca.set_backchannel_topics_to_db(topics)
+        if "files" in services["backchannel"]:
+            files = list(set(services["backchannel"]["files"]))
+            pca.set_backchannel_files_to_db(files)
+
+def thingworx_template_conf(fromA: dict):
+
+    print(f"{log_prefix()}Handling Thingworx template", flush = True)
+
+    # start SEND THINGWORX AGENT CONFIGURATION
+    iotgws_twa = list()
+    if "services" in fromA:
+        if "thingworx" in fromA["services"]:
+            if "things" in fromA["services"]["thingworx"]:
+                things_obj = fromA["services"]["thingworx"]["things"]
+                #print("things_obj ->", dumpjsonpretty(things_obj))
+                for thing in things_obj:
+                    #print("in first foreach, thingname is", thing)
+                    for iotgw in things_obj[thing]:
+                        #print("in second foreach, iotgw is", iotgw)
+                        iotgws_twa.append(iotgw)
+    
+    #print( len(iotgws_twa))
+    if len(iotgws_twa) <= 0:
+        print(f"{log_prefix()}{mycolors.WARNING}No IoT gw selected for Sentinel tags", flush = True)
+    else:
+
+        print(f"{log_prefix()}{mycolors.INFO}No IoT gw selected for Sentinel tags are {', '.join(iotgws_twa)}", flush = True)
+        proto = "http" # "mqtt" || "http"
+
+        try:
+
+            iotgw_avaiable = kepware.get_iotgws_http_client_name()
+            #   print( "iotgw_avaiable are", common.dumpjsonpretty(iotgw_avaiable))
+            for iotgw in iotgws_twa:
+                #print("going to check if" , iotgw, "is defined in kepware")
+                if iotgw in iotgw_avaiable:
+                    #print(iotgw, "is defined in kepware! Doing stuff")
+                    vars = kepware.iot_gw_to_template_twa(iotgw, proto)
+                    text = common.dumpjsonnospaces(vars)
+
+                    if METHODAB == "mqtt":
+                        topic_temp = MQTT_TOPIC_TW_TEMPLATE[0] + "create" + MQTT_TOPIC_TW_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+                        
+                        send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
+                        time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
+
+                        topic_temp = MQTT_TOPIC_TW_TEMPLATE[0] + "append" + MQTT_TOPIC_TW_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+
+                        for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
+                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
+                            #mqtt_client.publish( topic_temp , text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i])
+                            time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
+                    else:
+                        # invio dei template via http
+                            
+                        # invio del contenuto del file del template
+                        res = requests.post(f"http://127.0.0.1:{HTTP_PORT_TO_B_SIDE}{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_TWA}{iotgw}.json", json = vars, headers = {"content-type" : "application/json"}, timeout = 3)
+                        if res.ok:
+                            print(f"{log_prefix()}{mycolors.SUCCESS}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_TWA}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has been sent ", flush = True)
+                            time.sleep(SLEEP_TIME_BETWEEN_HTTP_REQUESTS)
+                        else:
+                            print(f"{log_prefix()}{mycolors.FAIL}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_TWA}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has NOT been sent ", flush = True)
+
+                else:
+                    print(f"{log_prefix()}{mycolors.FAIL}IoT gw '{iotgw}' is not available", flush = True)
+
+        except Exception as e:
+            print(f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
+            raise
+
+    # end SEND THINGWORX AGENT CONFIGURATION
+
+def opcua_template_conf(fromA: dict):
+
+    print(f"{log_prefix()}Handling OPCUA server template", flush = True)
+
+    # start SEND OPCUA Server CONFIGURATION
+    from_opcua = list() 
+    to_opcua = list()
+    if "services" in fromA:
+        if "opcua" in fromA["services"]:
+            if "iotgw" in fromA["services"]["opcua"]:
+                iotgws_opcua = fromA["services"]["opcua"]["iotgw"]
+                if 'from' in iotgws_opcua:
+                    from_opcua = iotgws_opcua['from']
+                if 'to' in iotgws_opcua:
+                    to_opcua = iotgws_opcua['to']
+                
+
+    if len(from_opcua) <= 0:
+        print(f"{log_prefix()}{mycolors.WARNING}No IoT gw selected for readable OPC Server tags", flush = True)
+    else:
+
+        print(f"{log_prefix()}{mycolors.INFO}No IoT gw selected for OPCUA server readable tags are {', '.join(from_opcua)}", flush = True)
+        proto = "http" # "mqtt" || "http"
+
+        try:
+
+            iotgw_avaiable = kepware.get_iotgws_http_client_name()
+            # print( "iotgw_avaiable are", common.dumpjsonpretty(iotgw_avaiable))
+            for iotgw in from_opcua:
+                #print("going to check if" , iotgw, "is defined in kepware")
+                if iotgw in iotgw_avaiable:
+                    # print(iotgw, " is defined in kepware! Doing stuff")
+                    vars = kepware.iot_gw_to_template_opcua(iotgw, proto)
+                    text = common.dumpjsonnospaces(vars)
+
+                    if METHODAB == "mqtt":
+                        topic_temp = MQTT_TOPIC_OPC_FROM_TEMPLATE[0] + "create" + MQTT_TOPIC_OPC_FROM_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+
+                        send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
+                        #mqtt_client.publish( topic_temp , " ") 
+                        time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
+                        
+                        topic_temp = MQTT_TOPIC_OPC_FROM_TEMPLATE[0] + "append" + MQTT_TOPIC_OPC_FROM_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+
+                        for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
+                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
+                            #mqtt_client.publish( topic_temp , text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i])
+                            time.sleep( SLEEP_TIME_BETWEEN_MQTT_TOPIC )
+                    else:
+                        # invio per la creazione del file del template per i tag in scrittura
+                        res = requests.post(f"http://127.0.0.1:{HTTP_PORT_TO_B_SIDE}{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_FROM}{iotgw}.json", json = vars, headers = {"content-type" : "application/json"}, timeout = 3)
+                        if res.ok:
+                            print(f"{log_prefix()}{mycolors.SUCCESS}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_FROM}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has been sent ", flush = True)
+                            time.sleep(SLEEP_TIME_BETWEEN_HTTP_REQUESTS)
+                        else:
+                            print(f"{log_prefix()}{mycolors.FAIL}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_FROM}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has NOT been sent ", flush = True)
+
+                else:
+                    print(f"{log_prefix()}{mycolors.FAIL}IoT gw '{iotgw}' is not available", flush = True)
+
+        except Exception as e:
+            print(f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
+            raise
+
+    if len(to_opcua) <= 0:
+        print(f"{log_prefix()}{mycolors.WARNING}No IoT gw selected for writable OPC Server tags", flush = True)
+    else:
+
+        print(f"{log_prefix()}{mycolors.INFO}No IoT gw selected for OPCUA server readable and writable tags are {', '.join(from_opcua)}", flush = True)
+        proto = "http_server" # "mqtt" || "http"
+
+        try:
+
+            iotgw_avaiable = kepware.get_iotgws_http_server_name()
+            # print("iotgw_avaiable are ", common.dumpjsonpretty(iotgw_avaiable))
+            for iotgw in to_opcua:
+                # print("going to check if ", iotgw, " is defined in kepware")
+                if iotgw in iotgw_avaiable:
+                    # print(iotgw, " is defined in kepware! Doing stuff")
+                    vars = kepware.iot_gw_to_template_opcua(iotgw, proto)
+                    text = common.dumpjsonnospaces(vars)
+
+                    if METHODAB == "mqtt":
+                        topic_temp = MQTT_TOPIC_OPC_TO_TEMPLATE[0] + "create" + MQTT_TOPIC_OPC_TO_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+
+                        send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = " ", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)  # you can write everything you want here, create message is used to empty/touch the file
+                        time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
+
+                        topic_temp = MQTT_TOPIC_OPC_TO_TEMPLATE[0] + "append" + MQTT_TOPIC_OPC_TO_TEMPLATE[1] + iotgw + ".json"
+                        if len(topic_temp) > TOPIC_ACROSS_DATA_DIODE_MAX_LENGTH:
+                            print(f"{log_prefix()}{mycolors.FAIL}Topic '{topic_temp}' is too long. MQTT msg for IoT gw '{iotgw}' template won't pass into data diode ", flush = True)
+
+                        for i in range(0, len(text), MQTT_BYTE_LIMIT_PER_MESSAGE):
+                            send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = topic_temp, mqtt_msg = text[i:MQTT_BYTE_LIMIT_PER_MESSAGE+i], mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
+                            time.sleep(SLEEP_TIME_BETWEEN_MQTT_TOPIC)
+                    else:
+                        # invio per la creazione del file del template per i tag in lettura e scrittura
+                        res = requests.post(f"http://127.0.0.1:{HTTP_PORT_TO_B_SIDE}{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_TO}{iotgw}.json", json = vars, headers = {"content-type" : "application/json"}, timeout = 3)
+                        if res.ok:
+                            print(f"{log_prefix()}{mycolors.SUCCESS}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_TO}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has been sent ", flush = True)
+                            time.sleep(0.5)
+                        else:
+                            print(f"{log_prefix()}{mycolors.FAIL}Request to path '{HTTP_PATH_TO_B_SIDE_SEND_TEMPLATE_OPCUA_TO}{iotgw}.json' on port {HTTP_PORT_TO_B_SIDE} has NOT been sent ", flush = True)
+
+                else:
+                    print(f"{log_prefix()}{mycolors.FAIL}IoT gw '{iotgw}' is not available", flush = True)
+
+        except Exception as e:
+            print(f"{log_prefix()}{mycolors.FAIL}Exception({type(e).__name__}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
+            raise
+    # end SEND OPCUA Server CONFIGURATION
+
+def not_only_internal_conf(fromA: dict):
+
+    if isBready():
+        thingworx_template_conf(fromA)
+        opcua_template_conf(fromA)
+    else:
+        print(f"{log_prefix()}{mycolors.FAIL}B side is not ready. Skip sending templates fro Thingworx and OPCUA server", flush = True)
+
+    #### STATIC ROUTES FOR EXTERNAL PC
+    # network on internal pc is set only if external pc has received messagge correctly
+    # here we create the list of routes for external pc
+    """
+    Use following variable to store if routes from pc A need to be sent again to pc B.
+    It is needed if reoutes set before are no longer valid. It could be because on internal pc user has changed:
+    - static routes;
+    - static ips;
+    - dhcp configuration.
+    """
+    need_send_routes_to_B = False
+    routes_to_B = dict()
+
+    if "system" in fromA:
+        if "network" in fromA["system"]:
+            if "industrial" in fromA["system"]["network"]:
+                network_industrial = fromA["system"]["network"]["industrial"]
+                if "routes" in network_industrial:
+                    routes = network_industrial["routes"]
+                    # pca.update_static_routes(routes) # do not apply here. At this point, we don't know if routes are going on the other side
+                    # _old_ routes_to_B += routes.keys()
+                    for route in routes:
+                        routes_to_B[route] = IP_ROUTER_PC_A
+                    need_send_routes_to_B = True
+                else:
+                    for route in pca.get_static_routes():
+                        routes_to_B[route] = IP_ROUTER_PC_A
+
+                if "ip" in network_industrial:
+                    for route in pca.ips_to_nets_cidr(network_industrial["ip"]):
+                        routes_to_B[route] = IP_ROUTER_PC_A
+                    need_send_routes_to_B = True
+
+                if "dhcp" in network_industrial:
+                    need_send_routes_to_B = True
+
+    # se si devono inviare nuove rotte statiche a B, aggiornare il fromA che verrà inviato
+    if need_send_routes_to_B:
+        print(f"{log_prefix()}Following routes are going to External pc\n{routes_to_B}", flush = True)
+
+        if "system" not in fromA:
+            fromA["system"] = dict()
+        if "network" not in fromA["system"]:
+            fromA["system"]["network"] = dict()
+        if "customer" not in fromA["system"]["network"]:
+            fromA["system"]["network"]["customer"] = dict()
+
+        fromA["system"]["network"]["customer"]["routes"] = routes_to_B
+    #### STATIC ROUTES FOR EXTERNAL PC
+
+    # save if mqtt has received a response
+    # if METHODAB == "mqtt":
+    
+    return fromA
+
 def sendtoBmqtt(payload):
     """
     this function takes a dictionary as input, transforms it to text with and object in JSON format 
-    and tries to send via mqtt to a4conf B.\n
+    and tries to send via mqtt to a4conf B.
     In order to understand if message reached a4conf B, this function adds to the message a property namd "id".\n
     If the same id is sent back in the next 15 seconds, this function returns True as a4conf B acknowleged the message.\n
     If the id is not received back in 15 seconds, this function returns a False, a4conf B may not be running properly or pc B may be offline...
@@ -604,10 +844,10 @@ def sendtoBmqtt(payload):
             while counter > 0:
                 counter -= 1
                 if str(payload["id"]) in set_history:
-                    print(f"{log_prefix()}function sendtoBmqtt did find the needed \"id\" in time, returning True", flush = True)
+                    print(f"{log_prefix()}{mycolors.SUCCESS}function sendtoBmqtt did find the needed 'id' in time", flush = True)
                     return True
                 time.sleep(1)
-            print(f"{log_prefix()}{mycolors.FAIL}function sendtoBmqtt did NOT find the needed \"id\" in time, returning False", flush = True)
+            print(f"{log_prefix()}{mycolors.FAIL}function sendtoBmqtt did NOT find the needed 'id' in time", flush = True)
             return False
         
         else:
@@ -644,30 +884,23 @@ def confB():
             After reading the file, this function deletes it from file system. Why? To avoid using older configurations.
     """
 
+    # check esistenza vecchio file di configurazione nella cartella. se esiste, lo elimino
     if os.path.exists(FROMB):
         print(f"{log_prefix()}{mycolors.WARNING} old file '{FROMB}' detected. Deleting it ")
         os.remove(FROMB)
 
-    if METHODAB == "mqtt":
-        send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = MQTT_TOPIC_CONF_GET, mqtt_msg = "confB", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
-    
-    else:
-        print(f"{log_prefix()}{mycolors.INFO}Trying to get configuration from B side", flush = True)
-        res = requests.post(f"http://127.0.0.1:{HTTP_PORT_TO_B_SIDE}{HTTP_PATH_TO_B_SIDE_GET}", data = "confB", headers = {"content-type" : "text/plain"}, timeout = 3)
-        if 200 <= res.status_code < 300:
-            print(f"{log_prefix()}{mycolors.INFO}Message to TF sw on port {HTTP_PORT_TO_B_SIDE} to path '{HTTP_PATH_TO_B_SIDE_GET}' has been sent")
-        else:
-            return data
+    # LA "GET" della configurazione di B è mantenuta via MQTT 
+    send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = MQTT_TOPIC_CONF_GET, mqtt_msg = "confB", mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
 
     data = "{}"
     counter = 0
 
-    while not os.path.exists(FROMB) and counter < 20:
+    while not os.path.exists(FROMB) and counter < WAITING_B_CONF_TIME:
         time.sleep(1)
-        counter+=1
+        counter += 1
 
-    try:
-        if os.path.exists(FROMB):
+    if os.path.exists(FROMB):
+        try:
             with fromB_lock:
                 # if necessary, give bchnld some time to complete creation of file.
                 time.sleep(1)
@@ -679,11 +912,11 @@ def confB():
                 
                 os.remove(FROMB)
         
-        else:
-            print(f"{log_prefix()}{mycolors.FAIL}FIle '{FROMB}' does not exists")
+        except Exception as e:
+            print(f"{log_prefix()}{mycolors.FAIL}Exception (type = {type(e)}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
 
-    except Exception as e:
-        print(f"{log_prefix()}{mycolors.FAIL}Exception (type = {type(e)}) at line {sys.exc_info()[-1].tb_lineno} -> {e} {mycolors.ENDC}", flush = True)
+    else:
+        print(f"{log_prefix()}{mycolors.FAIL}FIle '{FROMB}' does not exists")
     
     return data
 
@@ -718,7 +951,7 @@ def isBready():
     if result:
         return result
 
-    for x in range(2):
+    for _ in range(2):
         time.sleep(1)
         result = ( mytime.unix_now() - last_keepalive ) < 60
         if result:
@@ -731,7 +964,7 @@ def backupConf():
         creates a backup of pc A configuration and sends it in JSON format via MQTT
     """
     print(f"{log_prefix()}Sending backup of running configuration", flush = True)
-    conf = pca.getConf()
+    conf = pca.get_conf()
     send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = MQTT_TOPIC_CONF_BACKUP, mqtt_msg = common.dumpjsonnospaces(conf), mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
 
 def send_mqtt_msg(mqtt_client: helper_mqtt.helper_mqtt or None, mqtt_topic: str, mqtt_msg: str, mqtt_broker: str = "127.0.0.1", mqtt_port: int = 7883, mqtt_qos: int = 2):
@@ -781,7 +1014,7 @@ def mqtt_on_message_handler(topic, message):
             last_keepalive = mytime.unix_now() if message == "true" else 0
         
         elif topic == MQTT_TOPIC_CONF_SET_FROM_B:
-            set_history.append( message )
+            set_history.append(message)
 
         elif topic == MQTT_TOPIC_HWSW_LOCAL:
 
@@ -834,7 +1067,7 @@ if __name__ == "__main__":
         if len(argv) == 2:
             http_server_port = int(argv[1])
 
-        if os.path.isfile( pca.to_localhost_file ):
+        if os.path.isfile(pca.to_localhost_file):
             http_server_ip = "127.0.0.1"
 
         http_server = http_help.SimpleHttpServer(ip = http_server_ip,
@@ -859,7 +1092,7 @@ if __name__ == "__main__":
 
         pca.limit_antivirus_filesystem_access()
 
-        success = pca.applyStaticRoutes()
+        success = pca.set_static_route()
 
         print(f"{pca.log_prefix()}Tried to apply static routes. Result -> {success}", flush = True)
 

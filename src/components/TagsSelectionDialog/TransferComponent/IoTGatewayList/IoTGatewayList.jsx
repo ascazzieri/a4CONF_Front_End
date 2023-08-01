@@ -57,6 +57,7 @@ function StyledTreeItem(props) {
         bgColorForDarkMode,
         iotGatewayCart,
         setIotGatewayCart,
+        fullPath,
         ...other
     } = props;
 
@@ -66,28 +67,29 @@ function StyledTreeItem(props) {
             theme.palette.mode !== 'dark' ? bgColor : bgColorForDarkMode,
     };
 
-    const handleCheck = (event) => {
+    const removeElementAndChildren = (element, array) => {
+        const isChild = (child, parent) => {
+            return child.startsWith(parent + ".");
+        };
 
-        if (event?.target?.checked) {
-            if (iotGatewayCart.length !== 0) {
-                const index = iotGatewayCart.indexOf(absolutePath);
-                if (index === -1) {
-                    // La stringa non è presente nell'array, la aggiungo
-                    setIotGatewayCart((prevData) => [...prevData, absolutePath]);
-                }
-            } else {
-                setIotGatewayCart((prevData) => [...prevData, absolutePath]);
-            }
+        const childrenToRemove = array.filter((child) => isChild(child, element));
 
-        } else {
-            if (iotGatewayCart.length !== 0) {
-                const index = iotGatewayCart.indexOf(absolutePath);
-                if (index !== -1) {
-                    // La stringa è presente nell'array, la rimuovo
-                    setIotGatewayCart((prevData) => prevData.filter((item) => item !== absolutePath));
-                }
-            }
+        if (childrenToRemove.length > 0) {
+            childrenToRemove.forEach((child) => {
+                array.splice(array.indexOf(child, 1))
+            });
         }
+        if (array.indexOf(element) !== -1) {
+            array.splice(array.indexOf(element))
+        }
+
+
+        return array;
+    };
+
+    const handleDelete = () => {
+        const arrayWithItemRemoved = removeElementAndChildren(fullPath, iotGatewayCart)
+        setIotGatewayCart(arrayWithItemRemoved)
     }
     return (
         <StyledTreeItemRoot
@@ -107,7 +109,7 @@ function StyledTreeItem(props) {
                     <Typography variant="caption" color="inherit">
                         {(childTags && childTags !== 0) ? `tags:${childTags},` : ""} {(childNodes && childNodes !== 0) ? `nodes: ${childNodes}` : ""}
                     </Typography>
-                    <IconButton edge="end" aria-label="delete">
+                    <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
                         <DeleteIcon />
                     </IconButton>
                 </Box>
@@ -128,27 +130,40 @@ StyledTreeItem.propTypes = {
     labelText: PropTypes.string.isRequired,
 };
 
-const buildTree = (array) => {
-    const tree = {};
-    console.log(array)
+const buildTree = (array, setIotGatewayCart) => {
+    const shallowCopy = [...array]
+    // Funzione ausiliaria per aggiungere un elemento all'albero
+    const addToTree = (node, parts, fullPath) => {
+        const part = parts[0];
+        const currentPath = fullPath ? `${fullPath}.${part}` : part;
+
+        if (!node[part]) {
+            node[part] = {
+                children: {},
+                hasChildren: parts.length > 1,
+                labelIcon: parts.length > 1 ? FolderIcon : Label,
+                fullPath: currentPath, // Salva il percorso completo verso il nodo root
+            };
+        }
+
+        if (parts.length > 1) {
+            addToTree(node[part].children, parts.slice(1), currentPath);
+        }
+    };
+
+    const tree = { children: {} };
+
+    // Ordina l'array in modo che gli elementi più lunghi vengano prima
+    array.sort((a, b) => b.length - a.length);
+
     array.forEach((item) => {
         const parts = item.split('.');
-        let currentNode = tree;
-
-        for (let i = 0; i < parts.length; i++) {
-            const part = parts[i];
-            if (!currentNode[part]) {
-                currentNode[part] = {};
-            }
-
-            currentNode = currentNode[part];
-        }
+        addToTree(tree.children, parts);
     });
 
-    const generateComponents = (data, label) => {
+    const generateComponents = (data, label, fullPath) => {
         return Object.keys(data).map((key) => {
-            const hasChildren = Object.keys(data[key]).length > 0;
-            const labelIcon = hasChildren ? FolderIcon : Label;
+            const { children, hasChildren, labelIcon, fullPath: currentPath } = data[key];
 
             return (
                 <StyledTreeItem
@@ -156,20 +171,27 @@ const buildTree = (array) => {
                     nodeId={label ? `${label}.${key}` : key}
                     labelText={key}
                     labelIcon={labelIcon}
+                    fullPath={currentPath}
+                    iotGatewayCart={shallowCopy}
+                    setIotGatewayCart={setIotGatewayCart}
+
                 >
-                    {generateComponents(data[key], label ? `${label}.${key}` : key)}
+                    {hasChildren && generateComponents(children, label ? `${label}.${key}` : key, currentPath)}
                 </StyledTreeItem>
             );
         });
     };
 
-    return generateComponents(tree, null);
+    return generateComponents(tree.children, null);
 };
+
+// Funzione per rimuovere i componenti considerati impliciti
+
 
 export default function IconTreeView(props) {
 
     const { iotGatewayCart, setIotGatewayCart } = props
-    console.log(iotGatewayCart)
+
     return (
         <TreeView
             aria-label="icon"
@@ -182,7 +204,7 @@ export default function IconTreeView(props) {
             sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'auto' }}
         >
 
-            {buildTree(iotGatewayCart)}
+            {buildTree(iotGatewayCart, setIotGatewayCart)}
 
 
         </TreeView>

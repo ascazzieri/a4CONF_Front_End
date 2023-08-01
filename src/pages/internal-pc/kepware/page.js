@@ -216,6 +216,7 @@ const Row = (props) => {
                     <TableCell align="center">Name</TableCell>
                     <TableCell align="center">Endpoint</TableCell>
                     <TableCell align="center">Custom Endpoint</TableCell>
+                    <TableCell align="center">Choose tags</TableCell>
                     <TableCell align="center">
                       IoT gateway for Sentinel
                     </TableCell>
@@ -225,7 +226,6 @@ const Row = (props) => {
                     <TableCell align="center">
                       IoT gateway for OPCUA(writing)
                     </TableCell>
-                    <TableCell align="center">Choose tags</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -279,6 +279,13 @@ const Row = (props) => {
                           />
                         </TableCell>
                         <TableCell align="center">
+                          <Switch
+                            checked={device?.choose_tags}
+                            name={device?.name}
+                            onChange={handleChooseFromTags}
+                          />
+                        </TableCell>
+                        <TableCell align="center">
                           <Button
                             onClick={(event) => handleCreate(event, device)}
                             variant="contained"
@@ -304,13 +311,6 @@ const Row = (props) => {
                           >
                             Create
                           </Button>
-                        </TableCell>
-                        <TableCell align="center">
-                          <Switch
-                            checked={device?.choose_tags}
-                            name={device?.name}
-                            onChange={handleChooseFromTags}
-                          />
                         </TableCell>
                       </TableRow>
                     );

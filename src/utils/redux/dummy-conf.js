@@ -131,9 +131,9 @@ let dummy_config = {
       appkey: "1d59bd5b-b4a3-48e1-98a8-d19bd5133429", //fai un trim() per sicurezza
       enabled: true,
       connected: false,
-      version: "123456789", //altrimenti: Agent version not available
-      thing_names: [
-      ],
+      version: "123456789",
+      diagnostic: "log di thingworx", //altrimenti: Agent version not available
+      thing_names: [],
       things: {
         rt_testFede: {
           test_opcua: "fromkepware/rt_testFede",
@@ -166,36 +166,6 @@ let dummy_config = {
       iotgw: {
         from: ["from1", "from2", "from3"],
         to: ["to1", "to2", "to3"],
-      },
-    },
-    ftp: {
-      A: {
-        a4ftp: {
-          cloud_provider: "microsoft",
-          azure_SAS:
-            "sv=2020-10-02&st=2022-06-21T14%3A10%3A53Z&se=2070-06-22T14%3A10%3A00Z&sr=c&sp=racwdl&sig=wWZb9eG%2BYKO4hSkCJO47yDXpnmA0X%2B%2FobDLJZdYyY6I%3D",
-          azure_LSA: "a4gate0094blobs",
-          azure_blobContainer: "blobs-1",
-          processExistingFiles: true,
-          http_port: 11002,
-        },
-        server: {
-          anonymus_login: {},
-          users: [],
-          custom_port: false,
-          port: 21,
-          historyFile_folder_max_bytes: 1048576,
-          historyFile_days_expire: 1,
-          sentFile_folder_max_bytes: 1048576,
-          sentFile_days_expire: 1,
-          NOTsentFile_folder_max_bytes: 1048576,
-          NOTsentFile_days_expire: 1,
-        },
-      },
-      B: {
-        enabled: true,
-        cloud_provider: "microsoft",
-        http_port: 11002,
       },
     },
   },

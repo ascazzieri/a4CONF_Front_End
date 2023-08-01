@@ -185,7 +185,7 @@ export default function MiniDrawer(props) {
           </IconButton>
         </DrawerHeader>
 
-        <List>
+        <List style={{marginTop: 10}}>
           {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
@@ -254,7 +254,7 @@ export default function MiniDrawer(props) {
           ))}
         </List>
       </Drawer>
-      <Container component="main" sx={{ flexGrow: 1 }} disableGutters={true}>
+      <Container component="main" sx={{ flexGrow: 1 }} style={{marginTop:100}} disableGutters={true}>
         {children}
       </Container>
     </Box>

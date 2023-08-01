@@ -28,14 +28,72 @@ export default function MaxWidthDialog(props) {
     const handleClose = () => {
         setOpen(false);
     };
+    const transformIotGatewayCart = (totalTagsList, channel, device) => {
+        let spreadIoTCart = []
+
+        const recursiveFunction = (data, parentPath) => {
+
+            Object.keys(data).forEach((key) => {
+                // If the item has "tags" property, it's a leaf node with no more nested items
+                if (key === 'tags') {
+                    Object.keys(data.tags).forEach((insideKey, insideIndex) => {
+                        const currentPath = parentPath ? `${parentPath}.${insideKey}` : insideKey;
+                        spreadIoTCart.push(currentPath)
+
+                    }
+                    );
+                }
+
+                // If the item has "groups" property, it's a parent node with nested items
+                if (key === 'groups') {
+                    Object.keys(data.groups).forEach((insideKey, insideIndex) => {
+                        const currentPath = parentPath ? `${parentPath}.${insideKey}` : insideKey;
+                        recursiveFunction(data.groups[insideKey], currentPath)
+                    })
+                }
+
+            });
+        }
+
+        if (totalTagsList && Object.keys(totalTagsList).length !== 0) {
+            recursiveFunction(totalTagsList);
+        }
+
+        return spreadIoTCart
+
+    }
+
+    const findMatches = (iotTags, totalTags) => {
+
+        const finalShoppingList = []
+        iotTags.forEach((element) => {
+            const matches = totalTags.filter((item) => {
+                if (item.startsWith(element + ".")) {
+                    return true
+                }
+                if (item === element) {
+                    return true
+                }
+            })
+            finalShoppingList.push(...matches)
+        })
+
+        console.log(finalShoppingList)
+        return finalShoppingList
+
+    }
+
     const handleCreate = async (event) => {
-        console.log(provider)
+        const totalTagList = transformIotGatewayCart(tags, channel, device)
+        console.log(totalTagList)
+        console.log(iotGatewayCart)
+        const finalTagList = findMatches(iotGatewayCart, totalTagList)
         const response = await createiotgw(
             provider,
             channel,
             device,
             endPoint,
-            [iotGatewayCart]
+            finalTagList
         );
         if (response?.iotgw && response?.time && response?.thing_name)
             handleRequestFeedback({
