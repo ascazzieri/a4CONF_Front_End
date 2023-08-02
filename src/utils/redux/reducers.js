@@ -2,7 +2,6 @@
 import { dummy_config } from "./dummy-conf";
 import { createSlice } from "@reduxjs/toolkit";
 
-
 const initialState = dummy_config;
 
 // jsonReducer.js
@@ -47,6 +46,10 @@ const jsonSlice = createSlice({
       }
       state.timestamp = newConf?.timestamp;
     },
+    updateHostName(state, action) {
+      const { newHostName } = action.payload;
+      state.system.hostname = newHostName;
+    },
     updateInternalPC(state, action) {
       const { newInternalPC } = action.payload;
       state.system = {
@@ -89,6 +92,10 @@ const jsonSlice = createSlice({
       const { newThingworx } = action.payload;
       state.services.thingworx = newThingworx;
     },
+    updateThingNames(state, action) {
+      const newThingNames = action.payload;
+      state.services.thingworx.thing_names = newThingNames;
+    },
     updateThingworxEnable(state, action) {
       const newThingworxEnabled = action.payload;
       state.services.thingworx.enabled = newThingworxEnabled;
@@ -106,12 +113,14 @@ const jsonSlice = createSlice({
 
 export const {
   updateAll,
+  updateHostName,
   updateInternalPC,
   updateIndustrialNetwork,
   updateKepware,
   updateExternalPC,
   updateCustomerNetwork,
   updateThingworx,
+  updateThingNames,
   updateSitemanager,
   updateOPCServer,
   updateFirewallEnable,

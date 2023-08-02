@@ -29,7 +29,7 @@ const applied_background = {
 
 const Layout = () => {
 
-  const [bReady, setBReady] = useState(false)
+  const [bReady, setBReady] = useState(true)
 
   const dispatch = useDispatch()
 

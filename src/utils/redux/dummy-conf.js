@@ -131,8 +131,8 @@ let dummy_config = {
       appkey: "1d59bd5b-b4a3-48e1-98a8-d19bd5133429", //fai un trim() per sicurezza
       enabled: true,
       connected: false,
-      version: "123456789",
-      diagnostic: "log di thingworx", //altrimenti: Agent version not available
+      version: "123456789", //altrimenti: Agent version not available
+      diagnostic: "log di thingworx", 
       thing_names: [],
       things: {
         rt_testFede: {

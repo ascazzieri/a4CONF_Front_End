@@ -24,7 +24,7 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import SpeedIcon from "@mui/icons-material/Speed";
 import CellTowerIcon from "@mui/icons-material/CellTower";
-import AdbIcon from "@mui/icons-material/Adb";
+import Avatar from '@mui/material/Avatar';
 import a4GATELogo from "../media/img/a4GATE-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
@@ -166,9 +166,10 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
-              <Title variant="h6" noWrap component="div">
-                {mainSectionTitle.length === 0 ? 'Dashboard' : mainSectionTitle}
-              </Title>
+              {mainSectionTitle && mainSectionTitle.length !== 0 && <Avatar sx={{ bgcolor: '#1F293F', width: 150, color: 'white'}} variant="rounded">
+                {mainSectionTitle}
+              </Avatar>
+              }
             </Grid>
           </Grid>
         </Toolbar>
@@ -185,7 +186,7 @@ export default function MiniDrawer(props) {
           </IconButton>
         </DrawerHeader>
 
-        <List style={{marginTop: 10}}>
+        <List style={{ marginTop: 10 }}>
           {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
@@ -254,7 +255,7 @@ export default function MiniDrawer(props) {
           ))}
         </List>
       </Drawer>
-      <Container component="main" sx={{ flexGrow: 1 }} style={{marginTop:100}} disableGutters={true}>
+      <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }} disableGutters={true}>
         {children}
       </Container>
     </Box>

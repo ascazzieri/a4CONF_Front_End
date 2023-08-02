@@ -86,12 +86,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Thingworx() {
   const thingworx = useSelector((state) => state.services?.thingworx);
-  /* const industrialIP = useSelector(
-    (state) => state.json.config.system.network.industrial.ip
-  ); */
-  const thing_names = useSelector(
-    (state) => state.services?.thingworx?.thing_names
-  );
+
   const dispatch = useDispatch();
 
   const snackBarContext = useContext(SnackbarContext);
@@ -104,7 +99,7 @@ export default function Thingworx() {
   };
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = ["Connection", "Things", "Agent Logs", "JSON"];
+  const navbarItems = ["Connection", "Remote Things", "Agent Logs", "JSON"];
 
   const getArrayFromThingObject = (thingObject) => {
     let arrayFromThingsObject = [];
@@ -121,14 +116,8 @@ export default function Thingworx() {
 
   const [thingworxHost, setThingworxHost] = useState(thingworx?.host);
   const [thingworxAppkey, setThingworxAppkey] = useState(thingworx?.appkey);
-  const [iotGatewaysList, setIotGatewaysList] = useState([
-    "iot",
-    "io1",
-    "iot2",
-    "iot3",
-  ]);
+  const [iotGatewaysList, setIotGatewaysList] = useState({});
   const [iotGateway, setIotGateway] = useState();
-  const [thingName, setThingName] = useState();
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things)
   );
@@ -164,14 +153,14 @@ export default function Thingworx() {
       const iotGateways = await loadiotgws("from");
       console.log("get IoT gateways");
       if (iotGateways && Object.keys(iotGateways).length !== 0) {
-        setIotGatewaysList(Object.keys(iotGateways));
+        setIotGatewaysList(iotGateways);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "success",
           message: `Kepware IoT gateways loaded`,
         });
-      } else if (iotGateways && !Object.keys(iotGateways).lenght === 0) {
+      } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -199,23 +188,20 @@ export default function Thingworx() {
   const handleIotGatewaysChange = (event) => {
     setIotGateway(event?.target?.value);
   };
-  const handleThingNamesChange = (event) => {
-    setThingName(event?.target?.value);
-  };
 
   const handleIotGatewaysReloadChange = async () => {
     loaderContext[1](true);
     const iotGateways = await loadiotgws("from");
     console.log("get IoT gateways");
     if (iotGateways && Object.keys(iotGateways).length !== 0) {
-      setIotGatewaysList(Object.keys(iotGateways));
+      setIotGatewaysList(iotGateways);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (iotGateways && !Object.keys(iotGateways).lenght === 0) {
+    } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -264,17 +250,28 @@ export default function Thingworx() {
     },
     {
       accessorKey: "thing_name",
-      header: "Thing Name",
+      header: "Remote Thing Name",
       enableColumnOrdering: true,
       enableEditing: true, //disable editing on this column
       enableSorting: true,
     },
   ];
+  function extractThingName(inputString) {
+    const startIndex = inputString.indexOf("thingName=");
+    if (startIndex !== -1) {
+      const extractedString = inputString.substring(startIndex + 10); // La lunghezza di "thingName=" è 10
+      return extractedString;
+    }
+    return ""; // Restituisce una stringa vuota se "thingName=" non è presente nella stringa di input
+  }
 
   const handleAddRemoteThing = () => {
     setThingsTableData((prevData) => [
       ...prevData,
-      { iot_gateway: iotGateway, thing_name: thingName },
+      {
+        iot_gateway: iotGateway,
+        thing_name: extractThingName(iotGatewaysList[`${iotGateway}`]),
+      },
     ]);
   };
 
@@ -338,7 +335,7 @@ export default function Thingworx() {
         )}
         {currentTab === 1 && (
           <>
-            <FormLabel>Create Remote Thing</FormLabel>
+            <FormLabel>Connect a Local Thing to a Remote Thing</FormLabel>
             <Stack
               direction="row"
               spacing={3}
@@ -348,20 +345,21 @@ export default function Thingworx() {
               <FormControl fullWidth>
                 <TextField
                   select
-                  label="Choose iot gateway"
-                  helperText="Choose an iot gateway from Kepware"
+                  label="Choose iot gateway from Kepware"
                   defaultValue=""
                   onChange={handleIotGatewaysChange}
                 >
                   {iotGatewaysList &&
-                    iotGatewaysList.lenght !== 0 &&
-                    iotGatewaysList.map((item) => {
-                      return (
-                        <MenuItem key={Math.random() + item} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
+                    Object.keys(iotGatewaysList).length !== 0 &&
+                    Object.keys(iotGatewaysList)
+                      .filter((element) => element.startsWith("HTTP"))
+                      .map((item) => {
+                        return (
+                          <MenuItem key={Math.random() + item} value={item}>
+                            {item}
+                          </MenuItem>
+                        );
+                      })}
                 </TextField>
               </FormControl>
               <IconButton
@@ -371,11 +369,11 @@ export default function Thingworx() {
               >
                 <CachedIcon />
               </IconButton>
-              <FormControl fullWidth>
+              {/* <FormControl fullWidth>
                 <TextField
                   select
-                  label="Choose thing name"
-                  helperText="Select a thing name from the list created"
+                  label="Choose Thing name"
+                  helperText="Select a Thing name from your local list"
                   defaultValue=""
                   onChange={handleThingNamesChange}
                 >
@@ -387,13 +385,13 @@ export default function Thingworx() {
                     );
                   })}
                 </TextField>
-              </FormControl>
+              </FormControl> */}
               <Button onClick={handleAddRemoteThing} variant="contained">
-                Add Entity
+                Add
               </Button>
             </Stack>
 
-            <FormLabel>Remote Things</FormLabel>
+            <FormLabel>Remote Things configuration</FormLabel>
 
             <Table
               tableData={thingsTableData}

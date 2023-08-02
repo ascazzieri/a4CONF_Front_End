@@ -11,3 +11,28 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Stile della scrollbar principale */
+::-webkit-scrollbar {
+  width: 10px;
+  /* Larghezza della scrollbar */
+}
+
+::-webkit-scrollbar:horizontal {
+  height: 10px;
+  /* Altezza della scrollbar orizzontale */
+}
+
+/* Scroller (barra di scorrimento) */
+::-webkit-scrollbar-thumb {
+  background-color: #0d6efd;
+  /* Colore del "pulsante" della scrollbar */
+  border-radius: 5px;
+  /* Raggio dei bordi del "pulsante" */
+}
+
+/* Background della scrollbar */
+::-webkit-scrollbar-track {
+  background-color: #0D1626;
+  /* Colore dello sfondo della scrollbar */
+}

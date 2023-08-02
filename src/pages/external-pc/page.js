@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateExternalPC } from "../../utils/redux/reducers";
 import JSONPretty from "react-json-pretty";
-import VerticalTab_2 from "../../components/VerticalTab/VerticalTab";
+import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import { Grid, Box, Card, CardContent, Container } from "@mui/material";
 import { Outlet, useLocation, Link } from "react-router-dom";
 
@@ -51,9 +51,9 @@ export default function ExternalPC() {
     <Container sx={{ flexGrow: 1 }} disableGutters>
       <Card sx={{ mt: 1 }}>
         <CardContent>
-          <VerticalTab_2 tabsData={tabsData} root="external-pc">
+          <VerticalTab tabsData={tabsData} root="external-pc">
             <Outlet />
-          </VerticalTab_2>
+          </VerticalTab>
         </CardContent>
       </Card>
       <Grid container spacing={2}>
