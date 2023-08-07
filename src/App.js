@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
 import "./App.css";
 import Layout from "./pages/Layout";
-import Dashboard from "./pages/dashboard/page"
+import Dashboard from "./pages/dashboard/page";
 import NoPage from "./pages/NoPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -21,11 +21,15 @@ import { Checklist } from "@mui/icons-material";
 
 export default function App({ Component, pageProps }) {
   const [authenticate, setAuthenticate] = useState(true);
+  const [registered, setRegistered] = useState(true);
 
   if (!authenticate) {
     return (
       <BrowserRouter>
-        <Navigate to="/login" />;
+        <Navigate to="/login" />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
       </BrowserRouter>
     );
   }
@@ -48,10 +52,7 @@ export default function App({ Component, pageProps }) {
             </Route>
             <Route path="/external-pc" element={<ExternalPC />}>
               <Route path="network" element={<ExternalNetwork />} />
-              <Route
-                path="sitemanager"
-                element={<Sitemanager />}
-              />
+              <Route path="sitemanager" element={<Sitemanager />} />
               <Route path="thingworx" element={<Thingworx />} />
               <Route path="opcua-server" element={<OPCUAServer />} />
             </Route>
@@ -59,8 +60,8 @@ export default function App({ Component, pageProps }) {
             <Route path="/back-channel" element={<BackChannel />} />
             <Route path="*" element={<NoPage />} />
           </Route>
-          <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<h1>Login</h1>} />
         </Routes>
       </BrowserRouter>
     </>

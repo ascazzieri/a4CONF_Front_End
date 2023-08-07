@@ -112,6 +112,52 @@ export const loadiotgws = async (direction) => {
     console.error(e);
   }
 };
+export const machines_connected = async () => {
+  try {
+    const res = await helper.fetchData(`/machine/connections`, "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const monitor_logs_isWorking = async () => {
+  try {
+    const res = await helper.fetchData(`/monitor/logs/isWorking`, "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const monitor_a4monitor_status = async () => {
+  try {
+    const res = await helper.fetchData(`/monitor/logs/status`, "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const is_B_ready = async () => {
+  try {
+    const res = await helper.fetchData(`/ready`, "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const check_bidir = async () => {
+  try {
+    const res = await helper.fetchData(`/a4gate/bidir`, "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const uploadKepwareProject = async (file) => {
   //upload file from an input
   try {

@@ -30,7 +30,7 @@ export default function ExternalNetwork() {
   );
 
   const dispatch = useDispatch();
-
+  console.log(customerNetwork);
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = [
     "Connection parameters",
@@ -47,9 +47,7 @@ export default function ExternalNetwork() {
     customerNetwork?.static?.gateway
   );
   const [dnsServer, setDNSServer] = useState(customerNetwork?.static?.dns);
-  const [wifi, setWifi] = useState(
-    dummy_wireless.length !== 0 ? dummy_wireless[0] : null
-  );
+  const [wifi, setWifi] = useState("");
   const [customNTP, setCustomNTP] = useState(
     customerNetwork?.ntp?.length !== 0 ? true : false
   );
@@ -465,16 +463,18 @@ export default function ExternalNetwork() {
                       select
                       label="Add network"
                       helperText="Choose from the wireless network list ad add SSID and password to the table below"
-                      defaultValue={dummy_wireless[0] ? dummy_wireless[0] : ""}
+                      defaultValue={""}
                       onChange={handleWifiChange}
                     >
-                      {dummy_wireless.map((item) => {
-                        return (
-                          <MenuItem key={Math.random() + item} value={item}>
-                            {item}
-                          </MenuItem>
-                        );
-                      })}
+                      {customerNetwork?.essid &&
+                        customerNetwork?.essid.length !== 0 &&
+                        customerNetwork?.essid.map((item) => {
+                          return (
+                            <MenuItem key={Math.random() + item} value={item}>
+                              {item}
+                            </MenuItem>
+                          );
+                        })}
                     </TextField>
 
                     <IconButton aria-label="reload">

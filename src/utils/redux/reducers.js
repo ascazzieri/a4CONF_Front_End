@@ -19,10 +19,11 @@ const jsonSlice = createSlice({
 
       if (actionType === "fromA") {
         //system
+        console.log(state.system)
         state.system.a4updater_version.industrial =
-          newConf?.system?.a4updater_version.industrial;
-        state.system.hostname.industrial = newConf?.system?.hostname.industrial;
-        state.system.network.industrial = newConf?.system?.network.industrial;
+          newConf?.system?.a4updater_version?.industrial;
+        state.system.hostname.industrial = newConf?.system?.hostname?.industrial;
+        state.system.network.industrial = newConf?.system?.network?.industrial;
         //services
         state.services.kepware = newConf?.services?.kepware;
         state.services.backchannel = newConf?.services?.backchannel;

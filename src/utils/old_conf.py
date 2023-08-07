@@ -31,14 +31,17 @@ import common
 # HTTP SERVER INFO
 http_server_port = 80
 http_server_ip = "0.0.0.0"
-HTTP_SERVICES = [   "/version", "/confA", "/confB" , "/iotgwmqtt" , 
-                    "/iotgwhttp", "/createiotgw" , "/kepwaredevices",
-                    "/kepware/backup", "/ready", "/iotgwhttpserver",
+HTTP_SERVICES = [   "/version", "/confA", "/confB" , "/iotgwmqtt" , "/iotgw/http/client/enabled", 
+                    "/iotgwhttp", "/createiotgw" , "/kepwaredevices", "/iotgw/http/server/enabled",
+                    "/kepware/backup", "/ready", "/iotgwhttpserver", "/iotgw/http/client/tags", "/iotgw/http/server/tags",
                     "/a4gate/bidir" , "/kepware/upload", "/monitor/logs/isWorking",
-                    "/monitor/logs/table", "/monitor/logs/reload",
+                    "/monitor/logs/table", "/monitor/logs/reload", "/machine/connections",
                     "/monitor/logs/status", "/reload_kepware_now", "/conf/twx/diagnostic",
-                    "/enableiotgw", "/iotgw/http/client/disabled", "/channel/device/tags/tree",
-                    "/iotgws/http/endpoint", "/post", "/post/debug", "/iotgw/http/server/disabled", "/ftp/conf" # da eliminare !!!!!!
+                    "/iotgw/http/client/enable", "/iotgw/http/server/enable", "/iotgw/http/client/disabled", "/channel/device/tags/tree",
+                    "/iotgws/http/endpoint", "/post", "/post/debug", "/iotgw/http/server/disabled", "/ftp/conf", # da eliminare !!!!!!
+                    "/iotgw/http/client/enabled/opcua_from", "/iotgw/http/client/disabled/opcua_from",
+                    "/iotgw/http/server/enabled/opcua_to", "/iotgw/http/server/disabled/opcua_to",
+                    "/iotgw/http/client/enabled/fastdata_matrix", "/iotgw/http/client/disabled/fastdata_matrix"
                     ]
 # HTTP SERVER INFO
 
@@ -164,18 +167,6 @@ class S(BaseHTTPRequestHandler):
                     """ GET per ottenere la confgurazione di A """
                     resp = common.dumpjsonnospaces(pca.get_conf())
 
-                elif path[0] == "/iotgwmqtt":
-                    """ GET per ottenedere gli iot gw di tipo mqtt client """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("mqtt"))
-
-                elif path[0] == "/iotgwhttp":
-                    """ GET per ottenedere gli iot gw di tipo http client """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_client"))
-
-                elif path[0] == "/iotgwhttpserver":
-                    """ GET per ottenedere gli iot gw di tipo http server """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_server"))
-
                 elif path[0] == "/kepwaredevices":
                     """ GET per ottenere tutti i Device presenti su Kepware """
                     resp = common.dumpjsonnospaces(kepware.get_all_devices())
@@ -200,13 +191,131 @@ class S(BaseHTTPRequestHandler):
                     """ GET per ottenere lo stato della bidirezionalità e l'eventuale tempo rimanente  """
                     resp = common.dumpjsonnospaces({"a4GATE.U2U.RT" : bidir_rt, "a4GATE.U2U.BIDIR" : bidir_enabled})
 
+                elif path[0] == "/iotgwmqtt":
+                    """ GET per ottenedere gli iot gw di tipo mqtt client """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("mqtt"))
+
+                elif path[0] == "/iotgwhttp":
+                    """ GET per ottenedere gli iot gw di tipo http client """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_client"))
+
+                elif path[0] == "/iotgwhttpserver":
+                    """ GET per ottenedere gli iot gw di tipo http server """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_by_protocol("http_server"))
+
                 elif path[0] == "/iotgw/http/client/disabled":
                     """ GET degli iot gw di tipo http client disabilitati """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_disabled())
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_from_status(enabled = False))
 
                 elif path[0] == "/iotgw/http/server/disabled":
                     """ GET degli iot gw di tipo http server disabilitati """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_server_disabled())
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_server_from_status(enabled = False))
+                
+                elif path[0] == "/iotgw/http/client/enabled":
+                    """ GET degli iot gw di tipo http client abilitati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_from_status(enabled = True))
+
+                elif path[0] == "/iotgw/http/server/enabled":
+                    """ GET degli iot gw di tipo http server abilitati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_server_from_status(enabled = True))
+
+                elif path[0] == "/iotgw/http/client/enabled/opcua_from":
+                    """ GET degli iot gw di tipo http client abilitati che servono per inviare i dati in sola lettura al server OPCUA """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_opcua_from(enabled = True))
+                
+                elif path[0] == "/iotgw/http/client/disabled/opcua_from":
+                    """ GET degli iot gw di tipo http client disabilitati che servono per inviare i dati in sola lettura al server OPCUA """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_opcua_from(enabled = False))
+
+                elif path[0] == "/iotgw/http/server/enabled/opcua_to":
+                    """ GET degli iot gw di tipo http client abilitati che servono per inviare i dati in lettura e scrittura al server OPCUA """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_opcua_to(enabled = True))
+                
+                elif path[0] == "/iotgw/http/server/disabled/opcua_to":
+                    """ GET degli iot gw di tipo http client disabilitati che servono per inviare i dati in lettura e scrittura al server OPCUA """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_opcua_to(enabled = False))
+
+                elif path[0] == "/iotgw/http/client/enabled/fastdata_matrix":
+                    """ GET degli iot gw di tipo http client abilitati che servono per inviare i fastdata """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_fastdata_matrix(enabled = True))
+                
+                elif path[0] == "/iotgw/http/client/disabled/fastdata_matrix":
+                    """ GET degli iot gw di tipo http client disabilitati che servono per inviare i fastdata """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_client_for_fastdata_matrix(enabled = False))
+
+                elif path[0] == "/iotgw/http/client/tags":
+                    """ GET dei tag contenuti in un iot gw di tipo http client """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_http_client_tags(iotgw_name = iotgw_name))
+
+                elif path[0] == "/iotgw/http/server/tags":
+                    """ GET dei tag contenuti in un iot gw di tipo http server """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+                    resp = common.dumpjsonnospaces(kepware.get_iotgw_http_server_tags(iotgw_name = iotgw_name))
+
+                elif path[0] == "/iotgw/http/client/enable":
+                    """ GET per abilitare un iotgw di tipo http client """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+
+                    resp = common.dumpjsonnospaces(kepware.enable_iotgw_http_client(iotgw_name))
+                
+                elif path[0] == "/iotgw/http/server/enable":
+                    """ GET per abilitare un iotgw di tipo http server """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+
+                    resp = common.dumpjsonnospaces(kepware.enable_iotgw_http_server(iotgw_name))
+                
+                elif path[0] == "/iotgw/http/client/disable":
+                    """ GET per disabilitare un iotgw di tipo http client """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+
+                    resp = common.dumpjsonnospaces(kepware.disable_iotgw_http_client(iotgw_name))
+                
+                elif path[0] == "/iotgw/http/server/disable":
+                    """ GET per disabilitare un iotgw di tipo http server """
+
+                    parameters = dict()
+                    for line in path[1].split("&"):
+                        temp = line.split("=")
+                        parameters[temp[0]] = temp[1]
+                    
+                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
+
+                    resp = common.dumpjsonnospaces(kepware.disable_iotgw_http_server(iotgw_name))
+
+                elif path[0] == "/iotgws/http/endpoint":
+                    """ GET per ottenere gli iotgw di tipo http e i relativi endpoint sulla quale inviano i dati """
+                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_with_endpoint())
 
                 elif path[0] == "/reload_kepware_now":
                     """ GET per riavviare il runtime di Kepware """
@@ -222,6 +331,10 @@ class S(BaseHTTPRequestHandler):
                     """ GET per ottenere il JSON dai log di a4monitor_tf dove sono mostrati gli stati di monitoraggio dei diversi servizi di Terafence """
                     resp = str(monitor_logs_table)
 
+                elif path[0] == "/machine/connections":
+                    """ GET per ottenere un JSON dove ci sono le info sullo stato delle connessioni alle macchine dal PC A(Kepware) """
+                    resp = common.dumpjsonnospaces(kepware.machine_connected())
+
                 elif path[0] == "/monitor/logs/reload":
                     """ GET per riavviare a4monitor_tf """
                     
@@ -235,22 +348,6 @@ class S(BaseHTTPRequestHandler):
                     monitor_logs_status = os.popen('''monit status a4monitor_tf | grep status | grep -v monitoring |awk '{print $2  " " $3}' ''').read().strip()
                     resp = monitor_logs_status
 
-                elif path[0] == "/enableiotgw":
-                    """ GET per abilitare un iotgw """
-
-                    parameters = dict()
-                    for line in path[1].split("&"):
-                        temp = line.split("=")
-                        parameters[temp[0]] = temp[1]
-                    
-                    iotgw_name = parameters["iotgw_name"] if "iotgw_name" in parameters else ""
-
-                    resp = common.dumpjsonnospaces(kepware.enable_iotgw_http_client(iotgw_name))
-
-                elif path[0] == "/iotgws/http/endpoint":
-                    """ GET per ottenere gli iotgw di tipo http e i relativi endpoint sulla quale inviano i dati """
-                    resp = common.dumpjsonnospaces(kepware.get_iotgws_http_with_endpoint())
-
                 elif path[0] == "/createiotgw":
                     """ GET per creare un iotgw con tutti i tag presenti in un canale/canale+device """
 
@@ -262,9 +359,12 @@ class S(BaseHTTPRequestHandler):
                     channelname = parameters["channel"] if "channel" in parameters else ""
                     devicename = parameters["device"] if "device" in parameters else None
                     type_name = parameters["type"] if "type" in parameters else "twa"
-                    thing_name = parameters["thing_name"] if "thing_name" in parameters else None
+                    thing_name = parameters["thing_name"] if "thing_name" in parameters else "rt_MATRICOLA_MACCHINA"
+                    folder = parameters["folder"] if "folder" in parameters else "matrix"
+                    publish_rate_ms = parameters["publish_rate_ms"] if "publish_rate_ms" in parameters else 1000
+                    items_scan_rate = parameters["items_scan_rate"] if "items_scan_rate" in parameters else 1000
 
-                    resp = common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name))
+                    resp = common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name, folder, publish_rate_ms, items_scan_rate))
 
                 elif path[0] == "/channel/device/tags/tree":
                     """ GET per ottenere l'alberatura dei tags dentro un device di uno specifico channel """
@@ -392,13 +492,16 @@ class S(BaseHTTPRequestHandler):
                         parameters[temp[0]] = temp[1]
 
                     channelname = parameters["channel"] if "channel" in parameters else ""
-                    devicename = parameters["device"] if "device" in parameters else None
+                    devicename = parameters["device"] if "device" in parameters else ""
                     type_name = parameters["type"] if "type" in parameters else "twa"
-                    thing_name = parameters["thing_name"] if "thing_name" in parameters else None
+                    thing_name = parameters["thing_name"] if "thing_name" in parameters else "rt_MATRICOLA_MACCHINA"
+                    folder = parameters["folder"] if "folder" in parameters else "matrix"
+                    publish_rate_ms = parameters["publish_rate_ms"] if "publish_rate_ms" in parameters else 1000
+                    items_scan_rate = parameters["items_scan_rate"] if "items_scan_rate" in parameters else 1000
 
                     tag_list = json.loads(self.data_string)
 
-                    res = common.dumpjsonnospaces(kepware.create_iot_gw_custom_tags(channelname, devicename, tag_list, type_name, thing_name)) if len(tag_list) > 0 else common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name))
+                    res = common.dumpjsonnospaces(kepware.create_iot_gw_custom_tags(channelname, devicename, tag_list, type_name, thing_name, folder, publish_rate_ms, items_scan_rate)) if len(tag_list) > 0 else common.dumpjsonnospaces(kepware.create_iot_gw_all_tags(type_name, channelname, devicename, thing_name, folder, publish_rate_ms, items_scan_rate))
 
                     self.send_response(200)
                     self.end_headers()
@@ -1057,7 +1160,7 @@ def send_a4updater_to_cloud():
         print(f'{pca.log_prefix()}{mycolors.FAIL}Get A4Updater release -> result NOT sent to cloud" {mycolors.ENDC}', flush = True)
 
 def send_machine_connected_to_cloud():
-    machine_connected = kepware.machine_connected()
+    machine_connected = common.dumpjsonnospaces(kepware.machine_connected())
     send_mqtt_msg(mqtt_client = mqtt_client, mqtt_topic = MQTT_TOPIC_MACHINE_CONNECTED, mqtt_msg = machine_connected, mqtt_broker = MQTT_BROKER_IP, mqtt_port = MQTT_BROKER_PORT, mqtt_qos = MQTT_QOS)
 
 if __name__ == "__main__":

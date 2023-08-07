@@ -1,0 +1,29 @@
+[
+  {
+    "channel": "Channel1",
+    "device": "Device1",
+    "driver_type": "Modbus TCP/IP Ethernet",
+    "ip_address": "192.168.1.10",
+    "port": 502,
+    "timestamp": 1678789500,
+    "connected": true
+  },
+  {
+    "channel": "Channel1",
+    "device": "Device2",
+    "driver_type": "Modbus TCP/IP Ethernet",
+    "ip_address": "192.168.1.11",
+    "port": 502,
+    "timestamp": 1678789501,
+    "connected": false
+  },
+  {
+    "channel": "Channel2",
+    "device": "Device1",
+    "driver_type": "OPC UA Client",
+    "ip_address": "192.168.1.20",
+    "port": 4840,
+    "timestamp": 1678789502,
+    "connected": true
+  }
+]

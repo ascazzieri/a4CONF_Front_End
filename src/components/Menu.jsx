@@ -18,8 +18,12 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
+import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
+import MonitorHeartOutlinedIcon from '@mui/icons-material/MonitorHeartOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MailIcon from "@mui/icons-material/Mail";
+import LowPriorityIcon from '@mui/icons-material/LowPriority';
+import MessageIcon from '@mui/icons-material/Message';
 import GridViewIcon from "@mui/icons-material/GridView";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import SpeedIcon from "@mui/icons-material/Speed";
@@ -28,6 +32,7 @@ import Avatar from '@mui/material/Avatar';
 import a4GATELogo from "../media/img/a4GATE-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
+import { ChecklistOutlined } from "@mui/icons-material";
 
 const drawerWidth = 240;
 
@@ -130,13 +135,14 @@ export default function MiniDrawer(props) {
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpen}
+            /* onMouseOver={handleDrawerOpen} */
             edge="start"
             sx={{
               marginRight: 5,
               ...(open && { display: "none" }),
             }}
           >
-            <MenuIcon />
+            <img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} />
           </IconButton>
           <Grid container alignItems="center">
             <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
@@ -166,7 +172,7 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
-              {mainSectionTitle && mainSectionTitle.length !== 0 && <Avatar sx={{ bgcolor: '#1F293F', width: 150, color: 'white'}} variant="rounded">
+              {mainSectionTitle && mainSectionTitle.length !== 0 && <Avatar sx={{ bgcolor: '#1F293F', width: 150, color: 'white' }} variant="rounded">
                 {mainSectionTitle}
               </Avatar>
               }
@@ -174,19 +180,19 @@ export default function MiniDrawer(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader style={{ marginBottom: 10 }}>
-          a4CONF
-          <IconButton onClick={handleDrawerClose}>
+      <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
+        <DrawerHeader style={{justifyContent: 'center'}}>
+          <p style={{fontWeight: 'bolder'}}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35}/> a4CONF</p>
+          {/* <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
               <ChevronLeftIcon />
             )}
-          </IconButton>
+          </IconButton> */}
         </DrawerHeader>
-
-        <List style={{ marginTop: 10 }}>
+        <Divider />
+        <List>
           {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
@@ -199,7 +205,7 @@ export default function MiniDrawer(props) {
 
                 }}
               >
-                <ListItemIcon disabled>
+                <ListItemIcon>
                   {index !== 0 ? (
                     index === 1 ? (
                       <PrecisionManufacturingIcon name="internal-pc" />
@@ -219,7 +225,15 @@ export default function MiniDrawer(props) {
         <List>
           {["Fast-Data"].map((text, index) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton
+                name={text}
+                onClick={() => {
+
+
+                  navigate(`/${text?.toLowerCase()}`);
+
+
+                }}>
                 <ListItemIcon>
                   <SpeedIcon />
                 </ListItemIcon>
@@ -230,11 +244,17 @@ export default function MiniDrawer(props) {
         </List>
         <Divider />
         <List>
-          {["Back-Channel", "Archive"].map((text, index) => (
+          {["Back-Channel", "Info", "Archive"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton>
+              <ListItemButton
+                name={text}
+                onClick={() => {
+                  navigate(`/${text?.toLowerCase()}`);
+                }}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index === 0 && <LowPriorityIcon />}
+                  {index === 1 && <InfoOutlinedIcon />}
+                  {index === 2 && <MessageIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
@@ -247,7 +267,7 @@ export default function MiniDrawer(props) {
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {index === 0 ? <ChecklistOutlinedIcon /> : <MonitorHeartOutlinedIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
