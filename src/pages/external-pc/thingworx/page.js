@@ -4,7 +4,7 @@ import { updateThingworx } from "../../../utils/redux/reducers";
 import { loadiotgws } from "../../../utils/api";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
-import Table from "../../../components/Table/Table";
+import CustomTable from "../../../components/Table/Table";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { styled, alpha } from "@mui/material/styles";
@@ -28,6 +28,10 @@ import {
   MenuItem,
   Typography,
   InputBase,
+  Grid,
+  Table,
+  TableContainer,
+  TableBody,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import {
@@ -99,7 +103,13 @@ export default function Thingworx() {
   };
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = ["Connection", "Remote Things", "Agent Logs", "JSON"];
+  const navbarItems = [
+    "Connection",
+    "Remote Things",
+    "Manage Iot Gateways",
+    "Agent Logs",
+    "JSON",
+  ];
 
   const getArrayFromThingObject = (thingObject) => {
     let arrayFromThingsObject = [];
@@ -160,7 +170,7 @@ export default function Thingworx() {
           severity: "success",
           message: `Kepware IoT gateways loaded`,
         });
-      } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
+      } else if (iotGateways && Object.keys(iotGateways).length === 0) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -283,7 +293,7 @@ export default function Thingworx() {
         setCurrentTab={setCurrentTab}
         navbarItems={navbarItems}
       />
-      {currentTab === 3 && <JSONTree data={thingworx} />}
+      {currentTab === 4 && <JSONTree data={thingworx} />}
 
       <form onSubmit={handleThingworxChange}>
         {currentTab === 0 && (
@@ -369,23 +379,6 @@ export default function Thingworx() {
               >
                 <CachedIcon />
               </IconButton>
-              {/* <FormControl fullWidth>
-                <TextField
-                  select
-                  label="Choose Thing name"
-                  helperText="Select a Thing name from your local list"
-                  defaultValue=""
-                  onChange={handleThingNamesChange}
-                >
-                  {thing_names.map((item) => {
-                    return (
-                      <MenuItem key={Math.random() + item} value={item}>
-                        {item}
-                      </MenuItem>
-                    );
-                  })}
-                </TextField>
-              </FormControl> */}
               <Button onClick={handleAddRemoteThing} variant="contained">
                 Add
               </Button>
@@ -393,7 +386,7 @@ export default function Thingworx() {
 
             <FormLabel>Remote Things configuration</FormLabel>
 
-            <Table
+            <CustomTable
               tableData={thingsTableData}
               setTableData={setThingsTableData}
               columnsData={thingsColumnData}
@@ -403,6 +396,115 @@ export default function Thingworx() {
           </>
         )}
         {currentTab === 2 && (
+          <>
+            <FormLabel>Enabled IoT Gateways list for Thingworx</FormLabel>
+            <Grid
+              container
+              columns={{ xs: 4, sm: 12, md: 12 }}
+              sx={{ mt: 5, mb: 5 }}
+            >
+              <Grid
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "1px inset white",
+                  padding: "0px 20px",
+                }}
+              >
+                <h3>Enabled IoT Gateways for Thingworx</h3>
+                <Divider />
+                <Grid
+                  container
+                  rowSpacing={2}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
+                >
+                  <TableContainer sx={{ height: 150 }}>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {/* {thing_names &&
+                        thing_names.length !== 0 &&
+                        thing_names.map((row) => {
+                          return (
+                            <TableRow hover key={row}>
+                              <TableCell align="center">
+                                {row.substring(3, row.length)}
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  aria-label="delete"
+                                  onClick={() => {
+                                    handleThingNameDelete(row);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })} */}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
+              <Grid
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "1px inset white",
+                  padding: "0px 20px",
+                }}
+              >
+                <h3>Disabled IoT Gateways for Thingworx</h3>
+                <Divider />
+                <Grid
+                  container
+                  rowSpacing={2}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
+                >
+                  <TableContainer sx={{ height: 150 }}>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {/* {thing_names &&
+                        thing_names.length !== 0 &&
+                        thing_names.map((row) => {
+                          return (
+                            <TableRow hover key={row}>
+                              <TableCell align="center">
+                                {row.substring(3, row.length)}
+                              </TableCell>
+                              <TableCell align="center">
+                                <IconButton
+                                  aria-label="delete"
+                                  onClick={() => {
+                                    handleThingNameDelete(row);
+                                  }}
+                                >
+                                  <DeleteIcon />
+                                </IconButton>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })} */}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
+            </Grid>
+          </>
+        )}
+        {currentTab === 3 && (
           <>
             <Box sx={{ flexGrow: 1 }}>
               <FormLabel>Thingworx agent logs:</FormLabel>

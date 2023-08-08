@@ -148,6 +148,54 @@ export const is_B_ready = async () => {
     console.error(e);
   }
 };
+export const get_iot_gtws_opcua_reading_enabled = async () => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/enabled/opcua_from`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_opcua_reading_disabled = async () => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/disabled/opcua_from`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/enabled/opcua_to`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/disabled/opcua_to`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 export const check_bidir = async () => {
   try {
     const res = await helper.fetchData(`/a4gate/bidir`, "GET");

@@ -588,7 +588,7 @@ export default function Kepware() {
       const kepwareChannels = await loadChannels();
       console.log("get kepware channels");
 
-      if (kepwareChannels && Object.keys(kepwareChannels).lenght !== 0) {
+      if (kepwareChannels && Object.keys(kepwareChannels).length !== 0) {
         setChannelRows(buildRows(kepwareChannels));
         handleRequestFeedback({
           vertical: "bottom",
@@ -596,7 +596,7 @@ export default function Kepware() {
           severity: "success",
           message: `Kepware channels loaded`,
         });
-      } else if (kepwareChannels && Object.keys(kepwareChannels).lenght === 0) {
+      } else if (kepwareChannels && Object.keys(kepwareChannels).length === 0) {
         setChannelRows(buildRows(kepwareChannels));
         handleRequestFeedback({
           vertical: "bottom",
