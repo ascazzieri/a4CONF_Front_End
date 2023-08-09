@@ -112,6 +112,43 @@ export const loadiotgws = async (direction) => {
     console.error(e);
   }
 };
+export const get_iot_gtws_http_client_enabled = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/enabled", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_http_client_disabled = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/disabled", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_http_server_enabled = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/server/enabled", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_http_server_disabled = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/server/disabled", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const machines_connected = async () => {
   try {
     const res = await helper.fetchData(`/machine/connections`, "GET");
@@ -184,6 +221,31 @@ export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
     console.error(e);
   }
 };
+export const enable_http_client_iot_gateway = async (name) => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/enable?iotgw_name=${name}`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const disable_http_client_iot_gateway = async (name) => {
+  try {
+    const res = await helper.fetchData(
+      `/iotgw/http/client/disable&iotgw_name=${name}`,
+      "GET"
+    );
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
 export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
   try {
     const res = await helper.fetchData(

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateThingworx } from "../../../utils/redux/reducers";
-import { loadiotgws } from "../../../utils/api";
+import {
+  get_iot_gtws_http_client_enabled,
+  get_iot_gtws_http_client_disabled,
+  enable_http_client_iot_gateway,
+  disable_http_client_iot_gateway,
+} from "../../../utils/api";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
@@ -32,6 +37,8 @@ import {
   Table,
   TableContainer,
   TableBody,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import {
@@ -41,7 +48,9 @@ import {
   ThumbDownAltOutlined,
   CloudUploadOutlined,
 } from "@mui/icons-material";
-
+import BlurOffIcon from "@mui/icons-material/BlurOff";
+import BlurOnIcon from "@mui/icons-material/BlurOn";
+/** @type {*} */
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: theme.shape.borderRadius,
@@ -57,6 +66,7 @@ const Search = styled("div")(({ theme }) => ({
   },
 }));
 
+/** @type {*} */
 const SearchIconWrapper = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: "100%",
@@ -71,6 +81,7 @@ const HighlightedText = styled("span")({
   fontWeight: "bold",
 });
 
+/** @type {*} */
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
@@ -88,6 +99,11 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+/**
+ * Represents a React component for managing IoT gateways and remote things.
+ *
+ * @returns {React.Component} The Thingworx component.
+ */
 export default function Thingworx() {
   const thingworx = useSelector((state) => state.services?.thingworx);
 
@@ -127,6 +143,7 @@ export default function Thingworx() {
   const [thingworxHost, setThingworxHost] = useState(thingworx?.host);
   const [thingworxAppkey, setThingworxAppkey] = useState(thingworx?.appkey);
   const [iotGatewaysList, setIotGatewaysList] = useState({});
+  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState({});
   const [iotGateway, setIotGateway] = useState();
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things)
@@ -139,6 +156,13 @@ export default function Thingworx() {
     setSearchText(event.target.value);
   };
 
+  /**
+   * Highlights a specific search term within a given text.
+   *
+   * @param {string} text - The original text.
+   * @param {string} search - The term to be highlighted.
+   * @returns {Array|string} - The modified array of words or the original text if no match found.
+   */
   const highlightText = (text, search) => {
     const regex = new RegExp(`(${search})`, "gi");
     return text.split(regex).map((word, index) => {
@@ -160,22 +184,34 @@ export default function Thingworx() {
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
-      const iotGateways = await loadiotgws("from");
+      const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
+      const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
       console.log("get IoT gateways");
-      if (iotGateways && Object.keys(iotGateways).length !== 0) {
-        setIotGatewaysList(iotGateways);
+      if (
+        iotGatewaysEnabled &&
+        iotGatewaysDisabled &&
+        Object.keys(iotGatewaysEnabled).length !== 0
+      ) {
+        setIotGatewaysList(iotGatewaysEnabled);
+        setIotGatewaysListDisabled(iotGatewaysDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "success",
           message: `Kepware IoT gateways loaded`,
         });
-      } else if (iotGateways && Object.keys(iotGateways).length === 0) {
+      } else if (
+        iotGatewaysEnabled &&
+        iotGatewaysDisabled &&
+        Object.keys(iotGatewaysEnabled).length === 0
+      ) {
+        setIotGatewaysList(iotGatewaysEnabled);
+        setIotGatewaysListDisabled(iotGatewaysDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `Kepware IoT gateways not found`,
+          message: `Kepware enabled IoT gateways not found`,
         });
       } else {
         handleRequestFeedback({
@@ -201,22 +237,34 @@ export default function Thingworx() {
 
   const handleIotGatewaysReloadChange = async () => {
     loaderContext[1](true);
-    const iotGateways = await loadiotgws("from");
+    const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
+    const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
     console.log("get IoT gateways");
-    if (iotGateways && Object.keys(iotGateways).length !== 0) {
-      setIotGatewaysList(iotGateways);
+    if (
+      iotGatewaysEnabled &&
+      iotGatewaysDisabled &&
+      Object.keys(iotGatewaysEnabled).length !== 0
+    ) {
+      setIotGatewaysList(iotGatewaysEnabled);
+      setIotGatewaysListDisabled(iotGatewaysDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
+    } else if (
+      iotGatewaysEnabled &&
+      iotGatewaysDisabled &&
+      Object.keys(iotGatewaysEnabled).length === 0
+    ) {
+      setIotGatewaysList(iotGatewaysEnabled);
+      setIotGatewaysListDisabled(iotGatewaysDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Kepware IoT gateways not found`,
+        message: `Kepware enabled IoT gateways not found`,
       });
     } else {
       handleRequestFeedback({
@@ -227,6 +275,37 @@ export default function Thingworx() {
       });
     }
     loaderContext[1](false);
+  };
+
+  const handleEnableIotGateway = async (name) => {
+    let iotGatewaDisabledList = undefined;
+    const result = await enable_http_client_iot_gateway(name);
+
+    if (!result?.enabled) {
+      return;
+    }
+    iotGatewaDisabledList = { ...iotGatewaysListDisabled };
+    setIotGatewaysList((prevData) => ({
+      ...prevData,
+      [`${name}`]: iotGatewaDisabledList[`${name}`],
+    }));
+    delete iotGatewaDisabledList[`${name}`];
+    setIotGatewaysListDisabled(iotGatewaDisabledList);
+  };
+
+  const handleDisableIotGateway = async (name) => {
+    let iotGatewaList = undefined;
+    const result = await disable_http_client_iot_gateway(name);
+    if (result?.enabled) {
+      return;
+    }
+    iotGatewaList = { ...iotGatewaysList };
+    setIotGatewaysListDisabled((prevData) => ({
+      ...prevData,
+      [`${name}`]: iotGatewaList[`${name}`],
+    }));
+    delete iotGatewaList[`${name}`];
+    setIotGatewaysList(iotGatewaList);
   };
 
   const handleThingworxChange = (event) => {
@@ -266,13 +345,19 @@ export default function Thingworx() {
       enableSorting: true,
     },
   ];
+  /**
+   * Extracts the value of the "thingName" parameter from the given input string.
+   *
+   * @param {string} inputString - The input string from which to extract the "thingName" parameter.
+   * @returns {string} - The extracted "thingName" value, or an empty string if "thingName=" is not present in the input string.
+   */
   function extractThingName(inputString) {
     const startIndex = inputString.indexOf("thingName=");
     if (startIndex !== -1) {
-      const extractedString = inputString.substring(startIndex + 10); // La lunghezza di "thingName=" è 10
+      const extractedString = inputString.substring(startIndex + 10); // The length of "thingName=" is 10
       return extractedString;
     }
-    return ""; // Restituisce una stringa vuota se "thingName=" non è presente nella stringa di input
+    return ""; // Returns an empty string if "thingName=" is not present in the input string
   }
 
   const handleAddRemoteThing = () => {
@@ -362,7 +447,15 @@ export default function Thingworx() {
                   {iotGatewaysList &&
                     Object.keys(iotGatewaysList).length !== 0 &&
                     Object.keys(iotGatewaysList)
-                      .filter((element) => element.startsWith("HTTP"))
+                      .filter(
+                        (element) =>
+                          iotGatewaysList[element].includes(
+                            "http://127.0.0.1:8001"
+                          ) ||
+                          iotGatewaysList[element].includes(
+                            "http://localhost:8001"
+                          )
+                      )
                       .map((item) => {
                         return (
                           <MenuItem key={Math.random() + item} value={item}>
@@ -397,7 +490,10 @@ export default function Thingworx() {
         )}
         {currentTab === 2 && (
           <>
-            <FormLabel>Enabled IoT Gateways list for Thingworx</FormLabel>
+            <FormLabel>
+              Kepware IoT Gateways list for OPCUA Server with read only
+              permission
+            </FormLabel>
             <Grid
               container
               columns={{ xs: 4, sm: 12, md: 12 }}
@@ -418,7 +514,7 @@ export default function Thingworx() {
                 <Divider />
                 <Grid
                   container
-                  rowSpacing={2}
+                  rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
                   sx={{ p: 1 }}
@@ -426,27 +522,40 @@ export default function Thingworx() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                        thing_names.length !== 0 &&
-                        thing_names.map((row) => {
-                          return (
-                            <TableRow hover key={row}>
-                              <TableCell align="center">
-                                {row.substring(3, row.length)}
-                              </TableCell>
-                              <TableCell align="center">
-                                <IconButton
-                                  aria-label="delete"
-                                  onClick={() => {
-                                    handleThingNameDelete(row);
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })} */}
+                        {iotGatewaysList &&
+                          Object.keys(iotGatewaysList).length !== 0 &&
+                          Object.keys(iotGatewaysList)
+                            .filter(
+                              (element) =>
+                                iotGatewaysList[element].includes(
+                                  "http://127.0.0.1:8001"
+                                ) ||
+                                iotGatewaysList[element].includes(
+                                  "http://localhost:8001"
+                                )
+                            )
+                            .map((iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell align="center">
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      color="secondary"
+                                      endIcon={<BlurOffIcon />}
+                                      onClick={() => {
+                                        handleDisableIotGateway(iotGatewayName);
+                                      }}
+                                      size="small"
+                                    >
+                                      Disable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -467,7 +576,7 @@ export default function Thingworx() {
                 <Divider />
                 <Grid
                   container
-                  rowSpacing={2}
+                  rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
                   sx={{ p: 1 }}
@@ -475,27 +584,42 @@ export default function Thingworx() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                        thing_names.length !== 0 &&
-                        thing_names.map((row) => {
-                          return (
-                            <TableRow hover key={row}>
-                              <TableCell align="center">
-                                {row.substring(3, row.length)}
-                              </TableCell>
-                              <TableCell align="center">
-                                <IconButton
-                                  aria-label="delete"
-                                  onClick={() => {
-                                    handleThingNameDelete(row);
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })} */}
+                        {iotGatewaysListDisabled &&
+                          Object.keys(iotGatewaysListDisabled).length !== 0 &&
+                          Object.keys(iotGatewaysListDisabled)
+                            .filter(
+                              (element) =>
+                                iotGatewaysListDisabled[element].includes(
+                                  "http://127.0.0.1:8001"
+                                ) ||
+                                iotGatewaysListDisabled[element].includes(
+                                  "http://localhost:8001"
+                                )
+                            )
+                            .map((iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell
+                                    align="center"
+                                    style={{ color: "grey" }}
+                                  >
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      endIcon={<BlurOnIcon />}
+                                      onClick={() => {
+                                        handleEnableIotGateway(iotGatewayName);
+                                      }}
+                                      size="small"
+                                    >
+                                      Enable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
                       </TableBody>
                     </Table>
                   </TableContainer>

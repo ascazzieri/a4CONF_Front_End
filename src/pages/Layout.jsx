@@ -99,7 +99,7 @@ const Layout = () => {
   }
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <>
       <MiniDrawer>
         {/*         <img src={applied_logo} style={applied_background}/> */}
         <div style={applied_background} />
@@ -123,7 +123,7 @@ const Layout = () => {
         <Outlet />
       </MiniDrawer>
       <MainButtons />
-    </Box>
+    </>
   );
 };
 

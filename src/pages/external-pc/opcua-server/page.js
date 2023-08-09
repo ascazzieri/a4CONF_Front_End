@@ -11,6 +11,8 @@ import {
   get_iot_gtws_opcua_reading_disabled,
   get_iot_gtws_opcua_reading_writing_enabled,
   get_iot_gtws_opcua_reading_writing_disabled,
+  enable_http_client_iot_gateway,
+  disable_http_client_iot_gateway,
 } from "../../../utils/api";
 import {
   Autocomplete,
@@ -28,8 +30,12 @@ import {
   TableContainer,
   TableBody,
   Table,
+  TableRow,
+  TableCell,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
+import BlurOffIcon from "@mui/icons-material/BlurOff";
+import BlurOnIcon from "@mui/icons-material/BlurOn";
 
 export default function OPCServer() {
   const opcua = useSelector((state) => state?.services?.opcua);
@@ -79,6 +85,8 @@ export default function OPCServer() {
   };
 
   const [iotGatewaysFromList, setIotGatewaysFromList] = useState({});
+  const [iotGatewaysFromListDisabled, setIotGatewaysFromListDisabled] =
+    useState({});
   const [iotGatewayFrom, setIotGatewayFrom] = useState();
 
   const [iotGatewaysFromTableData, setIotGatewaysFromTableData] = useState(
@@ -86,6 +94,9 @@ export default function OPCServer() {
   );
 
   const [iotGatewaysToList, setIotGatewaysToList] = useState({});
+  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
+    {}
+  );
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
@@ -127,11 +138,15 @@ export default function OPCServer() {
       if (
         iotGatewaysFromEnabled &&
         iotGatewaysToEnabled &&
+        iotGatewaysFromDisabled &&
+        iotGatewaysToDisabled &&
         Object.keys(iotGatewaysFromEnabled).length !== 0 &&
         Object.keys(iotGatewaysToEnabled).length !== 0
       ) {
         setIotGatewaysFromList(iotGatewaysFromEnabled);
+        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
         setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -140,15 +155,21 @@ export default function OPCServer() {
         });
       } else if (
         iotGatewaysFromEnabled &&
+        iotGatewaysFromDisabled &&
         iotGatewaysToEnabled &&
-        Object.keys(iotGatewaysFromDisabled).length &&
-        Object.keys(iotGatewaysToDisabled).length === 0
+        iotGatewaysToDisabled &&
+        Object.keys(iotGatewaysFromEnabled).length === 0 &&
+        Object.keys(iotGatewaysToEnabled).length === 0
       ) {
+        setIotGatewaysFromList(iotGatewaysFromEnabled);
+        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+        setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `Kepware IoT gateways not found`,
+          message: `Kepware enabled IoT gateways not found`,
         });
       } else {
         handleRequestFeedback({
@@ -216,8 +237,130 @@ export default function OPCServer() {
     loaderContext[1](false);
   };
 
+  const handleRefreshAllIotGateways = async () => {
+    loaderContext[1](true);
+    const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
+    const iotGatewaysFromDisabled = await get_iot_gtws_opcua_reading_disabled();
+    const iotGatewaysToEnabled =
+      await get_iot_gtws_opcua_reading_writing_enabled();
+    const iotGatewaysToDisabled =
+      await get_iot_gtws_opcua_reading_writing_disabled();
+    console.log("get IoT gateways");
+    if (
+      iotGatewaysFromEnabled &&
+      iotGatewaysToEnabled &&
+      iotGatewaysFromDisabled &&
+      iotGatewaysToDisabled &&
+      Object.keys(iotGatewaysFromEnabled).length !== 0 &&
+      Object.keys(iotGatewaysToEnabled).length !== 0
+    ) {
+      setIotGatewaysFromList(iotGatewaysFromEnabled);
+      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Kepware IoT gateways loaded`,
+      });
+    } else if (
+      iotGatewaysFromEnabled &&
+      iotGatewaysFromDisabled &&
+      iotGatewaysToEnabled &&
+      iotGatewaysToDisabled &&
+      Object.keys(iotGatewaysFromEnabled).length === 0 &&
+      Object.keys(iotGatewaysToEnabled).length === 0
+    ) {
+      setIotGatewaysFromList(iotGatewaysFromEnabled);
+      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Kepware enabled IoT gateways not found`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during Kepware IoT Gateways loading`,
+      });
+    }
+    loaderContext[1](false);
+  };
+
+  const handleEnableIotGateway = async (name, permission) => {
+    let iotGatewaDisabledList = undefined;
+    const result = await enable_http_client_iot_gateway(name);
+
+    if (!result?.enabled) {
+      return;
+    }
+    if (permission === "from") {
+      iotGatewaDisabledList = { ...iotGatewaysFromListDisabled };
+      setIotGatewaysFromList((prevData) => ({
+        ...prevData,
+        [`${name}`]: iotGatewaDisabledList[`${name}`],
+      }));
+      delete iotGatewaDisabledList[`${name}`];
+      setIotGatewaysFromListDisabled(iotGatewaDisabledList);
+    } else if (permission === "to") {
+      iotGatewaDisabledList = { ...iotGatewaysToListDisabled };
+      setIotGatewaysToList((prevData) => ({
+        ...prevData,
+        [`${name}`]: iotGatewaDisabledList[`${name}`],
+      }));
+      delete iotGatewaDisabledList[`${name}`];
+      setIotGatewaysToListDisabled(iotGatewaDisabledList);
+    }
+  };
+
+  /**
+   * Disables an IoT gateway based on the provided name and permission.
+   * 
+   * @param {string} name - The name of the IoT gateway to disable.
+   * @param {string} permission - The permission type ("from" or "to").
+   * @returns {void}
+   */
+  const handleDisableIotGateway = async (name, permission) => {
+    let iotGatewaList = undefined;
+    const result = await disable_http_client_iot_gateway(name);
+
+    if (result?.enabled) {
+      return;
+    }
+    if (permission === "from") {
+      iotGatewaList = { ...iotGatewaysFromList };
+      setIotGatewaysFromListDisabled((prevData) => ({
+        ...prevData,
+        [`${name}`]: iotGatewaList[`${name}`],
+      }));
+      delete iotGatewaList[`${name}`];
+      setIotGatewaysFromList(iotGatewaList);
+    } else if (permission === "to") {
+      iotGatewaList = { ...iotGatewaysFromList };
+      setIotGatewaysToListDisabled((prevData) => ({
+        ...prevData,
+        [`${name}`]: iotGatewaList[`${name}`],
+      }));
+      delete iotGatewaList[`${name}`];
+      setIotGatewaysToList(iotGatewaList);
+    }
+  };
+
+  /**
+   * This code snippet is a part of a larger function/component named `OPCServer`.
+   * It is responsible for adding a new IoT gateway to the table data.
+   * 
+   * @function handleAddIotGatewayFrom
+   * @description Adds a new IoT gateway to the table data by updating the state variable `iotGatewaysFromTableData`.
+   * @returns {void}
+   */
   const handleAddIotGatewayFrom = () => {
-    console.log(iotGatewayFrom);
     setIotGatewaysFromTableData((prevData) => [
       ...prevData,
       {
@@ -261,6 +404,16 @@ export default function OPCServer() {
     dispatch(updateOPCServer({ newOPCUAServer }));
   };
 
+  /**
+   * This code snippet defines the `iotGatewaysColumnData` array, which contains configuration data for columns in a table.
+   * Each object in the array represents a column and includes properties such as `accessorKey`, `header`, `enableColumnOrdering`, `enableEditing`, and `enableSorting`.
+   * The `accessorKey` property specifies the key used to access the data for the column.
+   * The `header` property specifies the header text for the column.
+   * The `enableColumnOrdering` property specifies whether column ordering is enabled for the column.
+   * The `enableEditing` property specifies whether editing is enabled for the column.
+   * The `enableSorting` property specifies whether sorting is enabled for the column.
+   */
+
   const iotGatewaysColumnData = [
     {
       accessorKey: "iot_gateway",
@@ -278,19 +431,52 @@ export default function OPCServer() {
     },
   ];
 
+  /**
+   * This code snippet defines an array of objects named 'usersColumnData' that represents the column data for a table.
+   * Each object in the array represents a column and contains properties such as 'accessorKey', 'header', 'enableColumnOrdering',
+   * 'enableEditing', and 'enableSorting'.
+   * 
+   * The 'accessorKey' property represents the key used to access the data for the column in each row of the table.
+   * The 'header' property represents the header text for the column.
+   * The 'enableColumnOrdering' property determines whether the column can be reordered by the user.
+   * The 'enableEditing' property determines whether the column is editable.
+   * The 'enableSorting' property determines whether the column can be sorted by the user.
+   * 
+   * This code can be used to define the column data for a table in a React application.
+   * 
+   * Example usage:
+   * 
+   * const usersColumnData = [
+   *   {
+   *     accessorKey: "username",
+   *     header: "User",
+   *     enableColumnOrdering: true,
+   *     enableEditing: true, // disable editing on this column
+   *     enableSorting: true,
+   *   },
+   *   {
+   *     accessorKey: "password",
+   *     header: "Password",
+   *     enableColumnOrdering: true,
+   *     enableEditing: true, // disable editing on this column
+   *     enableSorting: true,
+   *   },
+   * ];
+   */
+
   const usersColumnData = [
     {
       accessorKey: "username",
       header: "User",
       enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
+      enableEditing: true, // disable editing on this column
       enableSorting: true,
     },
     {
       accessorKey: "password",
       header: "Password",
       enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
+      enableEditing: true, // disable editing on this column
       enableSorting: true,
     },
   ];
@@ -318,22 +504,6 @@ export default function OPCServer() {
               alignItems="center"
             >
               <FormControl fullWidth>
-                {/* <TextField
-                  select
-                  label="Choose iot gateway from Kepware"
-                  defaultValue=""
-                  onChange={handleIotGatewaysFromChange}
-                >
-                  {iotGatewaysFromList &&
-                    Object.keys(iotGatewaysFromList).length !== 0 &&
-                    Object.keys(iotGatewaysFromList).map((item) => {
-                      return (
-                        <MenuItem key={Math.random() + item} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                </TextField> */}
                 <Autocomplete
                   disablePortal
                   id="combo-box-demo"
@@ -442,10 +612,14 @@ export default function OPCServer() {
         {currentTab === 1 && (
           <>
             <FormLabel>
-              Enabled IoT Gateways list for OPCUA Server with read only
+              Kepware IoT Gateways list for OPCUA Server with read only
               permission
             </FormLabel>
-            <Grid container columns={{ xs: 4, sm: 12, md: 12 }} sx={{mt:5, mb: 5}}>
+            <Grid
+              container
+              columns={{ xs: 4, sm: 12, md: 12 }}
+              sx={{ mt: 5, mb: 5 }}
+            >
               <Grid
                 item
                 xs={2}
@@ -461,7 +635,7 @@ export default function OPCServer() {
                 <Divider />
                 <Grid
                   container
-                  rowSpacing={2}
+                  rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
                   sx={{ p: 1 }}
@@ -469,27 +643,35 @@ export default function OPCServer() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                          thing_names.length !== 0 &&
-                          thing_names.map((row) => {
-                            return (
-                              <TableRow hover key={row}>
-                                <TableCell align="center">
-                                  {row.substring(3, row.length)}
-                                </TableCell>
-                                <TableCell align="center">
-                                  <IconButton
-                                    aria-label="delete"
-                                    onClick={() => {
-                                      handleThingNameDelete(row);
-                                    }}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })} */}
+                        {iotGatewaysFromList &&
+                          Object.keys(iotGatewaysFromList).length !== 0 &&
+                          Object.keys(iotGatewaysFromList).map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell align="center">
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      color="secondary"
+                                      endIcon={<BlurOffIcon />}
+                                      onClick={() => {
+                                        handleDisableIotGateway(
+                                          iotGatewayName,
+                                          "from"
+                                        );
+                                      }}
+                                      size="small"
+                                    >
+                                      Disable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -510,7 +692,7 @@ export default function OPCServer() {
                 <Divider />
                 <Grid
                   container
-                  rowSpacing={2}
+                  rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
                   sx={{ p: 1 }}
@@ -518,27 +700,38 @@ export default function OPCServer() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                          thing_names.length !== 0 &&
-                          thing_names.map((row) => {
-                            return (
-                              <TableRow hover key={row}>
-                                <TableCell align="center">
-                                  {row.substring(3, row.length)}
-                                </TableCell>
-                                <TableCell align="center">
-                                  <IconButton
-                                    aria-label="delete"
-                                    onClick={() => {
-                                      handleThingNameDelete(row);
-                                    }}
+                        {iotGatewaysFromListDisabled &&
+                          Object.keys(iotGatewaysFromListDisabled).length !==
+                            0 &&
+                          Object.keys(iotGatewaysFromListDisabled).map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell
+                                    align="center"
+                                    style={{ color: "grey" }}
                                   >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })} */}
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      endIcon={<BlurOnIcon />}
+                                      onClick={() => {
+                                        handleEnableIotGateway(
+                                          iotGatewayName,
+                                          "from"
+                                        );
+                                      }}
+                                      size="small"
+                                    >
+                                      Enable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -546,10 +739,14 @@ export default function OPCServer() {
               </Grid>
             </Grid>
             <FormLabel>
-              Enabled IoT Gateways list for OPCUA Server with read and write
+              Kepware IoT Gateways list for OPCUA Server with read and write
               permission
             </FormLabel>
-            <Grid container columns={{ xs: 4, sm: 12, md: 12 }} sx={{mt:5, mb: 5}}>
+            <Grid
+              container
+              columns={{ xs: 4, sm: 12, md: 12 }}
+              sx={{ mt: 5, mb: 5 }}
+            >
               <Grid
                 item
                 xs={2}
@@ -573,27 +770,35 @@ export default function OPCServer() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                          thing_names.length !== 0 &&
-                          thing_names.map((row) => {
-                            return (
-                              <TableRow hover key={row}>
-                                <TableCell align="center">
-                                  {row.substring(3, row.length)}
-                                </TableCell>
-                                <TableCell align="center">
-                                  <IconButton
-                                    aria-label="delete"
-                                    onClick={() => {
-                                      handleThingNameDelete(row);
-                                    }}
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })} */}
+                        {iotGatewaysToList &&
+                          Object.keys(iotGatewaysToList).length !== 0 &&
+                          Object.keys(iotGatewaysToList).map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell align="center">
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      color="secondary"
+                                      endIcon={<BlurOffIcon />}
+                                      onClick={() => {
+                                        handleDisableIotGateway(
+                                          iotGatewayName,
+                                          "to"
+                                        );
+                                      }}
+                                      size="small"
+                                    >
+                                      Disable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
                       </TableBody>
                     </Table>
                   </TableContainer>
@@ -622,27 +827,37 @@ export default function OPCServer() {
                   <TableContainer sx={{ height: 150 }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
-                        {/* {thing_names &&
-                          thing_names.length !== 0 &&
-                          thing_names.map((row) => {
-                            return (
-                              <TableRow hover key={row}>
-                                <TableCell align="center">
-                                  {row.substring(3, row.length)}
-                                </TableCell>
-                                <TableCell align="center">
-                                  <IconButton
-                                    aria-label="delete"
-                                    onClick={() => {
-                                      handleThingNameDelete(row);
-                                    }}
+                        {iotGatewaysToListDisabled &&
+                          Object.keys(iotGatewaysToListDisabled).length !== 0 &&
+                          Object.keys(iotGatewaysToListDisabled).map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell
+                                    align="center"
+                                    style={{ color: "grey" }}
                                   >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })} */}
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Button
+                                      variant="contained"
+                                      endIcon={<BlurOnIcon />}
+                                      onClick={() => {
+                                        handleEnableIotGateway(
+                                          iotGatewayName,
+                                          "to"
+                                        );
+                                      }}
+                                      size="small"
+                                    >
+                                      Enable
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
                       </TableBody>
                     </Table>
                   </TableContainer>

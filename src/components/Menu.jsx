@@ -1,4 +1,5 @@
 import React from "react";
+import classes from "./Menu.module.css"
 import useTheme from "@mui/material/styles/useTheme";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -105,6 +106,21 @@ const Drawer = styled(MuiDrawer, {
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
+const floatingLogo = {
+  animationName: 'fly-1', // Since animation-name cannot be set via inline style directly
+  animationDuration: '0.6s',
+  animationTimingFunction: 'ease-in-out',
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+}
+const movingIcons = {
+  animationName: 'move-foreward', // Since animation-name cannot be set via inline style directly
+  animationDuration: '0.6s',
+  animationTimingFunction: 'ease-in-out',
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+}
+
 
 export default function MiniDrawer(props) {
   const { children } = props;
@@ -142,7 +158,8 @@ export default function MiniDrawer(props) {
               ...(open && { display: "none" }),
             }}
           >
-            <img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} />
+            <img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} />
+
           </IconButton>
           <Grid container alignItems="center">
             <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
@@ -181,8 +198,8 @@ export default function MiniDrawer(props) {
         </Toolbar>
       </AppBar>
       <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
-        <DrawerHeader style={{justifyContent: 'center'}}>
-          <p style={{fontWeight: 'bolder'}}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35}/> a4CONF</p>
+        <DrawerHeader style={{ justifyContent: 'center' }}>
+          <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
           {/* <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
@@ -205,7 +222,7 @@ export default function MiniDrawer(props) {
 
                 }}
               >
-                <ListItemIcon>
+                <ListItemIcon className={classes.hoverIcons}>
                   {index !== 0 ? (
                     index === 1 ? (
                       <PrecisionManufacturingIcon name="internal-pc" />
@@ -234,7 +251,7 @@ export default function MiniDrawer(props) {
 
 
                 }}>
-                <ListItemIcon>
+                <ListItemIcon className={classes.hoverIcons}>
                   <SpeedIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
@@ -251,7 +268,7 @@ export default function MiniDrawer(props) {
                 onClick={() => {
                   navigate(`/${text?.toLowerCase()}`);
                 }}>
-                <ListItemIcon>
+                <ListItemIcon className={classes.hoverIcons}>
                   {index === 0 && <LowPriorityIcon />}
                   {index === 1 && <InfoOutlinedIcon />}
                   {index === 2 && <MessageIcon />}
@@ -266,7 +283,7 @@ export default function MiniDrawer(props) {
           {["Checklist", "Logs"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton>
-                <ListItemIcon>
+                <ListItemIcon className={classes.hoverIcons}>
                   {index === 0 ? <ChecklistOutlinedIcon /> : <MonitorHeartOutlinedIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />

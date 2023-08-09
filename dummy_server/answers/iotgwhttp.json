@@ -4,8 +4,8 @@
   "FD_7Q610A0_orig": "http://127.0.0.1:11002/fastdata?filename=fastdataBT500_7Q6.csv&src=kepware",
   "FD_7Q810A0": "http://127.0.0.1:11002/fastdata?filename=fastdataBT500_7Q8.json&src=kepware&folder=7Q810A0",
   "FD_7Q810A0_orig": "http://127.0.0.1:11002/fastdata?filename=fastdataBT500_7Q8.csv&src=kepware",
-  "HTTP_codesys_PLC": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q610A0",
-  "HTTP_codesys_HMI": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q810A0",
+  "HTTP_codesys_PLC_thingworx": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q610A0",
+  "HTTP_codesys_HMI_thingworx": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q810A0",
   "REST Client 7Q610A0": "http://127.0.0.1:39321/iotgateway/write",
   "REST Client 7Q810A0": "http://127.0.0.1:39321/iotgateway/write"
 }

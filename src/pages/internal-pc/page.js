@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { updateInternalPC } from "../../utils/redux/reducers";
 import JSONPretty from "react-json-pretty";
-import VerticalTab_2 from "../../components/VerticalTab/VerticalTab";
+import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import { Grid, Card, CardContent, Container } from "@mui/material";
 import { Outlet, useLocation, Link } from "react-router-dom";
 import { SparkContext } from "../../components/RerenderSpark/RerenderSparkContext";
@@ -65,9 +65,9 @@ export default function InternalPC() {
     <Container sx={{ flexGrow: 1 }} disableGutters>
       <Card sx={{ mt: 1 }}>
         <CardContent>
-          <VerticalTab_2 tabsData={tabsData} root="internal-pc">
+          <VerticalTab tabsData={tabsData} root="internal-pc">
             <Outlet />
-          </VerticalTab_2>
+          </VerticalTab>
         </CardContent>
       </Card>
       <Grid container spacing={2}>
