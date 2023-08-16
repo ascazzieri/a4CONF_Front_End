@@ -186,8 +186,8 @@ const Table = (props) => {
             cell.column.id === "email"
               ? validateEmail(event.target.value)
               : cell.column.id === "age"
-              ? validateAge(+event.target.value)
-              : validateRequired(event.target.value);
+                ? validateAge(+event.target.value)
+                : validateRequired(event.target.value);
           if (!isValid) {
             //set validation error for cell if invalid
             setValidationErrors({
@@ -230,9 +230,9 @@ const Table = (props) => {
             sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}
           >
             <Button onClick={() => setCreateModalOpen(true)}>
-            <Add />
-          </Button>
-            <Button
+              <Add />
+            </Button>
+            {tableData && Object.keys(tableData).length !== 0 && <Button
               color="primary"
               //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
               onClick={handleExportData}
@@ -240,11 +240,12 @@ const Table = (props) => {
               variant="contained"
             >
               Export Table Data
-            </Button>
+            </Button>}
+
           </Box>
         )}
         renderRowActions={({ row, table }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }} style={{justifyContent: 'center'}}>
+          <Box sx={{ display: "flex", gap: "1rem" }} style={{ justifyContent: 'center' }}>
             <Tooltip arrow placement="left" title="Edit">
               <IconButton onClick={() => table.setEditingRow(row)}>
                 <Edit />

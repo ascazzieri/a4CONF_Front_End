@@ -6,6 +6,7 @@ import {
   get_iot_gtws_http_client_disabled,
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
+  twx_connection_diagnostic,
 } from "../../../utils/api";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
@@ -14,6 +15,17 @@ import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from "@mui/icons-material/Search";
+import List from "@mui/material/List";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import Collapse from "@mui/material/Collapse";
+import SettingsRemoteIcon from "@mui/icons-material/SettingsRemote";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import CallMergeIcon from "@mui/icons-material/CallMerge";
+import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import {
   AppBar,
   Box,
@@ -47,6 +59,7 @@ import {
   ThumbUpOffAltOutlined,
   ThumbDownAltOutlined,
   CloudUploadOutlined,
+  PendingOutlined,
 } from "@mui/icons-material";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
@@ -148,7 +161,9 @@ export default function Thingworx() {
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things)
   );
-  const [agentConnection, setAgentConnection] = useState(true);
+  const [agentDiagnosis, setAgentDiagnosis] = useState({});
+
+  const [expandedList, setExpandedList] = useState([]);
 
   const [searchText, setSearchText] = useState("");
 
@@ -164,17 +179,23 @@ export default function Thingworx() {
    * @returns {Array|string} - The modified array of words or the original text if no match found.
    */
   const highlightText = (text, search) => {
-    const regex = new RegExp(`(${search})`, "gi");
-    return text.split(regex).map((word, index) => {
-      if (word.toLowerCase() === search.toLowerCase()) {
-        return <HighlightedText key={index}>{word}</HighlightedText>;
-      }
-      return word;
-    });
+    if (text?.length === 0) {
+      return "";
+    } else {
+      const regex = new RegExp(`(${search})`, "gi");
+      return text.split(regex).map((word, index) => {
+        if (word.toLowerCase() === search.toLowerCase()) {
+          return <HighlightedText key={index}>{word}</HighlightedText>;
+        }
+        return word;
+      });
+    }
   };
-
   const highlightedContent = highlightText(
-    `Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique unde fugit veniam eius, perspiciatis sunt? Corporis qui ducimus quibusdam, aliquam dolore excepturi quae. Distinctio enim at eligendi perferendis in cum quibusdam sed quae, accusantium et aperiam? Quod itaque exercitationem, at ab sequi qui modi delectus quia corrupti alias distinctio nostrum. Minima ex dolor modi inventore sapiente necessitatibus aliquam fuga et. Sed numquam quibusdam at officia sapiente porro maxime corrupti perspiciatis asperiores, exercitationem eius nostrum consequuntur iure aliquam itaque, assumenda et! Quibusdam temporibus beatae doloremque voluptatum doloribus soluta accusamus porro reprehenderit eos inventore facere, fugit, molestiae ab officiis illo voluptates recusandae. Vel dolor nobis eius, ratione atque soluta, aliquam fugit qui iste architecto perspiciatis. Nobis, voluptatem! Cumque, eligendi unde aliquid minus quis sit debitis obcaecati error, delectus quo eius exercitationem tempore. Delectus sapiente, provident corporis dolorum quibusdam aut beatae repellendus est labore quisquam praesentium repudiandae non vel laboriosam quo ab perferendis velit ipsa deleniti modi! Ipsam, illo quod. Nesciunt commodi nihil corrupti cum non fugiat praesentium doloremque architecto laborum aliquid. Quae, maxime recusandae? Eveniet dolore molestiae dicta blanditiis est expedita eius debitis cupiditate porro sed aspernatur quidem, repellat nihil quasi praesentium quia eos, quibusdam provident. Incidunt tempore vel placeat voluptate iure labore, repellendus beatae quia unde est aliquid dolor molestias libero. Reiciendis similique exercitationem consequatur, nobis placeat illo laudantium! Enim perferendis nulla soluta magni error, provident repellat similique cupiditate ipsam, et tempore cumque quod! Qui, iure suscipit tempora unde rerum autem saepe nisi vel cupiditate iusto. Illum, corrupti? Fugiat quidem accusantium nulla. Aliquid inventore commodi reprehenderit rerum reiciendis! Quidem alias repudiandae eaque eveniet cumque nihil aliquam in expedita, impedit quas ipsum nesciunt ipsa ullam consequuntur dignissimos numquam at nisi porro a, quaerat rem repellendus. Voluptates perspiciatis, in pariatur impedit, nam facilis libero dolorem dolores sunt inventore perferendis, aut sapiente modi nesciunt.`,
+    agentDiagnosis["Error Message"] &&
+      agentDiagnosis["Error Message"].length !== 0
+      ? agentDiagnosis["Error Message"]
+      : "",
     searchText === " " ? "" : searchText
   );
 
@@ -186,6 +207,7 @@ export default function Thingworx() {
       loaderContext[1](true);
       const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
       const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
+      const agentConnectionInfo = await twx_connection_diagnostic();
       console.log("get IoT gateways");
       if (
         iotGatewaysEnabled &&
@@ -194,12 +216,6 @@ export default function Thingworx() {
       ) {
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "success",
-          message: `Kepware IoT gateways loaded`,
-        });
       } else if (
         iotGatewaysEnabled &&
         iotGatewaysDisabled &&
@@ -207,18 +223,22 @@ export default function Thingworx() {
       ) {
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Kepware enabled IoT gateways not found`,
-        });
       } else {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `An error occurred during Kepware IoT Gateways loading`,
+          message: `An error occurred on Kepware IoT Gateway loading`,
+        });
+      }
+      if (agentConnectionInfo) {
+        setAgentDiagnosis(agentConnectionInfo);
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on Thingworx agent diagnosis `,
         });
       }
       loaderContext[1](false);
@@ -233,6 +253,15 @@ export default function Thingworx() {
   };
   const handleIotGatewaysChange = (event) => {
     setIotGateway(event?.target?.value);
+  };
+  const handleExpandableList = (event, name) => {
+    const oldList = [...expandedList];
+    if (oldList.includes(name)) {
+      setExpandedList((prevItems) => prevItems.filter((item) => item !== name));
+    } else {
+      oldList.push(name);
+      setExpandedList(oldList);
+    }
   };
 
   const handleIotGatewaysReloadChange = async () => {
@@ -272,6 +301,29 @@ export default function Thingworx() {
         horizontal: "right",
         severity: "error",
         message: `An error occurred during Kepware IoT Gateways loading`,
+      });
+    }
+    loaderContext[1](false);
+  };
+
+  const handleTestConnection = async () => {
+    loaderContext[1](true);
+    const agentConnectionInfo = await twx_connection_diagnostic();
+    console.log("get agents info");
+    if (agentConnectionInfo) {
+      setAgentDiagnosis(agentConnectionInfo);
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Thingworx agent connection status requested`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on Thingworx agent diagnosis `,
       });
     }
     loaderContext[1](false);
@@ -634,7 +686,11 @@ export default function Thingworx() {
               <FormLabel>Thingworx agent logs:</FormLabel>
               <AppBar position="static" sx={{ background: "#1F293F" }}>
                 <Toolbar>
-                  <Button variant="contained" endIcon={<CloudUploadOutlined />}>
+                  <Button
+                    variant="contained"
+                    onClick={handleTestConnection}
+                    endIcon={<CloudUploadOutlined />}
+                  >
                     Test connection
                   </Button>
                   <IconButton
@@ -644,7 +700,7 @@ export default function Thingworx() {
                     aria-label="open drawer"
                     sx={{ ml: 2 }}
                   >
-                    {agentConnection ? (
+                    {agentDiagnosis && agentDiagnosis["TW is connected"] ? (
                       <ThumbUpOffAltOutlined color="success" />
                     ) : (
                       <ThumbDownAltOutlined color="error" />
@@ -656,20 +712,129 @@ export default function Thingworx() {
                     component="div"
                     sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
                   ></Typography>
-                  <Search>
-                    <SearchIconWrapper>
-                      <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                      placeholder="Search…"
-                      inputProps={{ "aria-label": "search" }}
-                      value={searchText}
-                      onChange={handleSearch}
-                    />
-                  </Search>
+                  {agentDiagnosis &&
+                    agentDiagnosis["Error Message"].trim().length !== 0 && (
+                      <Search>
+                        <SearchIconWrapper>
+                          <SearchIcon />
+                        </SearchIconWrapper>
+                        <StyledInputBase
+                          placeholder="Search…"
+                          inputProps={{ "aria-label": "search" }}
+                          value={searchText}
+                          onChange={handleSearch}
+                        />
+                      </Search>
+                    )}
                 </Toolbar>
                 <Box component="main" sx={{ p: 3 }}>
-                  <Typography>{highlightedContent}</Typography>
+                  {agentDiagnosis &&
+                    agentDiagnosis["Error Message"].trim().length !== 0 && (
+                      <>
+                        <Divider />
+
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          component="div"
+                          sx={{ flexGrow: 1, color: "red" }}
+                        >
+                          Error messages
+                        </Typography>
+                        <Typography sx={{backgroundColor: "orange", maxHeight: 400, overflowY: "auto"}}>{highlightedContent}</Typography>
+                      </>
+                    )}
+
+                  <Divider />
+
+                  <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{ flexGrow: 1 }}
+                  >
+                    Remote Things
+                  </Typography>
+                  <List
+                    sx={{
+                      width: "100%",
+                    }}
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                  >
+                    {agentDiagnosis &&
+                      agentDiagnosis["Bound Thing Properties"] &&
+                      agentDiagnosis["Bound Thing Properties"].length !== 0 &&
+                      agentDiagnosis["Bound Thing Properties"].map(
+                        (item, index) => {
+                          const rtName = Object.keys(item)[0];
+                          return (
+                            <>
+                              <ListItemButton
+                                onClick={(event, name) =>
+                                  handleExpandableList(event, rtName)
+                                }
+                              >
+                                <ListItemIcon>
+                                  <SettingsRemoteIcon />
+                                </ListItemIcon>
+                                <ListItemText primary={rtName} />
+                                {expandedList.includes(rtName) ? (
+                                  <ExpandLess />
+                                ) : (
+                                  <ExpandMore />
+                                )}
+                              </ListItemButton>
+                              <Collapse
+                                in={expandedList.includes(rtName)}
+                                timeout="auto"
+                                unmountOnExit
+                              >
+                                <List component="div" disablePadding>
+                                  <ListItemButton sx={{ pl: 5 }}>
+                                    <ListItemIcon>
+                                      <DoneAllIcon />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      primary={`TW Bound Properties: ${item[rtName]["TW Bound Properties"]} `}
+                                    />
+                                  </ListItemButton>
+                                  <ListItemButton sx={{ pl: 5 }}>
+                                    <ListItemIcon>
+                                      <CallMergeIcon />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      primary={`Ingestion Properties: ${item[rtName]["Ingestion Properties"]} `}
+                                    />
+                                  </ListItemButton>
+                                  <ListItemButton sx={{ pl: 5 }}>
+                                    <ListItemIcon>
+                                      <PendingOutlinedIcon />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      primary={`Pending Updates: ${item[rtName]["Pending Updates"]} `}
+                                    />
+                                  </ListItemButton>
+                                </List>
+                              </Collapse>
+                            </>
+                          );
+                        }
+                      )}
+                  </List>
+                  <Divider />
+
+                  <Typography
+                    variant="h7"
+                    noWrap
+                    component="div"
+                    sx={{ flexGrow: 1 }}
+                  >
+                    Agent version:{" "}
+                    {agentDiagnosis && agentDiagnosis["Agent version"]
+                      ? agentDiagnosis["Agent version"]
+                      : "not defined"}
+                  </Typography>
                 </Box>
               </AppBar>
             </Box>

@@ -14,4 +14,7 @@
       transform: rotate(-360deg);
     }
   }
+  .a4gate-hostname-form > div > input {
+    text-align: center
+  }
   

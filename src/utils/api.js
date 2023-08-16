@@ -130,6 +130,15 @@ export const get_iot_gtws_http_client_disabled = async () => {
     console.error(e);
   }
 };
+export const twx_connection_diagnostic = async () => {
+  try {
+    const res = await helper.fetchData("/conf/twx/diagnostic", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 export const get_iot_gtws_http_server_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/enabled", "GET");

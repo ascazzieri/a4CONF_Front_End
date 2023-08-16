@@ -16,6 +16,7 @@ import Kepware from "./pages/internal-pc/kepware/page";
 import ExternalNetwork from "./pages/external-pc/network/page";
 import Sitemanager from "./pages/external-pc/sitemanager/page";
 import Thingworx from "./pages/external-pc/thingworx/page";
+import HTTPServer from "./pages/external-pc/http-server/page"
 import OPCUAServer from "./pages/external-pc/opcua-server/page";
 import { Checklist } from "@mui/icons-material";
 
@@ -55,6 +56,7 @@ export default function App({ Component, pageProps }) {
               <Route path="sitemanager" element={<Sitemanager />} />
               <Route path="thingworx" element={<Thingworx />} />
               <Route path="opcua-server" element={<OPCUAServer />} />
+              <Route path="http-server" element={<HTTPServer />} />
             </Route>
             <Route path="/fast-data" element={<FastData />} />
             <Route path="/back-channel" element={<BackChannel />} />

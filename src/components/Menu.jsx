@@ -162,7 +162,7 @@ export default function MiniDrawer(props) {
 
           </IconButton>
           <Grid container alignItems="center">
-            <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
+            <Grid item xs={3}>
               <Title
                 variant="h6"
                 noWrap
@@ -173,7 +173,7 @@ export default function MiniDrawer(props) {
                 Innovation Makers
               </Title>
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={6} sx={{justifyContent: "center"}}>
               <Title
                 variant="h6"
                 noWrap
@@ -188,7 +188,7 @@ export default function MiniDrawer(props) {
                 />
               </Title>
             </Grid>
-            <Grid item xs={3} sx={{ display: { xs: "none", md: "flex" } }}>
+            <Grid item xs={3}>
               {mainSectionTitle && mainSectionTitle.length !== 0 && <Avatar sx={{ bgcolor: '#1F293F', width: 150, color: 'white' }} variant="rounded">
                 {mainSectionTitle}
               </Avatar>

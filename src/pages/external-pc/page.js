@@ -23,7 +23,7 @@ export default function ExternalPC() {
     dispatch(updateExternalPC({ newExternalPC }));
   };
 
-  const tabsData = ["Network", "Sitemanager", "Thingworx", "OPCUA-Server"];
+  const tabsData = ["Network", "Sitemanager", "Thingworx", "OPCUA-Server", "HTTP-Server"];
 
   if (currentURLArray.length === 2) {
     return (
@@ -41,6 +41,9 @@ export default function ExternalPC() {
           </li>
           <li>
             <Link to="/external-pc/opcua-server">OPCUA Server</Link>
+          </li>
+          <li>
+            <Link to="/external-pc/http-server">HTTP Server</Link>
           </li>
         </ul>
       </div>

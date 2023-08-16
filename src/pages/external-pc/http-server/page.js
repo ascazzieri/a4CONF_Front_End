@@ -7,10 +7,8 @@ import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
-  get_iot_gtws_opcua_reading_enabled,
-  get_iot_gtws_opcua_reading_disabled,
-  get_iot_gtws_opcua_reading_writing_enabled,
-  get_iot_gtws_opcua_reading_writing_disabled,
+  get_iot_gtws_http_client_enabled,
+  get_iot_gtws_http_client_disabled,
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
 } from "../../../utils/api";
@@ -37,8 +35,8 @@ import CachedIcon from "@mui/icons-material/Cached";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
 
-export default function OPCServer() {
-  const opcua = useSelector((state) => state?.services?.opcua);
+export default function HTTPServer() {
+  const http = useSelector((state) => state?.services?.http);
   /* const industrialIP = useSelector(
     (state) => state.json.config.system.network.industrial.ip
   ); */
@@ -71,10 +69,10 @@ export default function OPCServer() {
     }
     return arrayOfObjects;
   };
-  const getArrayOfObjectsOPCUA = (data, key1, key2) => {
+  const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];
     if (data) {
-      data.map((item, index) => {
+      data.forEach((item, index) => {
         arrayOfObjects.push({
           [`${key1}`]: item,
           mode: key2,
@@ -90,7 +88,7 @@ export default function OPCServer() {
   const [iotGatewayFrom, setIotGatewayFrom] = useState();
 
   const [iotGatewaysFromTableData, setIotGatewaysFromTableData] = useState(
-    getArrayOfObjectsOPCUA(opcua?.iotgw?.from, "iot_gateway", "read only")
+    getArrayOfObjectsHTTP(http?.iotgw?.from, "iot_gateway", "read only")
   );
 
   const [iotGatewaysToList, setIotGatewaysToList] = useState({});
@@ -100,24 +98,24 @@ export default function OPCServer() {
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
-    getArrayOfObjectsOPCUA(opcua?.iotgw?.to, "iot_gateway", "read & write")
+    getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
   );
 
   const [shiftFromKepware, setShiftFromKepware] = useState(
-    opcua?.shift_property_from_kepware
+    http?.shift_property_from_kepware
   );
   const [shiftToKepware, setShiftToKepware] = useState(
-    opcua?.shift_property_to_kepware
+    http?.shift_property_to_kepware
   );
   const [customPortEnable, setCustomPortEnable] = useState(
-    opcua?.opcua?.custom_port_enable
+    http?.http?.custom_port_enable
   );
-  const [customPort, setCustomPort] = useState(opcua?.opcua?.custom_port);
+  const [customPort, setCustomPort] = useState(http?.http?.custom_port);
 
-  const [serverAuth, setServerAuth] = useState(opcua?.security?.user_auth);
+  const [serverAuth, setServerAuth] = useState(http?.security?.user_auth);
 
   const [usersTableData, setUsersTableData] = useState(
-    getArrayOfObjects(opcua?.security?.users, "username", "password")
+    getArrayOfObjects(http?.security?.users, "username", "password")
   );
 
   const handleRequestFeedback = (newState) => {
@@ -127,26 +125,25 @@ export default function OPCServer() {
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
-      const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
-      const iotGatewaysFromDisabled =
-        await get_iot_gtws_opcua_reading_disabled();
-      const iotGatewaysToEnabled =
-        await get_iot_gtws_opcua_reading_writing_enabled();
+      const iotGatewaysFromEnabled = await get_iot_gtws_http_client_enabled();
+      const iotGatewaysFromDisabled = await get_iot_gtws_http_client_disabled();
+      /*  const iotGatewaysToEnabled =
+        await get_iot_gtws_http_reading_writing_enabled();
       const iotGatewaysToDisabled =
-        await get_iot_gtws_opcua_reading_writing_disabled();
+        await get_iot_gtws_http_reading_writing_disabled(); */
       console.log("get IoT gateways");
       if (
         iotGatewaysFromEnabled &&
-        iotGatewaysToEnabled &&
+        /*    iotGatewaysToEnabled && */
         iotGatewaysFromDisabled &&
-        iotGatewaysToDisabled &&
-        Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-        Object.keys(iotGatewaysToEnabled).length !== 0
+        /*         iotGatewaysToDisabled && */
+        Object.keys(iotGatewaysFromEnabled).length !== 0
+        /*  Object.keys(iotGatewaysToEnabled).length !== 0 */
       ) {
         setIotGatewaysFromList(iotGatewaysFromEnabled);
         setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+        /*  setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -156,15 +153,15 @@ export default function OPCServer() {
       } else if (
         iotGatewaysFromEnabled &&
         iotGatewaysFromDisabled &&
-        iotGatewaysToEnabled &&
-        iotGatewaysToDisabled &&
-        Object.keys(iotGatewaysFromEnabled).length === 0 &&
-        Object.keys(iotGatewaysToEnabled).length === 0
+        /*    iotGatewaysToEnabled &&
+        iotGatewaysToDisabled && */
+        Object.keys(iotGatewaysFromEnabled).length === 0
+        /*     Object.keys(iotGatewaysToEnabled).length === 0 */
       ) {
         setIotGatewaysFromList(iotGatewaysFromEnabled);
         setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+        /*       setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -202,16 +199,16 @@ export default function OPCServer() {
     loaderContext[1](true);
     let iotGateways = undefined;
     if (direction === "from") {
-      iotGateways = await get_iot_gtws_opcua_reading_enabled();
+      iotGateways = await get_iot_gtws_http_client_enabled();
     } else if (direction === "to") {
-      iotGateways = await get_iot_gtws_opcua_reading_writing_enabled();
+      /* iotGateways = await get_iot_gtws_http_reading_writing_enabled(); */
     }
     console.log("get IoT gateways");
     if (iotGateways && Object.keys(iotGateways).length !== 0) {
       if (direction === "from") {
         setIotGatewaysFromList(iotGateways);
       } else if (direction === "to") {
-        setIotGatewaysToList(iotGateways);
+        /*  setIotGatewaysToList(iotGateways); */
       }
       handleRequestFeedback({
         vertical: "bottom",
@@ -239,25 +236,25 @@ export default function OPCServer() {
 
   const handleRefreshAllIotGateways = async () => {
     loaderContext[1](true);
-    const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
-    const iotGatewaysFromDisabled = await get_iot_gtws_opcua_reading_disabled();
-    const iotGatewaysToEnabled =
-      await get_iot_gtws_opcua_reading_writing_enabled();
+    const iotGatewaysFromEnabled = await get_iot_gtws_http_client_enabled();
+    const iotGatewaysFromDisabled = await get_iot_gtws_http_client_disabled();
+    /* const iotGatewaysToEnabled =
+      await get_iot_gtws_http_reading_writing_enabled();
     const iotGatewaysToDisabled =
-      await get_iot_gtws_opcua_reading_writing_disabled();
+      await get_iot_gtws_http_reading_writing_disabled(); */
     console.log("get IoT gateways");
     if (
       iotGatewaysFromEnabled &&
-      iotGatewaysToEnabled &&
+      /*  iotGatewaysToEnabled && */
       iotGatewaysFromDisabled &&
-      iotGatewaysToDisabled &&
-      Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-      Object.keys(iotGatewaysToEnabled).length !== 0
+      /*       iotGatewaysToDisabled && */
+      Object.keys(iotGatewaysFromEnabled).length !== 0
+      /*  Object.keys(iotGatewaysToEnabled).length !== 0 */
     ) {
       setIotGatewaysFromList(iotGatewaysFromEnabled);
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+      /*  setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -267,15 +264,15 @@ export default function OPCServer() {
     } else if (
       iotGatewaysFromEnabled &&
       iotGatewaysFromDisabled &&
-      iotGatewaysToEnabled &&
-      iotGatewaysToDisabled &&
-      Object.keys(iotGatewaysFromEnabled).length === 0 &&
-      Object.keys(iotGatewaysToEnabled).length === 0
+      /*   iotGatewaysToEnabled &&
+      iotGatewaysToDisabled && */
+      Object.keys(iotGatewaysFromEnabled).length === 0
+      /*  Object.keys(iotGatewaysToEnabled).length === 0 */
     ) {
       setIotGatewaysFromList(iotGatewaysFromEnabled);
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+      /*    setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -380,7 +377,7 @@ export default function OPCServer() {
     ]);
   };
 
-  const handleOPCUAServerChange = () => {
+  const handleHTTPServerChange = () => {
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
@@ -388,11 +385,11 @@ export default function OPCServer() {
       );
     }
 
-    const newOPCUAServer = {
+    const newHTTPServer = {
       enabled: false,
       shift_property_from_kepware: shiftFromKepware?.toString(),
       shift_property_to_kepware: shiftToKepware?.toString(),
-      opcua: {
+      http: {
         custom_port_enable: customPortEnable,
         custom_port: customPort?.toString(),
       },
@@ -401,7 +398,7 @@ export default function OPCServer() {
         users: usersData,
       },
     };
-    dispatch(updateOPCServer({ newOPCUAServer }));
+    dispatch(updateOPCServer({ newHTTPServer }));
   };
 
   /**
@@ -483,19 +480,19 @@ export default function OPCServer() {
 
   return (
     <Container>
-      <h2>OPCUA Server</h2>
+      <h2>HTTP Server</h2>
       <SecondaryNavbar
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         navbarItems={navbarItems}
       />
-      {currentTab === 5 && <JSONTree data={opcua} />}
+      {currentTab === 5 && <JSONTree data={http} />}
 
-      <form onSubmit={handleOPCUAServerChange}>
+      <form onSubmit={handleHTTPServerChange}>
         {currentTab === 0 && (
           <>
             <FormLabel>
-              Expose IoT gateways with OPCUA Server only in read mode
+              Expose IoT gateways with HTTP Server only in read mode
             </FormLabel>
             <Stack
               direction="row"
@@ -514,7 +511,7 @@ export default function OPCServer() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="IoT Gateways for OPCUA server read only list"
+                      label="IoT Gateways for HTTP server read only list"
                     />
                   )}
                 />
@@ -544,7 +541,7 @@ export default function OPCServer() {
             <Divider />
 
             <FormLabel>
-              Expose IoT gateways with OPCUA Server in read and write mode
+              Expose IoT gateways with HTTP Server in read and write mode
             </FormLabel>
             <Stack
               direction="row"
@@ -579,7 +576,7 @@ export default function OPCServer() {
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="IoT Gateways for OPCUA server read and write list"
+                      label="IoT Gateways for HTTP server read and write list"
                     />
                   )}
                 />
@@ -612,7 +609,7 @@ export default function OPCServer() {
         {currentTab === 1 && (
           <>
             <FormLabel>
-              Kepware IoT Gateways list for OPCUA Server with read only
+              Kepware IoT Gateways list for HTTP Server with read only
               permission
             </FormLabel>
             <Grid
@@ -631,7 +628,7 @@ export default function OPCServer() {
                   padding: "0px 20px",
                 }}
               >
-                <h3>Enabled IoT Gateways for OPCUA (readonly)</h3>
+                <h3>Enabled IoT Gateways for HTTP</h3>
                 <Divider />
                 <Grid
                   container
@@ -688,7 +685,7 @@ export default function OPCServer() {
                   padding: "0px 20px",
                 }}
               >
-                <h3>Disabled IoT Gateways for OPCUA (readonly)</h3>
+                <h3>Disabled IoT Gateways for HTTP (readonly)</h3>
                 <Divider />
                 <Grid
                   container
@@ -738,8 +735,8 @@ export default function OPCServer() {
                 </Grid>
               </Grid>
             </Grid>
-            <FormLabel>
-              Kepware IoT Gateways list for OPCUA Server with read and write
+            {/* <FormLabel>
+              Kepware IoT Gateways list for HTTP Server with read and write
               permission
             </FormLabel>
             <Grid
@@ -758,7 +755,7 @@ export default function OPCServer() {
                   padding: "0px 20px",
                 }}
               >
-                <h3>Enabled IoT Gateways for OPCUA (read & write)</h3>
+                <h3>Enabled IoT Gateways for HTTP (read & write)</h3>
                 <Divider />
                 <Grid
                   container
@@ -815,7 +812,7 @@ export default function OPCServer() {
                   padding: "0px 20px",
                 }}
               >
-                <h3>Disabled IoT Gateways for OPCUA (read & write)</h3>
+                <h3>Disabled IoT Gateways for HTTP (read & write)</h3>
                 <Divider />
                 <Grid
                   container
@@ -863,7 +860,7 @@ export default function OPCServer() {
                   </TableContainer>
                 </Grid>
               </Grid>
-            </Grid>
+            </Grid> */}
           </>
         )}
         {currentTab === 2 && (
@@ -875,7 +872,7 @@ export default function OPCServer() {
                 type="text"
                 inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                 label="Shift from Kepware"
-                helperText="Shift OPCUA nodes (in order to exclude roots) from Kepware Iot Gateway"
+                helperText="Shift HTTP nodes (in order to exclude roots) from Kepware Iot Gateway"
                 value={shiftFromKepware}
                 required={false}
                 onChange={handleShiftFromKepwareChange}
@@ -889,7 +886,7 @@ export default function OPCServer() {
               <TextField
                 type="number"
                 label="Shift to Kepware"
-                helperText="Shift OPCUA nodes (in order to exclude roots) to Kepware Iot Gateway"
+                helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
                 value={shiftToKepware}
                 required={false}
                 onChange={handleShiftToKepwareChange}
@@ -901,7 +898,7 @@ export default function OPCServer() {
         {currentTab === 3 && (
           <>
             <FormControl fullWidth>
-              <FormLabel>OPCUA Server Port:</FormLabel>
+              <FormLabel>HTTP Server Port:</FormLabel>
 
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography>Use Default Port - 4840</Typography>
@@ -925,8 +922,8 @@ export default function OPCServer() {
                   <TextField
                     type="text"
                     label="Custom Port"
-                    helperText="Use this port for OPCUA Server tag exposure"
-                    defaultValue={customPort}
+                    helperText="Use this port for HTTP Server tag exposure"
+                    value={customPort}
                     required={false}
                     onChange={handleCustomPortChange}
                   />
@@ -940,7 +937,7 @@ export default function OPCServer() {
         {currentTab === 4 && (
           <>
             <FormControl fullWidth>
-              <FormLabel>Enable/Disable OPCUA Server authentication:</FormLabel>
+              <FormLabel>Enable/Disable HTTP Server authentication:</FormLabel>
 
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography>Disable</Typography>

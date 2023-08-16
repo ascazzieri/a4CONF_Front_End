@@ -191,6 +191,7 @@ export default function Dashboard() {
                     type="text"
                     label="a4GATE hostname"
                     helperText="Write a4GATE serial number S/N"
+                    className="a4gate-hostname-form"
                     value={
                       hostName?.industrial === hostName?.customer
                         ? hostName?.industrial
@@ -264,7 +265,7 @@ export default function Dashboard() {
             <Grid
               item
               xs={2}
-              sm={3}
+              sm={6}
               md={3}
               style={{
                 textAlign: "center",
@@ -315,7 +316,7 @@ export default function Dashboard() {
             <Grid
               item
               xs={2}
-              sm={3}
+              sm={6}
               md={3}
               style={{
                 textAlign: "center",
@@ -378,7 +379,7 @@ export default function Dashboard() {
             <Grid
               item
               xs={2}
-              sm={3}
+              sm={6}
               md={3}
               style={{
                 textAlign: "center",
@@ -434,7 +435,7 @@ export default function Dashboard() {
             <Grid
               item
               xs={2}
-              sm={3}
+              sm={6}
               md={3}
               style={{
                 textAlign: "center",
@@ -476,55 +477,6 @@ export default function Dashboard() {
                 </TableContainer>
               </Grid>
             </Grid>
-            {/* <Grid
-              item
-              xs={2}
-              sm={3}
-              md={3}
-              style={{
-                textAlign: "center",
-                border: "1px inset white",
-                padding: "0px 20px",
-              }}
-            >
-              <h3>Machines Connected</h3>
-              <Divider />
-              <Grid
-                container
-                rowSpacing={2}
-                justifyContent="center"
-                alignItems="center"
-                sx={{ p: 2 }}
-              >
-                <TableContainer>
-                  <Table stickyHeader aria-label="sticky table" size="small">
-                    <TableBody>
-                      {thing_names &&
-                        thing_names.length !== 0 &&
-                        thing_names.map((row) => {
-                          return (
-                            <TableRow hover key={row}>
-                              <TableCell align="center">
-                                {row.substring(3, row.length)}
-                              </TableCell>
-                              <TableCell align="center">
-                                <IconButton
-                                  aria-label="delete"
-                                  onClick={() => {
-                                    handleThingNameDelete(row);
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Grid>
-            </Grid> */}
           </Grid>
         </CardContent>
       </Card>

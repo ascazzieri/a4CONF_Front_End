@@ -5,7 +5,7 @@ import { updateAll } from "../utils/redux/reducers";
 import { get_confA, get_confB } from "../utils/api"
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
-import { Snackbar, Alert } from "@mui/material"
+import { Snackbar, Alert, Backdrop, Typography } from "@mui/material"
 import { SnackbarContext } from "../utils/context/SnackbarContext"
 import Checklist from "../components/Checklist_2";
 import THREED from "../components/THREED/THREED";
@@ -36,6 +36,9 @@ const Layout = () => {
   const snackBarContext = useContext(SnackbarContext)
 
   const { vertical, horizontal, severity, open, message } = snackBarContext[0];
+
+  const [mobileViewport, setMobileViewport] = useState(false)
+
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -90,6 +93,28 @@ const Layout = () => {
 
     })();
   }, []);
+
+  const handleResize = () => {
+    if (window.innerWidth <= 740) {
+      setMobileViewport(true)
+    } else
+      setMobileViewport(false)
+  }
+
+  window.addEventListener('resize', handleResize);
+
+  if (mobileViewport) {
+    return (
+      <Backdrop
+        sx={{ backgroundColor: "#0D1626", color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={true}
+      >
+        <Typography variant="h5" sx={{p: 5}}>
+          a4CONF does not support mobile devices with small screens. We recommend that you use a device with a larger screen to access the application
+        </Typography>
+      </Backdrop>
+    )
+  }
 
   if (!bReady) {
 
