@@ -9,6 +9,7 @@ import {
   twx_connection_diagnostic,
 } from "../../../utils/api";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
+import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
@@ -423,429 +424,451 @@ export default function Thingworx() {
   };
 
   return (
-    <Container>
-      <h2>Thingworx</h2>
-      <SecondaryNavbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        navbarItems={navbarItems}
-      />
-      {currentTab === 4 && <JSONTree data={thingworx} />}
+    <ErrorCacher>
+      <Container>
+        <h2>Thingworx</h2>
+        <SecondaryNavbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          navbarItems={navbarItems}
+        />
+        {currentTab === 4 && <JSONTree data={thingworx} />}
 
-      <form onSubmit={handleThingworxChange}>
-        {currentTab === 0 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>IP Address:</FormLabel>
-
-              <TextField
-                type="text"
-                label="Host"
-                helperText="Sentinel server endpoint"
-                defaultValue={thingworxHost}
-                required={true}
-                onChange={handleSentinelHostChange}
-              />
-            </FormControl>
-            <Divider />
-
-            <FormControl fullWidth>
-              <InputLabel htmlFor="outlined-adornment-password">
-                Appkey *
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type={showAppkey ? "text" : "password"}
-                required={true}
-                defaultValue={thingworxAppkey}
-                onChange={handleAppkeyChange}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      onMouseDown={handleClickShowPassword}
-                      onMouseUp={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showAppkey ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-                label="Password"
-              />
-              <FormHelperText id="outlined-weight-helper-text">
-                Unique string Sentinel authentication
-              </FormHelperText>
-            </FormControl>
-            <Divider />
-          </>
-        )}
-        {currentTab === 1 && (
-          <>
-            <FormLabel>Connect a Local Thing to a Remote Thing</FormLabel>
-            <Stack
-              direction="row"
-              spacing={3}
-              justifyContent="center"
-              alignItems="center"
-            >
+        <form onSubmit={handleThingworxChange}>
+          {currentTab === 0 && (
+            <>
               <FormControl fullWidth>
+                <FormLabel>IP Address:</FormLabel>
+
                 <TextField
-                  select
-                  label="Choose iot gateway from Kepware"
-                  defaultValue=""
-                  onChange={handleIotGatewaysChange}
-                >
-                  {iotGatewaysList &&
-                    Object.keys(iotGatewaysList).length !== 0 &&
-                    Object.keys(iotGatewaysList)
-                      .filter(
-                        (element) =>
-                          iotGatewaysList[element].includes(
-                            "http://127.0.0.1:8001"
-                          ) ||
-                          iotGatewaysList[element].includes(
-                            "http://localhost:8001"
-                          )
-                      )
-                      .map((item) => {
-                        return (
-                          <MenuItem key={Math.random() + item} value={item}>
-                            {item}
-                          </MenuItem>
-                        );
-                      })}
-                </TextField>
+                  type="text"
+                  label="Host"
+                  helperText="Sentinel server endpoint"
+                  defaultValue={thingworxHost}
+                  required={true}
+                  onChange={handleSentinelHostChange}
+                />
               </FormControl>
-              <IconButton
-                onClick={handleIotGatewaysReloadChange}
-                aria-label="reload"
-                className="rotate-on-hover"
+              <Divider />
+
+              <FormControl fullWidth>
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Appkey *
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showAppkey ? "text" : "password"}
+                  required={true}
+                  defaultValue={thingworxAppkey}
+                  onChange={handleAppkeyChange}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onMouseDown={handleClickShowPassword}
+                        onMouseUp={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showAppkey ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+                <FormHelperText id="outlined-weight-helper-text">
+                  Unique string Sentinel authentication
+                </FormHelperText>
+              </FormControl>
+              <Divider />
+            </>
+          )}
+          {currentTab === 1 && (
+            <>
+              <FormLabel>Connect a Local Thing to a Remote Thing</FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
               >
-                <CachedIcon />
-              </IconButton>
-              <Button onClick={handleAddRemoteThing} variant="contained">
-                Add
-              </Button>
-            </Stack>
-
-            <FormLabel>Remote Things configuration</FormLabel>
-
-            <CustomTable
-              tableData={thingsTableData}
-              setTableData={setThingsTableData}
-              columnsData={thingsColumnData}
-            />
-
-            <Divider />
-          </>
-        )}
-        {currentTab === 2 && (
-          <>
-            <FormLabel>
-              Kepware IoT Gateways list for OPCUA Server with read only
-              permission
-            </FormLabel>
-            <Grid
-              container
-              columns={{ xs: 4, sm: 12, md: 12 }}
-              sx={{ mt: 5, mb: 5 }}
-            >
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={6}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
-                }}
-              >
-                <h3>Enabled IoT Gateways for Thingworx</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ p: 1 }}
-                >
-                  <TableContainer sx={{ height: 150 }}>
-                    <Table stickyHeader aria-label="sticky table" size="small">
-                      <TableBody>
-                        {iotGatewaysList &&
-                          Object.keys(iotGatewaysList).length !== 0 &&
-                          Object.keys(iotGatewaysList)
-                            .filter(
-                              (element) =>
-                                iotGatewaysList[element].includes(
-                                  "http://127.0.0.1:8001"
-                                ) ||
-                                iotGatewaysList[element].includes(
-                                  "http://localhost:8001"
-                                )
+                <FormControl fullWidth>
+                  <TextField
+                    select
+                    label="Choose iot gateway from Kepware"
+                    defaultValue=""
+                    onChange={handleIotGatewaysChange}
+                  >
+                    {iotGatewaysList &&
+                      Object.keys(iotGatewaysList).length !== 0 &&
+                      Object.keys(iotGatewaysList)
+                        .filter(
+                          (element) =>
+                            iotGatewaysList[element].includes(
+                              "http://127.0.0.1:8001"
+                            ) ||
+                            iotGatewaysList[element].includes(
+                              "http://localhost:8001"
                             )
-                            .map((iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell align="center">
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      color="secondary"
-                                      endIcon={<BlurOffIcon />}
-                                      onClick={() => {
-                                        handleDisableIotGateway(iotGatewayName);
-                                      }}
-                                      size="small"
-                                    >
-                                      Disable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={6}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
-                }}
-              >
-                <h3>Disabled IoT Gateways for Thingworx</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ p: 1 }}
-                >
-                  <TableContainer sx={{ height: 150 }}>
-                    <Table stickyHeader aria-label="sticky table" size="small">
-                      <TableBody>
-                        {iotGatewaysListDisabled &&
-                          Object.keys(iotGatewaysListDisabled).length !== 0 &&
-                          Object.keys(iotGatewaysListDisabled)
-                            .filter(
-                              (element) =>
-                                iotGatewaysListDisabled[element].includes(
-                                  "http://127.0.0.1:8001"
-                                ) ||
-                                iotGatewaysListDisabled[element].includes(
-                                  "http://localhost:8001"
-                                )
-                            )
-                            .map((iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell
-                                    align="center"
-                                    style={{ color: "grey" }}
-                                  >
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      endIcon={<BlurOnIcon />}
-                                      onClick={() => {
-                                        handleEnableIotGateway(iotGatewayName);
-                                      }}
-                                      size="small"
-                                    >
-                                      Enable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-              </Grid>
-            </Grid>
-          </>
-        )}
-        {currentTab === 3 && (
-          <>
-            <Box sx={{ flexGrow: 1 }}>
-              <FormLabel>Thingworx agent logs:</FormLabel>
-              <AppBar position="static" sx={{ background: "#1F293F" }}>
-                <Toolbar>
-                  <Button
-                    variant="contained"
-                    onClick={handleTestConnection}
-                    endIcon={<CloudUploadOutlined />}
-                  >
-                    Test connection
-                  </Button>
-                  <IconButton
-                    size="large"
-                    edge="start"
-                    color="inherit"
-                    aria-label="open drawer"
-                    sx={{ ml: 2 }}
-                  >
-                    {agentDiagnosis && agentDiagnosis["TW is connected"] ? (
-                      <ThumbUpOffAltOutlined color="success" />
-                    ) : (
-                      <ThumbDownAltOutlined color="error" />
-                    )}
-                  </IconButton>
-                  <Typography
-                    variant="h6"
-                    noWrap
-                    component="div"
-                    sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-                  ></Typography>
-                  {agentDiagnosis &&
-                    agentDiagnosis["Error Message"].trim().length !== 0 && (
-                      <Search>
-                        <SearchIconWrapper>
-                          <SearchIcon />
-                        </SearchIconWrapper>
-                        <StyledInputBase
-                          placeholder="Search…"
-                          inputProps={{ "aria-label": "search" }}
-                          value={searchText}
-                          onChange={handleSearch}
-                        />
-                      </Search>
-                    )}
-                </Toolbar>
-                <Box component="main" sx={{ p: 3 }}>
-                  {agentDiagnosis &&
-                    agentDiagnosis["Error Message"].trim().length !== 0 && (
-                      <>
-                        <Divider />
-
-                        <Typography
-                          variant="h6"
-                          noWrap
-                          component="div"
-                          sx={{ flexGrow: 1, color: "red" }}
-                        >
-                          Error messages
-                        </Typography>
-                        <Typography sx={{backgroundColor: "orange", maxHeight: 400, overflowY: "auto"}}>{highlightedContent}</Typography>
-                      </>
-                    )}
-
-                  <Divider />
-
-                  <Typography
-                    variant="h6"
-                    noWrap
-                    component="div"
-                    sx={{ flexGrow: 1 }}
-                  >
-                    Remote Things
-                  </Typography>
-                  <List
-                    sx={{
-                      width: "100%",
-                    }}
-                    component="nav"
-                    aria-labelledby="nested-list-subheader"
-                  >
-                    {agentDiagnosis &&
-                      agentDiagnosis["Bound Thing Properties"] &&
-                      agentDiagnosis["Bound Thing Properties"].length !== 0 &&
-                      agentDiagnosis["Bound Thing Properties"].map(
-                        (item, index) => {
-                          const rtName = Object.keys(item)[0];
+                        )
+                        .map((item) => {
                           return (
-                            <>
-                              <ListItemButton
-                                onClick={(event, name) =>
-                                  handleExpandableList(event, rtName)
-                                }
-                              >
-                                <ListItemIcon>
-                                  <SettingsRemoteIcon />
-                                </ListItemIcon>
-                                <ListItemText primary={rtName} />
-                                {expandedList.includes(rtName) ? (
-                                  <ExpandLess />
-                                ) : (
-                                  <ExpandMore />
-                                )}
-                              </ListItemButton>
-                              <Collapse
-                                in={expandedList.includes(rtName)}
-                                timeout="auto"
-                                unmountOnExit
-                              >
-                                <List component="div" disablePadding>
-                                  <ListItemButton sx={{ pl: 5 }}>
-                                    <ListItemIcon>
-                                      <DoneAllIcon />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                      primary={`TW Bound Properties: ${item[rtName]["TW Bound Properties"]} `}
-                                    />
-                                  </ListItemButton>
-                                  <ListItemButton sx={{ pl: 5 }}>
-                                    <ListItemIcon>
-                                      <CallMergeIcon />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                      primary={`Ingestion Properties: ${item[rtName]["Ingestion Properties"]} `}
-                                    />
-                                  </ListItemButton>
-                                  <ListItemButton sx={{ pl: 5 }}>
-                                    <ListItemIcon>
-                                      <PendingOutlinedIcon />
-                                    </ListItemIcon>
-                                    <ListItemText
-                                      primary={`Pending Updates: ${item[rtName]["Pending Updates"]} `}
-                                    />
-                                  </ListItemButton>
-                                </List>
-                              </Collapse>
-                            </>
+                            <MenuItem key={Math.random() + item} value={item}>
+                              {item}
+                            </MenuItem>
                           );
-                        }
-                      )}
-                  </List>
-                  <Divider />
+                        })}
+                  </TextField>
+                </FormControl>
+                <IconButton
+                  onClick={handleIotGatewaysReloadChange}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddRemoteThing} variant="contained">
+                  Add
+                </Button>
+              </Stack>
 
-                  <Typography
-                    variant="h7"
-                    noWrap
-                    component="div"
-                    sx={{ flexGrow: 1 }}
+              <FormLabel>Remote Things configuration</FormLabel>
+
+              <CustomTable
+                tableData={thingsTableData}
+                setTableData={setThingsTableData}
+                columnsData={thingsColumnData}
+              />
+
+              <Divider />
+            </>
+          )}
+          {currentTab === 2 && (
+            <>
+              <FormLabel>
+                Kepware IoT Gateways list for OPCUA Server with read only
+                permission
+              </FormLabel>
+              <Grid
+                container
+                columns={{ xs: 4, sm: 12, md: 12 }}
+                sx={{ mt: 5, mb: 5 }}
+              >
+                <Grid
+                  item
+                  xs={2}
+                  sm={6}
+                  md={6}
+                  style={{
+                    textAlign: "center",
+                    border: "1px inset white",
+                    padding: "0px 20px",
+                  }}
+                >
+                  <h3>Enabled IoT Gateways for Thingworx</h3>
+                  <Divider />
+                  <Grid
+                    container
+                    rowSpacing={3}
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ p: 1 }}
                   >
-                    Agent version:{" "}
-                    {agentDiagnosis && agentDiagnosis["Agent version"]
-                      ? agentDiagnosis["Agent version"]
-                      : "not defined"}
-                  </Typography>
-                </Box>
-              </AppBar>
-            </Box>
-          </>
-        )}
-        <FormControl fullWidth>
-          <Button type="submit" variant="contained">
-            Invia
-          </Button>
-        </FormControl>
-      </form>
-    </Container>
+                    <TableContainer sx={{ height: 150 }}>
+                      <Table
+                        stickyHeader
+                        aria-label="sticky table"
+                        size="small"
+                      >
+                        <TableBody>
+                          {iotGatewaysList &&
+                            Object.keys(iotGatewaysList).length !== 0 &&
+                            Object.keys(iotGatewaysList)
+                              .filter(
+                                (element) =>
+                                  iotGatewaysList[element].includes(
+                                    "http://127.0.0.1:8001"
+                                  ) ||
+                                  iotGatewaysList[element].includes(
+                                    "http://localhost:8001"
+                                  )
+                              )
+                              .map((iotGatewayName) => {
+                                return (
+                                  <TableRow hover key={iotGatewayName}>
+                                    <TableCell align="center">
+                                      {iotGatewayName}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        endIcon={<BlurOffIcon />}
+                                        onClick={() => {
+                                          handleDisableIotGateway(
+                                            iotGatewayName
+                                          );
+                                        }}
+                                        size="small"
+                                      >
+                                        Disable
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                  sm={6}
+                  md={6}
+                  style={{
+                    textAlign: "center",
+                    border: "1px inset white",
+                    padding: "0px 20px",
+                  }}
+                >
+                  <h3>Disabled IoT Gateways for Thingworx</h3>
+                  <Divider />
+                  <Grid
+                    container
+                    rowSpacing={3}
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ p: 1 }}
+                  >
+                    <TableContainer sx={{ height: 150 }}>
+                      <Table
+                        stickyHeader
+                        aria-label="sticky table"
+                        size="small"
+                      >
+                        <TableBody>
+                          {iotGatewaysListDisabled &&
+                            Object.keys(iotGatewaysListDisabled).length !== 0 &&
+                            Object.keys(iotGatewaysListDisabled)
+                              .filter(
+                                (element) =>
+                                  iotGatewaysListDisabled[element].includes(
+                                    "http://127.0.0.1:8001"
+                                  ) ||
+                                  iotGatewaysListDisabled[element].includes(
+                                    "http://localhost:8001"
+                                  )
+                              )
+                              .map((iotGatewayName) => {
+                                return (
+                                  <TableRow hover key={iotGatewayName}>
+                                    <TableCell
+                                      align="center"
+                                      style={{ color: "grey" }}
+                                    >
+                                      {iotGatewayName}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Button
+                                        variant="contained"
+                                        endIcon={<BlurOnIcon />}
+                                        onClick={() => {
+                                          handleEnableIotGateway(
+                                            iotGatewayName
+                                          );
+                                        }}
+                                        size="small"
+                                      >
+                                        Enable
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </>
+          )}
+          {currentTab === 3 && (
+            <>
+              <Box sx={{ flexGrow: 1 }}>
+                <FormLabel>Thingworx agent logs:</FormLabel>
+                <AppBar position="static" sx={{ background: "#1F293F" }}>
+                  <Toolbar>
+                    <Button
+                      variant="contained"
+                      onClick={handleTestConnection}
+                      endIcon={<CloudUploadOutlined />}
+                    >
+                      Test connection
+                    </Button>
+                    <IconButton
+                      size="large"
+                      edge="start"
+                      color="inherit"
+                      aria-label="open drawer"
+                      sx={{ ml: 2 }}
+                    >
+                      {agentDiagnosis && agentDiagnosis["TW is connected"] ? (
+                        <ThumbUpOffAltOutlined color="success" />
+                      ) : (
+                        <ThumbDownAltOutlined color="error" />
+                      )}
+                    </IconButton>
+                    <Typography
+                      variant="h6"
+                      noWrap
+                      component="div"
+                      sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+                    ></Typography>
+                    {agentDiagnosis &&
+                      agentDiagnosis["Error Message"].trim().length !== 0 && (
+                        <Search>
+                          <SearchIconWrapper>
+                            <SearchIcon />
+                          </SearchIconWrapper>
+                          <StyledInputBase
+                            placeholder="Search…"
+                            inputProps={{ "aria-label": "search" }}
+                            value={searchText}
+                            onChange={handleSearch}
+                          />
+                        </Search>
+                      )}
+                  </Toolbar>
+                  <Box component="main" sx={{ p: 3 }}>
+                    {agentDiagnosis &&
+                      agentDiagnosis["Error Message"].trim().length !== 0 && (
+                        <>
+                          <Divider />
+
+                          <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ flexGrow: 1, color: "red" }}
+                          >
+                            Error messages
+                          </Typography>
+                          <Typography
+                            sx={{
+                              backgroundColor: "orange",
+                              maxHeight: 400,
+                              overflowY: "auto",
+                            }}
+                          >
+                            {highlightedContent}
+                          </Typography>
+                        </>
+                      )}
+
+                    <Divider />
+
+                    <Typography
+                      variant="h6"
+                      noWrap
+                      component="div"
+                      sx={{ flexGrow: 1 }}
+                    >
+                      Remote Things
+                    </Typography>
+                    <List
+                      sx={{
+                        width: "100%",
+                      }}
+                      component="nav"
+                      aria-labelledby="nested-list-subheader"
+                    >
+                      {agentDiagnosis &&
+                        agentDiagnosis["Bound Thing Properties"] &&
+                        agentDiagnosis["Bound Thing Properties"].length !== 0 &&
+                        agentDiagnosis["Bound Thing Properties"].map(
+                          (item, index) => {
+                            const rtName = Object.keys(item)[0];
+                            return (
+                              <>
+                                <ListItemButton
+                                  onClick={(event, name) =>
+                                    handleExpandableList(event, rtName)
+                                  }
+                                >
+                                  <ListItemIcon>
+                                    <SettingsRemoteIcon />
+                                  </ListItemIcon>
+                                  <ListItemText primary={rtName} />
+                                  {expandedList.includes(rtName) ? (
+                                    <ExpandLess />
+                                  ) : (
+                                    <ExpandMore />
+                                  )}
+                                </ListItemButton>
+                                <Collapse
+                                  in={expandedList.includes(rtName)}
+                                  timeout="auto"
+                                  unmountOnExit
+                                >
+                                  <List component="div" disablePadding>
+                                    <ListItemButton sx={{ pl: 5 }}>
+                                      <ListItemIcon>
+                                        <DoneAllIcon />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                        primary={`TW Bound Properties: ${item[rtName]["TW Bound Properties"]} `}
+                                      />
+                                    </ListItemButton>
+                                    <ListItemButton sx={{ pl: 5 }}>
+                                      <ListItemIcon>
+                                        <CallMergeIcon />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                        primary={`Ingestion Properties: ${item[rtName]["Ingestion Properties"]} `}
+                                      />
+                                    </ListItemButton>
+                                    <ListItemButton sx={{ pl: 5 }}>
+                                      <ListItemIcon>
+                                        <PendingOutlinedIcon />
+                                      </ListItemIcon>
+                                      <ListItemText
+                                        primary={`Pending Updates: ${item[rtName]["Pending Updates"]} `}
+                                      />
+                                    </ListItemButton>
+                                  </List>
+                                </Collapse>
+                              </>
+                            );
+                          }
+                        )}
+                    </List>
+                    <Divider />
+
+                    <Typography
+                      variant="h7"
+                      noWrap
+                      component="div"
+                      sx={{ flexGrow: 1 }}
+                    >
+                      Agent version:{" "}
+                      {agentDiagnosis && agentDiagnosis["Agent version"]
+                        ? agentDiagnosis["Agent version"]
+                        : "not defined"}
+                    </Typography>
+                  </Box>
+                </AppBar>
+              </Box>
+            </>
+          )}
+          <FormControl fullWidth>
+            <Button type="submit" variant="contained">
+              Invia
+            </Button>
+          </FormControl>
+        </form>
+      </Container>
+    </ErrorCacher>
   );
 }

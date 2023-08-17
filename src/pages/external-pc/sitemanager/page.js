@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSitemanager } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
+import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
 import Table from "../../../components/Table/Table";
@@ -134,118 +135,123 @@ export default function Sitemanager() {
   ];
 
   return (
-    <Container>
-      <h2>Sitemanager</h2>
-      <SecondaryNavbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        navbarItems={navbarItems}
-      />
-      {currentTab === 3 && <JSONTree data={sitemanager} />}
+    <ErrorCacher>
+      <Container>
+        <h2>Sitemanager</h2>
+        <SecondaryNavbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          navbarItems={navbarItems}
+        />
+        {currentTab === 3 && <JSONTree data={sitemanager} />}
 
-      <form onSubmit={handleSitemanagerSubmit}>
-        {currentTab === 0 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>IP Address:</FormLabel>
+        <form onSubmit={handleSitemanagerSubmit}>
+          {currentTab === 0 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>IP Address:</FormLabel>
 
-              <TextField
-                type="text"
-                label="Domain"
-                helperText="Gate Manager Domain"
-                defaultValue={smeDomain}
-                required={true}
-                onChange={handleDomainChange}
-              />
-            </FormControl>
-            <Divider />
-
-            <FormControl fullWidth>
-              <FormLabel>Default Gateway:</FormLabel>
-
-              <TextField
-                type="text"
-                label="Server"
-                helperText="Gate Manager IP Address"
-                defaultValue={smeServer}
-                onChange={handleServerChange}
-              />
-            </FormControl>
-            <Divider />
-          </>
-        )}
-        {currentTab === 1 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>Sitemanager activation</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Always</Typography>
-
-                <Switch checked={onlybidir} onChange={handleOnlyBidirChange} />
-
-                <Typography>Only in bidirectionl mode</Typography>
-              </Stack>
-            </FormControl>
-
-            <Divider />
-
-            <FormControl fullWidth>
-              <FormLabel>Gatemanager device name</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Use a custom name for Gate Manager</Typography>
-
-                <Switch
-                  checked={nameashostname}
-                  onChange={handleNameAsHostNameChange}
+                <TextField
+                  type="text"
+                  label="Domain"
+                  helperText="Gate Manager Domain"
+                  defaultValue={smeDomain}
+                  required={true}
+                  onChange={handleDomainChange}
                 />
+              </FormControl>
+              <Divider />
 
-                <Typography>Use a4GATE Hostname</Typography>
-              </Stack>
-            </FormControl>
+              <FormControl fullWidth>
+                <FormLabel>Default Gateway:</FormLabel>
 
-            {!nameashostname && (
-              <>
-                <FormControl fullWidth>
-                  <FormLabel>Gate manager device name:</FormLabel>
+                <TextField
+                  type="text"
+                  label="Server"
+                  helperText="Gate Manager IP Address"
+                  defaultValue={smeServer}
+                  onChange={handleServerChange}
+                />
+              </FormControl>
+              <Divider />
+            </>
+          )}
+          {currentTab === 1 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>Sitemanager activation</FormLabel>
 
-                  <TextField
-                    type="text"
-                    label="Name"
-                    helperText="Gate Manager device name"
-                    defaultValue={smeName}
-                    required={true}
-                    onChange={handleSMENameChange}
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Always</Typography>
+
+                  <Switch
+                    checked={onlybidir}
+                    onChange={handleOnlyBidirChange}
                   />
-                </FormControl>
-              </>
-            )}
 
-            <Divider />
-          </>
-        )}
+                  <Typography>Only in bidirectionl mode</Typography>
+                </Stack>
+              </FormControl>
 
-        {currentTab === 2 && (
-          <>
-            <FormLabel>Agents</FormLabel>
+              <Divider />
 
-            <Table
-              tableData={agentsTableData}
-              setTableData={setAgentTableData}
-              columnsData={agentsColumnData}
-            />
+              <FormControl fullWidth>
+                <FormLabel>Gatemanager device name</FormLabel>
 
-            <Divider />
-          </>
-        )}
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Use a custom name for Gate Manager</Typography>
 
-        <FormControl fullWidth>
-          <Button type="submit" variant="contained">
-            Invia
-          </Button>
-        </FormControl>
-      </form>
-    </Container>
+                  <Switch
+                    checked={nameashostname}
+                    onChange={handleNameAsHostNameChange}
+                  />
+
+                  <Typography>Use a4GATE Hostname</Typography>
+                </Stack>
+              </FormControl>
+
+              {!nameashostname && (
+                <>
+                  <FormControl fullWidth>
+                    <FormLabel>Gate manager device name:</FormLabel>
+
+                    <TextField
+                      type="text"
+                      label="Name"
+                      helperText="Gate Manager device name"
+                      defaultValue={smeName}
+                      required={true}
+                      onChange={handleSMENameChange}
+                    />
+                  </FormControl>
+                </>
+              )}
+
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 2 && (
+            <>
+              <FormLabel>Agents</FormLabel>
+
+              <Table
+                tableData={agentsTableData}
+                setTableData={setAgentTableData}
+                columnsData={agentsColumnData}
+              />
+
+              <Divider />
+            </>
+          )}
+
+          <FormControl fullWidth>
+            <Button type="submit" variant="contained">
+              Invia
+            </Button>
+          </FormControl>
+        </form>
+      </Container>
+    </ErrorCacher>
   );
 }
