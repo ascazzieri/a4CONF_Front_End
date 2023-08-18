@@ -173,7 +173,7 @@ export default function MiniDrawer(props) {
                 Innovation Makers
               </Title>
             </Grid>
-            <Grid item xs={6} sx={{justifyContent: "center"}}>
+            <Grid item xs={6} sx={{ justifyContent: "center" }}>
               <Title
                 variant="h6"
                 noWrap
@@ -292,7 +292,7 @@ export default function MiniDrawer(props) {
           ))}
         </List>
       </Drawer>
-      <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }} disableGutters={true}>
+      <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }}>
         {children}
       </Container>
     </Box>

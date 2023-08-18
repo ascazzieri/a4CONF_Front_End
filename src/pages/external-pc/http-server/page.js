@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
+import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
@@ -479,78 +480,79 @@ export default function HTTPServer() {
   ];
 
   return (
-    <Container>
-      <h2>HTTP Server</h2>
-      <SecondaryNavbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        navbarItems={navbarItems}
-      />
-      {currentTab === 5 && <JSONTree data={http} />}
+    <ErrorCacher>
+      <Container>
+        <h2>HTTP Server</h2>
+        <SecondaryNavbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          navbarItems={navbarItems}
+        />
+        {currentTab === 5 && <JSONTree data={http} />}
 
-      <form onSubmit={handleHTTPServerChange}>
-        {currentTab === 0 && (
-          <>
-            <FormLabel>
-              Expose IoT gateways with HTTP Server only in read mode
-            </FormLabel>
-            <Stack
-              direction="row"
-              spacing={3}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <FormControl fullWidth>
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={Object.keys(iotGatewaysFromList)}
-                  onChange={(event, newValue) => {
-                    setIotGatewayFrom(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="IoT Gateways for HTTP server read only list"
-                    />
-                  )}
-                />
-              </FormControl>
-              <IconButton
-                onClick={() => {
-                  handleIotGatewaysReloadChange("from");
-                }}
-                aria-label="reload"
-                className="rotate-on-hover"
+        <form onSubmit={handleHTTPServerChange}>
+          {currentTab === 0 && (
+            <>
+              <FormLabel>
+                Expose IoT gateways with HTTP Server only in read mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
               >
-                <CachedIcon />
-              </IconButton>
-              <Button onClick={handleAddIotGatewayFrom} variant="contained">
-                Add
-              </Button>
-            </Stack>
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={Object.keys(iotGatewaysFromList)}
+                    onChange={(event, newValue) => {
+                      setIotGatewayFrom(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="IoT Gateways for HTTP server read only list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("from");
+                  }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayFrom} variant="contained">
+                  Add
+                </Button>
+              </Stack>
 
-            <FormLabel>Remote Things configuration</FormLabel>
+              <FormLabel>Remote Things configuration</FormLabel>
 
-            <CustomTable
-              tableData={iotGatewaysFromTableData}
-              setTableData={setIotGatewaysFromTableData}
-              columnsData={iotGatewaysColumnData}
-            />
+              <CustomTable
+                tableData={iotGatewaysFromTableData}
+                setTableData={setIotGatewaysFromTableData}
+                columnsData={iotGatewaysColumnData}
+              />
 
-            <Divider />
+              <Divider />
 
-            <FormLabel>
-              Expose IoT gateways with HTTP Server in read and write mode
-            </FormLabel>
-            <Stack
-              direction="row"
-              spacing={3}
-              justifyContent="center"
-              alignItems="center"
-            >
-              <FormControl fullWidth>
-                {/* <TextField
+              <FormLabel>
+                Expose IoT gateways with HTTP Server in read and write mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  {/* <TextField
                   select
                   label="Choose iot gateway from Kepware"
                   defaultValue=""
@@ -566,176 +568,184 @@ export default function HTTPServer() {
                       );
                     })}
                 </TextField> */}
-                <Autocomplete
-                  disablePortal
-                  id="combo-box-demo"
-                  options={Object.keys(iotGatewaysToList)}
-                  onChange={(event, newValue) => {
-                    setIotGatewayTo(newValue);
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={Object.keys(iotGatewaysToList)}
+                    onChange={(event, newValue) => {
+                      setIotGatewayTo(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="IoT Gateways for HTTP server read and write list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("to");
                   }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="IoT Gateways for HTTP server read and write list"
-                    />
-                  )}
-                />
-              </FormControl>
-              <IconButton
-                onClick={() => {
-                  handleIotGatewaysReloadChange("to");
-                }}
-                aria-label="reload"
-                className="rotate-on-hover"
-              >
-                <CachedIcon />
-              </IconButton>
-              <Button onClick={handleAddIotGatewayTo} variant="contained">
-                Add
-              </Button>
-            </Stack>
-
-            <FormLabel>Remote Things configuration</FormLabel>
-
-            <CustomTable
-              tableData={iotGatewaysToTableData}
-              setTableData={setIotGatewaysToTableData}
-              columnsData={iotGatewaysColumnData}
-            />
-
-            <Divider />
-          </>
-        )}
-        {currentTab === 1 && (
-          <>
-            <FormLabel>
-              Kepware IoT Gateways list for HTTP Server with read only
-              permission
-            </FormLabel>
-            <Grid
-              container
-              columns={{ xs: 4, sm: 12, md: 12 }}
-              sx={{ mt: 5, mb: 5 }}
-            >
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={6}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
-                }}
-              >
-                <h3>Enabled IoT Gateways for HTTP</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ p: 1 }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
                 >
-                  <TableContainer sx={{ height: 150 }}>
-                    <Table stickyHeader aria-label="sticky table" size="small">
-                      <TableBody>
-                        {iotGatewaysFromList &&
-                          Object.keys(iotGatewaysFromList).length !== 0 &&
-                          Object.keys(iotGatewaysFromList).map(
-                            (iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell align="center">
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      color="secondary"
-                                      endIcon={<BlurOffIcon />}
-                                      onClick={() => {
-                                        handleDisableIotGateway(
-                                          iotGatewayName,
-                                          "from"
-                                        );
-                                      }}
-                                      size="small"
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayTo} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel>Remote Things configuration</FormLabel>
+
+              <CustomTable
+                tableData={iotGatewaysToTableData}
+                setTableData={setIotGatewaysToTableData}
+                columnsData={iotGatewaysColumnData}
+              />
+
+              <Divider />
+            </>
+          )}
+          {currentTab === 1 && (
+            <>
+              <FormLabel>
+                Kepware IoT Gateways list for HTTP Server with read only
+                permission
+              </FormLabel>
+              <Grid
+                container
+                columns={{ xs: 4, sm: 12, md: 12 }}
+                sx={{ mt: 5, mb: 5 }}
+              >
+                <Grid
+                  item
+                  xs={2}
+                  sm={6}
+                  md={6}
+                  style={{
+                    textAlign: "center",
+                    border: "1px inset white",
+                    padding: "0px 20px",
+                  }}
+                >
+                  <h3>Enabled IoT Gateways for HTTP</h3>
+                  <Divider />
+                  <Grid
+                    container
+                    rowSpacing={3}
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ p: 1 }}
+                  >
+                    <TableContainer sx={{ height: 150 }}>
+                      <Table
+                        stickyHeader
+                        aria-label="sticky table"
+                        size="small"
+                      >
+                        <TableBody>
+                          {iotGatewaysFromList &&
+                            Object.keys(iotGatewaysFromList).length !== 0 &&
+                            Object.keys(iotGatewaysFromList).map(
+                              (iotGatewayName) => {
+                                return (
+                                  <TableRow hover key={iotGatewayName}>
+                                    <TableCell align="center">
+                                      {iotGatewayName}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        endIcon={<BlurOffIcon />}
+                                        onClick={() => {
+                                          handleDisableIotGateway(
+                                            iotGatewayName,
+                                            "from"
+                                          );
+                                        }}
+                                        size="small"
+                                      >
+                                        Disable
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              }
+                            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                </Grid>
+                <Grid
+                  item
+                  xs={2}
+                  sm={6}
+                  md={6}
+                  style={{
+                    textAlign: "center",
+                    border: "1px inset white",
+                    padding: "0px 20px",
+                  }}
+                >
+                  <h3>Disabled IoT Gateways for HTTP (readonly)</h3>
+                  <Divider />
+                  <Grid
+                    container
+                    rowSpacing={3}
+                    justifyContent="center"
+                    alignItems="center"
+                    sx={{ p: 1 }}
+                  >
+                    <TableContainer sx={{ height: 150 }}>
+                      <Table
+                        stickyHeader
+                        aria-label="sticky table"
+                        size="small"
+                      >
+                        <TableBody>
+                          {iotGatewaysFromListDisabled &&
+                            Object.keys(iotGatewaysFromListDisabled).length !==
+                              0 &&
+                            Object.keys(iotGatewaysFromListDisabled).map(
+                              (iotGatewayName) => {
+                                return (
+                                  <TableRow hover key={iotGatewayName}>
+                                    <TableCell
+                                      align="center"
+                                      style={{ color: "grey" }}
                                     >
-                                      Disable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            }
-                          )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                                      {iotGatewayName}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                      <Button
+                                        variant="contained"
+                                        endIcon={<BlurOnIcon />}
+                                        onClick={() => {
+                                          handleEnableIotGateway(
+                                            iotGatewayName,
+                                            "from"
+                                          );
+                                        }}
+                                        size="small"
+                                      >
+                                        Enable
+                                      </Button>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              }
+                            )}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={6}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
-                }}
-              >
-                <h3>Disabled IoT Gateways for HTTP (readonly)</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ p: 1 }}
-                >
-                  <TableContainer sx={{ height: 150 }}>
-                    <Table stickyHeader aria-label="sticky table" size="small">
-                      <TableBody>
-                        {iotGatewaysFromListDisabled &&
-                          Object.keys(iotGatewaysFromListDisabled).length !==
-                            0 &&
-                          Object.keys(iotGatewaysFromListDisabled).map(
-                            (iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell
-                                    align="center"
-                                    style={{ color: "grey" }}
-                                  >
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      endIcon={<BlurOnIcon />}
-                                      onClick={() => {
-                                        handleEnableIotGateway(
-                                          iotGatewayName,
-                                          "from"
-                                        );
-                                      }}
-                                      size="small"
-                                    >
-                                      Enable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            }
-                          )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-              </Grid>
-            </Grid>
-            {/* <FormLabel>
+              {/* <FormLabel>
               Kepware IoT Gateways list for HTTP Server with read and write
               permission
             </FormLabel>
@@ -861,120 +871,123 @@ export default function HTTPServer() {
                 </Grid>
               </Grid>
             </Grid> */}
-          </>
-        )}
-        {currentTab === 2 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>From Kepware:</FormLabel>
+            </>
+          )}
+          {currentTab === 2 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>From Kepware:</FormLabel>
 
-              <TextField
-                type="text"
-                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                label="Shift from Kepware"
-                helperText="Shift HTTP nodes (in order to exclude roots) from Kepware Iot Gateway"
-                value={shiftFromKepware}
-                required={false}
-                onChange={handleShiftFromKepwareChange}
-              />
-            </FormControl>
-            <Divider />
-
-            <FormControl fullWidth>
-              <FormLabel>To Kepware:</FormLabel>
-
-              <TextField
-                type="number"
-                label="Shift to Kepware"
-                helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
-                value={shiftToKepware}
-                required={false}
-                onChange={handleShiftToKepwareChange}
-              />
-            </FormControl>
-            <Divider />
-          </>
-        )}
-        {currentTab === 3 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>HTTP Server Port:</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Use Default Port - 4840</Typography>
-
-                <Switch
-                  checked={customPortEnable}
-                  onChange={handleCustomPortEnableChange}
+                <TextField
+                  type="text"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+                  label="Shift from Kepware"
+                  helperText="Shift HTTP nodes (in order to exclude roots) from Kepware Iot Gateway"
+                  value={shiftFromKepware}
+                  required={false}
+                  onChange={handleShiftFromKepwareChange}
                 />
+              </FormControl>
+              <Divider />
 
-                <Typography>Use Custom Port</Typography>
-              </Stack>
-            </FormControl>
+              <FormControl fullWidth>
+                <FormLabel>To Kepware:</FormLabel>
 
-            <Divider />
+                <TextField
+                  type="number"
+                  label="Shift to Kepware"
+                  helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
+                  value={shiftToKepware}
+                  required={false}
+                  onChange={handleShiftToKepwareChange}
+                />
+              </FormControl>
+              <Divider />
+            </>
+          )}
+          {currentTab === 3 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>HTTP Server Port:</FormLabel>
 
-            {customPortEnable && (
-              <>
-                <FormControl fullWidth>
-                  <FormLabel>Custom Port:</FormLabel>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Use Default Port - 4840</Typography>
 
-                  <TextField
-                    type="text"
-                    label="Custom Port"
-                    helperText="Use this port for HTTP Server tag exposure"
-                    value={customPort}
-                    required={false}
-                    onChange={handleCustomPortChange}
+                  <Switch
+                    checked={customPortEnable}
+                    onChange={handleCustomPortEnableChange}
                   />
-                </FormControl>
-                <Divider />
-              </>
-            )}
-          </>
-        )}
 
-        {currentTab === 4 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>Enable/Disable HTTP Server authentication:</FormLabel>
+                  <Typography>Use Custom Port</Typography>
+                </Stack>
+              </FormControl>
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Disable</Typography>
+              <Divider />
 
-                <Switch
-                  checked={serverAuth}
-                  onChange={handleServerAuthChange}
-                />
+              {customPortEnable && (
+                <>
+                  <FormControl fullWidth>
+                    <FormLabel>Custom Port:</FormLabel>
 
-                <Typography>Enable</Typography>
-              </Stack>
-            </FormControl>
+                    <TextField
+                      type="text"
+                      label="Custom Port"
+                      helperText="Use this port for HTTP Server tag exposure"
+                      value={customPort}
+                      required={false}
+                      onChange={handleCustomPortChange}
+                    />
+                  </FormControl>
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
 
-            <Divider />
+          {currentTab === 4 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>
+                  Enable/Disable HTTP Server authentication:
+                </FormLabel>
 
-            {serverAuth && (
-              <>
-                <FormLabel>Users:</FormLabel>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Disable</Typography>
 
-                <Table
-                  tableData={usersTableData}
-                  setTableData={setUsersTableData}
-                  columnsData={usersColumnData}
-                />
+                  <Switch
+                    checked={serverAuth}
+                    onChange={handleServerAuthChange}
+                  />
 
-                <Divider />
-              </>
-            )}
-          </>
-        )}
+                  <Typography>Enable</Typography>
+                </Stack>
+              </FormControl>
 
-        <FormControl fullWidth>
-          <Button type="submit" variant="contained">
-            Invia
-          </Button>
-        </FormControl>
-      </form>
-    </Container>
+              <Divider />
+
+              {serverAuth && (
+                <>
+                  <FormLabel>Users:</FormLabel>
+
+                  <Table
+                    tableData={usersTableData}
+                    setTableData={setUsersTableData}
+                    columnsData={usersColumnData}
+                  />
+
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+
+          <FormControl fullWidth>
+            <Button type="submit" variant="contained">
+              Invia
+            </Button>
+          </FormControl>
+        </form>
+      </Container>
+    </ErrorCacher>
   );
 }

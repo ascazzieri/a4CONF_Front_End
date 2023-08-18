@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { updateInternalPC } from "../../utils/redux/reducers";
+import ErrorCacher from "../../components/Errors/ErrorCacher";
 import JSONPretty from "react-json-pretty";
 import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import { Grid, Card, CardContent, Container } from "@mui/material";
@@ -27,7 +28,7 @@ export default function InternalPC() {
   const [reRender, setReRender] = useState(false);
   const renderSpark = useContext(SparkContext);
 
-/*   useEffect(() => {
+  /*   useEffect(() => {
     setReRender(!reRender);
     console.log('re-reinderizzo')
   }, [renderSpark]); */
@@ -47,49 +48,53 @@ export default function InternalPC() {
 
   if (currentURLArray.length === 2) {
     return (
-      <div>
-        <h2>Lista di elementi:</h2>
-        <ul>
-          <li>
-            <Link to="/internal-pc/network">Network</Link>
-          </li>
-          <li>
-            <Link to="/internal-pc/kepware">Kepware</Link>
-          </li>
-        </ul>
-      </div>
+      <ErrorCacher>
+        <div>
+          <h2>Lista di elementi:</h2>
+          <ul>
+            <li>
+              <Link to="/internal-pc/network">Network</Link>
+            </li>
+            <li>
+              <Link to="/internal-pc/kepware">Kepware</Link>
+            </li>
+          </ul>
+        </div>
+      </ErrorCacher>
     );
   }
 
   return (
-    <Container sx={{ flexGrow: 1 }} disableGutters>
-      <Card sx={{ mt: 1 }}>
-        <CardContent>
-          <VerticalTab tabsData={tabsData} root="internal-pc">
-            <Outlet />
-          </VerticalTab>
-        </CardContent>
-      </Card>
-      <Grid container spacing={2}>
-        <Grid item xs={4} sx={{ display: "flex" }}>
-          <Card sx={{ width: "100%" }}>
-            <CardContent>
-              <JSONPretty data={onlyInternalPC} />
-              <button onClick={handleInternalPCChange}>
-                Change External PC
-              </button>
-            </CardContent>
-          </Card>
+    <ErrorCacher>
+      <Container sx={{ flexGrow: 1 }} disableGutters>
+        <Card sx={{ mt: 1 }}>
+          <CardContent>
+            <VerticalTab tabsData={tabsData} root="internal-pc">
+              <Outlet />
+            </VerticalTab>
+          </CardContent>
+        </Card>
+        <Grid container spacing={2}>
+          <Grid item xs={4} sx={{ display: "flex" }}>
+            <Card sx={{ width: "100%" }}>
+              <CardContent>
+                <JSONPretty data={onlyInternalPC} />
+                <button onClick={handleInternalPCChange}>
+                  Change External PC
+                </button>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={8} sx={{ display: "flex" }}>
+            <Card sx={{ width: "100%" }}>
+              <CardContent style={{ paddingBottom: 16 }}>
+                {/* <VerticalTabs tabsData={tabsData} /> */}
+                <h3>Qui ci metto altro</h3>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
-        <Grid item xs={8} sx={{ display: "flex" }}>
-          <Card sx={{ width: "100%" }}>
-            <CardContent style={{ paddingBottom: 16 }}>
-              {/* <VerticalTabs tabsData={tabsData} /> */}
-              <h3>Qui ci metto altro</h3>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </Container>
+      </Container>
+    </ErrorCacher>
   );
 }

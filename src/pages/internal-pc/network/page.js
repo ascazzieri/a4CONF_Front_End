@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateIndustrialNetwork } from "../../../utils/redux/reducers";
+import ErrorCacher from "../../../components/Errors/ErrorCacher"
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import Table from "../../../components/Table/Table";
 import { JSONTree } from "react-json-tree";
@@ -120,7 +121,8 @@ export default function InternalNetwork() {
   ];
 
   return (
-    <Container>
+    <ErrorCacher>
+      <Container>
       <h2>Network</h2>
       <SecondaryNavbar
         currentTab={currentTab}
@@ -210,5 +212,7 @@ export default function InternalNetwork() {
         </FormControl>
       </form>
     </Container>
+    </ErrorCacher>
+    
   );
 }

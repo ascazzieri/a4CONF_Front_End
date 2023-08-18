@@ -4,12 +4,15 @@ import { useDispatch } from "react-redux";
 import { updateAll } from "../../utils/redux/reducers";
 import { get_confA, get_confB } from "../../utils/api";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
+import { LoadingContext } from "../../utils/context/Loading";
+import { useSelector } from "react-redux/es/hooks/useSelector";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CachedIcon from '@mui/icons-material/Cached';
+import { downloadJSON } from "../../utils/api"
 import { Snackbar, Alert } from "@mui/material"
 import SaveIcon from "@mui/icons-material/Save";
 import PrintIcon from "@mui/icons-material/Print";
@@ -109,12 +112,14 @@ const ReloadInternal = () => {
   const dispatch = useDispatch()
 
   const snackBarContext = useContext(SnackbarContext)
+  const loadingContext = useContext(LoadingContext)
 
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
 
   const handleInternalReload = async () => {
+    loadingContext[1](true)
     const confA = await get_confA();
     console.log("get conf A")
 
@@ -136,6 +141,7 @@ const ReloadInternal = () => {
         message: `Error on loading PCA configuration`,
       });
     }
+    loadingContext[1](false)
 
     /* sparkContext[1](!sparkContext[0])
     console.log(sparkContext) */
@@ -157,12 +163,14 @@ const ReloadExternal = () => {
   const dispatch = useDispatch()
 
   const snackBarContext = useContext(SnackbarContext)
+  const loadingContext = useContext(LoadingContext)
 
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
 
   const handleExternalReload = async () => {
+    loadingContext[1](true)
     const confB = await get_confB();
     console.log("get conf B")
     if (confB) {
@@ -181,7 +189,7 @@ const ReloadExternal = () => {
         message: `Error on loading PCB configuration`,
       });
     }
-
+    loadingContext[1](false)
 
   }
   return (
@@ -214,8 +222,9 @@ const ApplyChanges = () => {
   );
 };
 const DownloadConfig = () => {
+  const config = useSelector((state) => state)
   return (
-    <StyledButton>
+    <StyledButton onClick={() => downloadJSON(config)}>
       <div className="img-wrapper-1">
         <div className="img-wrapper">
           <img
@@ -231,6 +240,58 @@ const DownloadConfig = () => {
   );
 };
 const UploadConfig = () => {
+  const [uploading, setUploading] = React.useState(false);
+  const dispatch = useDispatch();
+
+  const snackBarContext = React.useContext(SnackbarContext);
+  const loadingContext = React.useContext(LoadingContext)
+
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
+
+  const handleFileUpload = async (event) => {
+    loadingContext[1](true)
+    const file = event.target.files[0];
+
+    if (file) {
+      setUploading(true);
+
+      const fileContent = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        reader.readAsText(file);
+      });
+
+      try {
+        const jsonObject = JSON.parse(fileContent);
+        if (jsonObject?.crashed_page) {
+          delete jsonObject.crashed_page
+        }
+        console.log(jsonObject)
+        //dispatch(updateAll({ payload: jsonObject, meta: { actionType: "upload" } }));
+
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: "Uploaded JSON configuration",
+        });
+      } catch (error) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: "Error parsing JSON file",
+        });
+      }
+
+      setUploading(false);
+      loadingContext[1](false)
+    }
+  };
   return (
     <StyledButton>
       <div className="img-wrapper-1">
@@ -243,6 +304,12 @@ const UploadConfig = () => {
           />
         </div>
       </div>
+      <input
+        type="file"
+        accept=".json"
+        style={{ position: 'fixed', width: '120px', height: 50, right: 15, opacity: 0 }}
+        onChange={handleFileUpload}
+      />
       <span>Upload</span>
     </StyledButton>
   );

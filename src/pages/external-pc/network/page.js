@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateCustomerNetwork } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
@@ -30,7 +31,6 @@ export default function ExternalNetwork() {
   );
 
   const dispatch = useDispatch();
-  console.log(customerNetwork);
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = [
     "Connection parameters",
@@ -354,301 +354,303 @@ export default function ExternalNetwork() {
   ];
 
   return (
-    <Container>
-      <h2>Network</h2>
-      <SecondaryNavbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        navbarItems={navbarItems}
-      />
-      {currentTab === 7 && <JSONTree data={customerNetwork} />}
+    <ErrorCacher>
+      <Container>
+        <h2>Network</h2>
+        <SecondaryNavbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          navbarItems={navbarItems}
+        />
+        {currentTab === 7 && <JSONTree data={customerNetwork} />}
 
-      <form onSubmit={handleCustomerChange}>
-        {currentTab === 0 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>Connection:</FormLabel>
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-                value={connection}
-                onChange={handleConnectionChange}
-              >
-                <FormControlLabel
-                  value="static"
-                  control={<Radio />}
-                  label="Static"
+        <form onSubmit={handleCustomerChange}>
+          {currentTab === 0 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>Connection:</FormLabel>
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={connection}
+                  onChange={handleConnectionChange}
+                >
+                  <FormControlLabel
+                    value="static"
+                    control={<Radio />}
+                    label="Static"
+                  />
+                  <FormControlLabel
+                    value="dhcp"
+                    control={<Radio />}
+                    label="DHCP"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              <Divider />
+
+              <FormControl fullWidth>
+                <FormLabel>IP Address:</FormLabel>
+
+                <TextField
+                  type="text"
+                  label="IP Address"
+                  helperText="Ip device address"
+                  defaultValue={ipAddress}
+                  required={true}
+                  onChange={handleIPAddressChange}
                 />
-                <FormControlLabel
-                  value="dhcp"
-                  control={<Radio />}
-                  label="DHCP"
+              </FormControl>
+              <Divider />
+              <FormControl fullWidth>
+                <FormLabel>Default Gateway:</FormLabel>
+
+                <TextField
+                  type="text"
+                  label="Default Gateway"
+                  helperText="Default gateway address"
+                  defaultValue={defaultGateway}
+                  onChange={handleDefaultGatewayChange}
                 />
-              </RadioGroup>
-            </FormControl>
+              </FormControl>
+              <Divider />
+              <FormControl fullWidth>
+                <FormLabel>DNS server:</FormLabel>
 
-            <Divider />
-
-            <FormControl fullWidth>
-              <FormLabel>IP Address:</FormLabel>
-
-              <TextField
-                type="text"
-                label="IP Address"
-                helperText="Ip device address"
-                defaultValue={ipAddress}
-                required={true}
-                onChange={handleIPAddressChange}
-              />
-            </FormControl>
-            <Divider />
-            <FormControl fullWidth>
-              <FormLabel>Default Gateway:</FormLabel>
-
-              <TextField
-                type="text"
-                label="Default Gateway"
-                helperText="Default gateway address"
-                defaultValue={defaultGateway}
-                onChange={handleDefaultGatewayChange}
-              />
-            </FormControl>
-            <Divider />
-            <FormControl fullWidth>
-              <FormLabel>DNS server:</FormLabel>
-
-              <TextField
-                type="text"
-                label="DNS Server"
-                helperText="DNS server address"
-                defaultValue={dnsServer}
-                onChange={handleDNSServerChnage}
-              />
-            </FormControl>
-            <Divider />
-            <FormControl fullWidth>
-              <FormLabel>Connection type:</FormLabel>
-
-              <RadioGroup
-                row
-                aria-labelledby="demo-row-radio-buttons-group-label"
-                name="row-radio-buttons-group"
-                value={connectionType}
-                onChange={handleConnectionTypeChange}
-              >
-                <FormControlLabel
-                  value="ethernet"
-                  control={<Radio />}
-                  label="Static"
+                <TextField
+                  type="text"
+                  label="DNS Server"
+                  helperText="DNS server address"
+                  defaultValue={dnsServer}
+                  onChange={handleDNSServerChnage}
                 />
-                <FormControlLabel
-                  value="wireless"
-                  control={<Radio />}
-                  label="Wireless"
-                />
-              </RadioGroup>
-            </FormControl>
+              </FormControl>
+              <Divider />
+              <FormControl fullWidth>
+                <FormLabel>Connection type:</FormLabel>
 
-            {connectionType === "wireless" && (
-              <>
-                <FormControl fullWidth>
-                  <Stack
-                    direction="row"
-                    spacing={3}
-                    justifyContent="flex-start"
-                    alignItems="center"
-                  >
-                    <TextField
-                      select
-                      label="Add network"
-                      helperText="Choose from the wireless network list ad add SSID and password to the table below"
-                      defaultValue={""}
-                      onChange={handleWifiChange}
+                <RadioGroup
+                  row
+                  aria-labelledby="demo-row-radio-buttons-group-label"
+                  name="row-radio-buttons-group"
+                  value={connectionType}
+                  onChange={handleConnectionTypeChange}
+                >
+                  <FormControlLabel
+                    value="ethernet"
+                    control={<Radio />}
+                    label="Static"
+                  />
+                  <FormControlLabel
+                    value="wireless"
+                    control={<Radio />}
+                    label="Wireless"
+                  />
+                </RadioGroup>
+              </FormControl>
+
+              {connectionType === "wireless" && (
+                <>
+                  <FormControl fullWidth>
+                    <Stack
+                      direction="row"
+                      spacing={3}
+                      justifyContent="flex-start"
+                      alignItems="center"
                     >
-                      {customerNetwork?.essid &&
-                        customerNetwork?.essid.length !== 0 &&
-                        customerNetwork?.essid.map((item) => {
-                          return (
-                            <MenuItem key={Math.random() + item} value={item}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                    </TextField>
+                      <TextField
+                        select
+                        label="Add network"
+                        helperText="Choose from the wireless network list ad add SSID and password to the table below"
+                        defaultValue={""}
+                        onChange={handleWifiChange}
+                      >
+                        {customerNetwork?.essid &&
+                          customerNetwork?.essid.length !== 0 &&
+                          customerNetwork?.essid.map((item) => {
+                            return (
+                              <MenuItem key={Math.random() + item} value={item}>
+                                {item}
+                              </MenuItem>
+                            );
+                          })}
+                      </TextField>
 
-                    <IconButton aria-label="reload">
-                      <CachedIcon />
-                    </IconButton>
+                      <IconButton aria-label="reload">
+                        <CachedIcon />
+                      </IconButton>
 
-                    <Button onClick={handleAddSSID} variant="contained">
-                      Add SSID
-                    </Button>
-                  </Stack>
-                </FormControl>
+                      <Button onClick={handleAddSSID} variant="contained">
+                        Add SSID
+                      </Button>
+                    </Stack>
+                  </FormControl>
 
-                <FormLabel>Wifi:</FormLabel>
-                <Table
-                  tableData={wifiTableData}
-                  setTableData={setWifiTableData}
-                  columnsData={wifiColumnData}
-                  selectableObjectData={wifiSelectableObjectData}
-                />
-              </>
-            )}
-
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 1 && (
-          <>
-            <FormLabel>Routes:</FormLabel>
-
-            <Table
-              tableData={routeTableData}
-              setTableData={setRouteTableData}
-              columnsData={routesColumnData}
-            />
-
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 2 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>NTP Server:</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Use NTP from Gatemanager</Typography>
-
-                <Switch checked={customNTP} onChange={handleNTPChange} />
-
-                <Typography>Use Custom NTP Server</Typography>
-              </Stack>
-            </FormControl>
-
-            <Divider />
-
-            {customNTP === true && (
-              <>
-                <FormControl fullWidth>
-                  <TextField
-                    type="text"
-                    label="Custom NTP"
-                    helperText="Custom NTP server address"
-                    defaultValue={customerNetwork?.ntp}
-                    onChange={handleCustomNTPChange}
-                  />
-                </FormControl>
-                <Divider />
-              </>
-            )}
-          </>
-        )}
-
-        {currentTab === 3 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>NAT feature:</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>Disable NAT</Typography>
-
-                <Switch checked={NATFeatures} onChange={handleNATChange} />
-
-                <Typography>Enable NAT</Typography>
-              </Stack>
-
-              <Typography>
-                In outgoing connections, internal IPs will be replaced with
-                a4GATE external IP
-              </Typography>
-            </FormControl>
-
-            <Divider />
-
-            {NATFeatures && (
-              <>
-                <FormControl fullWidth>
-                  <FormLabel>Machine to internet:</FormLabel>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography>Disable</Typography>
-                    <Switch
-                      checked={machineToInternet}
-                      onChange={handleMTIChange}
-                    />
-                    <Typography>Enable</Typography>
-                  </Stack>
-                  <Typography>
-                    Machine network can reach external network
-                  </Typography>
-                </FormControl>
-
-                <Divider />
-              </>
-            )}
-          </>
-        )}
-
-        {currentTab === 4 && (
-          <>
-            <FormLabel>Alias:</FormLabel>
-
-            <Table
-              tableData={aliasTableData}
-              setTableData={setAliasTableData}
-              columnsData={aliasColumnData}
-            />
-
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 5 && (
-          <>
-            <FormLabel>Set TCP ports rules in input WAN:</FormLabel>
-
-            <Table
-              tableData={portsAllowedTableData}
-              setTableData={setPortsAllowedTableData}
-              columnsData={portsAllowedColumnData}
-              selectableObjectData={portsAllowedSelectableObjectData}
-            />
-
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 6 && (
-          <>
-            {NATFeatures ? (
-              <>
-                <div style={{ backgroundColor: "red" }}>
-                  <FormLabel>Foreward TCP port:</FormLabel>
-
+                  <FormLabel>Wifi:</FormLabel>
                   <Table
-                    tableData={inputNATTableData}
-                    setTableData={setInputNATTableData}
-                    columnsData={inputNatTableColumns}
+                    tableData={wifiTableData}
+                    setTableData={setWifiTableData}
+                    columnsData={wifiColumnData}
+                    selectableObjectData={wifiSelectableObjectData}
                   />
-                </div>
-              </>
-            ) : (
-              <>
-                <div>Nat features must be enabled</div>
-              </>
-            )}
-          </>
-        )}
+                </>
+              )}
 
-        <FormControl fullWidth>
-          <Button type="submit" variant="contained">
-            Invia
-          </Button>
-        </FormControl>
-      </form>
-    </Container>
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 1 && (
+            <>
+              <FormLabel>Routes:</FormLabel>
+
+              <Table
+                tableData={routeTableData}
+                setTableData={setRouteTableData}
+                columnsData={routesColumnData}
+              />
+
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 2 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>NTP Server:</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Use NTP from Gatemanager</Typography>
+
+                  <Switch checked={customNTP} onChange={handleNTPChange} />
+
+                  <Typography>Use Custom NTP Server</Typography>
+                </Stack>
+              </FormControl>
+
+              <Divider />
+
+              {customNTP === true && (
+                <>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      label="Custom NTP"
+                      helperText="Custom NTP server address"
+                      defaultValue={customerNetwork?.ntp}
+                      onChange={handleCustomNTPChange}
+                    />
+                  </FormControl>
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+
+          {currentTab === 3 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>NAT feature:</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Disable NAT</Typography>
+
+                  <Switch checked={NATFeatures} onChange={handleNATChange} />
+
+                  <Typography>Enable NAT</Typography>
+                </Stack>
+
+                <Typography>
+                  In outgoing connections, internal IPs will be replaced with
+                  a4GATE external IP
+                </Typography>
+              </FormControl>
+
+              <Divider />
+
+              {NATFeatures && (
+                <>
+                  <FormControl fullWidth>
+                    <FormLabel>Machine to internet:</FormLabel>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Typography>Disable</Typography>
+                      <Switch
+                        checked={machineToInternet}
+                        onChange={handleMTIChange}
+                      />
+                      <Typography>Enable</Typography>
+                    </Stack>
+                    <Typography>
+                      Machine network can reach external network
+                    </Typography>
+                  </FormControl>
+
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+
+          {currentTab === 4 && (
+            <>
+              <FormLabel>Alias:</FormLabel>
+
+              <Table
+                tableData={aliasTableData}
+                setTableData={setAliasTableData}
+                columnsData={aliasColumnData}
+              />
+
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 5 && (
+            <>
+              <FormLabel>Set TCP ports rules in input WAN:</FormLabel>
+
+              <Table
+                tableData={portsAllowedTableData}
+                setTableData={setPortsAllowedTableData}
+                columnsData={portsAllowedColumnData}
+                selectableObjectData={portsAllowedSelectableObjectData}
+              />
+
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 6 && (
+            <>
+              {NATFeatures ? (
+                <>
+                  <div style={{ backgroundColor: "red" }}>
+                    <FormLabel>Foreward TCP port:</FormLabel>
+
+                    <Table
+                      tableData={inputNATTableData}
+                      setTableData={setInputNATTableData}
+                      columnsData={inputNatTableColumns}
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>Nat features must be enabled</div>
+                </>
+              )}
+            </>
+          )}
+
+          <FormControl fullWidth>
+            <Button type="submit" variant="contained">
+              Invia
+            </Button>
+          </FormControl>
+        </form>
+      </Container>
+    </ErrorCacher>
   );
 }

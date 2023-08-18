@@ -19,10 +19,10 @@ const jsonSlice = createSlice({
 
       if (actionType === "fromA") {
         //system
-        console.log(state.system)
         state.system.a4updater_version.industrial =
           newConf?.system?.a4updater_version?.industrial;
-        state.system.hostname.industrial = newConf?.system?.hostname?.industrial;
+        state.system.hostname.industrial =
+          newConf?.system?.hostname?.industrial;
         state.system.network.industrial = newConf?.system?.network?.industrial;
         //services
         state.services.kepware = newConf?.services?.kepware;
@@ -40,10 +40,8 @@ const jsonSlice = createSlice({
         state.services.thingworx = newConf?.services?.thingworx;
         state.services.ftp = newConf?.services?.ftp;
         state.services.opcua = newConf?.services?.opcua;
-      } else {
-        state = {
-          ...state,
-        };
+      } else if (actionType === "fromBackup") {
+        state = newConf;
       }
       state.timestamp = newConf?.timestamp;
     },
@@ -109,6 +107,10 @@ const jsonSlice = createSlice({
       const newOPCServerEnabled = action.payload;
       state.services.opcua.enabled = newOPCServerEnabled;
     },
+    updateBackChannel(state, action) {
+      const { newBackChannel } = action.payload;
+      state.services.backchannel = newBackChannel;
+    },
   },
 });
 
@@ -128,5 +130,6 @@ export const {
   updateSitemanagerEnable,
   updateThingworxEnable,
   updateOPCServerEnable,
+  updateBackChannel,
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;

@@ -1,4 +1,5 @@
 import MiniDrawer from "../components/Menu";
+import ErrorCacher from "../components/Errors/ErrorCacher"
 import { useEffect, useState, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { updateAll } from "../utils/redux/reducers";
@@ -124,7 +125,7 @@ const Layout = () => {
   }
 
   return (
-    <>
+    <ErrorCacher>
       <MiniDrawer>
         {/*         <img src={applied_logo} style={applied_background}/> */}
         <div style={applied_background} />
@@ -148,7 +149,7 @@ const Layout = () => {
         <Outlet />
       </MiniDrawer>
       <MainButtons />
-    </>
+    </ErrorCacher>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useState, Fragment, useContext } from "react";
 import ReactDownloadLink from "react-download-link";
 import { useSelector, useDispatch } from "react-redux";
+import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateKepware, updateThingNames } from "../../../utils/redux/reducers";
 import * as helper from "../../../utils/utils";
 import {
@@ -722,182 +723,184 @@ export default function Kepware() {
   };
 
   return (
-    <Container>
-      <h2>Kepware</h2>
-      <SecondaryNavbar
-        currentTab={currentTab}
-        setCurrentTab={setCurrentTab}
-        navbarItems={navbarItems}
-      />
-      {currentTab === 4 && <JSONTree data={kepware} />}
+    <ErrorCacher>
+      <Container>
+        <h2>Kepware</h2>
+        <SecondaryNavbar
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
+          navbarItems={navbarItems}
+        />
+        {currentTab === 4 && <JSONTree data={kepware} />}
 
-      <Snackbar
-        open={open}
-        autoHideDuration={2000}
-        anchorOrigin={{ vertical, horizontal }}
-        onClose={() =>
-          setSnackBar((prevState) => ({
-            ...prevState,
-            open: false,
-          }))
-        }
-      >
-        <Alert severity={severity}>{message}</Alert>
-      </Snackbar>
+        <Snackbar
+          open={open}
+          autoHideDuration={2000}
+          anchorOrigin={{ vertical, horizontal }}
+          onClose={() =>
+            setSnackBar((prevState) => ({
+              ...prevState,
+              open: false,
+            }))
+          }
+        >
+          <Alert severity={severity}>{message}</Alert>
+        </Snackbar>
 
-      {/*    <form onSubmit={handleKepwareChange}> */}
-      {currentTab === 0 && (
-        <>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-          >
-            <FormControl fullWidth>
-              <FormLabel>Machine serial number:</FormLabel>
-
-              <TextField
-                type="text"
-                label="Machine serial"
-                helperText="Create a new machine serial number and add it to the list below"
-                value={thingName}
-                required={false}
-                onChange={(event) => {
-                  setThingName(event?.target?.value);
-                }}
-              />
-            </FormControl>
-            <Button variant="contained" onClick={handleAddThingName}>
-              Add
-            </Button>
-          </Stack>
-
-          <TableContainer sx={{ height: 250 }}>
-            <Table stickyHeader aria-label="sticky table" size="small">
-              <TableBody>
-                {thing_names &&
-                  thing_names.length !== 0 &&
-                  thing_names.map((row) => {
-                    return (
-                      <TableRow hover key={row}>
-                        <TableCell align="center">
-                          {row.substring(3, row.length)}
-                        </TableCell>
-                        <TableCell align="center">
-                          <IconButton
-                            aria-label="delete"
-                            onClick={() => {
-                              handleThingNameDelete(row);
-                            }}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </>
-      )}
-      {currentTab === 1 && (
-        <>
-          <TableContainer component={Paper}>
-            <Table aria-label="collapsible table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>
-                    <Button
-                      onClick={handleChannelRefresh}
-                      variant="outlined"
-                      endIcon={<CachedIcon />}
-                    >
-                      Refresh
-                    </Button>
-                  </TableCell>
-                  <TableCell>KEPWARE CHANNELS</TableCell>
-                  <TableCell>DEVICE NUMBER</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {channelRows &&
-                  channelRows.lenght !== 0 &&
-                  channelRows.map((row) => {
-                    return (
-                      <Row
-                        key={row.name + row.device_number}
-                        row={row}
-                        thingNames={thingNames}
-                        handleButtonClickFeedback={handleClick}
-                      />
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Divider />
-        </>
-      )}
-
-      {currentTab === 2 && (
-        <>
-          <FormControl fullWidth>
-            <Typography>Kepware configuration:</Typography>
-
+        {/*    <form onSubmit={handleKepwareChange}> */}
+        {currentTab === 0 && (
+          <>
             <Stack
               direction="row"
-              spacing={2}
-              justifyContent="flex-start"
+              justifyContent="center"
               alignItems="center"
+              spacing={2}
             >
-              <Button variant="contained">Upload</Button>
-              <Button
-                variant="contained"
-                onClick={handleDownloadKepwareProject}
-              >
-                Download
+              <FormControl fullWidth>
+                <FormLabel>Machine serial number:</FormLabel>
+
+                <TextField
+                  type="text"
+                  label="Machine serial"
+                  helperText="Create a new machine serial number and add it to the list below"
+                  value={thingName}
+                  required={false}
+                  onChange={(event) => {
+                    setThingName(event?.target?.value);
+                  }}
+                />
+              </FormControl>
+              <Button variant="contained" onClick={handleAddThingName}>
+                Add
               </Button>
             </Stack>
-          </FormControl>
 
-          <Divider />
-        </>
-      )}
+            <TableContainer sx={{ height: 250 }}>
+              <Table stickyHeader aria-label="sticky table" size="small">
+                <TableBody>
+                  {thing_names &&
+                    thing_names.length !== 0 &&
+                    thing_names.map((row) => {
+                      return (
+                        <TableRow hover key={row}>
+                          <TableCell align="center">
+                            {row.substring(3, row.length)}
+                          </TableCell>
+                          <TableCell align="center">
+                            <IconButton
+                              aria-label="delete"
+                              onClick={() => {
+                                handleThingNameDelete(row);
+                              }}
+                            >
+                              <DeleteIcon />
+                            </IconButton>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </>
+        )}
+        {currentTab === 1 && (
+          <>
+            <TableContainer component={Paper}>
+              <Table aria-label="collapsible table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <Button
+                        onClick={handleChannelRefresh}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                      >
+                        Refresh
+                      </Button>
+                    </TableCell>
+                    <TableCell>KEPWARE CHANNELS</TableCell>
+                    <TableCell>DEVICE NUMBER</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {channelRows &&
+                    channelRows.lenght !== 0 &&
+                    channelRows.map((row) => {
+                      return (
+                        <Row
+                          key={row.name + row.device_number}
+                          row={row}
+                          thingNames={thingNames}
+                          handleButtonClickFeedback={handleClick}
+                        />
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Divider />
+          </>
+        )}
 
-      {currentTab === 3 && (
-        <>
-          <FormControl fullWidth>
-            <FormLabel>Kepware mode:</FormLabel>
+        {currentTab === 2 && (
+          <>
+            <FormControl fullWidth>
+              <Typography>Kepware configuration:</Typography>
 
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Typography>License mode</Typography>
-              <FormControlLabel
-                control={
-                  <Switch
-                    defaultChecked={kepware?.trial}
-                    onChange={handleKepwareModeChange}
-                  />
-                }
-              />
-              <Typography>Trial mode</Typography>
-            </Stack>
-          </FormControl>
-          <FormControl fullWidth>
-            <Button onClick={handleKepwareChange} variant="contained">
-              Invia
-            </Button>
-          </FormControl>
-          <Divider />
-        </>
-      )}
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="flex-start"
+                alignItems="center"
+              >
+                <Button variant="contained">Upload</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleDownloadKepwareProject}
+                >
+                  Download
+                </Button>
+              </Stack>
+            </FormControl>
 
-      {/* <FormControl fullWidth>
+            <Divider />
+          </>
+        )}
+
+        {currentTab === 3 && (
+          <>
+            <FormControl fullWidth>
+              <FormLabel>Kepware mode:</FormLabel>
+
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography>License mode</Typography>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      defaultChecked={kepware?.trial}
+                      onChange={handleKepwareModeChange}
+                    />
+                  }
+                />
+                <Typography>Trial mode</Typography>
+              </Stack>
+            </FormControl>
+            <FormControl fullWidth>
+              <Button onClick={handleKepwareChange} variant="contained">
+                Invia
+              </Button>
+            </FormControl>
+            <Divider />
+          </>
+        )}
+
+        {/* <FormControl fullWidth>
           <Button type="submit" variant="contained">
             Invia
           </Button>
         </FormControl> */}
-    </Container>
+      </Container>
+    </ErrorCacher>
   );
 }

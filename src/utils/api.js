@@ -5,7 +5,6 @@ export const get_version = async () => {
     const res = await helper.fetchData("/version", "GET");
     const version = res.replace("\n", "").replace("\r", "");
     const version_string = "Version: " + version;
-    console.log(version_string);
     return version_string;
   } catch (error) {
     console.error(error);
@@ -346,4 +345,34 @@ export const reload_kepware = async () => {
   } catch (e) {
     console.error(e);
   }
+};
+export const downloadJSON = (object, reportName, hostname) => {
+  const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
+  const hostName = hostname || "unknown"
+  const fileName = (!reportName)
+    ? `a4json_${utcDate}.json`
+    : `crash_report_${hostName}_${utcDate}.json`;
+
+  let json = null;
+
+  if (reportName) {
+    json = {
+      ...object,
+      crashed_page: reportName,
+    };
+  } else {
+    json = { ...object };
+  }
+
+  const data = JSON.stringify(json);
+
+  const blob = new Blob([data], { type: "application/json" });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = fileName;
+  link.click();
+
+  URL.revokeObjectURL(url);
 };
