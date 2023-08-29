@@ -105,6 +105,66 @@
         "pippo/pluto",
         "rep/rep/monitor/tf"
       ]
+    },
+    "fastdata": {
+      "industrial": {
+        "ftp": {
+          "enabled": true,
+          "running": true,
+          "server": {
+            "ip_address": "0.0.0.0",
+            "type": "standard",
+            "custom_port": false,
+            "port": 21,
+            "max_cons": 25,
+            "max_cons_per_ip": 5,
+            "anonymus_login": {
+              "enabled": false,
+              "shared_folder": "anonymus"
+            },
+            "users": [
+              {
+                "username": "applied",
+                "password": "applied",
+                "shared_folder": "applied"
+              }
+            ]
+          },
+          "file_timestamp": {
+            "add_timestamp_to_filename": true,
+            "add_milliseconds_to_timestamp": true
+          },
+          "blob_settings": [
+            {
+              "default": "test"
+            },
+            {
+              "default_1": "default_1"
+            }
+          ]
+        },
+        "http": {
+          "enabled": true,
+          "running": true,
+          "http_server": {
+            "host": "0.0.0.0",
+            "port": 8080,
+            "path": "csv"
+          },
+          "add_file_suffix": {
+            "enabled": true,
+            "suffix": "csv"
+          },
+          "blob_settings": [
+            {
+              "default": "default"
+            },
+            {
+              "default_1": "default_1"
+            }
+          ]
+        }
+      }
     }
   },
   "version": "20220616.15-1"

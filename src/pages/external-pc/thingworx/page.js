@@ -192,13 +192,32 @@ export default function Thingworx() {
       });
     }
   };
-  const highlightedContent = highlightText(
-    agentDiagnosis["Error Message"] &&
-      agentDiagnosis["Error Message"].length !== 0
-      ? agentDiagnosis["Error Message"]
-      : "",
+  const agentDiagnosisHandler = () => {
+    if (!agentDiagnosis) {
+      return;
+    }
+    if (agentDiagnosis.appkey_NOT_set) {
+      return "Appkey not set!";
+    } else if (agentDiagnosis.server_NOT_set) {
+      return "Server not set!";
+    } else if (agentDiagnosis.server_name_dns_resolve === false) {
+      return "Cannot resolve DNS!";
+    } else if (agentDiagnosis.server_ip_reachable === false) {
+      return "Server is not reachable!";
+    } else if (
+      agentDiagnosis.connection_error &&
+      agentDiagnosis.connection_error.trim().length !== 0
+    ) {
+      return agentDiagnosis.connection_error;
+    } else {
+      return true;
+    }
+  };
+
+  /*   const highlightedContent = highlightText(
+    agentDiagnosisHandler(),
     searchText === " " ? "" : searchText
-  );
+  ); */
 
   const [showAppkey, setShowAppkey] = useState(false);
   const handleClickShowPassword = () => setShowAppkey((show) => !show);
@@ -726,7 +745,7 @@ export default function Thingworx() {
                       component="div"
                       sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
                     ></Typography>
-                    {agentDiagnosis &&
+{/*                     {agentDiagnosis &&
                       agentDiagnosis["Error Message"].trim().length !== 0 && (
                         <Search>
                           <SearchIconWrapper>
@@ -739,33 +758,32 @@ export default function Thingworx() {
                             onChange={handleSearch}
                           />
                         </Search>
-                      )}
+                      )} */}
                   </Toolbar>
                   <Box component="main" sx={{ p: 3 }}>
-                    {agentDiagnosis &&
-                      agentDiagnosis["Error Message"].trim().length !== 0 && (
-                        <>
-                          <Divider />
+                    {agentDiagnosisHandler() !== true && (
+                      <>
+                        <Divider />
 
-                          <Typography
-                            variant="h6"
-                            noWrap
-                            component="div"
-                            sx={{ flexGrow: 1, color: "red" }}
-                          >
-                            Error messages
-                          </Typography>
-                          <Typography
-                            sx={{
-                              backgroundColor: "orange",
-                              maxHeight: 400,
-                              overflowY: "auto",
-                            }}
-                          >
-                            {highlightedContent}
-                          </Typography>
-                        </>
-                      )}
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          component="div"
+                          sx={{ flexGrow: 1, color: "red" }}
+                        >
+                          Error messages
+                        </Typography>
+                        <Typography
+                          sx={{
+                            backgroundColor: "orange",
+                            maxHeight: 400,
+                            overflowY: "auto",
+                          }}
+                        >
+                          {agentDiagnosisHandler()}
+                        </Typography>
+                      </>
+                    )}
 
                     <Divider />
 

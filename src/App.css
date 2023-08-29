@@ -15,11 +15,19 @@
     transform: rotate(-360deg);
   }
 }
+.internal-menu-cards {
+  background-color: #0D1626;
+}
 
 .a4gate-hostname-form>div>input {
   text-align: center
 }
+.menu-cards {
+  background: #3E4756 !important
+}
 
 .menu-cards:hover {
   cursor: pointer;
+  transform: translateY(-10px) scale(1.1);
+  border: 2px solid #0d6efd;
 }

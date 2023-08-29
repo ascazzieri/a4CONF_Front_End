@@ -189,10 +189,10 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={3}>
-              {mainSectionTitle && mainSectionTitle.length !== 0 && <Avatar sx={{ bgcolor: '#1F293F', width: 150, color: 'white' }} variant="rounded">
-                {mainSectionTitle}
-              </Avatar>
-              }
+
+              {mainSectionTitle}
+
+
             </Grid>
           </Grid>
         </Toolbar>

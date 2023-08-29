@@ -42,17 +42,6 @@ export const get_confB = async () => {
     console.error(e);
   }
 };
-export const get_confFD = async () => {
-  //ricordati di far chiamare questa funzione con un delay
-  try {
-    const res = await helper.fetchData("/FD/conf", "GET");
-    const conf = helper.confToHTML(res);
-    console.log(res);
-    return conf;
-  } catch (e) {
-    console.error(e);
-  }
-};
 export const send_conf = async (data) => {
   //aggiungi un controllo su cambio della network per avvertire che l'utente potrebbe perdere la sessione
   try {
@@ -68,11 +57,14 @@ export const createiotgw = async (
   channel,
   device,
   thingName,
+  folder,
+  publish_rate,
+  scan_rate,
   tags_list
 ) => {
   try {
     const res = await helper.fetchData(
-      `/createiotgw?channel=${channel}&device=${device}&type=${type}&thing_name=${thingName}`,
+      `/createiotgw?channel=${channel}&device=${device}&type=${type}&publish_rate_ms=${publish_rate}&items_scan_rate=${scan_rate}&thing_name=${thingName}`,
       "POST",
       tags_list
     );
@@ -348,8 +340,8 @@ export const reload_kepware = async () => {
 };
 export const downloadJSON = (object, reportName, hostname) => {
   const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
-  const hostName = hostname || "unknown"
-  const fileName = (!reportName)
+  const hostName = hostname || "unknown";
+  const fileName = !reportName
     ? `a4json_${utcDate}.json`
     : `crash_report_${hostName}_${utcDate}.json`;
 

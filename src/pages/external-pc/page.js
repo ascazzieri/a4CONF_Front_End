@@ -15,11 +15,14 @@ import {
   Typography,
 } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import RouterIcon from "@mui/icons-material/Router";
+import BackupIcon from "@mui/icons-material/Backup";
+import PublicIcon from "@mui/icons-material/Public";
+import ShareIcon from "@mui/icons-material/Share";
+import HttpIcon from "@mui/icons-material/Http";
 
 export default function ExternalPC() {
-  const externalPC = useSelector((state) => state);
-
-  let externalOnly = { reboot: externalPC?.system.reboot };
+  const externalPCReboot = useSelector((state) => state?.system.reboot);
 
   const dispatch = useDispatch();
 
@@ -48,6 +51,8 @@ export default function ExternalPC() {
   ];
 
   if (currentURLArray.length === 2) {
+    const cardIcon = { fontSize: 80, color: "#0d6efd" };
+
     return (
       <ErrorCacher>
         <Container sx={{ flexGrow: 1 }} disableGutters>
@@ -68,14 +73,10 @@ export default function ExternalPC() {
                     sx={{ height: 200, width: 250 }}
                     className="menu-cards"
                     name="network"
-                    onClick={() =>handleClick("network")}
+                    onClick={() => handleClick("network")}
                   >
-                    <CardMedia
-                      sx={{ height: 120 }}
-                      image="/img/network.jpg"
-                      title="Network"
-                    />
-                    <CardContent sx={{ pt: 0 }} className='internal-menu-cards'>
+                    <PublicIcon style={cardIcon} />
+                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
                       <Typography variant="h7" component="div">
                         Network
                       </Typography>
@@ -84,7 +85,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Connect PCB with plant network
+                        Connect PCB to plant network
                       </Typography>
                     </CardContent>
                   </Card>
@@ -103,14 +104,10 @@ export default function ExternalPC() {
                     sx={{ height: 200, width: 250 }}
                     className="menu-cards"
                     name="sitemanager"
-                    onClick={()=>handleClick("sitemanager")}
+                    onClick={() => handleClick("sitemanager")}
                   >
-                    <CardMedia
-                      sx={{ height: 120 }}
-                      image="/img/teleassistance.jpg"
-                      title="Sitemanager"
-                    />
-                    <CardContent sx={{ pt: 0 }} className='internal-menu-cards'>
+                    <RouterIcon style={cardIcon} />
+                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
                       <Typography variant="h7" component="div">
                         Remote Assistance
                       </Typography>
@@ -119,8 +116,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Configure Sitemanager software to reach a4GATE from
-                        outside
+                        Configure remote assistance
                       </Typography>
                     </CardContent>
                   </Card>
@@ -139,24 +135,19 @@ export default function ExternalPC() {
                     sx={{ height: 200, width: 250 }}
                     className="menu-cards"
                     name="thingworx"
-                    onClick={()=>handleClick("thingworx")}
+                    onClick={() => handleClick("thingworx")}
                   >
-                    <CardMedia
-                      sx={{ height: 120 }}
-                      image="/img/thingworx.jpg"
-                      title="Thingworx"
-                    />
-                    <CardContent sx={{ pt: 0 }} className='internal-menu-cards'>
+                    <BackupIcon style={cardIcon} />
+                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
                       <Typography variant="h7" component="div">
-                        Remote Things
+                        Thingworx
                       </Typography>
                       <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Configure Thingworx connection in order to send data to
-                        Sentinel
+                        Configure Sentinel communication
                       </Typography>
                     </CardContent>
                   </Card>
@@ -177,14 +168,10 @@ export default function ExternalPC() {
                     sx={{ height: 200, width: 250 }}
                     className="menu-cards"
                     name="opcua-server"
-                    onClick={()=>handleClick("opcua-server")}
+                    onClick={() => handleClick("opcua-server")}
                   >
-                    <CardMedia
-                      sx={{ height: 120 }}
-                      image="/img/opc.jpg"
-                      title="OPCUA Server"
-                    />
-                    <CardContent sx={{ pt: 0 }} className='internal-menu-cards'>
+                    <ShareIcon style={cardIcon} />
+                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
                       <Typography variant="h7" component="div">
                         OPCUA Server
                       </Typography>
@@ -193,7 +180,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Expose collected data via local OPCUA server
+                        Expose data via OPCUA server
                       </Typography>
                     </CardContent>
                   </Card>
@@ -214,12 +201,8 @@ export default function ExternalPC() {
                     name="http-server"
                     onClick={() => handleClick("http-server")}
                   >
-                    <CardMedia
-                      sx={{ height: 120 }}
-                      image="/img/http.png"
-                      title="HTTP Server"
-                    />
-                    <CardContent sx={{ pt: 0 }} className='internal-menu-cards'>
+                    <HttpIcon style={cardIcon} />
+                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
                       <Typography variant="h7" component="div">
                         HTTP Server
                       </Typography>
@@ -228,7 +211,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Expose collected data via local HTTP server
+                        Expose data via HTTP server
                       </Typography>
                     </CardContent>
                   </Card>
@@ -275,7 +258,7 @@ export default function ExternalPC() {
           <Grid item xs={4} sx={{ display: "flex" }}>
             <Card sx={{ width: "100%" }}>
               <CardContent>
-                <JSONPretty data={externalOnly} />
+                <JSONPretty data={externalPCReboot} />
                 <button onClick={handleExternalPCChange}>
                   Change External PC
                 </button>

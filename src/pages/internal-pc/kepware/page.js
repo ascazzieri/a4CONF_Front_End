@@ -76,6 +76,9 @@ const Row = (props) => {
   const [provider, setProvider] = useState();
   const [endPoint, setEndPoint] = useState();
   const [deviceTags, setDeviceTags] = useState({});
+  const [folder, setFolder] = useState();
+  const [publishRate, setPublishRate] = useState(1000);
+  const [scanRate, setScanRate] = useState(1000);
 
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
@@ -128,6 +131,57 @@ const Row = (props) => {
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
     setRowData(updatedRowData);
   };
+  const handleFolderChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.folder = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
+  const handlePublishRateChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.publish_rate = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
+  const handleScanRateChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.scan_rate = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
   const handleCreate = async (event, device) => {
     if (!device?.endpoint) {
       handleButtonClickFeedback({
@@ -138,7 +192,19 @@ const Row = (props) => {
       });
       return;
     }
+    if (event?.target?.name === "matrix" && !device?.folder) {
+      handleButtonClickFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Device: ${device?.name} requires a folder`,
+      });
+      return;
+    }
     let endpoint = "";
+    const folder = device?.folder;
+    const publishRate = device?.publish_rate ? device?.publish_rate : 1000;
+    const scanRate = device?.scan_rate ? device?.scan_rate : 1000;
     if (!device?.endpoint.includes("rt_")) {
       endpoint = `rt_${device?.endpoint}`;
     } else {
@@ -148,17 +214,27 @@ const Row = (props) => {
       const tags = await get_device_tags(row?.name, device?.name);
       const channel = row?.name;
       const deviceName = device?.name;
+      const folder = device?.folder;
+      const publish_rate = device?.publish_rate;
+      const scan_rate = device?.scan_rate;
       setEndPoint(endpoint);
       setProvider(event?.target?.name);
       setDeviceTags(tags);
+      setFolder(folder);
+      setPublishRate(publish_rate);
+      setScanRate(scan_rate);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
       const response = await createiotgw(
-        event?.target?.name,
-        row?.name,
-        device?.name,
-        event?.target?.name === "twa" ? endpoint : null,
+        event?.target?.name, //type
+        row?.name, //channel name
+        device?.name, //device name
+        event?.target?.name === "twa" ? endpoint : null, //endpoint
+        event?.target?.name === "matrix" ? folder : null, //folder for matrix
+        event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
+        event?.target?.name === "matrix" ? scanRate : null, //scan rate for matrix
+
         []
       );
       if (response?.iotgw && response?.time && response?.thing_name)
@@ -195,6 +271,9 @@ const Row = (props) => {
           deviceName={channelDevice}
           provider={provider}
           endPoint={endPoint}
+          folder={folder}
+          publishRate={publishRate}
+          scanRate={scanRate}
           tags={deviceTags}
         />
       )}
@@ -491,12 +570,12 @@ const Row = (props) => {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">Name</TableCell>
+                        <TableCell align="center">Folder</TableCell>
+                        <TableCell align="center">Publish rate</TableCell>
+                        <TableCell align="center">Scan rate</TableCell>
                         <TableCell align="center">Choose tags</TableCell>
                         <TableCell align="center">
-                          IoT gateway for OPCUA(reading)
-                        </TableCell>
-                        <TableCell align="center">
-                          IoT gateway for OPCUA(writing)
+                          IoT gateway for Fast data Matrix
                         </TableCell>
                       </TableRow>
                     </TableHead>
@@ -511,6 +590,68 @@ const Row = (props) => {
                             >
                               {device?.name}
                             </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                select
+                                label="Folder name"
+                                name={device?.name}
+                                defaultValue=""
+                                onChange={handleFolderChange}
+                                style={{ minWidth: 150 }}
+                              >
+                                {thingNames &&
+                                  thingNames?.length !== 0 &&
+                                  thingNames.map((item, index) => (
+                                    <MenuItem key={item} value={item}>
+                                      {item.substring(3, item.length)}
+                                    </MenuItem>
+                                  ))}
+                              </TextField>
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                type="number"
+                                inputProps={{
+                                  inputMode: "numeric",
+                                  pattern: "[0-9]*",
+                                }}
+                                label="Publish rate (ms)"
+                                name={device?.name}
+                                variant="outlined"
+                                size="small"
+                                defaultValue={1000}
+                                onBlur={handlePublishRateChange}
+                                style={{ minWidth: 150 }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                type="number"
+                                inputProps={{
+                                  inputMode: "numeric",
+                                  pattern: "[0-9]*",
+                                }}
+                                label="Scan rate"
+                                name={device?.name}
+                                variant="outlined"
+                                size="small"
+                                defaultValue={1000}
+                                onBlur={handleScanRateChange}
+                                style={{ minWidth: 150 }}
+                              />
+                            </TableCell>
 
                             <TableCell align="center">
                               <Switch
@@ -523,16 +664,7 @@ const Row = (props) => {
                               <Button
                                 onClick={(event) => handleCreate(event, device)}
                                 variant="contained"
-                                name="opcua_from"
-                              >
-                                Create
-                              </Button>
-                            </TableCell>
-                            <TableCell align="center">
-                              <Button
-                                onClick={(event) => handleCreate(event, device)}
-                                variant="contained"
-                                name="opcua_to"
+                                name="matrix"
                               >
                                 Create
                               </Button>

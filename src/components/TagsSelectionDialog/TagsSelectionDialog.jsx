@@ -13,7 +13,7 @@ import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { createiotgw } from '../../utils/api';
 
 export default function MaxWidthDialog(props) {
-    const { open, setOpen, deviceName, provider, endPoint, tags } = props
+    const { open, setOpen, deviceName, provider, endPoint, folder, publishRate, scanRate, tags } = props
     const channel = Object.keys(deviceName)
     const device = deviceName[channel]
     const [iotGatewayCart, setIotGatewayCart] = useState([])
@@ -93,6 +93,9 @@ export default function MaxWidthDialog(props) {
             channel,
             device,
             endPoint,
+            provider === "matrix" ? folder : null, //folder for matrix
+            provider === "matrix" ? publishRate : null, //publish rate for matrix
+            provider === "matrix" ? scanRate : null, //scan rate for matrix 
             finalTagList
         );
         if (response?.iotgw && response?.time && response?.thing_name)

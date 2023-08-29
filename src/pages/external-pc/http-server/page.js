@@ -316,7 +316,6 @@ export default function HTTPServer() {
       setIotGatewaysToListDisabled(iotGatewaDisabledList);
     }
   };
-
   /**
    * Disables an IoT gateway based on the provided name and permission.
    *

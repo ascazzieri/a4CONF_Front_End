@@ -27,6 +27,8 @@ const jsonSlice = createSlice({
         //services
         state.services.kepware = newConf?.services?.kepware;
         state.services.backchannel = newConf?.services?.backchannel;
+        state.services.fastdata.industrial =
+          newConf?.services?.fastdata?.industrial;
         state.version = newConf?.version;
       } else if (actionType === "fromB") {
         //system
@@ -40,6 +42,8 @@ const jsonSlice = createSlice({
         state.services.thingworx = newConf?.services?.thingworx;
         state.services.ftp = newConf?.services?.ftp;
         state.services.opcua = newConf?.services?.opcua;
+        state.services.fastdata.customer =
+          newConf?.services?.fastdata?.customer;
       } else if (actionType === "fromBackup") {
         state = newConf;
       }
@@ -111,6 +115,27 @@ const jsonSlice = createSlice({
       const { newBackChannel } = action.payload;
       state.services.backchannel = newBackChannel;
     },
+    updateFastDataFTP(state, action) {
+      const { newFastDataFTP } = action.payload;
+      state.services.fastdata.industrial.ftp = newFastDataFTP;
+    },
+    updateFastDataHTTP(state, action) {
+      const { newFastDataHTTP } = action.payload;
+      state.services.fastdata.industrial.http = newFastDataHTTP;
+    },
+    updateFastDataMatrix(state, action) {
+      const { newFastDataMatrix } = action.payload;
+      state.services.fastdata.customer.matrix = newFastDataMatrix;
+    },
+    updateFastDataServices(state, action) {
+      const { newFastDataServices } = action.payload;
+      state.services.fastdata.industrial.ftp.enabled =
+        newFastDataServices.ftp;
+      state.services.fastdata.industrial.http.enabled =
+        newFastDataServices.http;
+      state.services.fastdata.customer.matrix.enabled =
+        newFastDataServices.matrix;
+    },
   },
 });
 
@@ -131,5 +156,9 @@ export const {
   updateThingworxEnable,
   updateOPCServerEnable,
   updateBackChannel,
+  updateFastDataFTP,
+  updateFastDataHTTP,
+  updateFastDataMatrix,
+  updateFastDataServices
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;

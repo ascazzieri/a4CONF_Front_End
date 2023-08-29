@@ -132,7 +132,7 @@ let dummy_config = {
       enabled: true,
       connected: false,
       version: "123456789", //altrimenti: Agent version not available
-      diagnostic: "log di thingworx", 
+      diagnostic: "log di thingworx",
       thing_names: [],
       things: {
         rt_testFede: {
@@ -166,6 +166,15 @@ let dummy_config = {
       iotgw: {
         from: ["from1", "from2", "from3"],
         to: ["to1", "to2", "to3"],
+      },
+    },
+    fastdata: {
+      industrial: {
+        ftp: {},
+        http: {},
+      },
+      customer: {
+        matrix: {},
       },
     },
   },
