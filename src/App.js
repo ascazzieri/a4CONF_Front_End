@@ -22,6 +22,7 @@ import FTP from "./pages/fast-data/ftp/page"
 import HTTP from "./pages/fast-data/http/page"
 import Matrix from "./pages/fast-data/matrix/page"
 import { Checklist } from "@mui/icons-material";
+import { Archive } from "./pages/archive/page";
 
 export default function App({ Component, pageProps }) {
   const [authenticate, setAuthenticate] = useState(true);
@@ -67,6 +68,7 @@ export default function App({ Component, pageProps }) {
               <Route path="matrix" element={<Matrix />} />
             </Route>
             <Route path="/back-channel" element={<BackChannel />} />
+            <Route path="/archive" element={<Archive />} />
             <Route path="*" element={<NoPage />} />
           </Route>
           <Route path="/register" element={<Register />} />
