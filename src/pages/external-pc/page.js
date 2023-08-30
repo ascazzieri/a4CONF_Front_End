@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
-import { updateExternalPC } from "../../utils/redux/reducers";
-import JSONPretty from "react-json-pretty";
+import {
+  updateExternalPC,
+  updateSitemanagerEnable,
+  updateThingworxEnable,
+  updateOPCServerEnable,
+  updateHTTPServerEnable,
+} from "../../utils/redux/reducers";
+import { JSONTree } from "react-json-tree";
 import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import {
   Grid,
-  Box,
   Card,
   CardContent,
-  CardActions,
-  CardMedia,
   Container,
   Typography,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import RouterIcon from "@mui/icons-material/Router";
@@ -23,8 +28,41 @@ import HttpIcon from "@mui/icons-material/Http";
 
 export default function ExternalPC() {
   const externalPCReboot = useSelector((state) => state?.system.reboot);
+  const serviceStatus = useSelector((state) => state?.services);
+
+  const [sitemanagerEnabled, setSitemanagerEnabled] = useState(
+    serviceStatus?.sitemanager?.enabled
+  );
+
+  const [thingworxEnabled, setThingworxEnabled] = useState(
+    serviceStatus?.thingworx?.enabled
+  );
+
+  const [opcuaServerEnabled, setOPCUAServerEnabled] = useState(
+    serviceStatus?.opcua
+  );
+
+  const [httpServerEnabled, setHTTPServerEnabled] = useState(
+    serviceStatus?.http?.enabled
+  );
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(updateSitemanagerEnable(sitemanagerEnabled));
+  }, [sitemanagerEnabled, dispatch]);
+
+  useEffect(() => {
+    updateThingworxEnable(thingworxEnabled);
+  }, [thingworxEnabled, dispatch]);
+
+  useEffect(() => {
+    updateOPCServerEnable(opcuaServerEnabled);
+  }, [opcuaServerEnabled, dispatch]);
+
+  useEffect(() => {
+    updateHTTPServerEnable(httpServerEnabled);
+  }, [httpServerEnabled, dispatch]);
 
   const location = useLocation();
   const currentURLArray = location.pathname.split("/");
@@ -100,26 +138,54 @@ export default function ExternalPC() {
                     padding: "0px 20px",
                   }}
                 >
-                  <Card
-                    sx={{ height: 200, width: 250 }}
-                    className="menu-cards"
-                    name="sitemanager"
-                    onClick={() => handleClick("sitemanager")}
-                  >
-                    <RouterIcon style={cardIcon} />
-                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
-                      <Typography variant="h7" component="div">
-                        Remote Assistance
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ p: 1 }}
+                  {sitemanagerEnabled ? (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards"
+                      name="sitemanager"
+                      onClick={() => handleClick("sitemanager")}
+                    >
+                      <RouterIcon style={cardIcon} />
+                      <CardContent
+                        sx={{ pt: 0 }}
+                        className="internal-menu-cards"
                       >
-                        Configure remote assistance
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                        <Typography variant="h7" component="div">
+                          Remote Assistance
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ p: 1 }}
+                        >
+                          Configure remote assistance
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards-disabled"
+                      name="http-server"
+                    >
+                      <CardContent
+                        sx={{ mt: 6.5 }}
+                        className="internal-menu-cards"
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={sitemanagerEnabled}
+                              onChange={(event) => {
+                                setSitemanagerEnabled(event?.target?.checked);
+                              }}
+                            />
+                          }
+                          label="Remote assistance disabled"
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
                 </Grid>
                 <Grid
                   item
@@ -131,26 +197,54 @@ export default function ExternalPC() {
                     padding: "0px 20px",
                   }}
                 >
-                  <Card
-                    sx={{ height: 200, width: 250 }}
-                    className="menu-cards"
-                    name="thingworx"
-                    onClick={() => handleClick("thingworx")}
-                  >
-                    <BackupIcon style={cardIcon} />
-                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
-                      <Typography variant="h7" component="div">
-                        Thingworx
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ p: 1 }}
+                  {thingworxEnabled ? (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards"
+                      name="thingworx"
+                      onClick={() => handleClick("thingworx")}
+                    >
+                      <BackupIcon style={cardIcon} />
+                      <CardContent
+                        sx={{ pt: 0 }}
+                        className="internal-menu-cards"
                       >
-                        Configure Sentinel communication
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                        <Typography variant="h7" component="div">
+                          Thingworx
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ p: 1 }}
+                        >
+                          Configure Sentinel communication
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards-disabled"
+                      name="http-server"
+                    >
+                      <CardContent
+                        sx={{ mt: 6.5 }}
+                        className="internal-menu-cards"
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={thingworxEnabled}
+                              onChange={(event) => {
+                                setThingworxEnabled(event?.target?.checked);
+                              }}
+                            />
+                          }
+                          label="Thingworx agent disabled"
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
                 </Grid>
               </Grid>
               <Grid container columns={{ xs: 4, sm: 12, md: 12 }}>
@@ -164,26 +258,54 @@ export default function ExternalPC() {
                     padding: "0px 20px",
                   }}
                 >
-                  <Card
-                    sx={{ height: 200, width: 250 }}
-                    className="menu-cards"
-                    name="opcua-server"
-                    onClick={() => handleClick("opcua-server")}
-                  >
-                    <ShareIcon style={cardIcon} />
-                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
-                      <Typography variant="h7" component="div">
-                        OPCUA Server
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ p: 1 }}
+                  {opcuaServerEnabled ? (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards"
+                      name="opcua-server"
+                      onClick={() => handleClick("opcua-server")}
+                    >
+                      <ShareIcon style={cardIcon} />
+                      <CardContent
+                        sx={{ pt: 0 }}
+                        className="internal-menu-cards"
                       >
-                        Expose data via OPCUA server
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                        <Typography variant="h7" component="div">
+                          OPCUA Server
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ p: 1 }}
+                        >
+                          Expose data via OPCUA server
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards-disabled"
+                      name="http-server"
+                    >
+                      <CardContent
+                        sx={{ mt: 6.5 }}
+                        className="internal-menu-cards"
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={opcuaServerEnabled}
+                              onChange={(event) => {
+                                setOPCUAServerEnabled(event?.target?.checked);
+                              }}
+                            />
+                          }
+                          label="OPCUA server disabled"
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
                 </Grid>
                 <Grid
                   item
@@ -195,50 +317,59 @@ export default function ExternalPC() {
                     padding: "0px 20px",
                   }}
                 >
-                  <Card
-                    sx={{ height: 200, width: 250 }}
-                    className="menu-cards"
-                    name="http-server"
-                    onClick={() => handleClick("http-server")}
-                  >
-                    <HttpIcon style={cardIcon} />
-                    <CardContent sx={{ pt: 0 }} className="internal-menu-cards">
-                      <Typography variant="h7" component="div">
-                        HTTP Server
-                      </Typography>
-                      <Typography
-                        variant="body2"
-                        color="text.secondary"
-                        sx={{ p: 1 }}
+                  {httpServerEnabled ? (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards"
+                      name="http-server"
+                      onClick={() => handleClick("http-server")}
+                    >
+                      <HttpIcon style={cardIcon} />
+                      <CardContent
+                        sx={{ pt: 0 }}
+                        className="internal-menu-cards"
                       >
-                        Expose data via HTTP server
-                      </Typography>
-                    </CardContent>
-                  </Card>
+                        <Typography variant="h7" component="div">
+                          HTTP Server
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ p: 1 }}
+                        >
+                          Expose data via HTTP server
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <Card
+                      sx={{ height: 200, width: 250 }}
+                      className="menu-cards-disabled"
+                      name="http-server"
+                    >
+                      <CardContent
+                        sx={{ mt: 6.5 }}
+                        className="internal-menu-cards"
+                      >
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              checked={httpServerEnabled}
+                              onChange={(event) => {
+                                setHTTPServerEnabled(event?.target?.checked);
+                              }}
+                            />
+                          }
+                          label="HTTP server disabled"
+                          sx={{ verticalAlign: "middle" }}
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
                 </Grid>
               </Grid>
             </CardContent>
           </Card>
-          {/*           <Grid container spacing={2}>
-            <Grid item xs={4} sx={{ display: "flex" }}>
-              <Card sx={{ width: "100%" }}>
-                <CardContent>
-                  <JSONPretty data={externalOnly} />
-                  <button onClick={handleExternalPCChange}>
-                    Change External PC
-                  </button>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={8} sx={{ display: "flex" }}>
-              <Card sx={{ width: "100%" }}>
-                <CardContent style={{ paddingBottom: 16 }}>
-                  <VerticalTabs tabsData={tabsData} />
-                  <h3>Qui ci metto altro</h3>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid> */}
         </Container>
       </ErrorCacher>
     );
@@ -258,7 +389,7 @@ export default function ExternalPC() {
           <Grid item xs={4} sx={{ display: "flex" }}>
             <Card sx={{ width: "100%" }}>
               <CardContent>
-                <JSONPretty data={externalPCReboot} />
+                <JSONTree data={externalPCReboot} />
                 <button onClick={handleExternalPCChange}>
                   Change External PC
                 </button>

@@ -43,6 +43,8 @@ export default function Dashboard() {
 
   const plugins_status = useSelector((state) => state?.services);
 
+  console.log(plugins_status);
+
   const dispatch = useDispatch();
 
   const location = useLocation();
@@ -54,11 +56,19 @@ export default function Dashboard() {
   const [hostName, setHostName] = useState(hostname);
   const [dashboardStatus, setDashboardStatus] = useState({});
 
-  if (Object.keys(dashboardStatus).length === 0) {
+  /* if (Object.keys(dashboardStatus).length === 0) {
     loaderContext[1](true);
   } else {
     loaderContext[1](false);
-  }
+  } */
+
+  useEffect(() => {
+    if (Object.keys(dashboardStatus).length === 0) {
+      loaderContext[1](true); // Imposta lo stato di caricamento iniziale
+    } else {
+      loaderContext[1](false); // Non è più in fase di caricamento
+    }
+  }, [dashboardStatus, loaderContext]);
 
   const handleHostNameChange = () => {
     const newHostName = {
@@ -67,23 +77,6 @@ export default function Dashboard() {
     };
     dispatch(updateHostName({ newHostName }));
   };
-  /*   const handleAddThingName = () => {
-    const thingNameList = [...thing_names];
-    if (thingName.trim() === "") {
-      return;
-    }
-    if (!thingName.includes("rt_")) {
-      thingNameList.push(`rt_${thingName}`);
-    } else {
-      thingNameList.push(thingName);
-    }
-
-    dispatch(updateThingNames(thingNameList));
-  }; */
-  /*   const handleThingNameDelete = (value) => {
-    const thingNameList = thing_names.filter((item) => item !== value);
-    dispatch(updateThingNames(thingNameList));
-  }; */
 
   const goodStatus = () => {
     return (
@@ -131,38 +124,6 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
-
-  /* useEffect(() => {
-    (async () => {
-      let timer = () => {};
-      if (dashboardPage?.length !== 0) {
-        timer = setInterval(async () => {
-          const machinesConnected = await machines_connected();
-          const monitorLogsIsWorking = await monitor_logs_isWorking();
-          const a4monitorStatus = await monitor_a4monitor_status();
-          const isBReady = await is_B_ready();
-          const checkBidir = await check_bidir();
-          setDashboardStatus((prevState) => ({
-            ...prevState,
-            is_B_ready: isBReady,
-            bidir: checkBidir,
-            monitor_terafence_status: monitorLogsIsWorking,
-            a4monitor_status: a4monitorStatus,
-            machines: machinesConnected,
-          }));
-          // Chiama altre funzioni di aggiornamento qui
-        }, 5000); // 5000 millisecondi corrispondono a 5 secondi
-
-        // Pulizia dell'effetto: ferma il timer quando il componente viene smontato
-        return () => {
-          clearInterval(timer);
-        };
-      } else {
-        clearInterval(timer);
-        console.log("sono qui");
-      }
-    })();
-  }, []); */
 
   return (
     <ErrorCacher>
@@ -267,6 +228,24 @@ export default function Dashboard() {
                       </div>
                     )}
                   </Grid>
+                  <Grid item xs={6}>
+                    <div>Kepware</div>
+                  </Grid>
+                  <Grid item xs={6}>
+                    {plugins_status?.kepware?.server_runtime ? goodStatus() : badStatus()}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div>IoT Gateway</div>
+                  </Grid>
+                  <Grid item xs={6}>
+                  {plugins_status?.kepware?.server_iotgateway ? goodStatus() : badStatus()}
+                  </Grid>
+                  <Grid item xs={6}>
+                    <div>Config API</div>
+                  </Grid>
+                  <Grid item xs={6}>
+                  {plugins_status?.kepware?.config_api_service ? goodStatus() : badStatus()}
+                  </Grid>
                 </Grid>
               </Grid>
               <Grid
@@ -315,7 +294,7 @@ export default function Dashboard() {
                       : badStatus()}
                   </Grid>
                   <Grid item xs={6}>
-                    <div>Config. Service</div>
+                    <div>Configuration</div>
                   </Grid>
                   <Grid item xs={6}>
                     {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
@@ -372,7 +351,9 @@ export default function Dashboard() {
                     <div>OPCUA Server</div>
                   </Grid>
                   <Grid item xs={6}>
-                    <div>value</div>
+                    {plugins_status?.opcua?.running
+                      ? goodStatus()
+                      : badStatus()}
                   </Grid>
                   <Grid item xs={6}>
                     <div>HTTP Server</div>
@@ -384,7 +365,9 @@ export default function Dashboard() {
                     <div>Fast Data</div>
                   </Grid>
                   <Grid item xs={6}>
-                    <div>value</div>
+                    {plugins_status?.fastdata?.running
+                      ? goodStatus()
+                      : badStatus()}
                   </Grid>
                 </Grid>
               </Grid>
@@ -406,7 +389,7 @@ export default function Dashboard() {
                   rowSpacing={2}
                   justifyContent="center"
                   alignItems="center"
-                  sx={{ p: 2 }}
+                  sx={{ p: 2, maxHeight: 300, overflowY: "auto" }}
                 >
                   <TableContainer>
                     <Table stickyHeader aria-label="sticky table">

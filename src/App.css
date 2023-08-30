@@ -25,6 +25,9 @@
 .menu-cards {
   background: #3E4756 !important
 }
+.menu-cards-disabled {
+  background: #3E4756 !important
+}
 
 .menu-cards:hover {
   cursor: pointer;

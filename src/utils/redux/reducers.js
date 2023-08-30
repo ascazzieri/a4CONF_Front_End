@@ -27,8 +27,10 @@ const jsonSlice = createSlice({
         //services
         state.services.kepware = newConf?.services?.kepware;
         state.services.backchannel = newConf?.services?.backchannel;
-        state.services.fastdata.industrial =
-          newConf?.services?.fastdata?.industrial;
+        state.services.fastdata.industrial.ftp =
+          newConf?.services?.fastdata?.industrial?.ftp;
+        state.services.fastdata.industrial.http =
+          newConf?.services?.fastdata?.industrial?.http;
         state.version = newConf?.version;
       } else if (actionType === "fromB") {
         //system
@@ -40,10 +42,12 @@ const jsonSlice = createSlice({
         //services
         state.services.sitemanager = newConf?.services?.sitemanager;
         state.services.thingworx = newConf?.services?.thingworx;
-        state.services.ftp = newConf?.services?.ftp;
         state.services.opcua = newConf?.services?.opcua;
-        state.services.fastdata.customer =
-          newConf?.services?.fastdata?.customer;
+        state.services.http = newConf?.services?.http;
+        state.services.fastdata.customer.matrix =
+          newConf?.services?.fastdata?.customer?.matrix;
+        state.services.fastdata.enabled = newConf?.services?.fastdata?.enabled;
+        state.services.fastdata.running = newConf?.services?.fastdata?.running;
       } else if (actionType === "fromBackup") {
         state = newConf;
       }
@@ -111,6 +115,10 @@ const jsonSlice = createSlice({
       const newOPCServerEnabled = action.payload;
       state.services.opcua.enabled = newOPCServerEnabled;
     },
+    updateHTTPServerEnable(state, action) {
+      const newHTTPServerEnabled = action.payload;
+      state.services.http.enabled = newHTTPServerEnabled;
+    },
     updateBackChannel(state, action) {
       const { newBackChannel } = action.payload;
       state.services.backchannel = newBackChannel;
@@ -118,6 +126,18 @@ const jsonSlice = createSlice({
     updateFastDataFTP(state, action) {
       const { newFastDataFTP } = action.payload;
       state.services.fastdata.industrial.ftp = newFastDataFTP;
+    },
+    updateFastDataFTPEnable(state, action) {
+      const ftpEnable = action.payload;
+      state.services.fastdata.industrial.ftp.enable = ftpEnable;
+    },
+    updateFastDataHTTPEnable(state, action) {
+      const httpEnable = action.payload;
+      state.services.fastdata.industrial.http.enable = httpEnable;
+    },
+    updateFastDataMatrixEnable(state, action) {
+      const matrixEnable = action.payload;
+      state.services.fastdata.customer.matrix.enable = matrixEnable;
     },
     updateFastDataHTTP(state, action) {
       const { newFastDataHTTP } = action.payload;
@@ -129,8 +149,8 @@ const jsonSlice = createSlice({
     },
     updateFastDataServices(state, action) {
       const { newFastDataServices } = action.payload;
-      state.services.fastdata.industrial.ftp.enabled =
-        newFastDataServices.ftp;
+      state.services.fastdata.enabled = newFastDataServices.fastdata;
+      state.services.fastdata.industrial.ftp.enabled = newFastDataServices.ftp;
       state.services.fastdata.industrial.http.enabled =
         newFastDataServices.http;
       state.services.fastdata.customer.matrix.enabled =
@@ -155,10 +175,14 @@ export const {
   updateSitemanagerEnable,
   updateThingworxEnable,
   updateOPCServerEnable,
+  updateHTTPServerEnable,
   updateBackChannel,
   updateFastDataFTP,
   updateFastDataHTTP,
   updateFastDataMatrix,
-  updateFastDataServices
+  updateFastDataFTPEnable,
+  updateFastDataHTTPEnable,
+  updateFastDataMatrixEnable,
+  updateFastDataServices,
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;

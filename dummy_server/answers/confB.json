@@ -141,12 +141,96 @@
         "username": "",
         "password": ""
       },
-      "enabled": false,
-      "connected": false
+      "enabled": true,
+      "connected": true,
+      "diagnostic": {
+        "TW is connected": true,
+        "appkey_NOT_set": false,
+        "server_NOT_set": false,
+        "server_name_dns_resolve": true,
+        "server_ip_reachable": true,
+        "connection_error": "Problem",
+        "Thingworx Configuration": {
+          "Tunneling: ": false,
+          "Pipe Count: ": 1,
+          "Block Size: ": 81920,
+          "Max Message Size: ": "1000000 byte",
+          "Duty Cycle Period: ": "120 s",
+          "Queue Size: ": 1000,
+          "Min Threads: ": 4,
+          "Duty Cycle Connected Percentage: ": 100,
+          "Connection Timeout: ": "10000 ms",
+          "Uri: ": "wss://dataroom-qa.cloud.thingworx.com:443/Thingworx/WS",
+          "Ignore SSL: ": true,
+          "Proxy": {
+            "Proxy Port: ": 0
+          },
+          "Reconnect Interval: ": "60 s",
+          "Idle Ping Rate: ": "45 s",
+          "Ping timeout: ": "10000 ms",
+          "Max Threads: ": 10,
+          "Thread Timeout: ": "10000 ms",
+          "Max File Size: ": 800000000
+        },
+        "Bound Thing Properties": [
+          {
+            "rt_N_8178_V2": {
+              "TW Bound Properties": 2494,
+              "Ingestion Properties": 2494,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "A4Gate_A207020000_0014": {
+              "TW Bound Properties": 25,
+              "Ingestion Properties": 0,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_G0011012": {
+              "TW Bound Properties": 294,
+              "Ingestion Properties": 288,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_test_N_8186": {
+              "TW Bound Properties": 173,
+              "Ingestion Properties": 167,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_51725V0": {
+              "TW Bound Properties": 65,
+              "Ingestion Properties": 59,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_54271O0": {
+              "TW Bound Properties": 41,
+              "Ingestion Properties": 35,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_G068": {
+              "TW Bound Properties": 39,
+              "Ingestion Properties": 33,
+              "Pending Updates": 0
+            }
+          }
+        ],
+        "Agent version": "2.9",
+        "MQTT is connected": true
+      }
     },
 
     "sitemanager": {
       "connected": false,
+      "enabled": true,
       "server": "gm.ima.it 10.10.83.66 81.208.52.93",
       "domain": "Talea.Devices.A4Gate",
       "name": "A207020000-0030",
@@ -174,12 +258,13 @@
         }
       },
       "onlybidir": false,
-      "enabled": true,
       "nameashostname": true,
       "usentp": true
     },
 
     "opcua": {
+      "enabled": true,
+      "running": true,
       "file_from_kepware": "from_kepware.csv.simulate",
       "file_to_kepware": "to_kepware.csv",
       "shift_property_from_kepware": "0",
@@ -210,11 +295,12 @@
         "port": 48400
       },
       "server_name": "OPC-UA-SERVER",
-      "namespace": "A4Gate",
-      "enabled": false
+      "namespace": "A4Gate"
     },
 
     "fastdata": {
+      "enabled": true,
+      "running": true,
       "customer": {
         "matrix": {
           "enabled": false,
@@ -365,6 +451,38 @@
           ]
         }
       }
+    },
+    "http": {
+      "enabled": false,
+      "running": true,
+      "file_from_kepware": "from_kepware.csv.simulate",
+      "file_to_kepware": "to_kepware.csv",
+      "shift_property_from_kepware": "0",
+      "shift_property_to_kepware": "0",
+
+      "security": {
+        "tls": false,
+        "cert_file": "server.crt.pem",
+        "key_file": "server.key.pem",
+        "user_auth": false,
+
+        "users": {
+          "pippo": "pippo",
+          "pluto": "pluto"
+        }
+      },
+
+      "http": {
+        "custom_port_enable": false,
+        "custom_port": 4841,
+        "http_port": 48400
+      },
+      "iotgw": {
+        "from": ["from1", "from2", "from3"],
+        "to": ["to1", "to2", "to3"]
+      },
+      "server_name": "OPC-UA-SERVER",
+      "namespace": "A4Gate"
     }
   }
 }

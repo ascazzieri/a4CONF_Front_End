@@ -7,6 +7,7 @@ import * as helper from "../../../utils/utils";
 import {
   loadChannels,
   createiotgw,
+  machines_connected,
   saveKepwareProject,
   get_device_tags,
 } from "../../../utils/api";
@@ -36,6 +37,10 @@ import {
   Alert,
   RadioGroup,
   Radio,
+  List,
+  ListItemIcon,
+  ListItemButton,
+  ListItemText,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import FormLabel from "@mui/material/FormLabel";
@@ -44,7 +49,15 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import Divider from "@mui/material/Divider";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import TagsSelectionDialog from "../../../components/TagsSelectionDialog/TagsSelectionDialog";
+
+import LabelImportantIcon from "@mui/icons-material/LabelImportant";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import CallMergeIcon from "@mui/icons-material/CallMerge";
+import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
+
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
 
@@ -705,8 +718,11 @@ export default function Kepware() {
 
   const [currentTab, setCurrentTab] = useState(0);
   const [channelRows, setChannelRows] = useState();
+  const [expandedListChannels, setExpandedListChannels] = useState([]);
+  const [expandedListDevices, setExpandedListDevices] = useState([]);
   const navbarItems = [
     "Local Things",
+    "Machines Configured",
     "Create IoT Gateway",
     "Kepware configuration",
     "License",
@@ -840,6 +856,46 @@ export default function Kepware() {
     const thingNameList = thing_names.filter((item) => item !== value);
     dispatch(updateThingNames(thingNameList));
   };
+  const handleExpandableListChannels = (event, name) => {
+    const oldList = [...expandedListChannels];
+    if (oldList.includes(name)) {
+      setExpandedListChannels((prevItems) =>
+        prevItems.filter((item) => item !== name)
+      );
+    } else {
+      oldList.push(name);
+      setExpandedListChannels(oldList);
+    }
+  };
+  const handleExpandableListDevices = (event, name) => {
+    const oldList = [...expandedListDevices];
+    if (oldList.includes(name)) {
+      setExpandedListDevices((prevItems) =>
+        prevItems.filter((item) => item !== name)
+      );
+    } else {
+      oldList.push(name);
+      setExpandedListDevices(oldList);
+    }
+  };
+  const groupByChannel = (data) => {
+    if (!data || data.length === 0) {
+      return;
+    }
+    let channelsList = new Set();
+    const groupedData = {};
+
+    data.forEach((item) => {
+      channelsList.add(item.channel);
+      const channel = item.channel;
+      if (!groupedData[channel]) {
+        groupedData[channel] = [];
+      }
+      groupedData[channel].push(item);
+    });
+
+    return [channelsList, groupedData];
+  };
   const [snackBar, setSnackBar] = useState({
     open: false,
     vertical: "bottom",
@@ -853,6 +909,8 @@ export default function Kepware() {
   const handleClick = (newState) => {
     setSnackBar({ ...newState, open: true });
   };
+  const channelList = Array.from(groupByChannel(kepware?.machines)[0]);
+  const device_connected = groupByChannel(kepware?.machines)[1];
 
   return (
     <ErrorCacher>
@@ -863,7 +921,7 @@ export default function Kepware() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && <JSONTree data={kepware} />}
+        {currentTab === 5 && <JSONTree data={kepware} />}
 
         <Snackbar
           open={open}
@@ -938,6 +996,143 @@ export default function Kepware() {
         )}
         {currentTab === 1 && (
           <>
+            <Box sx={{ flexGrow: 1 }}>
+              <FormLabel>Kepware device configured:</FormLabel>
+
+              <Box component="main" sx={{ p: 3 }}>
+                <Typography
+                  variant="h6"
+                  noWrap
+                  component="div"
+                  sx={{ flexGrow: 1 }}
+                >
+                  Devices
+                </Typography>
+                <List
+                  sx={{
+                    width: "100%",
+                  }}
+                  component="nav"
+                  aria-labelledby="nested-list-subheader"
+                >
+                  {channelList &&
+                    channelList !== 0 &&
+                    channelList.map((channel, index) => {
+                      const deviceInside = device_connected[channel];
+                      return (
+                        <>
+                          <ListItemButton
+                            onClick={(event, name) =>
+                              handleExpandableListChannels(event, channel)
+                            }
+                          >
+                            <ListItemIcon>
+                              <LabelImportantIcon />
+                            </ListItemIcon>
+                            <ListItemText primary={channel} />
+                            {expandedListChannels.includes(channel) ? (
+                              <ExpandLess />
+                            ) : (
+                              <ExpandMore />
+                            )}
+                          </ListItemButton>
+                          <Collapse
+                            in={expandedListChannels.includes(channel)}
+                            timeout="auto"
+                            unmountOnExit
+                          >
+                            {deviceInside &&
+                              deviceInside.length !== 0 &&
+                              deviceInside.map((insideItem, insideIndex) => {
+                                const deviceName = insideItem?.device;
+                                return (
+                                  <>
+                                    <ListItemButton
+                                      onClick={(event, name) =>
+                                        handleExpandableListDevices(
+                                          event,
+                                          deviceName
+                                        )
+                                      }
+                                    >
+                                      <ListItemIcon>
+                                        <LabelImportantIcon />
+                                      </ListItemIcon>
+                                      <ListItemText primary={deviceName} />
+                                      {expandedListDevices.includes(
+                                        deviceName
+                                      ) ? (
+                                        <ExpandLess />
+                                      ) : (
+                                        <ExpandMore />
+                                      )}
+                                    </ListItemButton>
+                                    <Collapse
+                                      in={expandedListDevices.includes(
+                                        deviceName
+                                      )}
+                                      timeout="auto"
+                                      unmountOnExit
+                                    >
+                                      <List component="div" disablePadding>
+                                        <ListItemButton sx={{ pl: 10 }}>
+                                          <ListItemIcon>
+                                            <DoneAllIcon />
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={`Device: ${deviceName} `}
+                                          />
+                                        </ListItemButton>
+                                        <ListItemButton sx={{ pl: 10 }}>
+                                          <ListItemIcon>
+                                            <CallMergeIcon />
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={`Driver type: ${insideItem?.driver_type} `}
+                                          />
+                                        </ListItemButton>
+                                        <ListItemButton sx={{ pl: 10 }}>
+                                          <ListItemIcon>
+                                            <PendingOutlinedIcon />
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={`Ip address: ${insideItem?.ip_address} `}
+                                          />
+                                        </ListItemButton>
+                                        <ListItemButton sx={{ pl: 10 }}>
+                                          <ListItemIcon>
+                                            <PendingOutlinedIcon />
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={`Port: ${insideItem?.port} `}
+                                          />
+                                        </ListItemButton>
+                                        <ListItemButton sx={{ pl: 10 }}>
+                                          <ListItemIcon>
+                                            <PendingOutlinedIcon />
+                                          </ListItemIcon>
+                                          <ListItemText
+                                            primary={`Last timestamp: ${new Date(
+                                              insideItem?.timestamp * 1000
+                                            )} `}
+                                          />
+                                        </ListItemButton>
+                                      </List>
+                                    </Collapse>
+                                  </>
+                                );
+                              })}
+                          </Collapse>
+                        </>
+                      );
+                    })}
+                </List>
+              </Box>
+            </Box>
+          </>
+        )}
+        {currentTab === 2 && (
+          <>
             <TableContainer component={Paper}>
               <Table aria-label="collapsible table">
                 <TableHead>
@@ -975,7 +1170,7 @@ export default function Kepware() {
           </>
         )}
 
-        {currentTab === 2 && (
+        {currentTab === 3 && (
           <>
             <FormControl fullWidth>
               <Typography>Kepware configuration:</Typography>
@@ -1000,21 +1195,19 @@ export default function Kepware() {
           </>
         )}
 
-        {currentTab === 3 && (
+        {currentTab === 4 && (
           <>
             <FormControl fullWidth>
               <FormLabel>Kepware mode:</FormLabel>
 
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography>License mode</Typography>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      defaultChecked={kepware?.trial}
-                      onChange={handleKepwareModeChange}
-                    />
-                  }
+
+                <Switch
+                  checked={kepwareMode}
+                  onChange={handleKepwareModeChange}
                 />
+
                 <Typography>Trial mode</Typography>
               </Stack>
             </FormControl>
