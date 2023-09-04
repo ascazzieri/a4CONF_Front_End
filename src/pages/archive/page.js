@@ -45,7 +45,8 @@ export function Archive() {
     setArchive(newArchive);
   };
   const handleModify = (item) => {
-    
+    setTitle(item);
+    setContent(archive[item]);
   };
   return (
     <ErrorCacher>
