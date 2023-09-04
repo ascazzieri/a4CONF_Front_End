@@ -15,29 +15,38 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TextField from "@mui/material/TextField";
-import FilledInput from "@mui/material/FilledInput";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import Input from "@mui/material/Input";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import { Divider } from "antd";
-import Stack from '@mui/material/Stack';
+import Stack from "@mui/material/Stack";
+import Item from "antd/es/list/Item";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 export function Archive() {
   const [archive, setArchive] = useState({
     "problema di connessione": "il cliente ha il firewall che deep inspection",
     "problema voltaggio": "accedono frequenti cali di voltaggio",
-    "led S2": "è stata registrata l'accensione del led S2 per 4 volte",
+    "led S2 ": "è stata registrata l'accensione del led S2 per 4 volte",
   });
-  console.log(archive);
-  Object.keys(archive).map((item, index) => {
-    console.log(item);
-  });
-  Object.values(archive).map((item, index) => {
-    console.log(item);
-  });
+
+  const [title, setTitle] = useState();
+  const [content, setContent] = useState();
+  const handleSave = () => {
+    const newArchive = {...archive}
+    newArchive[title] = content;
+    setArchive(newArchive);
+  }
+
   const archiveKeys = Object.keys(archive);
   const archiveValues = Object.values(archive);
+  const handleDelete = (item) => {
+    const newArchive = { ...archive };
+    delete newArchive[item];
+
+    setArchive(newArchive);
+  };
+  const handleModify = (item) => {
+    
+  };
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
@@ -52,14 +61,38 @@ export function Archive() {
                   <AccordionSummary
                     key={Math.random()}
                     expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1a-content"
-                    id="panel1a-header"
                   >
-                    <Typography key={Math.random()}>
-                      <Stack direction="row" spacing={2}>
-                        {item}
-                      </Stack>
+                    <Typography key={Math.random()} sx={{ width: "70%" }}>
+                      <Item>{item}</Item>
                     </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      justifyContent="flex-end"
+                      alignItems="center"
+                      style={{ width: "100%" }}
+                    >
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={() => {
+                          handleModify(item);
+                        }}
+                      >
+                        Modify
+                      </Button>
+
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                        onClick={() => {
+                          handleDelete(item);
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </Stack>
                   </AccordionSummary>
                   <AccordionDetails key={Math.random()}>
                     <Typography key={Math.random()}>
@@ -73,16 +106,28 @@ export function Archive() {
             <h1>Insert new Archive object</h1>
 
             <div>
-              <TextField id="outlined-textarea" label="Title" multiline />
+              <TextField
+                id="outlined-textarea"
+                label="Title"
+                value={title}
+                onChange={(event) => {setTitle(event.target.value)}}
+                multiline
+              />
               <Divider />
               <TextField
                 id="outlined-texterea"
                 label="Content"
                 multiline
                 rows={5}
-                defaultValue=""
+                value={content}
+                onChange={(event) => {setContent(event.target.value)}}
               />
             </div>
+            <Button variant="contained" size="small" onClick={
+              handleSave
+            }>
+              Save
+            </Button>
           </Card>
         </Card>
       </Container>
