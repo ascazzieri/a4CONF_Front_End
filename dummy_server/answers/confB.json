@@ -303,7 +303,7 @@
       "running": true,
       "customer": {
         "matrix": {
-          "enabled": false,
+          "enabled": true,
           "http_server": {
             "host": "127.0.0.1",
             "port": 11002

@@ -11,6 +11,7 @@ import {
   saveKepwareProject,
   get_device_tags,
 } from "../../../utils/api";
+import { useLocation } from "react-router-dom";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
 import Box from "@mui/material/Box";
@@ -57,6 +58,12 @@ import LabelImportantIcon from "@mui/icons-material/LabelImportant";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
 import CallMergeIcon from "@mui/icons-material/CallMerge";
 import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
+import DvrIcon from "@mui/icons-material/Dvr";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
+import NumbersIcon from "@mui/icons-material/Numbers";
+import DataArrayIcon from "@mui/icons-material/DataArray";
+import RestoreIcon from "@mui/icons-material/Restore";
 
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
@@ -731,6 +738,12 @@ export default function Kepware() {
 
   const [thingName, setThingName] = useState();
 
+  const [count, setCount] = useState(0);
+  const [isInKepware, setIsInKepware] = useState(false);
+  const [connctedMachines, setConnectedMachines] = useState(kepware?.machines);
+
+  const location = useLocation();
+
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
@@ -764,6 +777,34 @@ export default function Kepware() {
       loaderContext[1](false);
     })();
   }, []);
+
+  useEffect(() => {
+    let timer;
+
+    if (isInKepware) {
+      timer = setInterval(async () => {
+        const machinesConnected = await machines_connected();
+        setConnectedMachines(machinesConnected);
+        setCount((prevCount) => prevCount + 1);
+      }, 10000);
+    }
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [isInKepware]);
+
+  useEffect(() => {
+    if (location.pathname === "/internal-pc/kepware") {
+      setIsInKepware(true);
+    } else {
+      setIsInKepware(false);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setConnectedMachines(kepware?.machines);
+  }, [kepware?.machines]);
 
   const [kepwareMode, setKepwareMode] = useState(kepware?.trial);
   const [thingNames, setThingNames] = useState(thing_names);
@@ -867,14 +908,14 @@ export default function Kepware() {
       setExpandedListChannels(oldList);
     }
   };
-  const handleExpandableListDevices = (event, name) => {
+  const handleExpandableListDevices = (event, channel, device) => {
     const oldList = [...expandedListDevices];
-    if (oldList.includes(name)) {
+    if (oldList.includes(`${channel}.${device}`)) {
       setExpandedListDevices((prevItems) =>
-        prevItems.filter((item) => item !== name)
+        prevItems.filter((item) => item !== `${channel}.${device}`)
       );
     } else {
-      oldList.push(name);
+      oldList.push(`${channel}.${device}`);
       setExpandedListDevices(oldList);
     }
   };
@@ -909,8 +950,13 @@ export default function Kepware() {
   const handleClick = (newState) => {
     setSnackBar({ ...newState, open: true });
   };
-  const channelList = Array.from(groupByChannel(kepware?.machines)[0]);
-  const device_connected = groupByChannel(kepware?.machines)[1];
+
+  const channelList = groupByChannel(connctedMachines)
+    ? Array.from(groupByChannel(connctedMachines)[0])
+    : [];
+  const device_connected = groupByChannel(connctedMachines)
+    ? groupByChannel(connctedMachines)[1]
+    : [];
 
   return (
     <ErrorCacher>
@@ -1022,7 +1068,7 @@ export default function Kepware() {
                       return (
                         <>
                           <ListItemButton
-                            onClick={(event, name) =>
+                            onClick={(event) =>
                               handleExpandableListChannels(event, channel)
                             }
                           >
@@ -1048,19 +1094,21 @@ export default function Kepware() {
                                 return (
                                   <>
                                     <ListItemButton
-                                      onClick={(event, name) =>
+                                      onClick={(event) =>
                                         handleExpandableListDevices(
                                           event,
+                                          channel,
                                           deviceName
                                         )
                                       }
+                                      sx={{ pl: 5 }}
                                     >
                                       <ListItemIcon>
-                                        <LabelImportantIcon />
+                                        <DvrIcon />
                                       </ListItemIcon>
                                       <ListItemText primary={deviceName} />
                                       {expandedListDevices.includes(
-                                        deviceName
+                                        `${channel}.${deviceName}`
                                       ) ? (
                                         <ExpandLess />
                                       ) : (
@@ -1069,7 +1117,7 @@ export default function Kepware() {
                                     </ListItemButton>
                                     <Collapse
                                       in={expandedListDevices.includes(
-                                        deviceName
+                                        `${channel}.${deviceName}`
                                       )}
                                       timeout="auto"
                                       unmountOnExit
@@ -1077,7 +1125,7 @@ export default function Kepware() {
                                       <List component="div" disablePadding>
                                         <ListItemButton sx={{ pl: 10 }}>
                                           <ListItemIcon>
-                                            <DoneAllIcon />
+                                            <BorderColorIcon />
                                           </ListItemIcon>
                                           <ListItemText
                                             primary={`Device: ${deviceName} `}
@@ -1085,7 +1133,7 @@ export default function Kepware() {
                                         </ListItemButton>
                                         <ListItemButton sx={{ pl: 10 }}>
                                           <ListItemIcon>
-                                            <CallMergeIcon />
+                                            <DataArrayIcon />
                                           </ListItemIcon>
                                           <ListItemText
                                             primary={`Driver type: ${insideItem?.driver_type} `}
@@ -1093,15 +1141,15 @@ export default function Kepware() {
                                         </ListItemButton>
                                         <ListItemButton sx={{ pl: 10 }}>
                                           <ListItemIcon>
-                                            <PendingOutlinedIcon />
+                                            <SettingsEthernetIcon />
                                           </ListItemIcon>
                                           <ListItemText
-                                            primary={`Ip address: ${insideItem?.ip_address} `}
+                                            primary={`IP address: ${insideItem?.ip_address} `}
                                           />
                                         </ListItemButton>
                                         <ListItemButton sx={{ pl: 10 }}>
                                           <ListItemIcon>
-                                            <PendingOutlinedIcon />
+                                            <NumbersIcon />
                                           </ListItemIcon>
                                           <ListItemText
                                             primary={`Port: ${insideItem?.port} `}
@@ -1109,7 +1157,7 @@ export default function Kepware() {
                                         </ListItemButton>
                                         <ListItemButton sx={{ pl: 10 }}>
                                           <ListItemIcon>
-                                            <PendingOutlinedIcon />
+                                            <RestoreIcon />
                                           </ListItemIcon>
                                           <ListItemText
                                             primary={`Last timestamp: ${new Date(

@@ -32,7 +32,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard() {
   const hostname = useSelector((state) => state?.system?.hostname);
@@ -42,8 +42,6 @@ export default function Dashboard() {
   );
 
   const plugins_status = useSelector((state) => state?.services);
-
-  console.log(plugins_status);
 
   const dispatch = useDispatch();
 

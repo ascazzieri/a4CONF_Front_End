@@ -63,17 +63,18 @@ export default function ExternalNetwork() {
     customerNetwork?.if_wan_medium
   );
 
-  const getArrayOfObjects = (data, complex, key1, key2) => {
+  const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
     const keys = Object.keys(data);
-    if (!complex && keys && keys.length !== 0) {
-      keys.map((item, index) => {
+    if (keys && keys.length !== 0) {
+      keys.forEach((item, index) => {
         arrayOfObjects.push({
           [`${key1}`]: item,
           [`${key2}`]: data[item]?.toString()?.replace(",", ", "),
         });
       });
     }
+
     return arrayOfObjects;
   };
 
@@ -92,21 +93,20 @@ export default function ExternalNetwork() {
   };
 
   const [wifiTableData, setWifiTableData] = useState(
-    getArrayOfObjects(customerNetwork?.wireless, false, "ssid", "password")
+    getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
   );
 
   const [routeTableData, setRouteTableData] = useState(
-    getArrayOfObjects(customerNetwork?.routes, false, "subnet", "gateway")
+    getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
   );
 
   const [aliasTableData, setAliasTableData] = useState(
-    getArrayOfObjects(customerNetwork?.ALIAS, false, "alias", "value")
+    getArrayOfObjects(customerNetwork?.ALIAS, "alias", "value")
   );
 
   const [portsAllowedTableData, setPortsAllowedTableData] = useState(
     getArrayOfObjects(
       customerNetwork?.PORTS_TCP_SERVER_WAN,
-      false,
       "external_tcp_ports",
       "source"
     )
