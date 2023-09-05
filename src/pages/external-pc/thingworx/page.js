@@ -8,6 +8,7 @@ import {
   disable_http_client_iot_gateway,
   twx_connection_diagnostic,
 } from "../../../utils/api";
+import BackButton from "../../../components/BackButton/BackButton";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { JSONTree } from "react-json-tree";
@@ -445,7 +446,7 @@ export default function Thingworx() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>Thingworx</h2>
+        <BackButton pageTitle="Thingworx" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
@@ -745,7 +746,7 @@ export default function Thingworx() {
                       component="div"
                       sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
                     ></Typography>
-{/*                     {agentDiagnosis &&
+                    {/*                     {agentDiagnosis &&
                       agentDiagnosis["Error Message"].trim().length !== 0 && (
                         <Search>
                           <SearchIconWrapper>
