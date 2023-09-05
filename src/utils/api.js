@@ -366,5 +366,25 @@ export const downloadJSON = (object, reportName, hostname) => {
   link.download = fileName;
   link.click();
 
+
   URL.revokeObjectURL(url);
 };
+
+export const get_archive = async() => {
+  try {
+    const res = await helper.fetchData("/conf/archive", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}
+export const post_archive = async(data) => {
+  try {
+    const res = await helper.fetchData("/conf/archive", "POST", data);
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}

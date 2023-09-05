@@ -21,20 +21,27 @@ import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SimpleDialog from "@mui/material/Dialog";
+import { get_archive, post_archive } from "../../utils/api";
+import { useEffect } from "react";
 
 export function Archive() {
-  const [archive, setArchive] = useState({
-    "problema di connessione": "il cliente ha il firewall che deep inspection",
-    "problema voltaggio": "accedono frequenti cali di voltaggio",
-    "led S2 ": "è stata registrata l'accensione del led S2 per 4 volte",
-  });
+  const [archive, setArchive] = useState();
+
 
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
+  
   const handleSave = () => {
     const newArchive = { ...archive };
     newArchive[title] = content;
+    if(title.trim() === "" || content.trim() === ""){
+      alert("inserire i valori prima di salvare")
+    }else{
     setArchive(newArchive);
+    setTitle("");
+    setContent("");
+    setOpen(false);
+    }
   };
 
   const handleClear = () => {
@@ -42,8 +49,8 @@ export function Archive() {
     setContent("");
   };
 
-  const archiveKeys = Object.keys(archive);
-  const archiveValues = Object.values(archive);
+  const archiveKeys = archive ? Object.keys(archive) : [];
+  const archiveValues = archive ? Object.values(archive) : [];
   const handleDelete = (item) => {
     const newArchive = { ...archive };
     delete newArchive[item];
@@ -64,7 +71,8 @@ export function Archive() {
   const handleClose = () => {
     setOpen(false);
   };
-
+  useEffect (() => {});
+  console.log(get_archive());
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
@@ -72,7 +80,6 @@ export function Archive() {
         <Card sx={{ mt: 1 }}>
           <Stack
             direction="row"
-            
             alignItems="center"
             style={{ width: "100%" }}
             spacing={2}
@@ -132,12 +139,12 @@ export function Archive() {
               );
             })}
 
-          <SimpleDialog open={open} onClose={handleClose}>
-            <Card sx={{ width: 600, padding: 5 }}>
+          <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
+            <Card sx={{ padding: 5 , margin: 2}}>
               <h1>Insert new Archive object</h1>
               <div>
                 <TextField
-                  fullWidth="true"
+                  fullWidth= {true}
                   id="outlined-textarea"
                   label="Title"
                   value={title}
@@ -148,7 +155,7 @@ export function Archive() {
                 />
                 <Divider />
                 <TextField
-                  fullWidth="true"
+                  fullWidth={true}
                   id="outlined-texterea"
                   label="Content"
                   multiline
