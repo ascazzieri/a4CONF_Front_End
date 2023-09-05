@@ -20,6 +20,7 @@ import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import SimpleDialog from "@mui/material/Dialog";
 
 export function Archive() {
   const [archive, setArchive] = useState({
@@ -31,10 +32,15 @@ export function Archive() {
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
   const handleSave = () => {
-    const newArchive = {...archive}
+    const newArchive = { ...archive };
     newArchive[title] = content;
     setArchive(newArchive);
-  }
+  };
+
+  const handleClear = () => {
+    setTitle("");
+    setContent("");
+  };
 
   const archiveKeys = Object.keys(archive);
   const archiveValues = Object.values(archive);
@@ -47,13 +53,35 @@ export function Archive() {
   const handleModify = (item) => {
     setTitle(item);
     setContent(archive[item]);
+    setOpen(true);
   };
+
+  const handleAdd = () => {
+    setOpen(true);
+  };
+
+  const [open, setOpen] = useState();
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1 }}>
-          <h1>Archive</h1>
+          <Stack
+            direction="row"
+            
+            alignItems="center"
+            style={{ width: "100%" }}
+            spacing={2}
+          >
+            <h1>Archive</h1>
+            <Button variant="contained" size="small" onClick={handleAdd}>
+              Add
+            </Button>
+          </Stack>
           {archive &&
             archiveKeys.length !== 0 &&
             archiveKeys.map((item, index) => {
@@ -103,33 +131,50 @@ export function Archive() {
                 </Accordion>
               );
             })}
-          <Card sx={{ mt: 1 }}>
-            <h1>Insert new Archive object</h1>
 
-            <div>
-              <TextField
-                id="outlined-textarea"
-                label="Title"
-                value={title}
-                onChange={(event) => {setTitle(event.target.value)}}
-                multiline
-              />
-              <Divider />
-              <TextField
-                id="outlined-texterea"
-                label="Content"
-                multiline
-                rows={5}
-                value={content}
-                onChange={(event) => {setContent(event.target.value)}}
-              />
-            </div>
-            <Button variant="contained" size="small" onClick={
-              handleSave
-            }>
-              Save
-            </Button>
-          </Card>
+          <SimpleDialog open={open} onClose={handleClose}>
+            <Card sx={{ width: 600, padding: 5 }}>
+              <h1>Insert new Archive object</h1>
+              <div>
+                <TextField
+                  fullWidth="true"
+                  id="outlined-textarea"
+                  label="Title"
+                  value={title}
+                  onChange={(event) => {
+                    setTitle(event.target.value);
+                  }}
+                  multiline
+                />
+                <Divider />
+                <TextField
+                  fullWidth="true"
+                  id="outlined-texterea"
+                  label="Content"
+                  multiline
+                  rows={5}
+                  value={content}
+                  onChange={(event) => {
+                    setContent(event.target.value);
+                  }}
+                />
+              </div>
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="flex-end"
+                alignItems="center"
+                style={{ width: "100%" }}
+              >
+                <Button variant="contained" size="small" onClick={handleSave}>
+                  Save
+                </Button>
+                <Button variant="contained" size="small" onClick={handleClear}>
+                  Clear
+                </Button>
+              </Stack>
+            </Card>
+          </SimpleDialog>
         </Card>
       </Container>
     </ErrorCacher>
