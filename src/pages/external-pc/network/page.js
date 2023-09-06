@@ -6,6 +6,7 @@ import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
 import Table from "../../../components/Table/Table";
+import BackButton from "../../../components/BackButton/BackButton";
 import {
   Button,
   Container,
@@ -356,7 +357,7 @@ export default function ExternalNetwork() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>Network</h2>
+        <BackButton pageTitle="Network" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}

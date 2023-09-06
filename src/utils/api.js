@@ -57,14 +57,17 @@ export const createiotgw = async (
   channel,
   device,
   thingName,
-  folder,
-  publish_rate,
+  blob_folder,
   scan_rate,
+  publish_rate,
+  sampling_time,
+  sampling_number_start_index,
+  sampling_number,
   tags_list
 ) => {
   try {
     const res = await helper.fetchData(
-      `/createiotgw?channel=${channel}&device=${device}&type=${type}&publish_rate_ms=${publish_rate}&items_scan_rate=${scan_rate}&thing_name=${thingName}`,
+      `/createiotgw?channel=${channel}&device=${device}&type=${type}&publish_rate_ms=${publish_rate}&items_scan_rate=${scan_rate}&thing_name=${thingName}&machine_id=${blob_folder}&sampling_time=${sampling_time}&sampling_number_start_index=${sampling_number_start_index}&sampling_number=${sampling_number}`,
       "POST",
       tags_list
     );

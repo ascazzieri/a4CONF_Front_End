@@ -6,6 +6,7 @@ import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
 import Table from "../../../components/Table/Table";
+import BackButton from "../../../components/BackButton/BackButton";
 import {
   Button,
   Container,
@@ -51,16 +52,13 @@ export default function FTP() {
   //Server
   const [serverIP, setServerIP] = useState(ftp?.server?.ip_address);
   const [serverType, setServerType] = useState(ftp?.server?.type);
+  const [customPortEnable, setCustomPortEnable] = useState(
+    ftp?.server?.custom_port
+  );
   const [serverPort, setServerPort] = useState(ftp?.server?.port);
   const [maxConnection, setMaxConnection] = useState(ftp?.server?.max_cons);
   const [maxConnectionPerIP, setMaxConnectionPerIP] = useState(
     ftp?.server?.max_cons_per_ip
-  );
-  const [anonymousEnabled, setAnonymousEnabled] = useState(
-    ftp?.server?.anonymus_login?.enabled
-  );
-  const [anonymousFolder, setAnonymousFolder] = useState(
-    ftp?.server?.anonymus_login?.shared_folder
   );
 
   //Users
@@ -83,11 +81,10 @@ export default function FTP() {
   useEffect(() => {
     setServerIP(ftp?.server?.ip_address);
     setServerType(ftp?.server?.type);
+    setCustomPortEnable(ftp?.server?.custom_port);
     setServerPort(ftp?.server?.port);
     setMaxConnection(ftp?.server?.max_cons);
     setMaxConnectionPerIP(ftp?.server?.max_cons_per_ip);
-    setAnonymousEnabled(ftp?.server?.anonymus_login?.enabled);
-    setAnonymousFolder(ftp?.server?.anonymus_login?.shared_folder);
     setBlobTableData(
       getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder")
     );
@@ -102,6 +99,12 @@ export default function FTP() {
   const handleTypeChange = (value) => {
     if (value) {
       setServerType(value);
+    }
+  };
+  const handleCustomPortEnableChange = (event) => {
+    const customPort = event?.target?.checked;
+    if (customPort !== undefined) {
+      setCustomPortEnable(customPort);
     }
   };
   const handleServerPortChange = (event) => {
@@ -125,19 +128,6 @@ export default function FTP() {
     }
   };
 
-  const handleAnonymousLogin = (event) => {
-    const anonymous = event?.target?.checked;
-    if (anonymous !== undefined) {
-      setAnonymousEnabled(anonymous);
-    }
-  };
-  const handleAnonymousFolder = (event) => {
-    const folder = event?.target?.value;
-    if (folder) {
-      setAnonymousFolder(folder);
-    }
-  };
-
   const handleAddTimestampChange = (event) => {
     const timestamp = event?.target?.checked;
     if (timestamp !== undefined) {
@@ -147,7 +137,7 @@ export default function FTP() {
 
   const handleAddTimestampMilliseconds = (event) => {
     const timestampMilliseconds = event?.target?.checked;
-    if (timestampMilliseconds) {
+    if (timestampMilliseconds !== undefined) {
       setAddTimestampMilliseconds(timestampMilliseconds);
     }
   };
@@ -155,6 +145,27 @@ export default function FTP() {
   const handleFTPChange = () => {
     const newFTP = {
       ...ftp,
+      server: {
+        ip_address: serverIP,
+        type: serverType,
+        custom_port: customPortEnable,
+        port: serverPort,
+        max_cons: maxConnection,
+        max_cons_per_ip: maxConnectionPerIP,
+        users: usersTableData,
+      },
+      file_timestamp: {
+        add_timestamp_to_filename: addTimestamp,
+        add_milliseconds_to_timestamp: addTimestampMilliseconds,
+      },
+      blob_settings: [
+        {
+          default: "test",
+        },
+        {
+          default_1: "default_1",
+        },
+      ],
     };
 
     dispatch(updateFastDataFTP({ newFTP }));
@@ -208,7 +219,7 @@ export default function FTP() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>FTP</h2>
+        <BackButton pageTitle="FTP" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
@@ -249,22 +260,43 @@ export default function FTP() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>FTP server port:</FormLabel>
+                <FormLabel>Custom port:</FormLabel>
 
-                <TextField
-                  type="number"
-                  inputProps={{
-                    inputMode: "numeric",
-                    pattern: "[0-9]*",
-                  }}
-                  label="Port number"
-                  /*  variant="outlined"
-                                size="small" */
-                  value={serverPort}
-                  onChange={handleServerPortChange}
-                />
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>
+                    Port: {customPortEnable ? serverPort : 21}
+                  </Typography>
+
+                  <Switch
+                    checked={customPortEnable}
+                    onChange={handleCustomPortEnableChange}
+                  />
+                </Stack>
               </FormControl>
+
               <Divider />
+
+              {customPortEnable && (
+                <>
+                  <FormControl fullWidth>
+                    <FormLabel>FTP server port:</FormLabel>
+
+                    <TextField
+                      type="number"
+                      inputProps={{
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      }}
+                      label="Port number"
+                      /*  variant="outlined"
+                                size="small" */
+                      value={serverPort}
+                      onChange={handleServerPortChange}
+                    />
+                  </FormControl>
+                  <Divider />
+                </>
+              )}
 
               <FormControl fullWidth>
                 <FormLabel>
@@ -311,60 +343,15 @@ export default function FTP() {
 
           {currentTab === 1 && (
             <>
-              <FormControl fullWidth>
-                <FormLabel>Allow anonymous login:</FormLabel>
-
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Anonymous login</Typography>
-
-                  <Switch
-                    checked={anonymousEnabled}
-                    onChange={handleAnonymousLogin}
-                  />
-                </Stack>
-              </FormControl>
-
-              <Divider />
-
-              {anonymousEnabled ? (
-                <>
-                  <FormControl fullWidth>
-                    <FormLabel>Anonymous folder name:</FormLabel>
-
-                    <TextField
-                      type="text"
-                      label="folder name"
-                      helperText="Folder name for anonymous users"
-                      value={anonymousFolder}
-                      required={true}
-                      onChange={handleAnonymousFolder}
-                    />
-                  </FormControl>
-                  <Divider />
-                </>
-              ) : (
-                <>
-                  <FormLabel>Users:</FormLabel>
-
-                  <Table
-                    tableData={usersTableData}
-                    setTableData={setUsersTableData}
-                    columnsData={usersColumnData}
-                  />
-
-                  <Divider />
-                </>
-              )}
-
-              {/* <FormLabel>Routes:</FormLabel>
+              <FormLabel>Users:</FormLabel>
 
               <Table
-                tableData={routeTableData}
-                setTableData={setRouteTableData}
-                columnsData={routesColumnData}
+                tableData={usersTableData}
+                setTableData={setUsersTableData}
+                columnsData={usersColumnData}
               />
 
-              <Divider /> */}
+              <Divider />
             </>
           )}
 

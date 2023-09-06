@@ -21,7 +21,6 @@ import OPCUAServer from "./pages/external-pc/opcua-server/page";
 import FTP from "./pages/fast-data/ftp/page"
 import HTTP from "./pages/fast-data/http/page"
 import Matrix from "./pages/fast-data/matrix/page"
-import { Checklist } from "@mui/icons-material";
 
 export default function App({ Component, pageProps }) {
   const [authenticate, setAuthenticate] = useState(true);

@@ -150,10 +150,6 @@
             "port": 21,
             "max_cons": 25,
             "max_cons_per_ip": 5,
-            "anonymus_login": {
-              "enabled": false,
-              "shared_folder": "anonymus"
-            },
             "users": [
               {
                 "username": "applied",
@@ -180,6 +176,7 @@
           "running": true,
           "http_server": {
             "host": "0.0.0.0",
+            "custom_port": false,
             "port": 8080,
             "path": "csv"
           },

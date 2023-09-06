@@ -17,6 +17,7 @@ import {
   Container,
   Typography,
   FormControlLabel,
+  Box,
   Switch,
 } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -151,7 +152,7 @@ export default function ExternalPC() {
                         className="internal-menu-cards"
                       >
                         <Typography variant="h7" component="div">
-                          Remote Assistance
+                          Sitemanager
                         </Typography>
                         <Typography
                           variant="body2"
@@ -380,9 +381,19 @@ export default function ExternalPC() {
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1 }}>
           <CardContent>
-            <VerticalTab tabsData={tabsData} root="external-pc">
+            <Box
+              sx={{
+                flexGrow: 1,
+                bgcolor: "background.paper",
+                display: "flex",
+                pb: 2,
+              }}
+            >
               <Outlet />
-            </VerticalTab>
+            </Box>
+            {/* <VerticalTab tabsData={tabsData} root="external-pc">
+              <Outlet />
+            </VerticalTab> */}
           </CardContent>
         </Card>
         <Grid container spacing={2}>

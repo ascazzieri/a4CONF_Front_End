@@ -7,6 +7,7 @@ import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import BackButton from "../../../components/BackButton/BackButton";
 import {
   get_iot_gtws_opcua_reading_enabled,
   get_iot_gtws_opcua_reading_disabled,
@@ -485,7 +486,7 @@ export default function OPCServer() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>OPCUA Server</h2>
+        <BackButton pageTitle="OPCUA Server" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}

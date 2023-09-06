@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateKepware, updateThingNames } from "../../../utils/redux/reducers";
 import * as helper from "../../../utils/utils";
+import BackButton from "../../../components/BackButton/BackButton";
 import {
   loadChannels,
   createiotgw,
@@ -99,6 +100,9 @@ const Row = (props) => {
   const [folder, setFolder] = useState();
   const [publishRate, setPublishRate] = useState(1000);
   const [scanRate, setScanRate] = useState(1000);
+  const [samplingTime, setSamplingTime] = useState(16);
+  const [samplingNumberStartIndex, setSamplingNumberStartIndex] = useState(0);
+  const [samplingNumber, setSamplingNumber] = useState(100);
 
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
@@ -202,6 +206,57 @@ const Row = (props) => {
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
     setRowData(updatedRowData);
   };
+  const handleSamplingTimeChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.sampling_time = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
+  const handleSamplingStartIndexChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.sampling_number_start_index = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
+  const handleSamplingNumberChange = (event) => {
+    const value = event?.target?.value;
+    const name = event?.target?.name;
+
+    const updatedRowData = { ...rowData };
+
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.sampling_number = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
   const handleCreate = async (event, device) => {
     if (!device?.endpoint) {
       handleButtonClickFeedback({
@@ -222,9 +277,18 @@ const Row = (props) => {
       return;
     }
     let endpoint = "";
-    const folder = device?.folder;
-    const publishRate = device?.publish_rate ? device?.publish_rate : 1000;
-    const scanRate = device?.scan_rate ? device?.scan_rate : 1000;
+    const folder = device?.folder ? device?.folder : "blob_test";
+    const publish_rate = device?.publish_rate ? device?.publish_rate : 1000;
+    const scan_rate = device?.scan_rate ? device?.scan_rate : 1000;
+
+    const sampling_time = device?.sampling_time ? device?.sampling_time : 16;
+    const sampling_number_start_index = device?.sampling_number_start_index
+      ? device?.sampling_number_start_index
+      : 0;
+    const sampling_number = device?.sampling_number
+      ? device?.sampling_number
+      : 100;
+
     if (!device?.endpoint.includes("rt_")) {
       endpoint = `rt_${device?.endpoint}`;
     } else {
@@ -235,14 +299,16 @@ const Row = (props) => {
       const channel = row?.name;
       const deviceName = device?.name;
       const folder = device?.folder;
-      const publish_rate = device?.publish_rate;
-      const scan_rate = device?.scan_rate;
+
       setEndPoint(endpoint);
       setProvider(event?.target?.name);
       setDeviceTags(tags);
       setFolder(folder);
-      setPublishRate(publish_rate);
       setScanRate(scan_rate);
+      setPublishRate(publish_rate);
+      setSamplingTime(sampling_time);
+      setSamplingNumberStartIndex(sampling_number_start_index);
+      setSamplingNumber(sampling_number);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
@@ -252,9 +318,11 @@ const Row = (props) => {
         device?.name, //device name
         event?.target?.name === "twa" ? endpoint : null, //endpoint
         event?.target?.name === "matrix" ? folder : null, //folder for matrix
-        event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
         event?.target?.name === "matrix" ? scanRate : null, //scan rate for matrix
-
+        event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
+        event?.target?.name === "matrix" ? samplingTime : null, //sampling time for matrix
+        event?.target?.name === "matrix" ? samplingNumberStartIndex : null, //sampling number start index for matrix
+        event?.target?.name === "matrix" ? samplingNumber : null, //sampling number for matrix
         []
       );
       if (response?.iotgw && response?.time && response?.thing_name)
@@ -294,6 +362,9 @@ const Row = (props) => {
           folder={folder}
           publishRate={publishRate}
           scanRate={scanRate}
+          samplingTime={samplingTime}
+          samplingNumberStartIndex={samplingNumberStartIndex}
+          samplingNumber={samplingNumber}
           tags={deviceTags}
         />
       )}
@@ -590,9 +661,12 @@ const Row = (props) => {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">Name</TableCell>
-                        <TableCell align="center">Folder</TableCell>
-                        <TableCell align="center">Publish rate</TableCell>
+                        <TableCell align="center">Blob folder</TableCell>
                         <TableCell align="center">Scan rate</TableCell>
+                        <TableCell align="center">Publish rate</TableCell>
+                        <TableCell align="center">Sampling time</TableCell>
+                        <TableCell align="center">Sampling index</TableCell>
+                        <TableCell align="center">Sampling number</TableCell>
                         <TableCell align="center">Choose tags</TableCell>
                         <TableCell align="center">
                           IoT gateway for Fast data Matrix
@@ -617,7 +691,7 @@ const Row = (props) => {
                             >
                               <TextField
                                 select
-                                label="Folder name"
+                                label="Machine ID"
                                 name={device?.name}
                                 defaultValue=""
                                 onChange={handleFolderChange}
@@ -643,13 +717,13 @@ const Row = (props) => {
                                   inputMode: "numeric",
                                   pattern: "[0-9]*",
                                 }}
-                                label="Publish rate (ms)"
+                                label="ms"
                                 name={device?.name}
                                 variant="outlined"
                                 size="small"
                                 defaultValue={1000}
-                                onBlur={handlePublishRateChange}
-                                style={{ minWidth: 150 }}
+                                onBlur={handleScanRateChange}
+                                style={{ minWidth: 80 }}
                               />
                             </TableCell>
                             <TableCell
@@ -663,13 +737,73 @@ const Row = (props) => {
                                   inputMode: "numeric",
                                   pattern: "[0-9]*",
                                 }}
-                                label="Scan rate"
+                                label="ms"
                                 name={device?.name}
                                 variant="outlined"
                                 size="small"
                                 defaultValue={1000}
-                                onBlur={handleScanRateChange}
-                                style={{ minWidth: 150 }}
+                                onBlur={handlePublishRateChange}
+                                style={{ minWidth: 80 }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                type="number"
+                                inputProps={{
+                                  inputMode: "numeric",
+                                  pattern: "[0-9]*",
+                                }}
+                                label="ms"
+                                name={device?.name}
+                                variant="outlined"
+                                size="small"
+                                defaultValue={16}
+                                onBlur={handleSamplingTimeChange}
+                                style={{ minWidth: 80 }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                type="number"
+                                inputProps={{
+                                  inputMode: "numeric",
+                                  pattern: "[0-9]*",
+                                }}
+                                label="index"
+                                name={device?.name}
+                                variant="outlined"
+                                size="small"
+                                defaultValue={0}
+                                onBlur={handleSamplingStartIndexChange}
+                                style={{ minWidth: 80 }}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <TextField
+                                type="number"
+                                inputProps={{
+                                  inputMode: "numeric",
+                                  pattern: "[0-9]*",
+                                }}
+                                label="number"
+                                name={device?.name}
+                                variant="outlined"
+                                size="small"
+                                defaultValue={100}
+                                onBlur={handleSamplingNumberChange}
+                                style={{ minWidth: 80 }}
                               />
                             </TableCell>
 
@@ -729,10 +863,10 @@ export default function Kepware() {
   const [expandedListDevices, setExpandedListDevices] = useState([]);
   const navbarItems = [
     "Local Things",
-    "Machines Configured",
     "Create IoT Gateway",
     "Kepware configuration",
     "License",
+    "Machines Configured",
     "JSON",
   ];
 
@@ -961,7 +1095,7 @@ export default function Kepware() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>Kepware</h2>
+        <BackButton pageTitle="Kepware" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
@@ -1041,6 +1175,94 @@ export default function Kepware() {
           </>
         )}
         {currentTab === 1 && (
+          <>
+            <TableContainer component={Paper}>
+              <Table aria-label="collapsible table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      <Button
+                        onClick={handleChannelRefresh}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                      >
+                        Refresh
+                      </Button>
+                    </TableCell>
+                    <TableCell>KEPWARE CHANNELS</TableCell>
+                    <TableCell>DEVICE NUMBER</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {channelRows &&
+                    channelRows.lenght !== 0 &&
+                    channelRows.map((row) => {
+                      return (
+                        <Row
+                          key={row.name + row.device_number}
+                          row={row}
+                          thingNames={thingNames}
+                          handleButtonClickFeedback={handleClick}
+                        />
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <Divider />
+          </>
+        )}
+
+        {currentTab === 2 && (
+          <>
+            <FormControl fullWidth>
+              <Typography>Kepware project:</Typography>
+
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="flex-start"
+                alignItems="center"
+              >
+                <Button variant="contained">Upload</Button>
+                <Button
+                  variant="contained"
+                  onClick={handleDownloadKepwareProject}
+                >
+                  Download
+                </Button>
+              </Stack>
+            </FormControl>
+
+            <Divider />
+          </>
+        )}
+
+        {currentTab === 3 && (
+          <>
+            <FormControl fullWidth>
+              <FormLabel>Kepware mode:</FormLabel>
+
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Typography>License mode</Typography>
+
+                <Switch
+                  checked={kepwareMode}
+                  onChange={handleKepwareModeChange}
+                />
+
+                <Typography>Trial mode</Typography>
+              </Stack>
+            </FormControl>
+            <FormControl fullWidth>
+              <Button onClick={handleKepwareChange} variant="contained">
+                Invia
+              </Button>
+            </FormControl>
+            <Divider />
+          </>
+        )}
+        {currentTab === 4 && (
           <>
             <Box sx={{ flexGrow: 1 }}>
               <FormLabel>Kepware device configured:</FormLabel>
@@ -1177,94 +1399,6 @@ export default function Kepware() {
                 </List>
               </Box>
             </Box>
-          </>
-        )}
-        {currentTab === 2 && (
-          <>
-            <TableContainer component={Paper}>
-              <Table aria-label="collapsible table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <Button
-                        onClick={handleChannelRefresh}
-                        variant="outlined"
-                        endIcon={<CachedIcon />}
-                      >
-                        Refresh
-                      </Button>
-                    </TableCell>
-                    <TableCell>KEPWARE CHANNELS</TableCell>
-                    <TableCell>DEVICE NUMBER</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {channelRows &&
-                    channelRows.lenght !== 0 &&
-                    channelRows.map((row) => {
-                      return (
-                        <Row
-                          key={row.name + row.device_number}
-                          row={row}
-                          thingNames={thingNames}
-                          handleButtonClickFeedback={handleClick}
-                        />
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 3 && (
-          <>
-            <FormControl fullWidth>
-              <Typography>Kepware configuration:</Typography>
-
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="flex-start"
-                alignItems="center"
-              >
-                <Button variant="contained">Upload</Button>
-                <Button
-                  variant="contained"
-                  onClick={handleDownloadKepwareProject}
-                >
-                  Download
-                </Button>
-              </Stack>
-            </FormControl>
-
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 4 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>Kepware mode:</FormLabel>
-
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>License mode</Typography>
-
-                <Switch
-                  checked={kepwareMode}
-                  onChange={handleKepwareModeChange}
-                />
-
-                <Typography>Trial mode</Typography>
-              </Stack>
-            </FormControl>
-            <FormControl fullWidth>
-              <Button onClick={handleKepwareChange} variant="contained">
-                Invia
-              </Button>
-            </FormControl>
-            <Divider />
           </>
         )}
 

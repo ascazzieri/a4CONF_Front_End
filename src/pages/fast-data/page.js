@@ -69,14 +69,14 @@ export default function FastData() {
     navigate(`/fast-data/${name}`);
   };
 
-  const goodStatus = () => {
+/*   const goodStatus = () => {
     return (
       <CheckCircleOutlineOutlinedIcon sx={{ color: "green", fontSize: 20 }} />
     );
   };
   const badStatus = () => {
     return <DangerousOutlinedIcon sx={{ color: "red", fontSize: 21 }} />;
-  };
+  }; */
 
   if (currentURLArray.length === 2) {
     const cardIcon = { fontSize: 80, color: "#0d6efd" };
@@ -253,92 +253,7 @@ export default function FastData() {
                   )}
                 </Grid>
               </Grid>
-              <Grid container columns={{ xs: 4, sm: 12, md: 12 }}>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 2 }}
-                    style={{ overflowY: "auto" }}
-                  >
-                    <Grid item xs={6}>
-                      <div>FTP Running</div>
-                    </Grid>
-                    <Grid item xs={6}>
-                      {fastData?.industrial?.ftp?.running
-                        ? goodStatus()
-                        : badStatus()}
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 2 }}
-                    style={{ overflowY: "auto" }}
-                  >
-                    <Grid item xs={6}>
-                      <div>HTTP Running</div>
-                    </Grid>
-                    <Grid item xs={6}>
-                      {fastData?.industrial?.http?.running
-                        ? goodStatus()
-                        : badStatus()}
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 2 }}
-                    style={{ overflowY: "auto" }}
-                  >
-                    <Grid item xs={6}>
-                      <div>Matrix Running</div>
-                    </Grid>
-                    <Grid item xs={6}>
-                      {fastData?.customer?.matrix?.running
-                        ? goodStatus()
-                        : badStatus()}
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
+              {/* o vi */}
             </CardContent>
           </Card>
         </Container>
@@ -351,7 +266,16 @@ export default function FastData() {
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1 }}>
           <CardContent>
-            <Outlet />
+            <Box
+              sx={{
+                flexGrow: 1,
+                bgcolor: "background.paper",
+                display: "flex",
+                pb: 2,
+              }}
+            >
+              <Outlet />
+            </Box>
           </CardContent>
         </Card>
       </Container>
