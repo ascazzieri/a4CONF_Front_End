@@ -67,11 +67,20 @@ export function Archive() {
     setOpen(true);
   };
 
-  const [open, setOpen] = useState();
+  const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-  useEffect (() => {});
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await get_archive();
+        setArchive(response);
+      } catch (err) {
+        console.log('Error occured when fetching books');
+      }
+    })();
+  }, []);
   console.log(get_archive());
   return (
     <ErrorCacher>
