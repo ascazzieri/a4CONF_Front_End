@@ -49,7 +49,7 @@ export default function Login() {
           <Divider />
           <div>
             <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Username</h2>
+              <h2>Username:</h2>
               <TextField
                 fullWidth={true}
                 name="username"
@@ -60,7 +60,7 @@ export default function Login() {
             </Stack>
             <Divider />
             <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Password</h2>
+              <h2>Password:</h2>
               <TextField
                 fullWidth={true}
                 name="password"

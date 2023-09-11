@@ -1,13 +1,21 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateCustomerNetwork } from "../../../utils/redux/reducers";
+import {
+  updateCustomerNetwork,
+  updatePingResult,
+} from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
-import Table from "../../../components/Table/Table";
+import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
+import { test_connection } from "../../../utils/api";
+import { LoadingContext } from "../../../utils/context/Loading";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
+  AppBar,
+  Box,
   Button,
   Container,
   Divider,
@@ -16,13 +24,34 @@ import {
   FormLabel,
   IconButton,
   MenuItem,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
   Radio,
   RadioGroup,
   Stack,
   Switch,
+  TableBody,
+  TableContainer,
+  Table,
+  TableRow,
+  TableCell,
   TextField,
+  Toolbar,
   Typography,
 } from "@mui/material";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
+import NetworkPingIcon from "@mui/icons-material/NetworkPing";
+import LabelImportantIcon from "@mui/icons-material/LabelImportant";
+import DvrIcon from "@mui/icons-material/Dvr";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
+import DataArrayIcon from "@mui/icons-material/DataArray";
 
 const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
 
@@ -35,6 +64,7 @@ export default function ExternalNetwork() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = [
     "Connection parameters",
+    "Test connection",
     "Static Routes",
     "NTP",
     "NAT",
@@ -43,6 +73,20 @@ export default function ExternalNetwork() {
     "Port forwarding",
     "JSON",
   ];
+  const [expandedListHosts, setExpandedListHosts] = useState([]);
+  const [expandedListPingNumber, setExpandedListPingNumber] = useState([]);
+
+  const goodStatus = () => {
+    return (
+      <CheckCircleOutlineOutlinedIcon sx={{ color: "green", fontSize: 20 }} />
+    );
+  };
+  const badStatus = () => {
+    return <DangerousOutlinedIcon sx={{ color: "red", fontSize: 21 }} />;
+  };
+
+  const loaderContext = useContext(LoadingContext);
+  const snackBarContext = useContext(SnackbarContext);
   const [ipAddress, setIPAddress] = useState(customerNetwork?.static?.ip);
   const [defaultGateway, setDefaultGateway] = useState(
     customerNetwork?.static?.gateway
@@ -63,6 +107,12 @@ export default function ExternalNetwork() {
   const [connectionType, setConnectionType] = useState(
     customerNetwork?.if_wan_medium
   );
+
+  const [hostList, setHostList] = useState([]);
+  const [currentHost, setCurrentHost] = useState("");
+  const [testPingNumber, setTestPingNumber] = useState(3);
+
+  const [connectionTest, setConnectionTest] = useState();
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -91,6 +141,9 @@ export default function ExternalNetwork() {
       });
     });
     return arrayOfObjects;
+  };
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
   };
 
   const [wifiTableData, setWifiTableData] = useState(
@@ -153,7 +206,71 @@ export default function ExternalNetwork() {
     setMachineToInternet(event.target.checked);
   };
 
-  console.log(routeTableData);
+  const handleExpandableListHosts = (event, ip) => {
+    const oldList = [...expandedListHosts];
+    if (oldList.includes(ip)) {
+      setExpandedListHosts((prevItems) =>
+        prevItems.filter((item) => item !== ip)
+      );
+    } else {
+      oldList.push(ip);
+      setExpandedListHosts(oldList);
+    }
+  };
+  const handleExpandableListPingNumber = (event, ip, number) => {
+    const oldList = [...expandedListPingNumber];
+    if (oldList.includes(`${ip}.${number}`)) {
+      setExpandedListPingNumber((prevItems) =>
+        prevItems.filter((item) => item !== `${ip}.${number}`)
+      );
+    } else {
+      oldList.push(`${ip}.${number}`);
+      setExpandedListPingNumber(oldList);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    loaderContext[1](true);
+    const connection = await test_connection({
+      n_ping: testPingNumber,
+      ip_addresses: [hostList],
+    });
+
+    console.log("test PCB connection");
+
+    if (connection) {
+      setConnectionTest(connection);
+      dispatch(updatePingResult(connection));
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Test results received`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on PCB connection test`,
+      });
+    }
+    loaderContext[1](false);
+  };
+
+  const handleAddHostList = () => {
+    const newHost = currentHost ? currentHost : undefined;
+    if (newHost.trim() === "") {
+      return;
+    }
+    const oldHostList = new Set(hostList);
+    oldHostList.add(newHost);
+    setHostList(Array.from(oldHostList));
+  };
+  const handleHostListDelete = () => {
+    const newHostList = hostList.filter((item) => item !== currentHost);
+    setHostList(newHostList);
+  };
 
   const handleCustomerChange = (event) => {
     event.preventDefault();
@@ -363,7 +480,7 @@ export default function ExternalNetwork() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 7 && <JSONTree data={customerNetwork} />}
+        {currentTab === 8 && <JSONTree data={customerNetwork} />}
 
         <form onSubmit={handleCustomerChange}>
           {currentTab === 0 && (
@@ -452,58 +569,329 @@ export default function ExternalNetwork() {
                 </RadioGroup>
               </FormControl>
 
-              {connectionType === "wireless" && (
-                <>
-                  <FormControl fullWidth>
-                    <Stack
-                      direction="row"
-                      spacing={3}
-                      justifyContent="flex-start"
-                      alignItems="center"
-                    >
-                      <TextField
-                        select
-                        label="Add network"
-                        helperText="Choose from the wireless network list ad add SSID and password to the table below"
-                        defaultValue={""}
-                        onChange={handleWifiChange}
+              {connectionType === "wireless" &&
+                customerNetwork?.essid &&
+                customerNetwork?.essid.length !== 0 && (
+                  <>
+                    <FormControl fullWidth>
+                      <Stack
+                        direction="row"
+                        spacing={3}
+                        justifyContent="flex-start"
+                        alignItems="center"
                       >
-                        {customerNetwork?.essid &&
-                          customerNetwork?.essid.length !== 0 &&
-                          customerNetwork?.essid.map((item) => {
-                            return (
-                              <MenuItem key={Math.random() + item} value={item}>
-                                {item}
-                              </MenuItem>
-                            );
-                          })}
-                      </TextField>
+                        <TextField
+                          select
+                          label="Add network"
+                          helperText="Choose from the wireless network list ad add SSID and password to the table below"
+                          defaultValue={""}
+                          onChange={handleWifiChange}
+                        >
+                          {customerNetwork?.essid &&
+                            customerNetwork?.essid.length !== 0 &&
+                            customerNetwork?.essid.map((item) => {
+                              return (
+                                <MenuItem
+                                  key={Math.random() + item}
+                                  value={item}
+                                >
+                                  {item}
+                                </MenuItem>
+                              );
+                            })}
+                        </TextField>
 
-                      <IconButton aria-label="reload">
-                        <CachedIcon />
-                      </IconButton>
+                        <IconButton aria-label="reload">
+                          <CachedIcon />
+                        </IconButton>
 
-                      <Button onClick={handleAddSSID} variant="contained">
-                        Add SSID
-                      </Button>
-                    </Stack>
-                  </FormControl>
+                        <Button onClick={handleAddSSID} variant="contained">
+                          Add SSID
+                        </Button>
+                      </Stack>
+                    </FormControl>
 
-                  <FormLabel>Wifi:</FormLabel>
-                  <Table
-                    tableData={wifiTableData}
-                    setTableData={setWifiTableData}
-                    columnsData={wifiColumnData}
-                    selectableObjectData={wifiSelectableObjectData}
-                  />
-                </>
-              )}
+                    <FormLabel>Wifi:</FormLabel>
+                    <CustomTable
+                      tableData={wifiTableData}
+                      setTableData={setWifiTableData}
+                      columnsData={wifiColumnData}
+                      selectableObjectData={wifiSelectableObjectData}
+                    />
+                    <Divider />
+                  </>
+                )}
+              {connectionType === "wireless" &&
+                (!customerNetwork.essid ||
+                  customerNetwork?.essid.length !== 0) && (
+                  <>
+                    <Typography>
+                      No ESSID found. Check your connection settings, apply
+                      changes and reload configuration
+                    </Typography>
+                  </>
+                )}
 
               <Divider />
             </>
           )}
-
           {currentTab === 1 && (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <FormControl fullWidth>
+                  <FormLabel>Add new address to ping test:</FormLabel>
+
+                  <TextField
+                    type="text"
+                    label="Add address"
+                    helperText="Create a hosts list of all the address you want to ping"
+                    value={currentHost}
+                    onChange={(event) => {
+                      setCurrentHost(event?.target?.value);
+                    }}
+                  />
+                </FormControl>
+                <Button variant="contained" onClick={handleAddHostList}>
+                  Add
+                </Button>
+              </Stack>
+              <Divider />
+
+              <FormControl>
+                <FormLabel>FTP server port:</FormLabel>
+
+                <TextField
+                  type="number"
+                  inputProps={{
+                    inputMode: "numeric",
+                    pattern: "[0-9]*",
+                  }}
+                  label="Ping number"
+                  value={testPingNumber}
+                  onChange={(event) => {
+                    setTestPingNumber(event?.target?.value);
+                  }}
+                />
+              </FormControl>
+              <Divider />
+
+              {hostList && hostList.length !== 0 && (
+                <>
+                  <FormLabel>Ping list:</FormLabel>
+                  <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {hostList &&
+                          hostList.length !== 0 &&
+                          hostList.map((address) => {
+                            return (
+                              <TableRow hover key={address + Math.random()}>
+                                <TableCell
+                                  align="center"
+                                  key={address + Math.random()}
+                                >
+                                  {address}
+                                </TableCell>
+                                <TableCell
+                                  align="center"
+                                  key={address + Math.random()}
+                                >
+                                  <IconButton
+                                    aria-label="delete"
+                                    onClick={() => {
+                                      handleHostListDelete(address);
+                                    }}
+                                    key={address + Math.random()}
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Divider />
+                </>
+              )}
+              {hostList && hostList.length !== 0 && (
+                <>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <FormLabel>External PC network debugger:</FormLabel>
+                    <AppBar position="static" sx={{ background: "#1F293F" }}>
+                      <Toolbar>
+                        <Button
+                          variant="contained"
+                          onClick={handleTestConnection}
+                          endIcon={<NetworkPingIcon />}
+                        >
+                          Test connection
+                        </Button>
+                        <IconButton
+                          size="large"
+                          edge="start"
+                          color="inherit"
+                          aria-label="open drawer"
+                          sx={{ ml: 2 }}
+                        ></IconButton>
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          component="div"
+                          sx={{
+                            flexGrow: 1,
+                            display: { xs: "none", sm: "block" },
+                          }}
+                        ></Typography>
+                      </Toolbar>
+                      <Box component="main" sx={{ p: 3 }}>
+                        <Typography
+                          variant="h6"
+                          noWrap
+                          component="div"
+                          sx={{ flexGrow: 1 }}
+                        >
+                          {connectionTest
+                            ? "Ping result"
+                            : "Press the button above to make pings towards selected addresses"}
+                        </Typography>
+                        <List
+                          sx={{
+                            width: "100%",
+                          }}
+                          component="nav"
+                          aria-labelledby="nested-list-subheader"
+                        >
+                          {connectionTest &&
+                            connectionTest.length !== 0 &&
+                            connectionTest.map((item, index) => {
+                              const ip = Object.keys(item)[0] || undefined;
+                              if (!ip) {
+                                return <>Error on loading ping test results</>;
+                              }
+                              return (
+                                <>
+                                  <ListItemButton
+                                    onClick={(event) =>
+                                      handleExpandableListHosts(event, ip)
+                                    }
+                                  >
+                                    <ListItemIcon>
+                                      <LabelImportantIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary={ip} />
+                                    {expandedListHosts.includes(ip) ? (
+                                      <ExpandLess />
+                                    ) : (
+                                      <ExpandMore />
+                                    )}
+                                  </ListItemButton>
+                                  <Collapse
+                                    in={expandedListHosts.includes(ip)}
+                                    timeout="auto"
+                                    unmountOnExit
+                                  >
+                                    {ip &&
+                                      item[ip] &&
+                                      Object.keys(item[ip]).length !== 0 &&
+                                      Object.keys(item[ip]).map(
+                                        (pingNumber) => {
+                                          const result =
+                                            item[ip][pingNumber]?.result;
+                                          const rtt = result
+                                            ? item[ip][pingNumber]?.rtt
+                                            : undefined;
+                                          return (
+                                            <>
+                                              <ListItemButton
+                                                onClick={(event) =>
+                                                  handleExpandableListPingNumber(
+                                                    event,
+                                                    ip,
+                                                    pingNumber
+                                                  )
+                                                }
+                                                sx={{ pl: 5 }}
+                                              >
+                                                <ListItemIcon>
+                                                  <DvrIcon />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                  primary={pingNumber}
+                                                />
+                                                {expandedListPingNumber.includes(
+                                                  `${ip}.${pingNumber}`
+                                                ) ? (
+                                                  <ExpandLess />
+                                                ) : (
+                                                  <ExpandMore />
+                                                )}
+                                              </ListItemButton>
+                                              <Collapse
+                                                in={expandedListPingNumber.includes(
+                                                  `${ip}.${pingNumber}`
+                                                )}
+                                                timeout="auto"
+                                                unmountOnExit
+                                              >
+                                                <List
+                                                  component="div"
+                                                  disablePadding
+                                                >
+                                                  <ListItemButton
+                                                    sx={{ pl: 10 }}
+                                                  >
+                                                    <ListItemIcon>
+                                                      Result:
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                      primary={
+                                                        result
+                                                          ? goodStatus()
+                                                          : badStatus()
+                                                      }
+                                                    />
+                                                  </ListItemButton>
+                                                  <ListItemButton
+                                                    sx={{ pl: 10 }}
+                                                  >
+                                                    <ListItemIcon>
+                                                      RTT
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                      primary={
+                                                        result ? rtt : "None"
+                                                      }
+                                                    />
+                                                  </ListItemButton>
+                                                </List>
+                                              </Collapse>
+                                            </>
+                                          );
+                                        }
+                                      )}
+                                  </Collapse>
+                                </>
+                              );
+                            })}
+                        </List>
+                        <Divider />
+                      </Box>
+                    </AppBar>
+                  </Box>
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+
+          {currentTab === 2 && (
             <>
               <FormLabel>Routes:</FormLabel>
 
@@ -517,7 +905,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          {currentTab === 2 && (
+          {currentTab === 3 && (
             <>
               <FormControl fullWidth>
                 <FormLabel>NTP Server:</FormLabel>
@@ -550,7 +938,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          {currentTab === 3 && (
+          {currentTab === 4 && (
             <>
               <FormControl fullWidth>
                 <FormLabel>NAT feature:</FormLabel>
@@ -594,7 +982,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          {currentTab === 4 && (
+          {currentTab === 5 && (
             <>
               <FormLabel>Alias:</FormLabel>
 
@@ -608,7 +996,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          {currentTab === 5 && (
+          {currentTab === 6 && (
             <>
               <FormLabel>Set TCP ports rules in input WAN:</FormLabel>
 
@@ -623,7 +1011,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          {currentTab === 6 && (
+          {currentTab === 7 && (
             <>
               {NATFeatures ? (
                 <>

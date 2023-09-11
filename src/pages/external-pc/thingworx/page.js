@@ -55,64 +55,17 @@ import {
   TableCell,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import {
   Visibility,
   VisibilityOff,
-  ThumbUpOffAltOutlined,
-  ThumbDownAltOutlined,
   CloudUploadOutlined,
   PendingOutlined,
 } from "@mui/icons-material";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
-/** @type {*} */
-const Search = styled("div")(({ theme }) => ({
-  position: "relative",
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginLeft: 0,
-  width: "100%",
-  [theme.breakpoints.up("sm")]: {
-    marginLeft: theme.spacing(1),
-    width: "auto",
-  },
-}));
 
-/** @type {*} */
-const SearchIconWrapper = styled("div")(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: "100%",
-  position: "absolute",
-  pointerEvents: "none",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-}));
-const HighlightedText = styled("span")({
-  background: "#7F899E",
-  fontWeight: "bold",
-});
-
-/** @type {*} */
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: "inherit",
-  "& .MuiInputBase-input": {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create("width"),
-    width: "100%",
-    [theme.breakpoints.up("sm")]: {
-      width: "12ch",
-      "&:focus": {
-        width: "20ch",
-      },
-    },
-  },
-}));
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -128,7 +81,6 @@ export default function Thingworx() {
 
   const loaderContext = useContext(LoadingContext);
 
-  //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -167,32 +119,6 @@ export default function Thingworx() {
 
   const [expandedList, setExpandedList] = useState([]);
 
-  const [searchText, setSearchText] = useState("");
-
-  const handleSearch = (event) => {
-    setSearchText(event.target.value);
-  };
-
-  /**
-   * Highlights a specific search term within a given text.
-   *
-   * @param {string} text - The original text.
-   * @param {string} search - The term to be highlighted.
-   * @returns {Array|string} - The modified array of words or the original text if no match found.
-   */
-  const highlightText = (text, search) => {
-    if (text?.length === 0) {
-      return "";
-    } else {
-      const regex = new RegExp(`(${search})`, "gi");
-      return text.split(regex).map((word, index) => {
-        if (word.toLowerCase() === search.toLowerCase()) {
-          return <HighlightedText key={index}>{word}</HighlightedText>;
-        }
-        return word;
-      });
-    }
-  };
   const agentDiagnosisHandler = () => {
     if (!agentDiagnosis) {
       return;
@@ -735,9 +661,9 @@ export default function Thingworx() {
                       sx={{ ml: 2 }}
                     >
                       {agentDiagnosis && agentDiagnosis["TW is connected"] ? (
-                        <ThumbUpOffAltOutlined color="success" />
+                        <CheckCircleOutlineOutlinedIcon color="success" />
                       ) : (
-                        <ThumbDownAltOutlined color="error" />
+                        <DangerousOutlinedIcon color="error" />
                       )}
                     </IconButton>
                     <Typography
@@ -746,20 +672,6 @@ export default function Thingworx() {
                       component="div"
                       sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
                     ></Typography>
-                    {/*                     {agentDiagnosis &&
-                      agentDiagnosis["Error Message"].trim().length !== 0 && (
-                        <Search>
-                          <SearchIconWrapper>
-                            <SearchIcon />
-                          </SearchIconWrapper>
-                          <StyledInputBase
-                            placeholder="Search…"
-                            inputProps={{ "aria-label": "search" }}
-                            value={searchText}
-                            onChange={handleSearch}
-                          />
-                        </Search>
-                      )} */}
                   </Toolbar>
                   <Box component="main" sx={{ p: 3 }}>
                     {agentDiagnosisHandler() !== true && (

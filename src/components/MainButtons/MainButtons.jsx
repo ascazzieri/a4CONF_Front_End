@@ -311,7 +311,7 @@ const UploadConfig = () => {
     </StyledButton>
   );
 };
-const Checklist = () => {
+/* const Checklist = () => {
   return (
     <StyledButton>
       <div className="img-wrapper-1">
@@ -327,7 +327,7 @@ const Checklist = () => {
       <span>Checklist</span>
     </StyledButton>
   );
-};
+}; */
 
 
 
@@ -345,7 +345,7 @@ export default function SpeedDialTooltipOpen() {
     { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
-    { icon: <Checklist />, name: "modified data list" },
+    /*  { icon: <Checklist />, name: "modified data list" }, */
   ];
 
   /*  const bottomActions = [
@@ -362,7 +362,7 @@ export default function SpeedDialTooltipOpen() {
       <Backdrop open={openUpper} />
       <SpeedDial
         ariaLabel="SpeedDial tooltip upper"
-        sx={{ position: "fixed", top: 25, right: 10}}
+        sx={{ position: "fixed", top: 25, right: 10 }}
         icon={<MoreHorizIcon />}
         onClose={handleCloseUpper}
         onOpen={handleOpenUpper}

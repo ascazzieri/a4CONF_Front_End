@@ -874,7 +874,7 @@ export default function Kepware() {
 
   const [count, setCount] = useState(0);
   const [isInKepware, setIsInKepware] = useState(false);
-  const [connctedMachines, setConnectedMachines] = useState(kepware?.machines);
+  const [connectedMachines, setConnectedMachines] = useState(kepware?.machines);
 
   const location = useLocation();
 
@@ -1015,7 +1015,7 @@ export default function Kepware() {
   };
 
   const handleAddThingName = () => {
-    const thingNameList = [...thing_names];
+    const thingNameList = [...thingNames];
     if (thingName.trim() === "") {
       return;
     }
@@ -1028,7 +1028,7 @@ export default function Kepware() {
     dispatch(updateThingNames(thingNameList));
   };
   const handleThingNameDelete = (value) => {
-    const thingNameList = thing_names.filter((item) => item !== value);
+    const thingNameList = thingNames.filter((item) => item !== value);
     dispatch(updateThingNames(thingNameList));
   };
   const handleExpandableListChannels = (event, name) => {
@@ -1085,11 +1085,11 @@ export default function Kepware() {
     setSnackBar({ ...newState, open: true });
   };
 
-  const channelList = groupByChannel(connctedMachines)
-    ? Array.from(groupByChannel(connctedMachines)[0])
+  const channelList = groupByChannel(connectedMachines)
+    ? Array.from(groupByChannel(connectedMachines)[0])
     : [];
-  const device_connected = groupByChannel(connctedMachines)
-    ? groupByChannel(connctedMachines)[1]
+  const device_connected = groupByChannel(connectedMachines)
+    ? groupByChannel(connectedMachines)[1]
     : [];
 
   return (
@@ -1145,12 +1145,12 @@ export default function Kepware() {
               </Button>
             </Stack>
 
-            <TableContainer sx={{ height: 250 }}>
+            <TableContainer sx={{ maxHeight: 250, overflowY: 'auto' }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableBody>
-                  {thing_names &&
-                    thing_names.length !== 0 &&
-                    thing_names.map((row) => {
+                  {thingNames &&
+                    thingNames.length !== 0 &&
+                    thingNames.map((row) => {
                       return (
                         <TableRow hover key={row}>
                           <TableCell align="center">

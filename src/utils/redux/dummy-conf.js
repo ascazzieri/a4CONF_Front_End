@@ -66,6 +66,7 @@ let dummy_config = {
           },
         ],
         firewall_enabled: true,
+        ping: []
       },
     },
     reboot: false,

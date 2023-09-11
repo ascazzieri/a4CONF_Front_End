@@ -148,11 +148,8 @@ const Layout = () => {
         {/*  <Checklist /> */}
 
         <Outlet />
-        if({location && <MiniDrawer /> && <MainButtons/>}){
 
-        }
       </MiniDrawer>
-{/*       <MainButtons /> */}
     </ErrorCacher>
   );
 };

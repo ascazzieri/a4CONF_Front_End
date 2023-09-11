@@ -112,7 +112,7 @@
           51102,
           "PORT_SYSLOG"
         ],
-        "essid": false
+        "essid": ["wireless1", "wireless2", "wireless3"]
       }
     }
   },
