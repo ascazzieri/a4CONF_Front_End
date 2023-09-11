@@ -13,10 +13,7 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CachedIcon from '@mui/icons-material/Cached';
 import { downloadJSON } from "../../utils/api"
-import { Snackbar, Alert } from "@mui/material"
-import SaveIcon from "@mui/icons-material/Save";
-import PrintIcon from "@mui/icons-material/Print";
-import ShareIcon from "@mui/icons-material/Share";
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { SparkContext } from "../RerenderSpark/RerenderSparkContext";
 import background_tech from "../../media/img/tech_background.jpg";
@@ -336,23 +333,27 @@ const Checklist = () => {
 
 export default function SpeedDialTooltipOpen() {
   const [openUpper, setOpenUpper] = React.useState(false);
-  const [openBottom, setOpenBottom] = React.useState(false);
+  /*   const [openBottom, setOpenBottom] = React.useState(false); */
   const handleOpenUpper = () => setOpenUpper(true);
   const handleCloseUpper = () => setOpenUpper(false);
-  const handleOpenBottom = () => setOpenBottom(true);
-  const handleCloseBottom = () => setOpenBottom(false);
+  /*   const handleOpenBottom = () => setOpenBottom(true);
+    const handleCloseBottom = () => setOpenBottom(false); */
 
   const upperActions = [
     { icon: <ReloadInternal />, name: "Reload PCA" },
     { icon: <ReloadExternal />, name: "Reload PCB" },
-  ];
-
-  const bottomActions = [
     { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
     { icon: <Checklist />, name: "modified data list" },
   ];
+
+  /*  const bottomActions = [
+     { icon: <ApplyChanges />, name: "send to a4GATE" },
+     { icon: <DownloadConfig />, name: "download JSON" },
+     { icon: <UploadConfig />, name: "upload JSON" },
+     { icon: <Checklist />, name: "modified data list" },
+   ]; */
 
 
   return (
@@ -361,8 +362,8 @@ export default function SpeedDialTooltipOpen() {
       <Backdrop open={openUpper} />
       <SpeedDial
         ariaLabel="SpeedDial tooltip upper"
-        sx={{ position: "fixed", top: 100, right: 10, textAlign: "center" }}
-        icon={<SpeedDialIcon />}
+        sx={{ position: "fixed", top: 25, right: 10}}
+        icon={<MoreHorizIcon />}
         onClose={handleCloseUpper}
         onOpen={handleOpenUpper}
         open={openUpper}
@@ -379,7 +380,7 @@ export default function SpeedDialTooltipOpen() {
           />
         ))}
       </SpeedDial>
-      <Backdrop open={openBottom} />
+      {/*       <Backdrop open={openBottom} />
       <SpeedDial
         ariaLabel="SpeedDial tooltip bottom"
         sx={{ position: "fixed", bottom: 10, right: 10, textAlign: "center" }}
@@ -398,7 +399,7 @@ export default function SpeedDialTooltipOpen() {
             style={{ width: 120, justifyContent: "center", margin: 5 }}
           />
         ))}
-      </SpeedDial>
+      </SpeedDial> */}
     </Box>
 
   );

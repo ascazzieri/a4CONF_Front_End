@@ -8,7 +8,6 @@ import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Snackbar, Alert, Backdrop, Typography } from "@mui/material"
 import { SnackbarContext } from "../utils/context/SnackbarContext"
-import Checklist from "../components/Checklist_2";
 import THREED from "../components/THREED/THREED";
 import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
@@ -153,7 +152,7 @@ const Layout = () => {
 
         }
       </MiniDrawer>
-      <MainButtons />
+{/*       <MainButtons /> */}
     </ErrorCacher>
   );
 };

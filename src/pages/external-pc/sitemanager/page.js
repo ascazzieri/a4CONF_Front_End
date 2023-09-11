@@ -5,6 +5,7 @@ import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
+import BackButton from "../../../components/BackButton/BackButton";
 import Table from "../../../components/Table/Table";
 import {
   Button,
@@ -137,7 +138,7 @@ export default function Sitemanager() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>Sitemanager</h2>
+        <BackButton pageTitle="Sitemanager" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
@@ -149,7 +150,7 @@ export default function Sitemanager() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>IP Address:</FormLabel>
+                <FormLabel>Gatemanager domain path:</FormLabel>
 
                 <TextField
                   type="text"
@@ -163,7 +164,7 @@ export default function Sitemanager() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>Default Gateway:</FormLabel>
+                <FormLabel>Server address:</FormLabel>
 
                 <TextField
                   type="text"
