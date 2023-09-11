@@ -14,6 +14,7 @@ import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
 import MainButtons from "../components/MainButtons/MainButtons";
 import applied_logo from "../media/img/applied_logo.png";
+import { useLocation } from "react-router-dom";
 
 const applied_background = {
   position: "fixed",
@@ -45,7 +46,8 @@ const Layout = () => {
   };
 
   const loaderContext = useContext(LoadingContext)
-
+ 
+  const location = useLocation();
 
   useEffect(() => {
     (async () => {
@@ -147,6 +149,9 @@ const Layout = () => {
         {/*  <Checklist /> */}
 
         <Outlet />
+        if({location && <MiniDrawer /> && <MainButtons/>}){
+
+        }
       </MiniDrawer>
       <MainButtons />
     </ErrorCacher>

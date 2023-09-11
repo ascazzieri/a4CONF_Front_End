@@ -33,7 +33,9 @@ export default function App({ Component, pageProps }) {
       <BrowserRouter>
         <Navigate to="/login" />
         <Routes>
+        <Route path="/" element={<Layout />}>
           <Route path="/login" element={<Login />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     );
@@ -69,10 +71,11 @@ export default function App({ Component, pageProps }) {
             </Route>
             <Route path="/back-channel" element={<BackChannel />} />
             <Route path="/archive" element={<Archive />} />
+            <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
             <Route path="*" element={<NoPage />} />
           </Route>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<h1>Login</h1>} />
+         
         </Routes>
       </BrowserRouter>
     </>
