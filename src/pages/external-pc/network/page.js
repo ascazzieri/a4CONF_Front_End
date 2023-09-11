@@ -13,6 +13,7 @@ import BackButton from "../../../components/BackButton/BackButton";
 import { test_connection } from "../../../utils/api";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import {
   AppBar,
   Box,
@@ -62,17 +63,29 @@ export default function ExternalNetwork() {
 
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
-    "Connection parameters",
-    "Test connection",
-    "Static Routes",
-    "NTP",
-    "NAT",
-    "Port alias",
-    "Firewall rules",
-    "Port forwarding",
-    "JSON",
-  ];
+  const superUser = useContext(SuperUserContext)[0];
+  const navbarItems = superUser
+    ? [
+        "Connection parameters",
+        "Test connection",
+        "Static Routes",
+        "NTP",
+        "NAT",
+        "Port alias",
+        "Firewall rules",
+        "Port forwarding",
+        "JSON",
+      ]
+    : [
+        "Connection parameters",
+        "Test connection",
+        "Static Routes",
+        "NTP",
+        "NAT",
+        "Port alias",
+        "Firewall rules",
+        "Port forwarding",
+      ];
   const [expandedListHosts, setExpandedListHosts] = useState([]);
   const [expandedListPingNumber, setExpandedListPingNumber] = useState([]);
 
@@ -480,7 +493,7 @@ export default function ExternalNetwork() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 8 && <JSONTree data={customerNetwork} />}
+        {currentTab === 8 && superUser && <JSONTree data={customerNetwork} />}
 
         <form onSubmit={handleCustomerChange}>
           {currentTab === 0 && (

@@ -15,8 +15,7 @@ import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
-import { styled, alpha } from "@mui/material/styles";
-import SearchIcon from "@mui/icons-material/Search";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -46,7 +45,6 @@ import {
   Stack,
   MenuItem,
   Typography,
-  InputBase,
   Grid,
   Table,
   TableContainer,
@@ -61,7 +59,6 @@ import {
   Visibility,
   VisibilityOff,
   CloudUploadOutlined,
-  PendingOutlined,
 } from "@mui/icons-material";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
@@ -84,14 +81,20 @@ export default function Thingworx() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+  const superUser = useContext(SuperUserContext)[0]
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
+  const navbarItems = superUser ? [
     "Connection",
     "Remote Things",
     "Manage Iot Gateways",
     "Agent Logs",
     "JSON",
+  ] : [
+    "Connection",
+    "Remote Things",
+    "Manage Iot Gateways",
+    "Agent Logs",
   ];
 
   const getArrayFromThingObject = (thingObject) => {
@@ -378,7 +381,7 @@ export default function Thingworx() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && <JSONTree data={thingworx} />}
+        {currentTab === 4 && superUser && <JSONTree data={thingworx} />}
 
         <form onSubmit={handleThingworxChange}>
           {currentTab === 0 && (

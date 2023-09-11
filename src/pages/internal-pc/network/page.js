@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateIndustrialNetwork } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
@@ -23,21 +23,18 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 
 export default function InternalNetwork() {
   const industrialNetwork = useSelector(
     (state) => state.system?.network?.industrial
   );
   const dispatch = useDispatch();
-
+  const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
-    "Connection parameters",
-    "Static Routes",
-    "Scan Exception",
-    "JSON",
-  ];
+  const navbarItems = superUser
+    ? ["Connection parameters", "Static Routes", "Scan Exception", "JSON"]
+    : ["Connection parameters", "Static Routes", "Scan Exception"];
 
   const getArrayOfObjects = (data, complex, key1, key2) => {
     let arrayOfObjects = [];
@@ -125,15 +122,14 @@ export default function InternalNetwork() {
   return (
     <ErrorCacher>
       <Container>
-        <BackButton pageTitle="Network">
-        </BackButton>
+        <BackButton pageTitle="Network"></BackButton>
 
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 3 && <JSONTree data={industrialNetwork} />}
+        {currentTab === 3 && superUser && <JSONTree data={industrialNetwork} />}
 
         <form onSubmit={handleIndustrialChange}>
           {currentTab === 0 && (

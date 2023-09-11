@@ -15,6 +15,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import Table from "@mui/material/Table";
@@ -56,9 +57,6 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import TagsSelectionDialog from "../../../components/TagsSelectionDialog/TagsSelectionDialog";
 
 import LabelImportantIcon from "@mui/icons-material/LabelImportant";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import CallMergeIcon from "@mui/icons-material/CallMerge";
-import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import DvrIcon from "@mui/icons-material/Dvr";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
@@ -848,6 +846,8 @@ export default function Kepware() {
   ); */
   const dispatch = useDispatch();
 
+  const superUser = useContext(SuperUserContext)[0];
+
   const snackBarContext = useContext(SnackbarContext);
 
   //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
@@ -861,14 +861,22 @@ export default function Kepware() {
   const [channelRows, setChannelRows] = useState();
   const [expandedListChannels, setExpandedListChannels] = useState([]);
   const [expandedListDevices, setExpandedListDevices] = useState([]);
-  const navbarItems = [
-    "Local Things",
-    "Create IoT Gateway",
-    "Kepware configuration",
-    "License",
-    "Machines Configured",
-    "JSON",
-  ];
+  const navbarItems = superUser
+    ? [
+        "Local Things",
+        "Create IoT Gateway",
+        "Kepware configuration",
+        "License",
+        "Machines Configured",
+        "JSON",
+      ]
+    : [
+        "Local Things",
+        "Create IoT Gateway",
+        "Kepware configuration",
+        "License",
+        "Machines Configured",
+      ];
 
   const [thingName, setThingName] = useState();
 
@@ -1101,7 +1109,7 @@ export default function Kepware() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && <JSONTree data={kepware} />}
+        {currentTab === 5 && superUser && <JSONTree data={kepware} />}
 
         <Snackbar
           open={open}
@@ -1145,7 +1153,7 @@ export default function Kepware() {
               </Button>
             </Stack>
 
-            <TableContainer sx={{ maxHeight: 250, overflowY: 'auto' }}>
+            <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableBody>
                   {thingNames &&
