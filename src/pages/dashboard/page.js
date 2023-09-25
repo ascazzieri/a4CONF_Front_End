@@ -32,7 +32,8 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
-import { Outlet, useLocation, Link } from "react-router-dom";
+import Popover from "@mui/material/Popover";
+import { useLocation } from "react-router-dom";
 
 export default function Dashboard() {
   const hostname = useSelector((state) => state?.system?.hostname);
@@ -54,11 +55,19 @@ export default function Dashboard() {
   const [hostName, setHostName] = useState(hostname);
   const [dashboardStatus, setDashboardStatus] = useState({});
 
-  if (Object.keys(dashboardStatus).length === 0) {
+  /* if (Object.keys(dashboardStatus).length === 0) {
     loaderContext[1](true);
   } else {
     loaderContext[1](false);
-  }
+  } */
+
+  useEffect(() => {
+    if (Object.keys(dashboardStatus).length === 0) {
+      loaderContext[1](true); // Imposta lo stato di caricamento iniziale
+    } else {
+      loaderContext[1](false); // Non è più in fase di caricamento
+    }
+  }, [dashboardStatus, loaderContext]);
 
   const handleHostNameChange = () => {
     const newHostName = {
@@ -67,23 +76,6 @@ export default function Dashboard() {
     };
     dispatch(updateHostName({ newHostName }));
   };
-  /*   const handleAddThingName = () => {
-    const thingNameList = [...thing_names];
-    if (thingName.trim() === "") {
-      return;
-    }
-    if (!thingName.includes("rt_")) {
-      thingNameList.push(`rt_${thingName}`);
-    } else {
-      thingNameList.push(thingName);
-    }
-
-    dispatch(updateThingNames(thingNameList));
-  }; */
-  /*   const handleThingNameDelete = (value) => {
-    const thingNameList = thing_names.filter((item) => item !== value);
-    dispatch(updateThingNames(thingNameList));
-  }; */
 
   const goodStatus = () => {
     return (
@@ -96,6 +88,26 @@ export default function Dashboard() {
 
   const [count, setCount] = useState(0);
   const [isInDashboard, setIsInDashboard] = useState(false);
+
+  const [kepwareAnchor, setKepwareAnchor] = useState(null);
+  const [fastDataAnchor, setFastDataAnchor] = useState(null);
+
+  const handleOpenKepware = (event) => {
+    setKepwareAnchor(event.currentTarget);
+  };
+  const handleOpenFastData = (event) => {
+    setFastDataAnchor(event.currentTarget);
+  };
+
+  const handleKepwareClose = () => {
+    setKepwareAnchor(null);
+  };
+  const handleFastDataClose = () => {
+    setFastDataAnchor(null);
+  };
+
+  const kepwareOpen = Boolean(kepwareAnchor);
+  const fastDataOpen = Boolean(fastDataAnchor);
 
   useEffect(() => {
     let timer;
@@ -132,38 +144,6 @@ export default function Dashboard() {
     }
   }, [location.pathname]);
 
-  /* useEffect(() => {
-    (async () => {
-      let timer = () => {};
-      if (dashboardPage?.length !== 0) {
-        timer = setInterval(async () => {
-          const machinesConnected = await machines_connected();
-          const monitorLogsIsWorking = await monitor_logs_isWorking();
-          const a4monitorStatus = await monitor_a4monitor_status();
-          const isBReady = await is_B_ready();
-          const checkBidir = await check_bidir();
-          setDashboardStatus((prevState) => ({
-            ...prevState,
-            is_B_ready: isBReady,
-            bidir: checkBidir,
-            monitor_terafence_status: monitorLogsIsWorking,
-            a4monitor_status: a4monitorStatus,
-            machines: machinesConnected,
-          }));
-          // Chiama altre funzioni di aggiornamento qui
-        }, 5000); // 5000 millisecondi corrispondono a 5 secondi
-
-        // Pulizia dell'effetto: ferma il timer quando il componente viene smontato
-        return () => {
-          clearInterval(timer);
-        };
-      } else {
-        clearInterval(timer);
-        console.log("sono qui");
-      }
-    })();
-  }, []); */
-
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
@@ -178,7 +158,7 @@ export default function Dashboard() {
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
-                  padding: "0px 20px",
+                  padding: "5px 20px",
                 }}
               >
                 <Stack
@@ -224,7 +204,6 @@ export default function Dashboard() {
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
-                  padding: "0px 20px",
                 }}
               >
                 <h3>a4GATE Status</h3>
@@ -234,27 +213,26 @@ export default function Dashboard() {
                   rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
-                  sx={{ p: 2 }}
                   style={{ overflowY: "auto" }}
                 >
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>PCB Ready</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.is_B_ready?.ready
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>PCB Network</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {pcb_is_connected?.connected ? goodStatus() : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
-                    <div>Bidirectionality</div>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    <div>Bidir.</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.bidir !== undefined &&
                     !dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
                       <DoNotDisturbOnOutlinedIcon
@@ -267,6 +245,64 @@ export default function Dashboard() {
                       </div>
                     )}
                   </Grid>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    <Button
+                      sx={{ mb: 1, mt: 0 }}
+                      variant="contained"
+                      onClick={handleOpenKepware}
+                    >
+                      KepServer
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    {plugins_status?.kepware?.server_runtime &&
+                    plugins_status?.kepware?.server_iotgateway &&
+                    plugins_status?.kepware?.config_api_service
+                      ? goodStatus()
+                      : badStatus()}
+                  </Grid>
+                  <Popover
+                    open={kepwareOpen}
+                    anchorEl={kepwareAnchor}
+                    onClose={handleKepwareClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                  >
+                    <Grid
+                      container
+                      rowSpacing={3}
+                      justifyContent="center"
+                      alignItems="center"
+                      sx={{ p: 2, pb: 0 }}
+                    >
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>Kepware</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.kepware?.server_runtime
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>IoT Gateway</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.kepware?.server_iotgateway
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>Config API</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.kepware?.config_api_service
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                    </Grid>
+                  </Popover>
                 </Grid>
               </Grid>
               <Grid
@@ -277,7 +313,6 @@ export default function Dashboard() {
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
-                  padding: "0px 20px",
                 }}
               >
                 <h3>Services</h3>
@@ -287,45 +322,44 @@ export default function Dashboard() {
                   rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
-                  sx={{ p: 2 }}
                   style={{ overflowY: "auto" }}
                 >
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>a4Monitor</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.a4monitor_status?.status
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>Back Channel</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.monitor_terafence_status?.tf_bchnld
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>Data Transfer</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.monitor_terafence_status?.tf_http_xfer
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
-                    <div>Config. Service</div>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    <div>Configuration</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>Broker</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {dashboardStatus?.monitor_terafence_status?.mosquitto
                       ? goodStatus()
                       : badStatus()}
@@ -340,7 +374,6 @@ export default function Dashboard() {
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
-                  padding: "0px 20px",
                 }}
               >
                 <h3>Plugins</h3>
@@ -350,42 +383,93 @@ export default function Dashboard() {
                   rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
-                  sx={{ p: 2 }}
                 >
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>Sitemanager</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {plugins_status?.sitemanager?.connected
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>Thingworx</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     {plugins_status?.thingworx?.connected
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>OPCUA Server</div>
                   </Grid>
-                  <Grid item xs={6}>
-                    <div>value</div>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    {plugins_status?.opcua?.running
+                      ? goodStatus()
+                      : badStatus()}
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>HTTP Server</div>
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={6} sx={{ p: 1 }}>
                     <div>value</div>
                   </Grid>
-                  <Grid item xs={6}>
-                    <div>Fast Data</div>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    <Button
+                      variant="contained"
+                      sx={{ mb: 1, mt: 0 }}
+                      onClick={handleOpenFastData}
+                    >
+                      Fast Data
+                    </Button>
                   </Grid>
-                  <Grid item xs={6}>
-                    <div>value</div>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    {plugins_status?.fastdata?.running
+                      ? goodStatus()
+                      : badStatus()}
                   </Grid>
+                  <Popover
+                    open={fastDataOpen}
+                    anchorEl={fastDataAnchor}
+                    onClose={handleFastDataClose}
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "left",
+                    }}
+                  >
+                    <Grid
+                      container
+                      rowSpacing={3}
+                      justifyContent="center"
+                      alignItems="center"
+                      sx={{ p: 2, pb: 0 }}
+                    >
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>FTP</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.fastdata?.industrial?.ftp?.running
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>HTTP</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.fastdata?.industrial?.http?.running
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <div>Matrix</div>
+                      </Grid>
+                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        {plugins_status?.fastdata?.customer?.matrix?.running
+                          ? goodStatus()
+                          : badStatus()}
+                      </Grid>
+                    </Grid>
+                  </Popover>
                 </Grid>
               </Grid>
               <Grid
@@ -396,7 +480,6 @@ export default function Dashboard() {
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
-                  padding: "0px 20px",
                 }}
               >
                 <h3>Device Connected</h3>
@@ -406,7 +489,7 @@ export default function Dashboard() {
                   rowSpacing={2}
                   justifyContent="center"
                   alignItems="center"
-                  sx={{ p: 2 }}
+                  sx={{ maxHeight: 300, overflowY: "auto", overflowX: "auto" }}
                 >
                   <TableContainer>
                     <Table stickyHeader aria-label="sticky table">

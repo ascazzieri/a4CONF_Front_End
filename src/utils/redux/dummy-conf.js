@@ -169,6 +169,8 @@ let dummy_config = {
       },
     },
     fastdata: {
+      enabled: false,
+      running: false,
       industrial: {
         ftp: {},
         http: {},

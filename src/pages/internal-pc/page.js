@@ -7,7 +7,7 @@ import {
   Grid,
   Card,
   CardContent,
-  CardMedia,
+  Box,
   Typography,
   Container,
 } from "@mui/material";
@@ -133,9 +133,19 @@ export default function InternalPC() {
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1 }}>
           <CardContent>
-            <VerticalTab tabsData={tabsData} root="internal-pc">
+            <Box
+              sx={{
+                flexGrow: 1,
+                bgcolor: "background.paper",
+                display: "flex",
+                pb: 2,
+              }}
+            >
               <Outlet />
-            </VerticalTab>
+            </Box>
+            {/* <VerticalTab tabsData={tabsData} root="internal-pc">
+              <Outlet />
+            </VerticalTab> */}
           </CardContent>
         </Card>
         <Grid container spacing={2}>

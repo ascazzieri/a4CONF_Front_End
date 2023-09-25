@@ -1,0 +1,47 @@
+[
+  {
+    "10.2.240.4": {
+      "1": {
+        "result": true,
+        "rtt": 1.0
+      },
+      "2": {
+        "result": true,
+        "rtt": 0.753
+      },
+      "3": {
+        "result": true,
+        "rtt": 0.901
+      }
+    }
+  },
+  {
+    "10.2.240.5": {
+      "1": {
+        "result": false
+      },
+      "2": {
+        "result": false
+      },
+      "3": {
+        "result": false
+      }
+    }
+  },
+  {
+    "10.10.83.66": {
+      "1": {
+        "result": true,
+        "rtt": 0.413
+      },
+      "2": {
+        "result": true,
+        "rtt": 0.626
+      },
+      "3": {
+        "result": true,
+        "rtt": 0.638
+      }
+    }
+  }
+]

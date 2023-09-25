@@ -5,6 +5,7 @@ import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import CustomTable from "../../../components/Table/Table";
+import BackButton from "../../../components/BackButton/BackButton";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
@@ -481,7 +482,7 @@ export default function HTTPServer() {
   return (
     <ErrorCacher>
       <Container>
-        <h2>HTTP Server</h2>
+        <BackButton pageTitle="HTTP Server" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}

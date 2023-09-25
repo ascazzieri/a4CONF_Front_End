@@ -6,9 +6,8 @@ import { updateAll } from "../utils/redux/reducers";
 import { get_confA, get_confB } from "../utils/api";
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
-import { Snackbar, Alert, Backdrop, Typography } from "@mui/material";
-import { SnackbarContext } from "../utils/context/SnackbarContext";
-import Checklist from "../components/Checklist_2";
+import { Snackbar, Alert, Backdrop, Typography } from "@mui/material"
+import { SnackbarContext } from "../utils/context/SnackbarContext"
 import THREED from "../components/THREED/THREED";
 import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
@@ -152,9 +151,12 @@ const Layout = () => {
             </Snackbar>
             {/*  <Checklist /> */}
 
-            <Outlet />
-          </MiniDrawer>
-          <MainButtons />
+        <Outlet />
+        if({location && <MiniDrawer /> && <MainButtons/>}){
+
+        }
+      </MiniDrawer>
+      <MainButtons />
     </ErrorCacher>
   );
 };

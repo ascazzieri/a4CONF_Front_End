@@ -12,28 +12,21 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import ChecklistOutlinedIcon from "@mui/icons-material/ChecklistOutlined";
-import MonitorHeartOutlinedIcon from "@mui/icons-material/MonitorHeartOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import MailIcon from "@mui/icons-material/Mail";
-import LowPriorityIcon from "@mui/icons-material/LowPriority";
-import MessageIcon from "@mui/icons-material/Message";
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LowPriorityIcon from '@mui/icons-material/LowPriority';
+import MessageIcon from '@mui/icons-material/Message';
 import GridViewIcon from "@mui/icons-material/GridView";
-import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
+import MergeIcon from '@mui/icons-material/Merge';
 import SpeedIcon from "@mui/icons-material/Speed";
-import CellTowerIcon from "@mui/icons-material/CellTower";
-import Avatar from "@mui/material/Avatar";
+import CallSplitIcon from '@mui/icons-material/CallSplit';
 import a4GATELogo from "../media/img/a4GATE-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
-import { ChecklistOutlined } from "@mui/icons-material";
+import MainButtons from "../components/MainButtons/MainButtons"
 
 const drawerWidth = 240;
 
@@ -107,19 +100,14 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 const floatingLogo = {
-  animationName: "fly-1", // Since animation-name cannot be set via inline style directly
-  animationDuration: "0.6s",
-  animationTimingFunction: "ease-in-out",
-  animationIterationCount: "infinite",
-  animationDirection: "alternate",
-};
-const movingIcons = {
-  animationName: "move-foreward", // Since animation-name cannot be set via inline style directly
-  animationDuration: "0.6s",
-  animationTimingFunction: "ease-in-out",
-  animationIterationCount: "infinite",
-  animationDirection: "alternate",
-};
+  animationName: 'fly-1', // Since animation-name cannot be set via inline style directly
+  animationDuration: '0.6s',
+  animationTimingFunction: 'ease-in-out',
+  animationIterationCount: 'infinite',
+  animationDirection: 'alternate',
+}
+
+
 
 export default function MiniDrawer(props) {
   const { children } = props;
@@ -132,6 +120,17 @@ export default function MiniDrawer(props) {
   const currentURLArray = location.pathname.split("/");
 
   const mainSectionTitle = currentURLArray[1].replace("-", " ").toUpperCase();
+
+
+  const [buttonsOpen, setButtonsOpen] = React.useState(false);
+
+  const handleButtonsOpen = (event) => {
+    setButtonsOpen(true);
+  };
+  const handleButtonsClose = () => {
+    setButtonsOpen(false);
+  };
+
 
   const handleDrawerOpen = () => {
     if(location.pathname.includes("login") || location.pathname.includes("register")){
@@ -196,8 +195,16 @@ export default function MiniDrawer(props) {
                 />
               </Title>
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={2} sx={{ textAlign: "center" }}>
+
               {mainSectionTitle}
+
+
+            </Grid>
+            <Grid item xs={1} sx={{ textAlign: "center" }}>
+              <>
+                <MainButtons />
+              </>
             </Grid>
           </Grid>
         </Toolbar>
@@ -229,95 +236,80 @@ export default function MiniDrawer(props) {
               <ChevronLeftIcon />
             )}
           </IconButton> */}
-          </DrawerHeader>
-          <Divider />
-          <List>
-            {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  name={text}
-                  onClick={() => {
-                    navigate(`/${text?.toLowerCase()}`);
-                  }}
-                >
-                  <ListItemIcon className={classes.hoverIcons}>
-                    {index !== 0 ? (
-                      index === 1 ? (
-                        <PrecisionManufacturingIcon name="internal-pc" />
-                      ) : (
-                        <CellTowerIcon name="external-pc" />
-                      )
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton
+                name={text}
+                onClick={() => {
+
+
+                  navigate(`/${text?.toLowerCase()}`);
+
+
+                }}
+              >
+                <ListItemIcon className={classes.hoverIcons}>
+                  {index !== 0 ? (
+                    index === 1 ? (
+                      <MergeIcon name="internal-pc" />
                     ) : (
-                      <GridViewIcon name="dashboard" />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["Fast-Data"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton
-                  name={text}
-                  onClick={() => {
-                    navigate(`/${text?.toLowerCase()}`);
-                  }}
-                >
-                  <ListItemIcon className={classes.hoverIcons}>
-                    <SpeedIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["Back-Channel", "Info", "Archive"].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <ListItemButton
-                  name={text}
-                  onClick={() => {
-                    navigate(`/${text?.toLowerCase()}`);
-                  }}
-                >
-                  <ListItemIcon className={classes.hoverIcons}>
-                    {index === 0 && <LowPriorityIcon />}
-                    {index === 1 && <InfoOutlinedIcon />}
-                    {index === 2 && <MessageIcon />}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["Checklist", "Logs"].map((text, index) => (
-              <ListItem key={text} disablePadding sx={{ display: "block" }}>
-                <ListItemButton>
-                  <ListItemIcon className={classes.hoverIcons}>
-                    {index === 0 ? (
-                      <ChecklistOutlinedIcon />
-                    ) : (
-                      <MonitorHeartOutlinedIcon />
-                    )}
-                  </ListItemIcon>
-                  <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-        </Drawer>
-      )}
-      <Container
-        component="main"
-        sx={{ flexGrow: 1 }}
-        style={{ marginTop: 100 }}
-      >
+                      <CallSplitIcon name="external-pc" />
+                    )
+                  ) : (
+                    <GridViewIcon name="dashboard" />
+                  )}
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {["Fast-Data"].map((text, index) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton
+                name={text}
+                onClick={() => {
+
+
+                  navigate(`/${text?.toLowerCase()}`);
+
+
+                }}>
+                <ListItemIcon className={classes.hoverIcons}>
+                  <SpeedIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {["Back-Channel", "Info", "Archive"].map((text, index) => (
+            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                name={text}
+                onClick={() => {
+                  navigate(`/${text?.toLowerCase()}`);
+                }}>
+                <ListItemIcon className={classes.hoverIcons}>
+                  {index === 0 && <LowPriorityIcon />}
+                  {index === 1 && <InfoOutlinedIcon />}
+                  {index === 2 && <MessageIcon />}
+                </ListItemIcon>
+                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+      </Drawer>
+      <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }}>
         {children}
       </Container>
     </Box>
