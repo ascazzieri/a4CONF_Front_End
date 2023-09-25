@@ -155,7 +155,6 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
-console.log(system)
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
