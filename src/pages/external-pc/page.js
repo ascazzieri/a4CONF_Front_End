@@ -26,6 +26,8 @@ import BackupIcon from "@mui/icons-material/Backup";
 import PublicIcon from "@mui/icons-material/Public";
 import ShareIcon from "@mui/icons-material/Share";
 import HttpIcon from "@mui/icons-material/Http";
+import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
+
 
 export default function ExternalPC() {
   const externalPCReboot = useSelector((state) => state?.system.reboot);
@@ -411,7 +413,7 @@ export default function ExternalPC() {
             <Card sx={{ width: "100%" }}>
               <CardContent style={{ paddingBottom: 16 }}>
                 {/* <VerticalTabs tabsData={tabsData} /> */}
-                <h3>Qui ci metto altro</h3>
+                <ServiceHandler />
               </CardContent>
             </Card>
           </Grid>

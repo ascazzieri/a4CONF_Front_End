@@ -125,7 +125,11 @@ export default function MiniDrawer(props) {
 
 
   const handleDrawerOpen = () => {
+    if(location.pathname.includes("login") || location.pathname.includes("register")){
+      setOpen(false);
+    }else{
     setOpen(true);
+    }
   };
 
   const handleDrawerClose = () => {
@@ -148,8 +152,13 @@ export default function MiniDrawer(props) {
               ...(open && { display: "none" }),
             }}
           >
-            <img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} />
-
+            <img
+              src="/img/applied_logo_cropped.png"
+              alt="menu icon"
+              width={35}
+              height={35}
+              style={floatingLogo}
+            />
           </IconButton>
           <Grid container alignItems="center">
             <Grid item xs={3}>

@@ -5,7 +5,6 @@ import { Divider } from "antd";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ErrorCacher from "../components/Errors/ErrorCacher";
-import { BrowserRouter, Route } from "react-router-dom";
 import appliedLogo from "../media/img/applied_logo_cropped.png";
 import {  post_login } from "../utils/api";
 
