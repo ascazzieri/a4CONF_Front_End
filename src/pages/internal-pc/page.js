@@ -14,6 +14,7 @@ import {
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import CableIcon from "@mui/icons-material/Cable";
 import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
+import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
 
 export default function InternalPC() {
   const internalPC = useSelector((state) => state?.system);
@@ -152,7 +153,7 @@ export default function InternalPC() {
             <Card sx={{ width: "100%" }}>
               <CardContent style={{ paddingBottom: 16 }}>
                 {/* <VerticalTabs tabsData={tabsData} /> */}
-                <h3>Qui ci metto altro</h3>
+                <ServiceHandler />
               </CardContent>
             </Card>
           </Grid>
