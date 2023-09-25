@@ -65,6 +65,23 @@ export const agents_vendor_list = [
   "Yaskawa",
 ];
 
+export const getArrayOfObjects = (data, key1, key2) => {
+  let arrayOfObjects = [];
+  if (data) {
+    const keys = Object.keys(data);
+    if (keys && keys.length !== 0) {
+      keys.forEach((item, index) => {
+        arrayOfObjects.push({
+          [key1]: item,
+          [key2]: data[item]?.toString()?.replace(",", ", "),
+        });
+      });
+    }
+  }
+
+  return arrayOfObjects;
+};
+
 export const agent_vendor_device_type = {
   GENERIC: [
     "LogTunnel Client",

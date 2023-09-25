@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import {
@@ -11,6 +11,7 @@ import CachedIcon from "@mui/icons-material/Cached";
 import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { test_connection } from "../../../utils/api";
+import { getArrayOfObjects } from "../../../utils/utils";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -51,8 +52,6 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import NetworkPingIcon from "@mui/icons-material/NetworkPing";
 import LabelImportantIcon from "@mui/icons-material/LabelImportant";
 import DvrIcon from "@mui/icons-material/Dvr";
-import BorderColorIcon from "@mui/icons-material/BorderColor";
-import DataArrayIcon from "@mui/icons-material/DataArray";
 
 const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
 
@@ -127,34 +126,6 @@ export default function ExternalNetwork() {
 
   const [connectionTest, setConnectionTest] = useState();
 
-  const getArrayOfObjects = (data, key1, key2) => {
-    let arrayOfObjects = [];
-    const keys = Object.keys(data);
-    if (keys && keys.length !== 0) {
-      keys.forEach((item, index) => {
-        arrayOfObjects.push({
-          [`${key1}`]: item,
-          [`${key2}`]: data[item]?.toString()?.replace(",", ", "),
-        });
-      });
-    }
-
-    return arrayOfObjects;
-  };
-
-  const getArrayOfInputNAT = (data) => {
-    let arrayOfObjects = [];
-    data.map((item, index) => {
-      arrayOfObjects.push({
-        IP_EXT: item?.IP_EXT,
-        PORT_EXT: item?.PORT_EXT,
-        IP_DST: item?.IP_DST,
-        PORT_DST: item?.PORT_DST,
-        SOURCE: item?.SOURCE.toString().split(","),
-      });
-    });
-    return arrayOfObjects;
-  };
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -180,8 +151,38 @@ export default function ExternalNetwork() {
   );
 
   const [inputNATTableData, setInputNATTableData] = useState(
-    getArrayOfInputNAT(customerNetwork?.INPUT_NAT)
+    customerNetwork?.INPUT_NAT
   );
+
+  useEffect(() => {
+    setIPAddress(customerNetwork?.static?.ip);
+    setDefaultGateway(customerNetwork?.static?.gateway);
+    setDNSServer(customerNetwork?.static?.dns);
+    setCustomNTP(customerNetwork?.ntp?.length !== 0 ? true : false);
+    setNTPAddress(customerNetwork?.ntp);
+    setNATFeatures(customerNetwork?.nat);
+    setWifiTableData(
+      getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
+    );
+    setMachineToInternet(customerNetwork?.machine_to_internet);
+    setConnection(customerNetwork?.dhcp ? "dhcp" : "static");
+    setConnectionType(customerNetwork?.if_wan_medium);
+    setRouteTableData(
+      getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
+    );
+    setAliasTableData(
+      getArrayOfObjects(customerNetwork?.ALIAS, "alias", "value")
+    );
+    setPortsAllowedTableData(
+      getArrayOfObjects(
+        customerNetwork?.PORTS_TCP_SERVER_WAN,
+        "external_tcp_ports",
+        "source"
+      )
+    );
+    setInputNATTableData(customerNetwork?.INPUT_NAT);
+  }, [customerNetwork]);
+
   const handleConnectionChange = (event) => {
     setConnection(event.target.value);
   };
@@ -273,11 +274,11 @@ export default function ExternalNetwork() {
 
   const handleAddHostList = () => {
     const newHost = currentHost ? currentHost : undefined;
-    if (newHost.trim() === "") {
+    if (!newHost || newHost.length === 0 || newHost.trim() === "") {
       return;
     }
     const oldHostList = new Set(hostList);
-    oldHostList.add(newHost);
+    oldHostList.add(newHost.trim());
     setHostList(Array.from(oldHostList));
   };
   const handleHostListDelete = () => {
@@ -626,7 +627,7 @@ export default function ExternalNetwork() {
 
                     <FormLabel>Wifi:</FormLabel>
                     <CustomTable
-                      tableData={wifiTableData}
+                      tableData={wifiTableData || []}
                       setTableData={setWifiTableData}
                       columnsData={wifiColumnData}
                       selectableObjectData={wifiSelectableObjectData}
@@ -789,26 +790,31 @@ export default function ExternalNetwork() {
                                 return <>Error on loading ping test results</>;
                               }
                               return (
-                                <>
+                                <Fragment key={Math.random()}>
                                   <ListItemButton
                                     onClick={(event) =>
                                       handleExpandableListHosts(event, ip)
                                     }
+                                    key={Math.random()}
                                   >
-                                    <ListItemIcon>
-                                      <LabelImportantIcon />
+                                    <ListItemIcon key={Math.random()}>
+                                      <LabelImportantIcon key={Math.random()} />
                                     </ListItemIcon>
-                                    <ListItemText primary={ip} />
+                                    <ListItemText
+                                      primary={ip}
+                                      key={Math.random()}
+                                    />
                                     {expandedListHosts.includes(ip) ? (
-                                      <ExpandLess />
+                                      <ExpandLess key={Math.random()} />
                                     ) : (
-                                      <ExpandMore />
+                                      <ExpandMore key={Math.random()} />
                                     )}
                                   </ListItemButton>
                                   <Collapse
                                     in={expandedListHosts.includes(ip)}
                                     timeout="auto"
                                     unmountOnExit
+                                    key={Math.random()}
                                   >
                                     {ip &&
                                       item[ip] &&
@@ -821,7 +827,7 @@ export default function ExternalNetwork() {
                                             ? item[ip][pingNumber]?.rtt
                                             : undefined;
                                           return (
-                                            <>
+                                            <Fragment key={Math.random()}>
                                               <ListItemButton
                                                 onClick={(event) =>
                                                   handleExpandableListPingNumber(
@@ -831,19 +837,29 @@ export default function ExternalNetwork() {
                                                   )
                                                 }
                                                 sx={{ pl: 5 }}
+                                                key={Math.random()}
                                               >
-                                                <ListItemIcon>
-                                                  <DvrIcon />
+                                                <ListItemIcon
+                                                  key={Math.random()}
+                                                >
+                                                  <DvrIcon
+                                                    key={Math.random()}
+                                                  />
                                                 </ListItemIcon>
                                                 <ListItemText
                                                   primary={pingNumber}
+                                                  key={Math.random()}
                                                 />
                                                 {expandedListPingNumber.includes(
                                                   `${ip}.${pingNumber}`
                                                 ) ? (
-                                                  <ExpandLess />
+                                                  <ExpandLess
+                                                    key={Math.random()}
+                                                  />
                                                 ) : (
-                                                  <ExpandMore />
+                                                  <ExpandMore
+                                                    key={Math.random()}
+                                                  />
                                                 )}
                                               </ListItemButton>
                                               <Collapse
@@ -852,15 +868,20 @@ export default function ExternalNetwork() {
                                                 )}
                                                 timeout="auto"
                                                 unmountOnExit
+                                                key={Math.random()}
                                               >
                                                 <List
                                                   component="div"
                                                   disablePadding
+                                                  key={Math.random()}
                                                 >
                                                   <ListItemButton
                                                     sx={{ pl: 10 }}
+                                                    key={Math.random()}
                                                   >
-                                                    <ListItemIcon>
+                                                    <ListItemIcon
+                                                      key={Math.random()}
+                                                    >
                                                       Result:
                                                     </ListItemIcon>
                                                     <ListItemText
@@ -869,28 +890,33 @@ export default function ExternalNetwork() {
                                                           ? goodStatus()
                                                           : badStatus()
                                                       }
+                                                      key={Math.random()}
                                                     />
                                                   </ListItemButton>
                                                   <ListItemButton
                                                     sx={{ pl: 10 }}
+                                                    key={Math.random()}
                                                   >
-                                                    <ListItemIcon>
+                                                    <ListItemIcon
+                                                      key={Math.random()}
+                                                    >
                                                       RTT
                                                     </ListItemIcon>
                                                     <ListItemText
                                                       primary={
                                                         result ? rtt : "None"
                                                       }
+                                                      key={Math.random()}
                                                     />
                                                   </ListItemButton>
                                                 </List>
                                               </Collapse>
-                                            </>
+                                            </Fragment>
                                           );
                                         }
                                       )}
                                   </Collapse>
-                                </>
+                                </Fragment>
                               );
                             })}
                         </List>
@@ -908,8 +934,8 @@ export default function ExternalNetwork() {
             <>
               <FormLabel>Routes:</FormLabel>
 
-              <Table
-                tableData={routeTableData}
+              <CustomTable
+                tableData={routeTableData || []}
                 setTableData={setRouteTableData}
                 columnsData={routesColumnData}
               />
@@ -999,8 +1025,8 @@ export default function ExternalNetwork() {
             <>
               <FormLabel>Alias:</FormLabel>
 
-              <Table
-                tableData={aliasTableData}
+              <CustomTable
+                tableData={aliasTableData || []}
                 setTableData={setAliasTableData}
                 columnsData={aliasColumnData}
               />
@@ -1013,8 +1039,8 @@ export default function ExternalNetwork() {
             <>
               <FormLabel>Set TCP ports rules in input WAN:</FormLabel>
 
-              <Table
-                tableData={portsAllowedTableData}
+              <CustomTable
+                tableData={portsAllowedTableData || []}
                 setTableData={setPortsAllowedTableData}
                 columnsData={portsAllowedColumnData}
                 selectableObjectData={portsAllowedSelectableObjectData}
@@ -1028,15 +1054,13 @@ export default function ExternalNetwork() {
             <>
               {NATFeatures ? (
                 <>
-                  <div style={{ backgroundColor: "red" }}>
-                    <FormLabel>Foreward TCP port:</FormLabel>
+                  <FormLabel>Foreward TCP port:</FormLabel>
 
-                    <Table
-                      tableData={inputNATTableData}
-                      setTableData={setInputNATTableData}
-                      columnsData={inputNatTableColumns}
-                    />
-                  </div>
+                  <CustomTable
+                    tableData={inputNATTableData || []}
+                    setTableData={setInputNATTableData}
+                    columnsData={inputNatTableColumns}
+                  />
                 </>
               ) : (
                 <>

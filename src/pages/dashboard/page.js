@@ -24,7 +24,6 @@ import {
   Divider,
   FormLabel,
   Button,
-  IconButton,
   Stack,
 } from "@mui/material";
 import Table from "@mui/material/Table";
@@ -34,9 +33,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableRow from "@mui/material/TableRow";
 import Popover from "@mui/material/Popover";
 import { useLocation } from "react-router-dom";
+import { Typography } from "antd";
 
 export default function Dashboard() {
-  const hostname = useSelector((state) => state?.system?.hostname);
+  const system = useSelector((state) => state?.system);
 
   const pcb_is_connected = useSelector(
     (state) => state?.system?.network?.customer?.static
@@ -52,8 +52,12 @@ export default function Dashboard() {
 
   //const dashboardPage = currentURLArray.filter((item) => item === "dashboard");
 
-  const [hostName, setHostName] = useState(hostname);
+  const [hostName, setHostName] = useState(system?.hostname);
   const [dashboardStatus, setDashboardStatus] = useState({});
+
+  useEffect(() => {
+    setHostName(system?.hostName);
+  }, [system]);
 
   /* if (Object.keys(dashboardStatus).length === 0) {
     loaderContext[1](true);
@@ -71,8 +75,8 @@ export default function Dashboard() {
 
   const handleHostNameChange = () => {
     const newHostName = {
-      customer: hostName?.customer,
-      industrial: hostName?.industrial,
+      customer: hostName,
+      industrial: hostName,
     };
     dispatch(updateHostName({ newHostName }));
   };
@@ -91,12 +95,16 @@ export default function Dashboard() {
 
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
+  const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
 
   const handleOpenKepware = (event) => {
     setKepwareAnchor(event.currentTarget);
   };
   const handleOpenFastData = (event) => {
     setFastDataAnchor(event.currentTarget);
+  };
+  const handleOpenVersionWarning = (event) => {
+    setVersionWarningAnchor(event.currentTarget);
   };
 
   const handleKepwareClose = () => {
@@ -105,9 +113,13 @@ export default function Dashboard() {
   const handleFastDataClose = () => {
     setFastDataAnchor(null);
   };
+  const handleCloseVersionWarning = (event) => {
+    setVersionWarningAnchor(null);
+  };
 
   const kepwareOpen = Boolean(kepwareAnchor);
   const fastDataOpen = Boolean(fastDataAnchor);
+  const versionWarningOpen = Boolean(versionWarningAnchor);
 
   useEffect(() => {
     let timer;
@@ -143,7 +155,7 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
-
+console.log(system)
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
@@ -302,6 +314,42 @@ export default function Dashboard() {
                           : badStatus()}
                       </Grid>
                     </Grid>
+                  </Popover>
+                  <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                    <div style={{ marginBottom: 5 }}>Version:</div>
+                  </Grid>
+                  <Grid item xs={6} sx={{ p: 1 }}>
+                    {system?.a4updater_version?.industrial ===
+                    system?.a4updater_version?.customer ? (
+                      system?.a4updater_version?.industrial
+                    ) : (
+                      <>
+                        <Button
+                          sx={{ mb: 1, mt: 0 }}
+                          variant="contained"
+                          color="error"
+                          onClick={handleOpenVersionWarning}
+                        >
+                          Error!
+                        </Button>
+                      </>
+                    )}
+                  </Grid>
+                  <Popover
+                    open={versionWarningOpen}
+                    anchorEl={versionWarningAnchor}
+                    onClose={handleCloseVersionWarning}
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "right",
+                    }}
+                  >
+                    <div style={{ padding: 10, textAlign: "center" }}>
+                      <Typography style={{ color: "white" }}>
+                        The software version of Internal PC and External PC do
+                        not match!
+                      </Typography>
+                    </div>
                   </Popover>
                 </Grid>
               </Grid>

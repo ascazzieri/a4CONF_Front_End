@@ -12,7 +12,7 @@ import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CachedIcon from '@mui/icons-material/Cached';
-import { downloadJSON } from "../../utils/api"
+import { downloadJSON, send_conf } from "../../utils/api"
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { SparkContext } from "../RerenderSpark/RerenderSparkContext";
@@ -202,8 +202,36 @@ const ReloadExternal = () => {
 };
 
 const ApplyChanges = () => {
+  const config = useSelector((state) => state)
+  const snackBarContext = React.useContext(SnackbarContext);
+  const loadingContext = React.useContext(LoadingContext)
+
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
+
+  const handleSendConf = async (event) => {
+    loadingContext[1](true)
+    const res = await send_conf(config)
+    if (res) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: "Configuration sent to a4GATE",
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: "Error on sending configuration to a4GATE",
+      });
+    }
+    loadingContext[1](false)
+  };
   return (
-    <StyledButton>
+    <StyledButton onClick={handleSendConf}>
       <div className="img-wrapper-1">
         <div className="img-wrapper">
           <img
@@ -347,14 +375,6 @@ export default function SpeedDialTooltipOpen() {
     { icon: <UploadConfig />, name: "upload JSON" },
     /*  { icon: <Checklist />, name: "modified data list" }, */
   ];
-
-  /*  const bottomActions = [
-     { icon: <ApplyChanges />, name: "send to a4GATE" },
-     { icon: <DownloadConfig />, name: "download JSON" },
-     { icon: <UploadConfig />, name: "upload JSON" },
-     { icon: <Checklist />, name: "modified data list" },
-   ]; */
-
 
   return (
 

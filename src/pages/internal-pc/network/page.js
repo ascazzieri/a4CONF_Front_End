@@ -5,23 +5,18 @@ import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
+import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import {
-  Box,
   Button,
   Container,
   Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
-  MenuItem,
   Radio,
   RadioGroup,
-  Stack,
-  Switch,
   TextField,
-  Typography,
 } from "@mui/material";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 
@@ -36,27 +31,13 @@ export default function InternalNetwork() {
     ? ["Connection parameters", "Static Routes", "Scan Exception", "JSON"]
     : ["Connection parameters", "Static Routes", "Scan Exception"];
 
-  const getArrayOfObjects = (data, complex, key1, key2) => {
-    let arrayOfObjects = [];
-    const keys = Object.keys(data);
-    if (!complex && keys && keys.length !== 0) {
-      keys.map((item, index) => {
-        arrayOfObjects.push({
-          subnet: item,
-          gateway: data[item]?.toString()?.replace(",", ", "),
-        });
-      });
-    }
-    return arrayOfObjects;
-  };
-
   const [connection, setConnection] = useState(
     industrialNetwork?.dhcp ? "dhcp" : "static"
   );
   const [ipAddress, setIPAddress] = useState(industrialNetwork?.ip);
 
   const [routeTableData, setRouteTableData] = useState(
-    getArrayOfObjects(industrialNetwork?.routes, false, "subnet", "gateway")
+    getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
   );
   const [scanException, setScanException] = useState(
     industrialNetwork?.net_scan

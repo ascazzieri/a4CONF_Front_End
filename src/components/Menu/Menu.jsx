@@ -23,11 +23,10 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import MergeIcon from '@mui/icons-material/Merge';
 import SpeedIcon from "@mui/icons-material/Speed";
 import CallSplitIcon from '@mui/icons-material/CallSplit';
-import a4GATELogo from "../media/img/a4GATE-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
-import MainButtons from "../components/MainButtons/MainButtons"
-import {SuperUserContext} from "../utils/context/SuperUser"
+import MainButtons from "../MainButtons/MainButtons"
+import { SuperUserContext } from "../../utils/context/SuperUser"
 
 const drawerWidth = 240;
 
@@ -172,7 +171,7 @@ export default function MiniDrawer(props) {
                 style={{ paddingTop: 5, paddingBottom: 0, minWidth: 250 }}
               >
                 <img
-                  src={a4GATELogo}
+                  src='/img/a4GATE-logo.png'
                   alt="a4GATE logo"
                   width="230"
                   height="70"
@@ -180,10 +179,7 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={2} sx={{ textAlign: "center" }}>
-
               {mainSectionTitle}
-
-
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
               <>
@@ -196,13 +192,6 @@ export default function MiniDrawer(props) {
       <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
         <DrawerHeader style={{ justifyContent: 'center' }}>
           <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
-          {/* <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton> */}
         </DrawerHeader>
         <Divider />
         <List>
