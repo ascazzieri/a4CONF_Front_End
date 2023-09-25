@@ -7,6 +7,7 @@ import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import BackButton from "../../../components/BackButton/BackButton";
 import {
   get_iot_gtws_opcua_reading_enabled,
@@ -49,16 +50,24 @@ export default function OPCServer() {
   const snackBarContext = useContext(SnackbarContext);
 
   const loaderContext = useContext(LoadingContext);
-
+  const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
-    "Expose Iot Gateway",
-    "Manage Iot Gateways",
-    "Shift nodes",
-    "Port",
-    "Security",
-    "JSON",
-  ];
+  const navbarItems = superUser
+    ? [
+        "Expose Iot Gateway",
+        "Manage Iot Gateways",
+        "Shift nodes",
+        "Port",
+        "Security",
+        "JSON",
+      ]
+    : [
+        "Expose Iot Gateway",
+        "Manage Iot Gateways",
+        "Shift nodes",
+        "Port",
+        "Security",
+      ];
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -492,7 +501,7 @@ export default function OPCServer() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && <JSONTree data={opcua} />}
+        {currentTab === 5 && superUser && <JSONTree data={opcua} />}
 
         <form onSubmit={handleOPCUAServerChange}>
           {currentTab === 0 && (

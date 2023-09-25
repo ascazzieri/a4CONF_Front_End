@@ -24,7 +24,7 @@ import SimpleDialog from "@mui/material/Dialog";
 import { get_archive, post_archive } from "../../utils/api";
 import { useEffect } from "react";
 
-export function Archive() {
+export default function Archive() {
   const [archive, setArchive] = useState();
 
 
@@ -86,7 +86,7 @@ export function Archive() {
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
-        <Card sx={{ mt: 1 }}>
+        <Card sx={{ mt: 1, p:2 }}>
           <Stack
             direction="row"
             alignItems="center"

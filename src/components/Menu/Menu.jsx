@@ -1,5 +1,5 @@
-import React from "react";
-import classes from "./Menu.module.css";
+import React, { useContext } from "react";
+import classes from "./Menu.module.css"
 import useTheme from "@mui/material/styles/useTheme";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -23,10 +23,10 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import MergeIcon from '@mui/icons-material/Merge';
 import SpeedIcon from "@mui/icons-material/Speed";
 import CallSplitIcon from '@mui/icons-material/CallSplit';
-import a4GATELogo from "../media/img/a4GATE-logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
-import MainButtons from "../components/MainButtons/MainButtons"
+import MainButtons from "../MainButtons/MainButtons"
+import { SuperUserContext } from "../../utils/context/SuperUser"
 
 const drawerWidth = 240;
 
@@ -111,7 +111,9 @@ const floatingLogo = {
 
 export default function MiniDrawer(props) {
   const { children } = props;
-  const theme = useTheme();
+  const superUser = useContext(SuperUserContext)[0]
+
+  const archiveBackChannelInfoList = superUser ? ["Info", "Back-Channel", "Archive"] : ["Info"]
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
@@ -120,16 +122,6 @@ export default function MiniDrawer(props) {
   const currentURLArray = location.pathname.split("/");
 
   const mainSectionTitle = currentURLArray[1].replace("-", " ").toUpperCase();
-
-
-  const [buttonsOpen, setButtonsOpen] = React.useState(false);
-
-  const handleButtonsOpen = (event) => {
-    setButtonsOpen(true);
-  };
-  const handleButtonsClose = () => {
-    setButtonsOpen(false);
-  };
 
 
   const handleDrawerOpen = () => {
@@ -188,7 +180,7 @@ export default function MiniDrawer(props) {
                 style={{ paddingTop: 5, paddingBottom: 0, minWidth: 250 }}
               >
                 <img
-                  src={a4GATELogo}
+                  src='/img/a4GATE-logo.png'
                   alt="a4GATE logo"
                   width="230"
                   height="70"
@@ -196,10 +188,7 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={2} sx={{ textAlign: "center" }}>
-
               {mainSectionTitle}
-
-
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
               <>
@@ -209,33 +198,9 @@ export default function MiniDrawer(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      {(!location.pathname.includes("login") &&
-      !location.pathname.includes("register")) && (
-
-        <Drawer
-          variant="permanent"
-          open={open}
-          onMouseOver={handleDrawerOpen}
-          onMouseLeave={handleDrawerClose}
-        >
-          <DrawerHeader style={{ justifyContent: "center" }}>
-            <p style={{ fontWeight: "bolder" }}>
-              <img
-                src="/img/applied_logo_cropped.png"
-                alt="menu icon"
-                width={35}
-                height={35}
-                style={floatingLogo}
-              />{" "}
-              a4CONF
-            </p>
-            {/* <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton> */}
+      <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
+        <DrawerHeader style={{ justifyContent: 'center' }}>
+          <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
         </DrawerHeader>
         <Divider />
         <List>
@@ -290,7 +255,7 @@ export default function MiniDrawer(props) {
         </List>
         <Divider />
         <List>
-          {["Back-Channel", "Info", "Archive"].map((text, index) => (
+          {archiveBackChannelInfoList.map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 name={text}
@@ -298,8 +263,8 @@ export default function MiniDrawer(props) {
                   navigate(`/${text?.toLowerCase()}`);
                 }}>
                 <ListItemIcon className={classes.hoverIcons}>
-                  {index === 0 && <LowPriorityIcon />}
-                  {index === 1 && <InfoOutlinedIcon />}
+                  {index === 0 && <InfoOutlinedIcon />}
+                  {index === 1 && <LowPriorityIcon />}
                   {index === 2 && <MessageIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />

@@ -15,6 +15,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../../utils/context/Loading";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import Box from "@mui/material/Box";
 import Collapse from "@mui/material/Collapse";
 import Table from "@mui/material/Table";
@@ -56,9 +57,6 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import TagsSelectionDialog from "../../../components/TagsSelectionDialog/TagsSelectionDialog";
 
 import LabelImportantIcon from "@mui/icons-material/LabelImportant";
-import DoneAllIcon from "@mui/icons-material/DoneAll";
-import CallMergeIcon from "@mui/icons-material/CallMerge";
-import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import DvrIcon from "@mui/icons-material/Dvr";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
 import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
@@ -848,6 +846,8 @@ export default function Kepware() {
   ); */
   const dispatch = useDispatch();
 
+  const superUser = useContext(SuperUserContext)[0];
+
   const snackBarContext = useContext(SnackbarContext);
 
   //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
@@ -861,20 +861,28 @@ export default function Kepware() {
   const [channelRows, setChannelRows] = useState();
   const [expandedListChannels, setExpandedListChannels] = useState([]);
   const [expandedListDevices, setExpandedListDevices] = useState([]);
-  const navbarItems = [
-    "Local Things",
-    "Create IoT Gateway",
-    "Kepware configuration",
-    "License",
-    "Machines Configured",
-    "JSON",
-  ];
+  const navbarItems = superUser
+    ? [
+        "Local Things",
+        "Create IoT Gateway",
+        "Kepware configuration",
+        "License",
+        "Machines Configured",
+        "JSON",
+      ]
+    : [
+        "Local Things",
+        "Create IoT Gateway",
+        "Kepware configuration",
+        "License",
+        "Machines Configured",
+      ];
 
   const [thingName, setThingName] = useState();
 
   const [count, setCount] = useState(0);
   const [isInKepware, setIsInKepware] = useState(false);
-  const [connctedMachines, setConnectedMachines] = useState(kepware?.machines);
+  const [connectedMachines, setConnectedMachines] = useState(kepware?.machines);
 
   const location = useLocation();
 
@@ -1015,7 +1023,7 @@ export default function Kepware() {
   };
 
   const handleAddThingName = () => {
-    const thingNameList = [...thing_names];
+    const thingNameList = [...thingNames];
     if (thingName.trim() === "") {
       return;
     }
@@ -1028,7 +1036,7 @@ export default function Kepware() {
     dispatch(updateThingNames(thingNameList));
   };
   const handleThingNameDelete = (value) => {
-    const thingNameList = thing_names.filter((item) => item !== value);
+    const thingNameList = thingNames.filter((item) => item !== value);
     dispatch(updateThingNames(thingNameList));
   };
   const handleExpandableListChannels = (event, name) => {
@@ -1085,11 +1093,11 @@ export default function Kepware() {
     setSnackBar({ ...newState, open: true });
   };
 
-  const channelList = groupByChannel(connctedMachines)
-    ? Array.from(groupByChannel(connctedMachines)[0])
+  const channelList = groupByChannel(connectedMachines)
+    ? Array.from(groupByChannel(connectedMachines)[0])
     : [];
-  const device_connected = groupByChannel(connctedMachines)
-    ? groupByChannel(connctedMachines)[1]
+  const device_connected = groupByChannel(connectedMachines)
+    ? groupByChannel(connectedMachines)[1]
     : [];
 
   return (
@@ -1101,7 +1109,7 @@ export default function Kepware() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && <JSONTree data={kepware} />}
+        {currentTab === 5 && superUser && <JSONTree data={kepware} />}
 
         <Snackbar
           open={open}
@@ -1145,12 +1153,12 @@ export default function Kepware() {
               </Button>
             </Stack>
 
-            <TableContainer sx={{ height: 250 }}>
+            <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
               <Table stickyHeader aria-label="sticky table" size="small">
                 <TableBody>
-                  {thing_names &&
-                    thing_names.length !== 0 &&
-                    thing_names.map((row) => {
+                  {thingNames &&
+                    thingNames.length !== 0 &&
+                    thingNames.map((row) => {
                       return (
                         <TableRow hover key={row}>
                           <TableCell align="center">

@@ -369,11 +369,10 @@ export const downloadJSON = (object, reportName, hostname) => {
   link.download = fileName;
   link.click();
 
-
   URL.revokeObjectURL(url);
 };
 
-export const get_archive = async() => {
+export const get_archive = async () => {
   try {
     const res = await helper.fetchData("/conf/archive", "GET");
     console.log(res);
@@ -381,8 +380,8 @@ export const get_archive = async() => {
   } catch (e) {
     console.error(e);
   }
-}
-export const post_archive = async(data) => {
+};
+export const post_archive = async (data) => {
   try {
     const res = await helper.fetchData("/conf/archive", "POST", data);
     console.log(res);
@@ -390,17 +389,8 @@ export const post_archive = async(data) => {
   } catch (e) {
     console.error(e);
   }
-}
-/* export const get_login = async() => {
-  try {
-    const res = await helper.fetchData("/conf/login", "GET");
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
-} */
-export const post_login = async(data) => {
+};
+export const post_login = async (data) => {
   try {
     const res = await helper.fetchData("/conf/login", "POST", data);
     console.log(res);
@@ -408,17 +398,8 @@ export const post_login = async(data) => {
   } catch (e) {
     console.error(e);
   }
-}
-/* export const get_register = async() => {
-  try {
-    const res = await helper.fetchData("/conf/register", "GET");
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
-} */
-export const post_register = async(data) => {
+};
+export const post_register = async (data) => {
   try {
     const res = await helper.fetchData("/conf/register", "POST", data);
     console.log(res);
@@ -426,4 +407,22 @@ export const post_register = async(data) => {
   } catch (e) {
     console.error(e);
   }
-}
+};
+export const check_credentials = async () => {
+  try {
+    const res = await helper.fetchData("/conf/check-credentials", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const test_connection = async (data) => {
+  try {
+    const res = await helper.fetchData("/external/network/ping", "POST", data);
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};

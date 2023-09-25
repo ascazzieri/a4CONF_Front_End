@@ -1,9 +1,9 @@
 import { useState, useRef } from "react"
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, CameraControls, Text3D, useFont } from '@react-three/drei'
+import { Environment, CameraControls} from '@react-three/drei'
 import { extend } from '@react-three/fiber'
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry'
-import { Gltf } from "@react-three/drei";
+import { Gltf, } from "@react-three/drei";
 import myFont from './helvetiker_regular.typeface.json'
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader'
 
@@ -22,34 +22,10 @@ const FloatingApplied = () => {
 
     return (
         <group position={[0, 5, -20]} rotation={[Math.PI / 2, 0, 0]} scale={[20, 20, 20]}>
-            <Gltf src="/assets/logo_reduce.gltf" receiveShadow ref={fbxRef} color="blue" />
-
+            <Gltf src="/assets/logo_reduce.gltf" receiveShadow ref={fbxRef} />
         </group>
     );
 };
-
-function THREEDBox(props) {
-    // This reference gives us direct access to the THREE.Mesh object
-    const ref = useRef()
-    // Hold state for hovered and clicked events
-    const [hovered, hover] = useState(false)
-    const [clicked, click] = useState(false)
-    // Subscribe this component to the render-loop, rotate the mesh every frame
-    useFrame((state, delta) => (ref.current.rotation.x += delta))
-    // Return the view, these are regular Threejs elements expressed in JSX
-    return (
-        <mesh
-            {...props}
-            ref={ref}
-            scale={clicked ? 1.5 : 1}
-            onClick={(event) => click(!clicked)}
-            onPointerOver={(event) => hover(true)}
-            onPointerOut={(event) => hover(false)}>
-            <boxGeometry args={[1, 1, 1]} />
-            <meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
-        </mesh>
-    )
-}
 extend({ TextGeometry })
 export default function THREED() {
 

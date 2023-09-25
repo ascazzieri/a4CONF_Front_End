@@ -1,57 +1,35 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateIndustrialNetwork } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
+import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import {
-  Box,
   Button,
   Container,
   Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
-  IconButton,
-  MenuItem,
   Radio,
   RadioGroup,
-  Stack,
-  Switch,
   TextField,
-  Typography,
 } from "@mui/material";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 
 export default function InternalNetwork() {
   const industrialNetwork = useSelector(
     (state) => state.system?.network?.industrial
   );
   const dispatch = useDispatch();
-
+  const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
-    "Connection parameters",
-    "Static Routes",
-    "Scan Exception",
-    "JSON",
-  ];
-
-  const getArrayOfObjects = (data, complex, key1, key2) => {
-    let arrayOfObjects = [];
-    const keys = Object.keys(data);
-    if (!complex && keys && keys.length !== 0) {
-      keys.map((item, index) => {
-        arrayOfObjects.push({
-          subnet: item,
-          gateway: data[item]?.toString()?.replace(",", ", "),
-        });
-      });
-    }
-    return arrayOfObjects;
-  };
+  const navbarItems = superUser
+    ? ["Connection parameters", "Static Routes", "Scan Exception", "JSON"]
+    : ["Connection parameters", "Static Routes", "Scan Exception"];
 
   const [connection, setConnection] = useState(
     industrialNetwork?.dhcp ? "dhcp" : "static"
@@ -59,7 +37,7 @@ export default function InternalNetwork() {
   const [ipAddress, setIPAddress] = useState(industrialNetwork?.ip);
 
   const [routeTableData, setRouteTableData] = useState(
-    getArrayOfObjects(industrialNetwork?.routes, false, "subnet", "gateway")
+    getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
   );
   const [scanException, setScanException] = useState(
     industrialNetwork?.net_scan
@@ -125,15 +103,14 @@ export default function InternalNetwork() {
   return (
     <ErrorCacher>
       <Container>
-        <BackButton pageTitle="Network">
-        </BackButton>
+        <BackButton pageTitle="Network"></BackButton>
 
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 3 && <JSONTree data={industrialNetwork} />}
+        {currentTab === 3 && superUser && <JSONTree data={industrialNetwork} />}
 
         <form onSubmit={handleIndustrialChange}>
           {currentTab === 0 && (

@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSitemanager } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import BackButton from "../../../components/BackButton/BackButton";
 import Table from "../../../components/Table/Table";
 import {
@@ -27,7 +28,10 @@ export default function Sitemanager() {
   const dispatch = useDispatch();
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = ["Gate manager", "Advanced", "Agents", "JSON"];
+  const superUser = useContext(SuperUserContext)[0];
+  const navbarItems = superUser
+    ? ["Gate manager", "Advanced", "Agents", "JSON"]
+    : ["Gate manager", "Advanced", "Agents"];
 
   const getArrayFromAgentsObject = (agentsObject) => {
     let agentsArrayOfObjects = [];
@@ -144,7 +148,7 @@ export default function Sitemanager() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 3 && <JSONTree data={sitemanager} />}
+        {currentTab === 3 && superUser && <JSONTree data={sitemanager} />}
 
         <form onSubmit={handleSitemanagerSubmit}>
           {currentTab === 0 && (

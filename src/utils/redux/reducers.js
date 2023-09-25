@@ -83,6 +83,11 @@ const jsonSlice = createSlice({
       const { newCustomer } = action.payload;
       state.system.network.customer = newCustomer;
     },
+    updatePingResult(state, action) {
+      const newPingResult = action.payload;
+      console.log(newPingResult);
+      state.system.network.customer.ping = newPingResult;
+    },
     updateFirewallEnable(state, action) {
       const newFirewallEnabled = action.payload;
       state.system.network.customer.firewall_enabled = newFirewallEnabled;
@@ -167,6 +172,7 @@ export const {
   updateKepware,
   updateExternalPC,
   updateCustomerNetwork,
+  updatePingResult,
   updateThingworx,
   updateThingNames,
   updateSitemanager,

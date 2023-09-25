@@ -1,5 +1,5 @@
-import MiniDrawer from "../components/Menu";
-import ErrorCacher from "../components/Errors/ErrorCacher";
+import MiniDrawer from "../components/Menu/Menu";
+import ErrorCacher from "../components/Errors/ErrorCacher"
 import { useEffect, useState, useContext } from "react";
 import { useDispatch } from "react-redux";
 import { updateAll } from "../utils/redux/reducers";
@@ -152,11 +152,8 @@ const Layout = () => {
             {/*  <Checklist /> */}
 
         <Outlet />
-        if({location && <MiniDrawer /> && <MainButtons/>}){
 
-        }
       </MiniDrawer>
-      <MainButtons />
     </ErrorCacher>
   );
 };

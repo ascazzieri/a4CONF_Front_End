@@ -8,6 +8,7 @@ import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import {
   get_iot_gtws_http_client_enabled,
   get_iot_gtws_http_client_disabled,
@@ -48,15 +49,23 @@ export default function HTTPServer() {
 
   const loaderContext = useContext(LoadingContext);
 
+  const superUser = useContext(SuperUserContext)[0]
+
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = [
+  const navbarItems = superUser ? [
     "Expose Iot Gateway",
     "Manage Iot Gateways",
     "Shift nodes",
     "Port",
     "Security",
     "JSON",
-  ];
+  ] : [
+    "Expose Iot Gateway",
+    "Manage Iot Gateways",
+    "Shift nodes",
+    "Port",
+    "Security",
+  ] ;
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -488,7 +497,7 @@ export default function HTTPServer() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && <JSONTree data={http} />}
+        {currentTab === 5 && superUser && <JSONTree data={http} />}
 
         <form onSubmit={handleHTTPServerChange}>
           {currentTab === 0 && (

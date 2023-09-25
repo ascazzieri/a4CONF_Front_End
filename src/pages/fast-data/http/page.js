@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataFTP } from "../../../utils/redux/reducers";
+import { updateFastDataHTTP } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import CachedIcon from "@mui/icons-material/Cached";
+import { SuperUserContext } from "../../../utils/context/SuperUser";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import {
@@ -12,10 +12,8 @@ import {
   Container,
   Divider,
   FormControl,
-  FormControlLabel,
   FormLabel,
   Stack,
-  Autocomplete,
   Switch,
   TextField,
   Typography,
@@ -26,8 +24,11 @@ export default function FTP() {
   );
 
   const dispatch = useDispatch();
+  const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = ["Server", "Blob settings", "File suffix", "JSON"];
+  const navbarItems = superUser
+    ? ["Server", "File suffix", "Blob settings", "JSON"]
+    : ["Server", "File suffix", "Blob settings"];
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -119,8 +120,8 @@ export default function FTP() {
     }
   };
 
-  const handleFTPChange = () => {
-    const newFTP = {
+  const handleHTTPChange = () => {
+    const newHTTP = {
       ...http,
       http_server: {
         host: serverBind,
@@ -142,7 +143,7 @@ export default function FTP() {
       ],
     };
 
-    dispatch(updateFastDataFTP({ newFTP }));
+    dispatch(updateFastDataHTTP({ newHTTP }));
   };
 
   const blobColumnsData = [
@@ -167,15 +168,15 @@ export default function FTP() {
   return (
     <ErrorCacher>
       <Container>
-        <BackButton pageTitle="FTP" />
+        <BackButton pageTitle="HTTP" />
         <SecondaryNavbar
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && <JSONTree data={http} />}
+        {currentTab === 4 && superUser && <JSONTree data={http} />}
 
-        <form onSubmit={handleFTPChange}>
+        <form onSubmit={handleHTTPChange}>
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
@@ -260,7 +261,7 @@ export default function FTP() {
 
               <Divider />
 
-              {customPortEnable && (
+              {addFileSuffixEnable && (
                 <>
                   <FormControl fullWidth>
                     <FormLabel>Add file suffix:</FormLabel>
@@ -270,7 +271,7 @@ export default function FTP() {
                       label="File suffix"
                       helperText="Add file suffix"
                       value={addFileSuffixFormat}
-                      onChange={handleAddSuffixEnableChange}
+                      onChange={handleAddSuffixFormatChange}
                     />
                   </FormControl>
                   <Divider />

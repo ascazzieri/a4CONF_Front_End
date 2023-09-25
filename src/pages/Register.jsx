@@ -62,10 +62,9 @@ export default function Register() {
           <Divider />
           <div>
             <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Username</h2>
+              <h2>Username:</h2>
               <TextField
                 fullWidth={true}
-                id="outlined-texterea"
                 name="username"
                 rows={1}
                 value={username}
@@ -74,10 +73,9 @@ export default function Register() {
             </Stack>
             <Divider />
             <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Password</h2>
+              <h2>Password:</h2>
               <TextField
                 fullWidth={true}
-                id="outlined-textarea"
                 name="password"
                 rows={1}
                 value={password}
@@ -89,7 +87,6 @@ export default function Register() {
               <h2>Confirm Password</h2>
               <TextField
                 fullWidth={true}
-                id="outlined-textarea"
                 name="confirmPassword"
                 rows={1}
                 value={confirmPassword}
