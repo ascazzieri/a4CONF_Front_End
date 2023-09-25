@@ -7,7 +7,7 @@ import { Stack } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { send_conf } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
-import { useContext , useState } from "react";
+import { useContext, useState } from "react";
 
 export default function ServiceHandler() {
   const pathLocationServices = {
@@ -18,41 +18,30 @@ export default function ServiceHandler() {
   };
 
   const loaderContext = useContext(LoadingContext);
-  console.log(loaderContext);
 
   const location = useLocation().pathname;
-  console.log(location);
 
   const pathValue = pathLocationServices[location];
-  console.log(pathValue);
 
   const handleChange = (event) => {
     const command = event.target.value;
     setServiceCommand(command)
-    postJson(command);
+    loaderContext[1](true);
+    manageService(pathValue, command);
+    loaderContext[1](false);
     setServiceCommand(undefined)
   };
 
   const [serviceCommand, setServiceCommand] = useState("");
 
-  function postJson(cmd) {
+  const manageService = async (service, cmd) => {
     const body = {};
-    body["services"] = { [pathValue]: cmd };
-    console.log(body);
-
-    (async () => {
-      try {
-        loaderContext[1](true);
-        await send_conf({ body });
-      } catch (err) {
-        console.log("Error occured when fetching books");
-      }
-    })();
-    loaderContext[1](false);
+    body["services"] = { [service]: cmd };
+    await send_conf({ body });
   }
   return (
     <FormControl>
-      <FormLabel >{pathValue} service commands</FormLabel>
+      <FormLabel >{pathValue && pathValue.charAt(0).toUpperCase() + pathValue.slice(1)} service commands</FormLabel>
       <RadioGroup
         row
         name="position"
@@ -69,12 +58,12 @@ export default function ServiceHandler() {
           control={<Radio />}
           label="Stop"
         />
-        <FormControlLabel 
-        value="restart" 
-        control={<Radio />} 
-        label="Restart" />
+        <FormControlLabel
+          value="restart"
+          control={<Radio />}
+          label="Restart" />
       </RadioGroup>
     </FormControl>
-    
+
   );
 }

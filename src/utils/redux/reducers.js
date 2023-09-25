@@ -134,15 +134,15 @@ const jsonSlice = createSlice({
     },
     updateFastDataFTPEnable(state, action) {
       const ftpEnable = action.payload;
-      state.services.fastdata.industrial.ftp.enable = ftpEnable;
+      state.services.fastdata.industrial.ftp.enabled = ftpEnable;
     },
     updateFastDataHTTPEnable(state, action) {
       const httpEnable = action.payload;
-      state.services.fastdata.industrial.http.enable = httpEnable;
+      state.services.fastdata.industrial.http.enabled = httpEnable;
     },
     updateFastDataMatrixEnable(state, action) {
       const matrixEnable = action.payload;
-      state.services.fastdata.customer.matrix.enable = matrixEnable;
+      state.services.fastdata.customer.matrix.enabled = matrixEnable;
     },
     updateFastDataHTTP(state, action) {
       const { newFastDataHTTP } = action.payload;

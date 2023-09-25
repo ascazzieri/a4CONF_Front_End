@@ -9,7 +9,6 @@ import {
   updateHTTPServerEnable,
 } from "../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
-import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import {
   Grid,
   Card,
@@ -28,7 +27,6 @@ import ShareIcon from "@mui/icons-material/Share";
 import HttpIcon from "@mui/icons-material/Http";
 import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
 
-
 export default function ExternalPC() {
   const externalPCReboot = useSelector((state) => state?.system.reboot);
   const serviceStatus = useSelector((state) => state?.services);
@@ -42,7 +40,7 @@ export default function ExternalPC() {
   );
 
   const [opcuaServerEnabled, setOPCUAServerEnabled] = useState(
-    serviceStatus?.opcua
+    serviceStatus?.opcua?.enabled
   );
 
   const [httpServerEnabled, setHTTPServerEnabled] = useState(
@@ -50,6 +48,13 @@ export default function ExternalPC() {
   );
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    setSitemanagerEnabled(serviceStatus?.sitemanager?.enabled);
+    setThingworxEnabled(serviceStatus?.thingworx?.enabled);
+    setOPCUAServerEnabled(serviceStatus?.opcua?.enabled);
+    setHTTPServerEnabled(serviceStatus?.http?.enabled);
+  }, [serviceStatus]);
 
   useEffect(() => {
     dispatch(updateSitemanagerEnable(sitemanagerEnabled));
@@ -82,14 +87,6 @@ export default function ExternalPC() {
     };
     dispatch(updateExternalPC({ newExternalPC }));
   };
-
-  const tabsData = [
-    "Network",
-    "Sitemanager",
-    "Thingworx",
-    "OPCUA-Server",
-    "HTTP-Server",
-  ];
 
   if (currentURLArray.length === 2) {
     const cardIcon = { fontSize: 80, color: "#0d6efd" };
@@ -178,7 +175,7 @@ export default function ExternalPC() {
                         <FormControlLabel
                           control={
                             <Switch
-                              checked={sitemanagerEnabled}
+                              checked={sitemanagerEnabled || false}
                               onChange={(event) => {
                                 setSitemanagerEnabled(event?.target?.checked);
                               }}
@@ -237,7 +234,7 @@ export default function ExternalPC() {
                         <FormControlLabel
                           control={
                             <Switch
-                              checked={thingworxEnabled}
+                              checked={thingworxEnabled || false}
                               onChange={(event) => {
                                 setThingworxEnabled(event?.target?.checked);
                               }}
@@ -298,7 +295,7 @@ export default function ExternalPC() {
                         <FormControlLabel
                           control={
                             <Switch
-                              checked={opcuaServerEnabled}
+                              checked={opcuaServerEnabled || false}
                               onChange={(event) => {
                                 setOPCUAServerEnabled(event?.target?.checked);
                               }}
@@ -357,7 +354,7 @@ export default function ExternalPC() {
                         <FormControlLabel
                           control={
                             <Switch
-                              checked={httpServerEnabled}
+                              checked={httpServerEnabled || false}
                               onChange={(event) => {
                                 setHTTPServerEnabled(event?.target?.checked);
                               }}
@@ -393,31 +390,29 @@ export default function ExternalPC() {
             >
               <Outlet />
             </Box>
-            {/* <VerticalTab tabsData={tabsData} root="external-pc">
-              <Outlet />
-            </VerticalTab> */}
           </CardContent>
         </Card>
-        <Grid container spacing={2}>
-          <Grid item xs={4} sx={{ display: "flex" }}>
-            <Card sx={{ width: "100%" }}>
-              <CardContent>
-                <JSONTree data={externalPCReboot} />
-                <button onClick={handleExternalPCChange}>
-                  Change External PC
-                </button>
-              </CardContent>
-            </Card>
+        {!currentURLArray.includes("network") && (
+          <Grid container spacing={2}>
+            <Grid item xs={4} sx={{ display: "flex" }}>
+              <Card sx={{ width: "100%" }}>
+                <CardContent>
+                  <JSONTree data={externalPCReboot} />
+                  <button onClick={handleExternalPCChange}>
+                    Change External PC
+                  </button>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={8} sx={{ display: "flex" }}>
+              <Card sx={{ width: "100%" }}>
+                <CardContent style={{ paddingBottom: 16 }}>
+                  <ServiceHandler />
+                </CardContent>
+              </Card>
+            </Grid>
           </Grid>
-          <Grid item xs={8} sx={{ display: "flex" }}>
-            <Card sx={{ width: "100%" }}>
-              <CardContent style={{ paddingBottom: 16 }}>
-                {/* <VerticalTabs tabsData={tabsData} /> */}
-                <ServiceHandler />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        )}
       </Container>
     </ErrorCacher>
   );

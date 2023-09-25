@@ -5,6 +5,7 @@ import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateKepware, updateThingNames } from "../../../utils/redux/reducers";
 import * as helper from "../../../utils/utils";
 import BackButton from "../../../components/BackButton/BackButton";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import {
   loadChannels,
   createiotgw,
@@ -1262,11 +1263,6 @@ export default function Kepware() {
                 <Typography>Trial mode</Typography>
               </Stack>
             </FormControl>
-            <FormControl fullWidth>
-              <Button onClick={handleKepwareChange} variant="contained">
-                Invia
-              </Button>
-            </FormControl>
             <Divider />
           </>
         )}
@@ -1410,11 +1406,7 @@ export default function Kepware() {
           </>
         )}
 
-        {/* <FormControl fullWidth>
-          <Button type="submit" variant="contained">
-            Invia
-          </Button>
-        </FormControl> */}
+        {(currentTab === 0 || currentTab === 3) && <SaveButton />}
       </Container>
     </ErrorCacher>
   );

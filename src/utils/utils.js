@@ -78,7 +78,6 @@ export const getArrayOfObjects = (data, key1, key2) => {
       });
     }
   }
-
   return arrayOfObjects;
 };
 
@@ -273,7 +272,7 @@ export const clearEmpties = (o) => {
 export const verifyIPCIDR = (text) => {
   const input = text.split("/");
 
-  if (input.length != 2) return false;
+  if (input.length !== 2) return false;
 
   if (input[1] < 0 || input[1] > 32) return false;
 
@@ -397,6 +396,6 @@ export const downloadafilewithIE = (text, filename) => {
 
 export const removeDuplicates = (a) => {
   return a.sort().filter(function (item, pos, ary) {
-    return !pos || item != ary[pos - 1];
+    return !pos || item !== ary[pos - 1];
   });
 };

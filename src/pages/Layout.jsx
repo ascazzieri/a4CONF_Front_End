@@ -45,9 +45,6 @@ const Layout = () => {
 
   const loaderContext = useContext(LoadingContext);
 
-  const location = useLocation();
-  console.log(location);
-
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
