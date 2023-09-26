@@ -2,7 +2,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateInternalPC } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import JSONPretty from "react-json-pretty";
-import VerticalTab from "../../components/VerticalTab/VerticalTab";
 import {
   Grid,
   Card,
@@ -45,8 +44,6 @@ export default function InternalPC() {
     };
     dispatch(updateInternalPC({ newInternalPC }));
   };
-
-  const tabsData = ["Network", "Kepware"];
 
   if (currentURLArray.length === 2) {
     const cardIcon = { fontSize: 80, color: "#0d6efd" };

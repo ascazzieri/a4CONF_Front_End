@@ -58,18 +58,14 @@ let dummy_config = {
       agents: null,
     },
     thingworx: {
-      host: "ima-dev.cloud.thingworx.com",
-      appkey: "1d59bd5b-b4a3-48e1-98a8-d19bd5133429", //fai un trim() per sicurezza
-      enabled: true,
-      connected: false,
-      version: "123456789", //altrimenti: Agent version not available
-      diagnostic: "log di thingworx",
-      thing_names: [],
-      things: {
-        rt_testFede: {
-          test_opcua: "fromkepware/rt_testFede",
-        },
-      },
+      host: null,
+      appkey: null,
+      enabled: null,
+      connected: null,
+      version: null,
+      diagnostic: null,
+      thing_names: null,
+      things: null,
     },
     backchannel: {
       topics: null,
@@ -96,11 +92,11 @@ let dummy_config = {
       enabled: null,
       running: null,
       industrial: {
-        ftp: {enabled : null},
-        http: {enabled : null},
+        ftp: { enabled: null },
+        http: { enabled: null },
       },
       customer: {
-        matrix: {enabled : null},
+        matrix: { enabled: null },
       },
     },
   },

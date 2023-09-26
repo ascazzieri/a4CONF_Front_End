@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateIndustrialNetwork } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import Table from "../../../components/Table/Table";
+import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import {
-  Button,
   Container,
   Divider,
   FormControl,
@@ -17,7 +17,16 @@ import {
   Radio,
   RadioGroup,
   TextField,
+  Button,
+  Table,
+  Stack,
+  TableContainer,
+  TableCell,
+  IconButton,
+  TableBody,
+  TableRow,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 
 export default function InternalNetwork() {
@@ -42,14 +51,13 @@ export default function InternalNetwork() {
   const [scanException, setScanException] = useState(
     industrialNetwork?.net_scan
   );
+  const [currentScanException, setCurrentScanException] = useState();
 
   useEffect(() => {
     setConnection(industrialNetwork?.dhcp ? "dhcp" : "static");
     setIPAddress(industrialNetwork?.ip);
     setRouteTableData(
-      getArrayOfObjects(industrialNetwork?.routes),
-      "subnet",
-      "gateway"
+      getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
     );
     setScanException(industrialNetwork?.net_scan);
   }, [industrialNetwork]);
@@ -60,8 +68,26 @@ export default function InternalNetwork() {
   const handleIPAddressChange = (event) => {
     setIPAddress(event?.target?.value);
   };
-  const handleNetScanChange = (event) => {
-    setScanException(event?.target?.value);
+
+  const handleAddScanException = () => {
+    if (!currentScanException || currentScanException.trim() === "") {
+      return;
+    }
+
+    // Creare una copia dell'array scanException
+    const scanExceptionCopy = [...scanException];
+
+    // Verificare se l'elemento è già presente nell'array
+    if (!scanExceptionCopy.includes(currentScanException)) {
+      // Se non è presente, aggiungerlo
+      scanExceptionCopy.push(currentScanException);
+      setScanException(scanExceptionCopy);
+    }
+  };
+
+  const handleDeleteScanException = (value) => {
+    const scanExceptionList = scanException.filter((item) => item !== value);
+    setScanException(scanExceptionList);
   };
 
   const handleIndustrialChange = (event) => {
@@ -159,7 +185,7 @@ export default function InternalNetwork() {
             <>
               <FormLabel>Routes:</FormLabel>
 
-              <Table
+              <CustomTable
                 tableData={routeTableData}
                 setTableData={setRouteTableData}
                 columnsData={routesColumnData}
@@ -171,26 +197,60 @@ export default function InternalNetwork() {
 
           {currentTab === 2 && (
             <>
-              <FormControl fullWidth>
-                <FormLabel>Machine network scan exception:</FormLabel>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <FormControl fullWidth>
+                  <FormLabel>Scan Exception list:</FormLabel>
 
-                <TextField
-                  type="text"
-                  label="Scan Exception"
-                  helperText="These ip will not be reported inside daily network scan"
-                  value={scanException}
-                  onChange={handleNetScanChange}
-                />
-              </FormControl>
+                  <TextField
+                    type="text"
+                    label="Scan Exception"
+                    helperText="These ip will not be reported inside daily network scan"
+                    value={currentScanException}
+                    required={false}
+                    onChange={(event) => {
+                      setCurrentScanException(event?.target?.value);
+                    }}
+                  />
+                </FormControl>
+                <Button variant="contained" onClick={handleAddScanException}>
+                  Add
+                </Button>
+              </Stack>
+
+              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
+                <Table stickyHeader aria-label="sticky table" size="small">
+                  <TableBody>
+                    {scanException &&
+                      scanException.length !== 0 &&
+                      scanException.map((row) => {
+                        return (
+                          <TableRow hover key={row}>
+                            <TableCell align="center">{row}</TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                aria-label="delete"
+                                onClick={() => {
+                                  handleDeleteScanException(row);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
               <Divider />
             </>
           )}
-
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 3 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

@@ -9,16 +9,11 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import Box from "@mui/material/Box";
 import Backdrop from "@mui/material/Backdrop";
 import SpeedDial from "@mui/material/SpeedDial";
-import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CachedIcon from '@mui/icons-material/Cached';
 import { downloadJSON, send_conf } from "../../utils/api"
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
-import { SparkContext } from "../RerenderSpark/RerenderSparkContext";
-import background_tech from "../../media/img/tech_background.jpg";
-import Button from "@mui/material/Button";
-import { Typography } from "@mui/material";
 import { useContext } from "react";
 
 const StyledButton = styled("div")`
@@ -139,9 +134,6 @@ const ReloadInternal = () => {
       });
     }
     loadingContext[1](false)
-
-    /* sparkContext[1](!sparkContext[0])
-    console.log(sparkContext) */
   }
   return (
     <StyledButton>
@@ -296,7 +288,7 @@ const UploadConfig = () => {
           delete jsonObject.crashed_page
         }
         console.log(jsonObject)
-        //dispatch(updateAll({ payload: jsonObject, meta: { actionType: "upload" } }));
+        dispatch(updateAll({ payload: jsonObject, meta: { actionType: "upload" } }));
 
         handleRequestFeedback({
           vertical: "bottom",
@@ -339,25 +331,6 @@ const UploadConfig = () => {
     </StyledButton>
   );
 };
-/* const Checklist = () => {
-  return (
-    <StyledButton>
-      <div className="img-wrapper-1">
-        <div className="img-wrapper">
-          <img
-            src={applied_logo_cropped}
-            height="24"
-            width="24"
-            alt="applied main button icon"
-          />
-        </div>
-      </div>
-      <span>Checklist</span>
-    </StyledButton>
-  );
-}; */
-
-
 
 export default function SpeedDialTooltipOpen() {
   const [openUpper, setOpenUpper] = React.useState(false);

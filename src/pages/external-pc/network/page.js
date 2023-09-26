@@ -5,6 +5,7 @@ import {
   updateCustomerNetwork,
   updatePingResult,
 } from "../../../utils/redux/reducers";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -583,27 +584,26 @@ export default function ExternalNetwork() {
                 </RadioGroup>
               </FormControl>
 
-              {connectionType === "wireless" &&
-                customerNetwork?.essid &&
-                customerNetwork?.essid.length !== 0 && (
-                  <>
-                    <FormControl fullWidth>
-                      <Stack
-                        direction="row"
-                        spacing={3}
-                        justifyContent="flex-start"
-                        alignItems="center"
-                      >
-                        <TextField
-                          select
-                          label="Add network"
-                          helperText="Choose from the wireless network list ad add SSID and password to the table below"
-                          defaultValue={""}
-                          onChange={handleWifiChange}
+              {connectionType === "wireless" && (
+                <>
+                  {customerNetwork.essid &&
+                  customerNetwork?.essid.length !== 0 ? (
+                    <>
+                      <FormControl fullWidth>
+                        <Stack
+                          direction="row"
+                          spacing={3}
+                          justifyContent="flex-start"
+                          alignItems="center"
                         >
-                          {customerNetwork?.essid &&
-                            customerNetwork?.essid.length !== 0 &&
-                            customerNetwork?.essid.map((item) => {
+                          <TextField
+                            select
+                            label="Add network"
+                            helperText="Choose from the wireless network list ad add SSID and password to the table below"
+                            defaultValue={""}
+                            onChange={handleWifiChange}
+                          >
+                            {customerNetwork?.essid.map((item) => {
                               return (
                                 <MenuItem
                                   key={Math.random() + item}
@@ -613,38 +613,37 @@ export default function ExternalNetwork() {
                                 </MenuItem>
                               );
                             })}
-                        </TextField>
+                          </TextField>
 
-                        <IconButton aria-label="reload">
-                          <CachedIcon />
-                        </IconButton>
+                          <IconButton aria-label="reload">
+                            <CachedIcon />
+                          </IconButton>
 
-                        <Button onClick={handleAddSSID} variant="contained">
-                          Add SSID
-                        </Button>
-                      </Stack>
-                    </FormControl>
+                          <Button onClick={handleAddSSID} variant="contained">
+                            Add SSID
+                          </Button>
+                        </Stack>
+                      </FormControl>
+                    </>
+                  ) : (
+                    <>
+                      <Typography>
+                        No ESSID found. Check your connection settings, apply
+                        changes and reload configuration
+                      </Typography>
+                    </>
+                  )}
 
-                    <FormLabel>Wifi:</FormLabel>
-                    <CustomTable
-                      tableData={wifiTableData || []}
-                      setTableData={setWifiTableData}
-                      columnsData={wifiColumnData}
-                      selectableObjectData={wifiSelectableObjectData}
-                    />
-                    <Divider />
-                  </>
-                )}
-              {connectionType === "wireless" &&
-                (!customerNetwork.essid ||
-                  customerNetwork?.essid.length !== 0) && (
-                  <>
-                    <Typography>
-                      No ESSID found. Check your connection settings, apply
-                      changes and reload configuration
-                    </Typography>
-                  </>
-                )}
+                  <FormLabel>Wifi:</FormLabel>
+                  <CustomTable
+                    tableData={wifiTableData || []}
+                    setTableData={setWifiTableData}
+                    columnsData={wifiColumnData}
+                    selectableObjectData={wifiSelectableObjectData}
+                  />
+                  <Divider />
+                </>
+              )}
 
               <Divider />
             </>
@@ -1070,11 +1069,7 @@ export default function ExternalNetwork() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 1 && currentTab !== 8 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateSitemanager } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
@@ -19,6 +19,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 
 export default function Sitemanager() {
   const sitemanager = useSelector((state) => state.services?.sitemanager);
@@ -35,14 +36,16 @@ export default function Sitemanager() {
 
   const getArrayFromAgentsObject = (agentsObject) => {
     let agentsArrayOfObjects = [];
-    Object.keys(agentsObject).map((item, index) =>
-      agentsArrayOfObjects.push({
-        agent: agentsObject[`${item}`]?.agent,
-        name: agentsObject[`${item}`]?.name,
-        sn: agentsObject[`${item}`]?.sn,
-        cfg: agentsObject[`${item}`]?.cfg,
-      })
-    );
+    if (agentsObject && Object.keys(agentsObject).length !== 0) {
+      Object.keys(agentsObject).forEach((item, index) =>
+        agentsArrayOfObjects.push({
+          agent: agentsObject[`${item}`]?.agent,
+          name: agentsObject[`${item}`]?.name,
+          sn: agentsObject[`${item}`]?.sn,
+          cfg: agentsObject[`${item}`]?.cfg,
+        })
+      );
+    }
 
     return agentsArrayOfObjects;
   };
@@ -57,6 +60,15 @@ export default function Sitemanager() {
   const [agentsTableData, setAgentTableData] = useState(
     getArrayFromAgentsObject(sitemanager?.agents)
   );
+
+  useEffect(() => {
+    setSMEDomain(sitemanager?.domain);
+    setSMEServer(sitemanager?.server);
+    setOnlyBidir(sitemanager?.onlybidir);
+    setNameAsHostName(sitemanager?.nameashostname);
+    setSMEName(sitemanager?.name);
+    setAgentTableData(getArrayFromAgentsObject(sitemanager?.agents));
+  }, [sitemanager]);
 
   const handleDomainChange = (event) => {
     setSMEDomain(event.target.value);
@@ -160,7 +172,7 @@ export default function Sitemanager() {
                   type="text"
                   label="Domain"
                   helperText="Gate Manager Domain"
-                  defaultValue={smeDomain}
+                  value={smeDomain || ""}
                   required={true}
                   onChange={handleDomainChange}
                 />
@@ -174,7 +186,7 @@ export default function Sitemanager() {
                   type="text"
                   label="Server"
                   helperText="Gate Manager IP Address"
-                  defaultValue={smeServer}
+                  value={smeServer || ""}
                   onChange={handleServerChange}
                 />
               </FormControl>
@@ -224,7 +236,7 @@ export default function Sitemanager() {
                       type="text"
                       label="Name"
                       helperText="Gate Manager device name"
-                      defaultValue={smeName}
+                      value={smeName || ""}
                       required={true}
                       onChange={handleSMENameChange}
                     />
@@ -250,11 +262,7 @@ export default function Sitemanager() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 3 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

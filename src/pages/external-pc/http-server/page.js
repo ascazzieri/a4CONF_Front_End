@@ -2,6 +2,8 @@ import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
+import SaveButton from "../../../components/SaveButton/SaveButton";
+import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import CustomTable from "../../../components/Table/Table";
@@ -49,40 +51,29 @@ export default function HTTPServer() {
 
   const loaderContext = useContext(LoadingContext);
 
-  const superUser = useContext(SuperUserContext)[0]
+  const superUser = useContext(SuperUserContext)[0];
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = superUser ? [
-    "Expose Iot Gateway",
-    "Manage Iot Gateways",
-    "Shift nodes",
-    "Port",
-    "Security",
-    "JSON",
-  ] : [
-    "Expose Iot Gateway",
-    "Manage Iot Gateways",
-    "Shift nodes",
-    "Port",
-    "Security",
-  ] ;
+  const navbarItems = superUser
+    ? [
+        "Expose Iot Gateway",
+        "Manage Iot Gateways",
+        "Shift nodes",
+        "Port",
+        "Security",
+        "JSON",
+      ]
+    : [
+        "Expose Iot Gateway",
+        "Manage Iot Gateways",
+        "Shift nodes",
+        "Port",
+        "Security",
+      ];
 
-  const getArrayOfObjects = (data, key1, key2) => {
-    let arrayOfObjects = [];
-    if (data) {
-      const keys = Object.keys(data);
-      keys.map((item, index) => {
-        arrayOfObjects.push({
-          [`${key1}`]: item,
-          [`${key2}`]: data[item].toString(),
-        });
-      });
-    }
-    return arrayOfObjects;
-  };
   const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];
-    if (data) {
+    if (data && data.length !== 0) {
       data.forEach((item, index) => {
         arrayOfObjects.push({
           [`${key1}`]: item,
@@ -132,6 +123,23 @@ export default function HTTPServer() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+
+  useEffect(() => {
+    setIotGatewaysFromTableData(
+      getArrayOfObjectsHTTP(http?.iotgw?.from, "iot_gateway", "read only")
+    );
+    setIotGatewaysToTableData(
+      getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
+    );
+    setShiftFromKepware(http?.shift_property_from_kepware);
+    setShiftToKepware(http?.shift_property_to_kepware);
+    setCustomPortEnable(http?.http?.custom_port_enable);
+    setCustomPort(http?.http?.custom_port);
+    setServerAuth(http?.security?.user_auth);
+    setUsersTableData(
+      getArrayOfObjects(http?.security?.users, "username", "password")
+    );
+  }, [http]);
 
   useEffect(() => {
     (async () => {
@@ -990,11 +998,7 @@ export default function HTTPServer() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

@@ -20,7 +20,7 @@ import {
   OutlinedInput,
   InputAdornment,
   IconButton,
-  FormHelperText
+  FormHelperText,
 } from "@mui/material";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
 import Accordion from "@mui/material/Accordion";
@@ -333,8 +333,8 @@ export default function Matrix() {
                 <TextField
                   type="text"
                   label="IP Address"
-                  helperText="FTP server address"
-                  value={serverIP}
+                  helperText="HTTP server address"
+                  value={serverIP || ""}
                   required={true}
                   onChange={handleServerIPChange}
                 />
@@ -351,7 +351,7 @@ export default function Matrix() {
                     pattern: "[0-9]*",
                   }}
                   label="Port number"
-                  value={serverPort}
+                  value={serverPort || ""}
                   onChange={handleServerPortChange}
                 />
               </FormControl>

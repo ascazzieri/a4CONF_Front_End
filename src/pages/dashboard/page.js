@@ -52,19 +52,20 @@ export default function Dashboard() {
 
   //const dashboardPage = currentURLArray.filter((item) => item === "dashboard");
 
-  const [hostName, setHostName] = useState(system?.hostname);
+  const [hostName, setHostName] = useState(
+    system?.hostname?.industrial === system?.hostname?.customer
+      ? system?.hostname?.industrial
+      : ""
+  );
   const [dashboardStatus, setDashboardStatus] = useState({});
-
+  console.log(hostName);
   useEffect(() => {
-    setHostName(system?.hostName);
+    setHostName(
+      system?.hostname?.industrial === system?.hostname?.customer
+        ? system?.hostname?.industrial
+        : ""
+    );
   }, [system]);
-
-  /* if (Object.keys(dashboardStatus).length === 0) {
-    loaderContext[1](true);
-  } else {
-    loaderContext[1](false);
-  } */
-
   useEffect(() => {
     if (Object.keys(dashboardStatus).length === 0) {
       loaderContext[1](true); // Imposta lo stato di caricamento iniziale
@@ -91,6 +92,14 @@ export default function Dashboard() {
   };
 
   const [count, setCount] = useState(0);
+  let hostNameHelperText = "";
+
+  if (!hostName) {
+    hostNameHelperText = "Write a4GATE serial number S/N";
+  } else if (hostName === "") {
+    hostNameHelperText =
+      "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE";
+  }
   const [isInDashboard, setIsInDashboard] = useState(false);
 
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
@@ -184,13 +193,9 @@ export default function Dashboard() {
                     <TextField
                       type="text"
                       label="a4GATE hostname"
-                      helperText="Write a4GATE serial number S/N"
+                      helperText={hostNameHelperText}
                       className="a4gate-hostname-form"
-                      value={
-                        hostName?.industrial === hostName?.customer
-                          ? hostName?.industrial
-                          : "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE"
-                      }
+                      value={hostName ? hostName : ""}
                       required={true}
                       onChange={(event) => {
                         setHostName({
@@ -200,7 +205,7 @@ export default function Dashboard() {
                       }}
                     />
                   </FormControl>
-                  <Button variant="contained" onClick={handleHostNameChange}>
+                  <Button variant="contained" onClick={handleHostNameChange} style={{marginTop:20}}>
                     Save
                   </Button>
                 </Stack>

@@ -1,6 +1,7 @@
 // reducers.js
 import { dummy_config } from "./dummy-conf";
 import { createSlice } from "@reduxjs/toolkit";
+import { deepMerge } from "../utils";
 
 const initialState = dummy_config;
 
@@ -49,7 +50,8 @@ const jsonSlice = createSlice({
         state.services.fastdata.enabled = newConf?.services?.fastdata?.enabled;
         state.services.fastdata.running = newConf?.services?.fastdata?.running;
       } else if (actionType === "fromBackup") {
-        state = newConf;
+        const mergedObject = deepMerge({ ...state }, newConf);
+        state = mergedObject;
       }
       state.timestamp = newConf?.timestamp;
     },
@@ -134,15 +136,15 @@ const jsonSlice = createSlice({
     },
     updateFastDataFTPEnable(state, action) {
       const ftpEnable = action.payload;
-      state.services.fastdata.industrial.ftp.enable = ftpEnable;
+      state.services.fastdata.industrial.ftp.enabled = ftpEnable;
     },
     updateFastDataHTTPEnable(state, action) {
       const httpEnable = action.payload;
-      state.services.fastdata.industrial.http.enable = httpEnable;
+      state.services.fastdata.industrial.http.enabled = httpEnable;
     },
     updateFastDataMatrixEnable(state, action) {
       const matrixEnable = action.payload;
-      state.services.fastdata.customer.matrix.enable = matrixEnable;
+      state.services.fastdata.customer.matrix.enabled = matrixEnable;
     },
     updateFastDataHTTP(state, action) {
       const { newFastDataHTTP } = action.payload;

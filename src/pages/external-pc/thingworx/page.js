@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateThingworx } from "../../../utils/redux/reducers";
 import {
@@ -8,6 +8,7 @@ import {
   disable_http_client_iot_gateway,
   twx_connection_diagnostic,
 } from "../../../utils/api";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import BackButton from "../../../components/BackButton/BackButton";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
@@ -63,7 +64,6 @@ import {
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
 
-
 /**
  * Represents a React component for managing IoT gateways and remote things.
  *
@@ -81,31 +81,30 @@ export default function Thingworx() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-  const superUser = useContext(SuperUserContext)[0]
+  const superUser = useContext(SuperUserContext)[0];
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = superUser ? [
-    "Connection",
-    "Remote Things",
-    "Manage Iot Gateways",
-    "Agent Logs",
-    "JSON",
-  ] : [
-    "Connection",
-    "Remote Things",
-    "Manage Iot Gateways",
-    "Agent Logs",
-  ];
+  const navbarItems = superUser
+    ? [
+        "Connection",
+        "Remote Things",
+        "Manage Iot Gateways",
+        "Agent Logs",
+        "JSON",
+      ]
+    : ["Connection", "Remote Things", "Manage Iot Gateways", "Agent Logs"];
 
   const getArrayFromThingObject = (thingObject) => {
     let arrayFromThingsObject = [];
 
-    Object.keys(thingObject).map((item, index) =>
-      arrayFromThingsObject.push({
-        iot_gateway: Object.keys(thingObject[`${item}`])[0],
-        thing_name: item,
-      })
-    );
+    if (thingObject && Object.keys(thingObject).length !== 0) {
+      Object.keys(thingObject).map((item, index) =>
+        arrayFromThingsObject.push({
+          iot_gateway: Object.keys(thingObject[`${item}`])[0],
+          thing_name: item,
+        })
+      );
+    }
 
     return arrayFromThingsObject;
   };
@@ -116,8 +115,14 @@ export default function Thingworx() {
   const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState({});
   const [iotGateway, setIotGateway] = useState();
   const [thingsTableData, setThingsTableData] = useState(
-    getArrayFromThingObject(thingworx?.things)
+    getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
   );
+
+  useEffect(() => {
+    setThingworxHost(thingworx?.host);
+    setThingworxAppkey(thingworx?.appkey);
+    setThingsTableData(getArrayFromThingObject(thingworx?.things));
+  }, [thingworx]);
   const [agentDiagnosis, setAgentDiagnosis] = useState({});
 
   const [expandedList, setExpandedList] = useState([]);
@@ -393,7 +398,7 @@ export default function Thingworx() {
                   type="text"
                   label="Host"
                   helperText="Sentinel server endpoint"
-                  defaultValue={thingworxHost}
+                  value={thingworxHost || ""}
                   required={true}
                   onChange={handleSentinelHostChange}
                 />
@@ -408,7 +413,7 @@ export default function Thingworx() {
                   id="outlined-adornment-password"
                   type={showAppkey ? "text" : "password"}
                   required={true}
-                  defaultValue={thingworxAppkey}
+                  value={thingworxAppkey || ""}
                   onChange={handleAppkeyChange}
                   endAdornment={
                     <InputAdornment position="end">
@@ -725,16 +730,20 @@ export default function Thingworx() {
                           (item, index) => {
                             const rtName = Object.keys(item)[0];
                             return (
-                              <>
+                              <Fragment key={Math.random()}>
                                 <ListItemButton
                                   onClick={(event, name) =>
                                     handleExpandableList(event, rtName)
                                   }
+                                  key={Math.random()}
                                 >
-                                  <ListItemIcon>
+                                  <ListItemIcon key={Math.random()}>
                                     <SettingsRemoteIcon />
                                   </ListItemIcon>
-                                  <ListItemText primary={rtName} />
+                                  <ListItemText
+                                    primary={rtName}
+                                    key={Math.random()}
+                                  />
                                   {expandedList.includes(rtName) ? (
                                     <ExpandLess />
                                   ) : (
@@ -745,35 +754,52 @@ export default function Thingworx() {
                                   in={expandedList.includes(rtName)}
                                   timeout="auto"
                                   unmountOnExit
+                                  key={Math.random()}
                                 >
-                                  <List component="div" disablePadding>
-                                    <ListItemButton sx={{ pl: 5 }}>
-                                      <ListItemIcon>
+                                  <List
+                                    component="div"
+                                    disablePadding
+                                    key={Math.random()}
+                                  >
+                                    <ListItemButton
+                                      sx={{ pl: 5 }}
+                                      key={Math.random()}
+                                    >
+                                      <ListItemIcon key={Math.random()}>
                                         <DoneAllIcon />
                                       </ListItemIcon>
                                       <ListItemText
                                         primary={`TW Bound Properties: ${item[rtName]["TW Bound Properties"]} `}
+                                        key={Math.random()}
                                       />
                                     </ListItemButton>
-                                    <ListItemButton sx={{ pl: 5 }}>
-                                      <ListItemIcon>
+                                    <ListItemButton
+                                      sx={{ pl: 5 }}
+                                      key={Math.random()}
+                                    >
+                                      <ListItemIcon key={Math.random()}>
                                         <CallMergeIcon />
                                       </ListItemIcon>
                                       <ListItemText
                                         primary={`Ingestion Properties: ${item[rtName]["Ingestion Properties"]} `}
+                                        key={Math.random()}
                                       />
                                     </ListItemButton>
-                                    <ListItemButton sx={{ pl: 5 }}>
-                                      <ListItemIcon>
+                                    <ListItemButton
+                                      sx={{ pl: 5 }}
+                                      key={Math.random()}
+                                    >
+                                      <ListItemIcon key={Math.random()}>
                                         <PendingOutlinedIcon />
                                       </ListItemIcon>
                                       <ListItemText
                                         primary={`Pending Updates: ${item[rtName]["Pending Updates"]} `}
+                                        key={Math.random()}
                                       />
                                     </ListItemButton>
                                   </List>
                                 </Collapse>
-                              </>
+                              </Fragment>
                             );
                           }
                         )}
@@ -796,11 +822,7 @@ export default function Thingworx() {
               </Box>
             </>
           )}
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {(currentTab === 0 || currentTab === 1) && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

@@ -3,11 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
+import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import BackButton from "../../../components/BackButton/BackButton";
 import {
   get_iot_gtws_opcua_reading_enabled,
@@ -69,23 +71,10 @@ export default function OPCServer() {
         "Security",
       ];
 
-  const getArrayOfObjects = (data, key1, key2) => {
-    let arrayOfObjects = [];
-    if (data) {
-      const keys = Object.keys(data);
-      keys.map((item, index) => {
-        arrayOfObjects.push({
-          [`${key1}`]: item,
-          [`${key2}`]: data[item].toString(),
-        });
-      });
-    }
-    return arrayOfObjects;
-  };
   const getArrayOfObjectsOPCUA = (data, key1, key2) => {
     let arrayOfObjects = [];
-    if (data) {
-      data.map((item, index) => {
+    if (data && data.length !== 0) {
+      data.forEach((item, index) => {
         arrayOfObjects.push({
           [`${key1}`]: item,
           mode: key2,
@@ -134,6 +123,19 @@ export default function OPCServer() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+
+  useEffect(() => {
+    setIotGatewaysFromTableData( getArrayOfObjectsOPCUA(opcua?.iotgw?.from, "iot_gateway", "read only"))
+    setIotGatewaysToTableData( getArrayOfObjectsOPCUA(opcua?.iotgw?.to, "iot_gateway", "read & write"))
+    setShiftFromKepware(opcua?.shift_property_to_kepware)
+    setShiftToKepware( opcua?.shift_property_to_kepware)
+    setCustomPortEnable( opcua?.opcua?.custom_port_enable)
+    setCustomPort(opcua?.opcua?.custom_port)
+    setServerAuth(opcua?.security?.user_auth)
+    setUsersTableData(getArrayOfObjects(opcua?.security?.users, "username", "password"))
+
+
+  },[opcua]);
 
   useEffect(() => {
     (async () => {
@@ -565,25 +567,8 @@ export default function OPCServer() {
                 alignItems="center"
               >
                 <FormControl fullWidth>
-                  {/* <TextField
-                  select
-                  label="Choose iot gateway from Kepware"
-                  defaultValue=""
-                  onChange={handleIotGatewaysToChange}
-                >
-                  {iotGatewaysToList &&
-                    Object.keys(iotGatewaysToList).length !== 0 &&
-                    Object.keys(iotGatewaysToList).map((item) => {
-                      return (
-                        <MenuItem key={Math.random() + item} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                </TextField> */}
                   <Autocomplete
                     disablePortal
-                    id="combo-box-demo"
                     options={Object.keys(iotGatewaysToList)}
                     onChange={(event, newValue) => {
                       setIotGatewayTo(newValue);
@@ -905,7 +890,7 @@ export default function OPCServer() {
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   label="Shift from Kepware"
                   helperText="Shift OPCUA nodes (in order to exclude roots) from Kepware Iot Gateway"
-                  value={shiftFromKepware}
+                  value={shiftFromKepware || 0}
                   required={false}
                   onChange={handleShiftFromKepwareChange}
                 />
@@ -917,9 +902,10 @@ export default function OPCServer() {
 
                 <TextField
                   type="number"
+                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   label="Shift to Kepware"
                   helperText="Shift OPCUA nodes (in order to exclude roots) to Kepware Iot Gateway"
-                  value={shiftToKepware}
+                  value={shiftToKepware || 0}
                   required={false}
                   onChange={handleShiftToKepwareChange}
                 />
@@ -955,7 +941,7 @@ export default function OPCServer() {
                       type="text"
                       label="Custom Port"
                       helperText="Use this port for OPCUA Server tag exposure"
-                      defaultValue={customPort}
+                      value={customPort || ""}
                       required={false}
                       onChange={handleCustomPortChange}
                     />
@@ -1003,11 +989,7 @@ export default function OPCServer() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>
