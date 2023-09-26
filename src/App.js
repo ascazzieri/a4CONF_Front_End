@@ -24,6 +24,7 @@ import HTTP from "./pages/fast-data/http/page";
 import Matrix from "./pages/fast-data/matrix/page";
 import Archive from "./pages/archive/page";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
@@ -204,7 +205,10 @@ export default function App({ Component, pageProps }) {
             <Route
               path="/back-channel"
               element={
-                <PrivateRoute authenticated={authenticated}>
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
                   <BackChannel />
                 </PrivateRoute>
               }
@@ -212,7 +216,10 @@ export default function App({ Component, pageProps }) {
             <Route
               path="/archive"
               element={
-                <PrivateRoute authenticated={authenticated}>
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
                   <Archive />
                 </PrivateRoute>
               }
@@ -220,8 +227,22 @@ export default function App({ Component, pageProps }) {
             <Route
               path="/manage-users"
               element={
-                <PrivateRoute authenticated={authenticated}>
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
                   <ManageUsers />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/advanced"
+              element={
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
+                  <Advanced />
                 </PrivateRoute>
               }
             />

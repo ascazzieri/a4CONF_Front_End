@@ -21,6 +21,7 @@ import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import MessageIcon from '@mui/icons-material/Message';
 import GridViewIcon from "@mui/icons-material/GridView";
 import MergeIcon from '@mui/icons-material/Merge';
+import TuneIcon from '@mui/icons-material/Tune';
 import SpeedIcon from "@mui/icons-material/Speed";
 import CallSplitIcon from '@mui/icons-material/CallSplit';
 import { useNavigate, useLocation } from "react-router-dom";
@@ -113,7 +114,7 @@ export default function MiniDrawer(props) {
   const { children } = props;
   const superUser = useContext(SuperUserContext)[0]
 
-  const archiveBackChannelInfoUsersList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users"] : ["Info"]
+  const secondaryMenuList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Info"]
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
@@ -251,7 +252,7 @@ export default function MiniDrawer(props) {
         </List>
         <Divider />
         <List>
-          {archiveBackChannelInfoUsersList.map((text, index) => (
+          {secondaryMenuList.map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 name={text}
@@ -263,6 +264,7 @@ export default function MiniDrawer(props) {
                   {index === 1 && <LowPriorityIcon />}
                   {index === 2 && <MessageIcon />}
                   {index === 3 && <PersonAddIcon />}
+                  {index === 4 && <TuneIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
