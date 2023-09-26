@@ -1,12 +1,7 @@
 import React, { useState } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import {
-  Grid,
-  Box,
   Card,
-  CardContent,
-  CardActions,
-  CardMedia,
   Container,
   Typography,
 } from "@mui/material";
@@ -21,7 +16,7 @@ import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SimpleDialog from "@mui/material/Dialog";
-import { get_archive, post_archive } from "../../utils/api";
+import { get_archive } from "../../utils/api";
 import { useEffect } from "react";
 
 export default function Archive() {

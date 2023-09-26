@@ -426,3 +426,12 @@ export const test_connection = async (data) => {
     console.error(e);
   }
 };
+export const get_matrix = async () => {
+  try {
+    const res = await helper.fetchData("/fast-data/matrix", "GET");
+    console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
