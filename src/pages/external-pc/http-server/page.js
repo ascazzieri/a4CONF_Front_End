@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
@@ -124,16 +125,21 @@ export default function HTTPServer() {
   };
 
   useEffect(() => {
-    setIotGatewaysFromTableData(getArrayOfObjectsHTTP(http?.iotgw?.from, "iot_gateway", "read only"))
-    setIotGatewaysToTableData( getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write"))
-    setShiftFromKepware(   http?.shift_property_from_kepware)
-    setShiftToKepware(http?.shift_property_to_kepware)
-    setCustomPortEnable(http?.http?.custom_port_enable)
-    setCustomPort(http?.http?.custom_port)
-    setServerAuth(http?.security?.user_auth)
-    setUsersTableData(getArrayOfObjects(http?.security?.users, "username", "password"))
-
-  },[http])
+    setIotGatewaysFromTableData(
+      getArrayOfObjectsHTTP(http?.iotgw?.from, "iot_gateway", "read only")
+    );
+    setIotGatewaysToTableData(
+      getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
+    );
+    setShiftFromKepware(http?.shift_property_from_kepware);
+    setShiftToKepware(http?.shift_property_to_kepware);
+    setCustomPortEnable(http?.http?.custom_port_enable);
+    setCustomPort(http?.http?.custom_port);
+    setServerAuth(http?.security?.user_auth);
+    setUsersTableData(
+      getArrayOfObjects(http?.security?.users, "username", "password")
+    );
+  }, [http]);
 
   useEffect(() => {
     (async () => {
@@ -992,11 +998,7 @@ export default function HTTPServer() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

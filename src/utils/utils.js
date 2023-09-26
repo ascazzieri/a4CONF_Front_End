@@ -399,3 +399,26 @@ export const removeDuplicates = (a) => {
     return !pos || item !== ary[pos - 1];
   });
 };
+
+export const deepMerge = (obj1, obj2) => {
+  const result = { ...obj1 };
+
+  for (const key in obj2) {
+    if (obj2.hasOwnProperty(key)) {
+      if (
+        typeof obj2[key] === "object" &&
+        obj2[key] !== null &&
+        typeof result[key] === "object" &&
+        result[key] !== null
+      ) {
+        // Se sia obj2[key] che result[key] sono oggetti, richiamiamo la funzione deepMerge in modo ricorsivo
+        result[key] = deepMerge(result[key], obj2[key]);
+      } else {
+        // Altrimenti, aggiorniamo il valore
+        result[key] = obj2[key];
+      }
+    }
+  }
+
+  return result;
+};

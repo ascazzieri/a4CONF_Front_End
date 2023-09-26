@@ -1,6 +1,7 @@
 // reducers.js
 import { dummy_config } from "./dummy-conf";
 import { createSlice } from "@reduxjs/toolkit";
+import { deepMerge } from "../utils";
 
 const initialState = dummy_config;
 
@@ -49,7 +50,8 @@ const jsonSlice = createSlice({
         state.services.fastdata.enabled = newConf?.services?.fastdata?.enabled;
         state.services.fastdata.running = newConf?.services?.fastdata?.running;
       } else if (actionType === "fromBackup") {
-        state = newConf;
+        const mergedObject = deepMerge({ ...state }, newConf);
+        state = mergedObject;
       }
       state.timestamp = newConf?.timestamp;
     },
