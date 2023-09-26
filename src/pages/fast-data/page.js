@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  updateFastDataServices,
-  updateFastDataFTPEnable,
-  updateFastDataHTTPEnable,
-  updateFastDataMatrixEnable,
-} from "../../utils/redux/reducers";
+import { updateFastData } from "../../utils/redux/reducers";
 import JSONPretty from "react-json-pretty";
 import {
   Grid,
@@ -54,22 +49,26 @@ export default function FastData() {
   }, [fastData]);
 
   useEffect(() => {
-    dispatch(updateFastDataFTPEnable(ftpEnabled));
+    dispatch(updateFastData({ industrial: { ftp: { enabled: ftpEnabled } } }));
   }, [ftpEnabled, dispatch]);
 
   useEffect(() => {
-    dispatch(updateFastDataHTTPEnable(httpEnabled));
+    dispatch(
+      updateFastData({ industrial: { http: { enabled: httpEnabled } } })
+    );
   }, [httpEnabled, dispatch]);
 
   useEffect(() => {
-    dispatch(updateFastDataMatrixEnable(matrixEnabled));
+    dispatch(
+      updateFastData({ customer: { matrix: { enabled: matrixEnabled } } })
+    );
   }, [matrixEnabled, dispatch]);
 
   const handleClick = (name) => {
     navigate(`/fast-data/${name}`);
   };
 
-/*   const goodStatus = () => {
+  /*   const goodStatus = () => {
     return (
       <CheckCircleOutlineOutlinedIcon sx={{ color: "green", fontSize: 20 }} />
     );

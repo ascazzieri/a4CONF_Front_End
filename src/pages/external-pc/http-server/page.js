@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateOPCServer } from "../../../utils/redux/reducers";
+import { updateHTTPServer } from "../../../utils/redux/reducers";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import { getArrayOfObjects } from "../../../utils/utils";
@@ -416,7 +416,7 @@ export default function HTTPServer() {
         users: usersData,
       },
     };
-    dispatch(updateOPCServer({ newHTTPServer }));
+    dispatch(updateHTTPServer(newHTTPServer));
   };
 
   /**

@@ -58,7 +58,6 @@ export default function Dashboard() {
       : ""
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
-  console.log(hostName);
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
@@ -205,7 +204,11 @@ export default function Dashboard() {
                       }}
                     />
                   </FormControl>
-                  <Button variant="contained" onClick={handleHostNameChange} style={{marginTop:20}}>
+                  <Button
+                    variant="contained"
+                    onClick={handleHostNameChange}
+                    style={{ marginTop: 20 }}
+                  >
                     Save
                   </Button>
                 </Stack>

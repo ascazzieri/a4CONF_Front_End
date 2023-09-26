@@ -125,17 +125,21 @@ export default function OPCServer() {
   };
 
   useEffect(() => {
-    setIotGatewaysFromTableData( getArrayOfObjectsOPCUA(opcua?.iotgw?.from, "iot_gateway", "read only"))
-    setIotGatewaysToTableData( getArrayOfObjectsOPCUA(opcua?.iotgw?.to, "iot_gateway", "read & write"))
-    setShiftFromKepware(opcua?.shift_property_to_kepware)
-    setShiftToKepware( opcua?.shift_property_to_kepware)
-    setCustomPortEnable( opcua?.opcua?.custom_port_enable)
-    setCustomPort(opcua?.opcua?.custom_port)
-    setServerAuth(opcua?.security?.user_auth)
-    setUsersTableData(getArrayOfObjects(opcua?.security?.users, "username", "password"))
-
-
-  },[opcua]);
+    setIotGatewaysFromTableData(
+      getArrayOfObjectsOPCUA(opcua?.iotgw?.from, "iot_gateway", "read only")
+    );
+    setIotGatewaysToTableData(
+      getArrayOfObjectsOPCUA(opcua?.iotgw?.to, "iot_gateway", "read & write")
+    );
+    setShiftFromKepware(opcua?.shift_property_to_kepware);
+    setShiftToKepware(opcua?.shift_property_to_kepware);
+    setCustomPortEnable(opcua?.opcua?.custom_port_enable);
+    setCustomPort(opcua?.opcua?.custom_port);
+    setServerAuth(opcua?.security?.user_auth);
+    setUsersTableData(
+      getArrayOfObjects(opcua?.security?.users, "username", "password")
+    );
+  }, [opcua]);
 
   useEffect(() => {
     (async () => {
@@ -414,7 +418,7 @@ export default function OPCServer() {
         users: usersData,
       },
     };
-    dispatch(updateOPCServer({ newOPCUAServer }));
+    dispatch(updateOPCServer(newOPCUAServer));
   };
 
   /**

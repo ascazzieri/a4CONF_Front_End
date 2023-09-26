@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataHTTP } from "../../../utils/redux/reducers";
+import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -143,7 +143,7 @@ export default function FTP() {
       ],
     };
 
-    dispatch(updateFastDataHTTP({ newHTTP }));
+    dispatch(updateFastData({ industrial: { http: { newHTTP } } }));
   };
 
   const blobColumnsData = [

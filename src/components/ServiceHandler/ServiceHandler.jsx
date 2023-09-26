@@ -2,32 +2,25 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import { Stack } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { send_conf } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
+import { Typography } from "@mui/material";
 
 export default function ServiceHandler() {
-  const pathLocationServices = {
-    "/external-pc/sitemanager": "sitemanager",
-    "/external-pc/thingworx": "thingworx",
-    "/external-pc/opcua-server": "opcua",
-    "/external-pc/http-server": "http",
-  };
 
   const loaderContext = useContext(LoadingContext);
 
-  const location = useLocation().pathname;
+  const location = useLocation();
 
-  const pathValue = pathLocationServices[location];
+  const serviceName = location?.pathname?.split("/")[location?.pathname?.split("/").length - 1]
 
   const handleChange = (event) => {
     const command = event.target.value;
     setServiceCommand(command)
     loaderContext[1](true);
-    manageService(pathValue, command);
+    manageService(serviceName, command);
     loaderContext[1](false);
     setServiceCommand(undefined)
   };
@@ -41,7 +34,7 @@ export default function ServiceHandler() {
   }
   return (
     <FormControl>
-      <FormLabel >{pathValue && pathValue.charAt(0).toUpperCase() + pathValue.slice(1)} service commands</FormLabel>
+      <Typography >{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
       <RadioGroup
         row
         name="position"

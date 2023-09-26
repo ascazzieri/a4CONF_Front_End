@@ -1,3 +1,5 @@
 {
-    "res": true
+  "result": false,
+
+  "role": "admin"
 }

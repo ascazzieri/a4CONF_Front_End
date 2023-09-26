@@ -28,59 +28,28 @@ import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
-  /*  const [authenticate, setAuthenticate] = useState(true);
-  const [firstUser, setFirstUser] = useState(); */
+  const [authenticated, setAuthenticated] = useState(true);
 
-  /*  useEffect(() => {
-    (async () => {
-      const credentials = await check_credentials();
-      console.log(credentials)
-      console.log("loading account details");
-      if (credentials) {
-        setFirstUser(false);
-      } else {
-        setFirstUser(true);
-      }
-    })();
-  }, []);
-
-  if (firstUser) {
-    console.log(firstUser)
+  if (!authenticated) {
     return (
       <BrowserRouter>
-        <Navigate to="/register" />
+        <Navigate to="/login" />
         <Routes>
-          <Route path="/" element={<PrivateRoute authenticated={authenticated}><Layout />}>
-            <Route path="/register" element={<PrivateRoute authenticated={authenticated}><Register />} />
+          <Route path="/" element={<Layout />}>
+            <Route
+              path="/login"
+              element={
+                <Login
+                  authenticated={authenticated}
+                  setAuthenticated={setAuthenticated}
+                />
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
     );
   }
-
-  if (!authenticate) {
-    return (
-      <BrowserRouter>
-        <Navigate to="/login" />
-        <Routes>
-          <Route path="/" element={<PrivateRoute authenticated={authenticated}><Layout />}>
-            <Route path="/login" element={<PrivateRoute authenticated={authenticated}><Login />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    );
-  } */
-
-  const [authenticated, setAuthenticated] = useState(true);
-
-  useEffect(() => {
-    setAuthenticated(true);
-    /* // Controlla se l'utente è autenticato quando il componente si monta
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setAuthenticated(true);
-    } */
-  }, []);
 
   return (
     <>
@@ -252,7 +221,12 @@ export default function App({ Component, pageProps }) {
             />
             <Route
               path="/login"
-              element={<Login setAuthenticated={setAuthenticated} />}
+              element={
+                <Login
+                  authenticated={authenticated}
+                  setAuthenticated={setAuthenticated}
+                />
+              }
             />
             <Route
               path="*"

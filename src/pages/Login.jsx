@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Card, Container } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Divider } from "antd";
@@ -9,10 +9,15 @@ import appliedLogo from "../media/img/applied_logo_cropped.png";
 import { post_login } from "../utils/api";
 import { useLocation } from 'react-router-dom';
 import { SuperUserContext } from "../utils/context/SuperUser";
+import { ArrowBackIos } from "@mui/icons-material"
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+
 
 export default function Login(props) {
 
-  const { setAuthenticated } = props
+  const navigate = useNavigate()
+
+  const { authenticated, setAuthenticated } = props
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,8 +26,11 @@ export default function Login(props) {
   const location = useLocation();
   const elevation = location.state?.elevation || false;
 
-  console.log(location)
-
+  useEffect(() => {
+    if (authenticated && !elevation) {
+      navigate("/")
+    }
+  })
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -45,9 +53,9 @@ export default function Login(props) {
         } else {
           superUser[1](false)
         }
+        navigate("/")
       } else {
         setAuthenticated(false)
-        alert("accesso negato: credenzieli non corrette");
       }
 
     } else {
@@ -94,9 +102,18 @@ export default function Login(props) {
             alignItems="center"
             style={{ width: "100%" }}
           >
-            <Button variant="contained" size="medium" onClick={handleLogin}>
+            {elevation ? <><Stack direction="row" spacing={4} alignItems="center">
+              <Button variant="outlined" color="secondary" startIcon={<ArrowBackIos />} onClick={() => { navigate("/") }}>
+                Back
+              </Button>
+              <Button variant="contained" onClick={handleLogin}>
+                Login
+              </Button>
+            </Stack></> : <Button variant="contained" onClick={handleLogin}>
               Login
-            </Button>
+            </Button>}
+
+
           </Stack>
         </Card>
       </Container>

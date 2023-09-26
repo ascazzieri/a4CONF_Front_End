@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataFTP } from "../../../utils/redux/reducers";
+import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -13,7 +13,6 @@ import {
   Container,
   Divider,
   FormControl,
-  FormControlLabel,
   FormLabel,
   Stack,
   Autocomplete,
@@ -25,20 +24,11 @@ export default function FTP() {
   const ftp = useSelector((state) => state.services?.fastdata?.industrial?.ftp);
 
   const dispatch = useDispatch();
-  const superUser = useContext(SuperUserContext)[0]
+  const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = superUser ? [
-    "Server",
-    "Security",
-    "Blob settings",
-    "File timestamp",
-    "JSON",
-  ] : [
-    "Server",
-    "Security",
-    "Blob settings",
-    "File timestamp",
-  ];
+  const navbarItems = superUser
+    ? ["Server", "Security", "Blob settings", "File timestamp", "JSON"]
+    : ["Server", "Security", "Blob settings", "File timestamp"];
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -175,7 +165,7 @@ export default function FTP() {
       ],
     };
 
-    dispatch(updateFastDataFTP({ newFTP }));
+    dispatch(updateFastData({ industrial: { ftp: newFTP } }));
   };
 
   const usersColumnData = [

@@ -117,7 +117,8 @@ export default function Sitemanager() {
       INPUT_NAT: inputNATTableData,
       firewall_enabled: customerNetwork?.firewall_enabled, */
     };
-    dispatch(updateSitemanager({ newSitemanager }));
+    dispatch(updateSitemanager(newSitemanager));
+    console.log(newSitemanager);
   };
 
   const agentsColumnData = [

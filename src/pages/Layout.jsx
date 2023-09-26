@@ -147,7 +147,7 @@ const Layout = () => {
           <Alert severity={severity}>{message}</Alert>
         </Snackbar>
         {/*  <Checklist /> */}
-        {location?.pathname === "/" && <video src="/img/home-video.mp4" width="100%" loop autoPlay muted style={{position: 'absolute', right:0, top:0}} />}
+        {location?.pathname === "/" && <video src="/img/home-video.mp4" width="100%" loop autoPlay muted style={{position: 'absolute', right:0, top:80}} />}
         <Outlet />
 
       </MiniDrawer>

@@ -3,10 +3,10 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
 import {
   updateExternalPC,
-  updateSitemanagerEnable,
-  updateThingworxEnable,
-  updateOPCServerEnable,
-  updateHTTPServerEnable,
+  updateSitemanager,
+  updateThingworx,
+  updateOPCServer,
+  updateHTTPServer,
 } from "../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import {
@@ -26,6 +26,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import ShareIcon from "@mui/icons-material/Share";
 import HttpIcon from "@mui/icons-material/Http";
 import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
+import ServiceDisabler from "../../components/ServiceDisabler/ServiceDisabler";
 
 export default function ExternalPC() {
   const externalPCReboot = useSelector((state) => state?.system.reboot);
@@ -57,19 +58,19 @@ export default function ExternalPC() {
   }, [serviceStatus]);
 
   useEffect(() => {
-    dispatch(updateSitemanagerEnable(sitemanagerEnabled));
+    dispatch(updateSitemanager({ enabled: sitemanagerEnabled }));
   }, [sitemanagerEnabled, dispatch]);
 
   useEffect(() => {
-    updateThingworxEnable(thingworxEnabled);
+    dispatch(updateThingworx({ enabled: thingworxEnabled }));
   }, [thingworxEnabled, dispatch]);
 
   useEffect(() => {
-    updateOPCServerEnable(opcuaServerEnabled);
+    dispatch(updateOPCServer({ enabled: opcuaServerEnabled }));
   }, [opcuaServerEnabled, dispatch]);
 
   useEffect(() => {
-    updateHTTPServerEnable(httpServerEnabled);
+    dispatch(updateHTTPServer({ enabled: httpServerEnabled }));
   }, [httpServerEnabled, dispatch]);
 
   const location = useLocation();
@@ -395,18 +396,15 @@ export default function ExternalPC() {
         {!currentURLArray.includes("network") && (
           <Grid container spacing={2}>
             <Grid item xs={4} sx={{ display: "flex" }}>
-              <Card sx={{ width: "100%" }}>
+              <Card sx={{ width: "100%", height: 100 }}>
                 <CardContent>
-                  <JSONTree data={externalPCReboot} />
-                  <button onClick={handleExternalPCChange}>
-                    Change External PC
-                  </button>
+                  <ServiceDisabler />
                 </CardContent>
               </Card>
             </Grid>
             <Grid item xs={8} sx={{ display: "flex" }}>
-              <Card sx={{ width: "100%" }}>
-                <CardContent style={{ paddingBottom: 16 }}>
+              <Card sx={{ width: "100%", height: 100 }}>
+                <CardContent>
                   <ServiceHandler />
                 </CardContent>
               </Card>

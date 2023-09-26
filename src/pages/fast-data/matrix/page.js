@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataMatrix } from "../../../utils/redux/reducers";
+import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CustomTable from "../../../components/Table/Table";
@@ -33,26 +33,22 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import SimpleDialog from "@mui/material/Dialog";
 import { get_matrix } from "../../../utils/api";
 
-
-
 export default function Matrix() {
-
   const [archive, setArchive] = useState();
-
 
   const [matrixId, setMatrixId] = useState();
   const [content, setContent] = useState();
-  
+
   const handleSave = () => {
     const newArchive = { ...archive };
     newArchive[matrixId] = content;
-    if(matrixId.trim() === "" || content.trim() === ""){
-      alert("inserire i valori prima di salvare")
-    }else{
-    setArchive(newArchive);
-    setMatrixId("");
-    setContent("");
-    setOpen(false);
+    if (matrixId.trim() === "" || content.trim() === "") {
+      alert("inserire i valori prima di salvare");
+    } else {
+      setArchive(newArchive);
+      setMatrixId("");
+      setContent("");
+      setOpen(false);
     }
   };
 
@@ -89,12 +85,11 @@ export default function Matrix() {
         const response = await get_matrix();
         setArchive(response);
       } catch (err) {
-        console.log('Error occured when fetching books');
+        console.log("Error occured when fetching books");
       }
     })();
   }, []);
   console.log(get_matrix());
-
 
   const matrix = useSelector(
     (state) => state.services?.fastdata?.customer?.matrix
@@ -310,7 +305,7 @@ export default function Matrix() {
       ],
     };
 
-    dispatch(updateFastDataMatrix({ newMatrix }));
+    dispatch(updateFastData({ customer: { matrix: { newMatrix } } }));
   };
 
   return (
@@ -408,128 +403,140 @@ export default function Matrix() {
             </>
           )}
 
-          {currentTab === 2 && <>
-          
-           
- 
- 
-    <ErrorCacher>
-      <Container sx={{ flexGrow: 1 }} disableGutters></Container>
-      <Container sx={{ flexGrow: 1 }} disableGutters>
-        <Card sx={{ mt: 1, p:2 }}>
-          <Stack
-            direction="row"
-            alignItems="center"
-            style={{ width: "100%" }}
-            spacing={2}
-          >
-            <h1>Matrix management archive</h1>
-            <Button variant="contained" size="small" onClick={handleAdd}>
-              Add
-            </Button>
-          </Stack>
-          {archive &&
-            archiveKeys.length !== 0 &&
-            archiveKeys.map((item, index) => {
-              return (
-                <Accordion key={Math.random()}>
-                  <AccordionSummary
-                    key={Math.random()}
-                    expandIcon={<ExpandMoreIcon />}
-                  >
-                    <Typography key={Math.random()} sx={{ width: "70%" }}>
-                      <Item>{item}</Item>
-                    </Typography>
+          {currentTab === 2 && (
+            <>
+              <ErrorCacher>
+                <Container sx={{ flexGrow: 1 }} disableGutters></Container>
+                <Container sx={{ flexGrow: 1 }} disableGutters>
+                  <Card sx={{ mt: 1, p: 2 }}>
                     <Stack
                       direction="row"
-                      spacing={2}
-                      justifyContent="flex-end"
                       alignItems="center"
                       style={{ width: "100%" }}
+                      spacing={2}
                     >
+                      <h1>Matrix management archive</h1>
                       <Button
                         variant="contained"
                         size="small"
-                        onClick={() => {
-                          handleModify(item);
-                        }}
+                        onClick={handleAdd}
                       >
-                        Modify
-                      </Button>
-
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                      >
-                        Delete
+                        Add
                       </Button>
                     </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails key={Math.random()}>
-                    <Typography key={Math.random()}>
-                      {archiveValues[index]}
-                    </Typography>
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
+                    {archive &&
+                      archiveKeys.length !== 0 &&
+                      archiveKeys.map((item, index) => {
+                        return (
+                          <Accordion key={Math.random()}>
+                            <AccordionSummary
+                              key={Math.random()}
+                              expandIcon={<ExpandMoreIcon />}
+                            >
+                              <Typography
+                                key={Math.random()}
+                                sx={{ width: "70%" }}
+                              >
+                                <Item>{item}</Item>
+                              </Typography>
+                              <Stack
+                                direction="row"
+                                spacing={2}
+                                justifyContent="flex-end"
+                                alignItems="center"
+                                style={{ width: "100%" }}
+                              >
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  onClick={() => {
+                                    handleModify(item);
+                                  }}
+                                >
+                                  Modify
+                                </Button>
 
-          <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
-            <Card sx={{ padding: 5 , margin: 2}}>
-              <h1>Insert new Matrix object</h1>
-              <div>
-                <TextField
-                  fullWidth= {true}
-                  id="outlined-textarea"
-                  label="Matrix Id"
-                  value={matrixId}
-                  onChange={(event) => {
-                    setMatrixId(event.target.value);
-                  }}
-                  multiline
-                />
-                <Divider />
-                <TextField
-                  fullWidth={true}
-                  id="outlined-texterea"
-                  label="JSON"
-                  multiline
-                  rows={5}
-                  value={content}
-                  onChange={(event) => {
-                    setContent(event.target.value);
-                  }}
-                />
-              </div>
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="flex-end"
-                alignItems="center"
-                style={{ width: "100%" }}
-              >
-                <Button variant="contained" size="small" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="contained" size="small" onClick={handleClear}>
-                  Clear
-                </Button>
-              </Stack>
-            </Card>
-          </SimpleDialog>
-        </Card>
-      </Container>
-    </ErrorCacher>
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  startIcon={<DeleteIcon />}
+                                  onClick={() => {
+                                    handleDelete(item);
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </Stack>
+                            </AccordionSummary>
+                            <AccordionDetails key={Math.random()}>
+                              <Typography key={Math.random()}>
+                                {archiveValues[index]}
+                              </Typography>
+                            </AccordionDetails>
+                          </Accordion>
+                        );
+                      })}
 
-          
-          
-          
-          
-          </>}
+                    <SimpleDialog
+                      open={open}
+                      onClose={handleClose}
+                      sx={{ padding: 5 }}
+                    >
+                      <Card sx={{ padding: 5, margin: 2 }}>
+                        <h1>Insert new Matrix object</h1>
+                        <div>
+                          <TextField
+                            fullWidth={true}
+                            id="outlined-textarea"
+                            label="Matrix Id"
+                            value={matrixId}
+                            onChange={(event) => {
+                              setMatrixId(event.target.value);
+                            }}
+                            multiline
+                          />
+                          <Divider />
+                          <TextField
+                            fullWidth={true}
+                            id="outlined-texterea"
+                            label="JSON"
+                            multiline
+                            rows={5}
+                            value={content}
+                            onChange={(event) => {
+                              setContent(event.target.value);
+                            }}
+                          />
+                        </div>
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          justifyContent="flex-end"
+                          alignItems="center"
+                          style={{ width: "100%" }}
+                        >
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleSave}
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            onClick={handleClear}
+                          >
+                            Clear
+                          </Button>
+                        </Stack>
+                      </Card>
+                    </SimpleDialog>
+                  </Card>
+                </Container>
+              </ErrorCacher>
+            </>
+          )}
 
           <FormControl fullWidth>
             <Button type="submit" variant="contained">
