@@ -1,6 +1,5 @@
 import React, { useContext } from "react";
 import classes from "./Menu.module.css"
-import useTheme from "@mui/material/styles/useTheme";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -16,6 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import MessageIcon from '@mui/icons-material/Message';
@@ -113,7 +113,7 @@ export default function MiniDrawer(props) {
   const { children } = props;
   const superUser = useContext(SuperUserContext)[0]
 
-  const archiveBackChannelInfoList = superUser ? ["Info", "Back-Channel", "Archive"] : ["Info"]
+  const archiveBackChannelInfoUsersList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users"] : ["Info"]
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
@@ -125,10 +125,10 @@ export default function MiniDrawer(props) {
 
 
   const handleDrawerOpen = () => {
-    if(location.pathname.includes("login") || location.pathname.includes("register")){
+    if (location.pathname.includes("login") || location.pathname.includes("register")) {
       setOpen(false);
-    }else{
-    setOpen(true);
+    } else {
+      setOpen(true);
     }
   };
 
@@ -191,29 +191,25 @@ export default function MiniDrawer(props) {
               {mainSectionTitle}
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
-              <>
-                <MainButtons />
-              </>
+
+              {!currentURLArray.includes('login') && <MainButtons />}
+
             </Grid>
           </Grid>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
+      {!currentURLArray.includes('login') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
         <DrawerHeader style={{ justifyContent: 'center' }}>
           <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
         </DrawerHeader>
         <Divider />
         <List>
-          {["Dashboard", "Internal-PC", "External-PC"].map((text, index) => (
+          {["Dashboard", "Data-Collector", "Data-Sender"].map((text, index) => (
             <ListItem key={text} disablePadding>
               <ListItemButton
                 name={text}
                 onClick={() => {
-
-
                   navigate(`/${text?.toLowerCase()}`);
-
-
                 }}
               >
                 <ListItemIcon className={classes.hoverIcons}>
@@ -255,7 +251,7 @@ export default function MiniDrawer(props) {
         </List>
         <Divider />
         <List>
-          {archiveBackChannelInfoList.map((text, index) => (
+          {archiveBackChannelInfoUsersList.map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 name={text}
@@ -266,6 +262,7 @@ export default function MiniDrawer(props) {
                   {index === 0 && <InfoOutlinedIcon />}
                   {index === 1 && <LowPriorityIcon />}
                   {index === 2 && <MessageIcon />}
+                  {index === 3 && <PersonAddIcon />}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
@@ -273,7 +270,8 @@ export default function MiniDrawer(props) {
           ))}
         </List>
         <Divider />
-      </Drawer>
+      </Drawer>}
+
       <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }}>
         {children}
       </Container>

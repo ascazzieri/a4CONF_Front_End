@@ -78,7 +78,7 @@ export default function ExternalPC() {
   const navigate = useNavigate();
 
   const handleClick = (name) => {
-    navigate(`/external-pc/${name}`);
+    navigate(`/data-sender/${name}`);
   };
 
   const handleExternalPCChange = () => {

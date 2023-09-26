@@ -15,6 +15,8 @@ import { downloadJSON, send_conf } from "../../utils/api"
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 
 const StyledButton = styled("div")`
   && {
@@ -54,6 +56,14 @@ const StyledButton = styled("div")`
       display: block;
       transform-origin: center center;
       transition: transform 0.3s ease-in-out;
+    }
+    .admin-icon {
+      display: block
+      transition: transform 0.3s ease-in-out
+      
+    }
+    &:hover .admin-icon {
+      transform: translateX(1.8em) scale(1.5);
     }
 
     &:hover .img-wrapper {
@@ -332,6 +342,27 @@ const UploadConfig = () => {
   );
 };
 
+const AdminEl = () => {
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+
+    navigate('/login', { state: { elevation: true } });
+
+  }
+  return (
+    <StyledButton onClick={() => handleClick()}>
+      <div className="img-wrapper-1">
+        <div className="img-wrapper">
+          <AdminPanelSettingsIcon  sx={{fontSize:25}} className="admin-icon" color="primary" />
+        </div>
+      </div>
+      <span>Admin</span>
+    </StyledButton>
+  );
+};
+
 export default function SpeedDialTooltipOpen() {
   const [openUpper, setOpenUpper] = React.useState(false);
   /*   const [openBottom, setOpenBottom] = React.useState(false); */
@@ -341,11 +372,12 @@ export default function SpeedDialTooltipOpen() {
     const handleCloseBottom = () => setOpenBottom(false); */
 
   const upperActions = [
-    { icon: <ReloadInternal />, name: "Reload PCA" },
-    { icon: <ReloadExternal />, name: "Reload PCB" },
+    { icon: <ReloadInternal />, name: "reload PCA" },
+    { icon: <ReloadExternal />, name: "reload PCB" },
     { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
+    { icon: <AdminEl />, name: "admin elevation" },
     /*  { icon: <Checklist />, name: "modified data list" }, */
   ];
 

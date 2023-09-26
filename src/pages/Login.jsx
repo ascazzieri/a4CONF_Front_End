@@ -6,11 +6,18 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ErrorCacher from "../components/Errors/ErrorCacher";
 import appliedLogo from "../media/img/applied_logo_cropped.png";
-import {  post_login } from "../utils/api";
+import { post_login } from "../utils/api";
+import { useLocation } from 'react-router-dom';
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const location = useLocation();
+  const elevation = location.state?.elevation || false;
+
+  console.log(location)
+
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -31,7 +38,7 @@ export default function Login() {
       } else {
         alert("accesso negato: credenzieli non corrette");
       }
-      
+
     } else {
       alert("cannot login: there are empty spaces");
     }
@@ -41,47 +48,47 @@ export default function Login() {
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ padding: 5, margin: 5 }}>
-          <Stack direction="row" spacing={40} style={{ width: "100%" }}>
-            <h1> Login </h1>
-            <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
+          <Stack direction="row" justifyContent="center" spacing={2} style={{ width: "100%" }}>
+            {elevation ? <h1>Log as administrator </h1> : <h1>Authenticate</h1>}
+          <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
+        </Stack>
+        <Divider style={{ background: "white" }} />
+        <div>
+          <Stack direction="row" spacing={5} style={{ width: "100%" }}>
+            <h2>Username:</h2>
+            <TextField
+              fullWidth={true}
+              name="username"
+              rows={1}
+              value={username}
+              onChange={handleUsernameChange}
+            />
           </Stack>
           <Divider />
-          <div>
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Username:</h2>
-              <TextField
-                fullWidth={true}
-                name="username"
-                rows={1}
-                value={username}
-                onChange={handleUsernameChange}
-              />
-            </Stack>
-            <Divider />
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Password:</h2>
-              <TextField
-                fullWidth={true}
-                name="password"
-                rows={1}
-                value={password}
-                onChange={handlePasswordChange}
-              />
-            </Stack>
-          </div>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="flex-end"
-            alignItems="center"
-            style={{ width: "100%" }}
-          >
-            <Button variant="contained" size="medium" onClick={handleLogin}>
-              Login
-            </Button>
+          <Stack direction="row" spacing={5} style={{ width: "100%" }}>
+            <h2>Password:</h2>
+            <TextField
+              fullWidth={true}
+              name="password"
+              rows={1}
+              value={password}
+              onChange={handlePasswordChange}
+            />
           </Stack>
-        </Card>
-      </Container>
-    </ErrorCacher>
+        </div>
+        <Stack
+          direction="row"
+          spacing={2}
+          justifyContent="flex-end"
+          alignItems="center"
+          style={{ width: "100%" }}
+        >
+          <Button variant="contained" size="medium" onClick={handleLogin}>
+            Login
+          </Button>
+        </Stack>
+      </Card>
+    </Container>
+    </ErrorCacher >
   );
 }

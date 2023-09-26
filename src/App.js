@@ -11,6 +11,7 @@ import InternalPC from "./pages/internal-pc/page";
 import ExternalPC from "./pages/external-pc/page";
 import FastData from "./pages/fast-data/page";
 import BackChannel from "./pages/back-channel/page";
+import ManageUsers from "./pages/users/page";
 import InternalNetwork from "./pages/internal-pc/network/page";
 import Kepware from "./pages/internal-pc/kepware/page";
 import ExternalNetwork from "./pages/external-pc/network/page";
@@ -94,7 +95,7 @@ export default function App({ Component, pageProps }) {
               }
             />
             <Route
-              path="/internal-pc"
+              path="/data-collector"
               element={
                 <PrivateRoute authenticated={authenticated}>
                   <InternalPC />
@@ -119,7 +120,7 @@ export default function App({ Component, pageProps }) {
               />
             </Route>
             <Route
-              path="/external-pc"
+              path="/data-sender"
               element={
                 <PrivateRoute authenticated={authenticated}>
                   <ExternalPC />
@@ -213,6 +214,14 @@ export default function App({ Component, pageProps }) {
               element={
                 <PrivateRoute authenticated={authenticated}>
                   <Archive />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/manage-users"
+              element={
+                <PrivateRoute authenticated={authenticated}>
+                  <ManageUsers />
                 </PrivateRoute>
               }
             />

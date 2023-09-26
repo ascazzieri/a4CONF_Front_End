@@ -5,10 +5,8 @@ import { useDispatch } from "react-redux";
 import { updateAll } from "../utils/redux/reducers";
 import { get_confA, get_confB } from "../utils/api";
 import { Outlet } from "react-router-dom";
-import { Box } from "@mui/material";
 import { Snackbar, Alert, Backdrop, Typography } from "@mui/material"
 import { SnackbarContext } from "../utils/context/SnackbarContext"
-import THREED from "../components/THREED/THREED";
 import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
 import MainButtons from "../components/MainButtons/MainButtons";
@@ -38,6 +36,8 @@ const Layout = () => {
   const { vertical, horizontal, severity, open, message } = snackBarContext[0];
 
   const [mobileViewport, setMobileViewport] = useState(false);
+
+  const location = useLocation()
 
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
@@ -120,34 +120,34 @@ const Layout = () => {
   }
 
   if (!bReady) {
-    return <THREED />;
+    return <h1>Loading...</h1>;
   }
 
   return (
     <ErrorCacher>
-          <MiniDrawer>
-            <div style={applied_background} />
-            {loaderContext[0] && (
-              <div style={{ position: "relative" }}>
-                <Loader />
-              </div>
-            )}
+      <MiniDrawer>
+        <div style={applied_background} />
+        {loaderContext[0] && (
+          <div style={{ position: "relative" }}>
+            <Loader />
+          </div>
+        )}
 
-            <Snackbar
-              open={open}
-              autoHideDuration={3000}
-              anchorOrigin={{ vertical, horizontal }}
-              onClose={() =>
-                snackBarContext[1]((prevState) => ({
-                  ...prevState,
-                  open: false,
-                }))
-              }
-            >
-              <Alert severity={severity}>{message}</Alert>
-            </Snackbar>
-            {/*  <Checklist /> */}
-
+        <Snackbar
+          open={open}
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical, horizontal }}
+          onClose={() =>
+            snackBarContext[1]((prevState) => ({
+              ...prevState,
+              open: false,
+            }))
+          }
+        >
+          <Alert severity={severity}>{message}</Alert>
+        </Snackbar>
+        {/*  <Checklist /> */}
+        {location?.pathname === "/" && <video src="/img/home-video.mp4" width="100%" loop autoPlay muted style={{position: 'absolute', right:0, top:0}} />}
         <Outlet />
 
       </MiniDrawer>

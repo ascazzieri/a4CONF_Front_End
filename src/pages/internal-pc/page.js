@@ -34,7 +34,7 @@ export default function InternalPC() {
   const navigate = useNavigate();
 
   const handleClick = (name) => {
-    navigate(`/internal-pc/${name}`);
+    navigate(`/data-collector/${name}`);
   };
 
   const handleInternalPCChange = () => {
