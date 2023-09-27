@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateHostName, updateThingNames } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
-import JSONPretty from "react-json-pretty";
 import { LoadingContext } from "../../utils/context/Loading";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
@@ -58,6 +57,7 @@ export default function Dashboard() {
       : ""
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
+  console.log(dashboardStatus);
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
@@ -100,7 +100,7 @@ export default function Dashboard() {
       "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE";
   }
   const [isInDashboard, setIsInDashboard] = useState(false);
-
+  console.log(dashboardStatus);
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
   const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
@@ -163,6 +163,8 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
+
+  console.log(dashboardStatus?.machines);
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
@@ -252,7 +254,7 @@ export default function Dashboard() {
                     <div>Bidir.</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.bidir !== undefined &&
+                    {dashboardStatus?.bidir === false &&
                     !dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
                       <DoNotDisturbOnOutlinedIcon
                         sx={{ color: "red", fontSize: 20 }}
@@ -550,7 +552,7 @@ export default function Dashboard() {
                     <Table stickyHeader aria-label="sticky table">
                       <TableBody>
                         {dashboardStatus?.machines &&
-                          dashboardStatus?.machines.length !== 0 &&
+                          dashboardStatus?.machines?.length !== 0 &&
                           dashboardStatus?.machines.map((item) => {
                             return (
                               <TableRow

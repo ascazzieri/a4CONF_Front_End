@@ -5,6 +5,14 @@ import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CustomTable from "../../../components/Table/Table";
+import Stack from "@mui/material/Stack";
+import Item from "antd/es/list/Item";
+import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import BackButton from "../../../components/BackButton/BackButton";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import SaveButton from "../../../components/SaveButton/SaveButton";
@@ -14,6 +22,7 @@ import {
   FormControl,
   FormLabel,
   TextField,
+  Typography
 } from "@mui/material";
 
 export default function Matrix() {
@@ -259,7 +268,49 @@ export default function Matrix() {
 
           {currentTab === 1 && (
             <>
-              <h1>Work in progress...</h1>
+              {matrixDataManagement &&
+            matrixDataManagement.length !== 0 &&
+            matrixDataManagement.map((item, index) => {
+              return (
+                <Accordion key={Math.random()}>
+                  <AccordionSummary
+                    key={Math.random()}
+                    expandIcon={<ExpandMoreIcon />}
+                  >
+                    <Typography key={Math.random()} sx={{ width: "70%" }}>
+                      <Item>{item?.id}</Item>
+                    </Typography>
+                    <Stack
+                      direction="row"
+                      spacing={2}
+                      justifyContent="flex-end"
+                      alignItems="center"
+                      style={{ width: "100%" }}
+                    >
+                      <Button
+                        variant="contained"
+                        size="small"
+                      
+                      >
+                        Modify
+                      </Button>
+
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<DeleteIcon />}
+                      
+                      >
+                        Delete
+                      </Button>
+                    </Stack>
+                  </AccordionSummary>
+                  <AccordionDetails key={Math.random()}>
+                    <JSONTree data={matrixDataManagement[index]} />
+                  </AccordionDetails>
+                </Accordion>
+              );
+            })}
             </>
           )}
 

@@ -157,6 +157,7 @@ export const get_iot_gtws_http_server_disabled = async () => {
 export const machines_connected = async () => {
   try {
     const res = await helper.fetchData(`/machine/connections`, "GET");
+    console.log(res)
     verbose && console.log(res);
     return res;
   } catch (e) {

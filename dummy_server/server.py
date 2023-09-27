@@ -22,13 +22,14 @@ async def get_json(request: Request, full_path: str):
         index = request_name.index("?")
         request_name = request_name[:index]
     print(request_name)
-    json_path = os.path.join("answers", request_name + ".json")
+    json_path = os.path.join("dummy_server", "answers", request_name + ".json")
     if os.path.exists(json_path):
         with open(json_path, "r") as json_file:
             content = json.load(json_file)
+            print(content)
             return content
     else:
-        return {"error": "JSON not found"}
+        return None
 
 
 @app.post("/{full_path:path}")
@@ -38,13 +39,14 @@ async def get_json(request: Request, full_path: str):
         index = request_name.index("?")
         request_name = request_name[:index]
     print(request_name)
-    json_path = os.path.join("answers", request_name + ".json")
+    json_path = os.path.join("dummy_server", "answers", request_name + ".json")
     if os.path.exists(json_path):
         with open(json_path, "r") as json_file:
             content = json.load(json_file)
+            print(content)
             return content
     else:
-        return {"error": "JSON not found"}
+        return None
 
 if __name__ == "__main__":
     import uvicorn

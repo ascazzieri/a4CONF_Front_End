@@ -10,7 +10,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TextField from "@mui/material/TextField";
-import { Divider } from "antd";
+import {Divider} from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
