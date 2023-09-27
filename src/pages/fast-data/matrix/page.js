@@ -4,12 +4,7 @@ import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import {
-  JsonView,
-  allExpanded,
-  darkStyles,
-} from "react-json-view-lite";
-import 'react-json-view-lite/dist/index.css';
+import { JSONEditor } from "react-json-editor-viewer";
 import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
@@ -306,10 +301,9 @@ export default function Matrix() {
                         </Stack>
                       </AccordionSummary>
                       <AccordionDetails key={Math.random()}>
-                        <JsonView
+                        <JSONEditor
                           data={matrixDataManagement[index]}
-                          shouldExpandNode={allExpanded}
-                          style={darkStyles}
+                          collapsible
                         />
                       </AccordionDetails>
                     </Accordion>
