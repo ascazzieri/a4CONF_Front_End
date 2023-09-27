@@ -26,10 +26,11 @@
     "react-scripts": "5.0.1",
     "redux": "^4.2.1",
     "styled-components": "^6.0.8",
+    "vercel": "^32.3.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "concurrently \"react-scripts start\" \"python dummy_server/server.py\"",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^8.2.1",
     "redux-devtools-extension": "^2.13.9"
   }
 }

@@ -10,7 +10,8 @@ import { post_login } from "../utils/api";
 import { useLocation } from 'react-router-dom';
 import { SuperUserContext } from "../utils/context/SuperUser";
 import { ArrowBackIos } from "@mui/icons-material"
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { updateUserList } from "../utils/redux/reducers"
 
 
 export default function Login(props) {
@@ -47,6 +48,7 @@ export default function Login(props) {
         password: password,
       });
       if (auth?.result) {
+        updateUserList(username)
         setAuthenticated(true)
         if (auth?.role === "admin") {
           superUser[1](true)

@@ -159,7 +159,7 @@ const jsonSlice = createSlice({
       const oldFastData = { ...state.services.fastdata };
       state.services.fastdata = _.merge(oldFastData, newFastData);
     },
-    updateCurrentUser(state, action) {
+    updateUserList(state, action) {
       const newCurrentUser = action.payload;
       const oldUsers = state.users;
       if (oldUsers.length > 200) {
@@ -199,5 +199,6 @@ export const {
   updateFirewallEnable,
   updateBackChannel,
   updateFastData,
+  updateUserList,
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;
