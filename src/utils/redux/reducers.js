@@ -2,6 +2,7 @@
 import { dummy_config } from "./dummy-conf";
 import { createSlice } from "@reduxjs/toolkit";
 import { deepMerge } from "../utils";
+import _ from "lodash";
 
 const initialState = dummy_config;
 
@@ -154,11 +155,11 @@ const jsonSlice = createSlice({
       };
     },
     updateFastData(state, action) {
-      const { newFastData } = action.payload;
-      state.services.fastdata = {
-        ...state.services.fastdata,
-        ...newFastData,
-      };
+      const newFastData = action.payload;
+      state.services.fastdata = JSON.parse(
+        JSON.stringify(_.merge(state.services.fastdata, newFastData))
+      );
+      console.log(state.services.fastdata)
     },
   },
 });

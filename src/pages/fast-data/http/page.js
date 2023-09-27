@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
@@ -294,11 +295,7 @@ export default function FTP() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 3 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

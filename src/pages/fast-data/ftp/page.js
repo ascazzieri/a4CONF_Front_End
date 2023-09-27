@@ -8,8 +8,8 @@ import CachedIcon from "@mui/icons-material/Cached";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import {
-  Button,
   Container,
   Divider,
   FormControl,
@@ -432,11 +432,7 @@ export default function FTP() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 4 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

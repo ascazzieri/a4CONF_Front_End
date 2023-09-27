@@ -3,6 +3,7 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
 import { updateFastData } from "../../utils/redux/reducers";
 import JSONPretty from "react-json-pretty";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 import {
   Grid,
   Box,
@@ -11,8 +12,15 @@ import {
   Container,
   Typography,
   Switch,
-  FormControlLabel,
-  Stack,
+  InputLabel,
+  OutlinedInput,
+  InputAdornment,
+  IconButton,
+  FormHelperText,
+  Divider,
+  FormControl,
+  FormLabel,
+  TextField,
 } from "@mui/material";
 import DriveFileMoveOutlinedIcon from "@mui/icons-material/DriveFileMoveOutlined";
 import HttpOutlinedIcon from "@mui/icons-material/HttpOutlined";
@@ -21,8 +29,13 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import SaveButton from "../../components/SaveButton/SaveButton";
 export default function FastData() {
   const fastData = useSelector((state) => state?.services?.fastdata);
+
+  const matrix = useSelector(
+    (state) => state.services?.fastdata?.customer?.matrix
+  );
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -42,11 +55,26 @@ export default function FastData() {
     fastData?.customer?.matrix?.enabled
   );
 
+  const [blobConnectionUrl, setBlobConnectionUrl] = useState(
+    matrix?.blob_connection?.azure_url
+  );
+  const [blobConnectionSas, setBlobConnectionSas] = useState(
+    matrix?.blob_connection?.azure_sas
+  );
+
+  const [showSaskey, setShowSaskey] = useState(false);
+  const handleClickShowSas = () => setShowSaskey((show) => !show);
+
   useEffect(() => {
     setFTPEnabled(fastData?.industrial?.ftp?.enabled);
     setHTTPEnabled(fastData?.industrial?.http?.enabled);
     setMatrixEnabled(fastData?.customer?.matrix?.enabled);
   }, [fastData]);
+
+  useEffect(() => {
+    setBlobConnectionUrl(matrix?.blob_connection?.azure_url);
+    setBlobConnectionSas(matrix?.blob_connection?.azure_sas);
+  }, [matrix]);
 
   useEffect(() => {
     dispatch(updateFastData({ industrial: { ftp: { enabled: ftpEnabled } } }));
@@ -68,14 +96,32 @@ export default function FastData() {
     navigate(`/fast-data/${name}`);
   };
 
-  /*   const goodStatus = () => {
-    return (
-      <CheckCircleOutlineOutlinedIcon sx={{ color: "green", fontSize: 20 }} />
-    );
+  const handleBlobConnectionUrlChange = (event) => {
+    const blobUrl = event?.target?.value;
+    if (blobUrl !== undefined) {
+      setBlobConnectionUrl(blobUrl);
+    }
   };
-  const badStatus = () => {
-    return <DangerousOutlinedIcon sx={{ color: "red", fontSize: 21 }} />;
-  }; */
+
+  const handleBlobConnectionSasChange = (event) => {
+    const blobSas = event?.target?.value;
+    if (blobSas !== undefined) {
+      setBlobConnectionSas(blobSas);
+    }
+  };
+
+  const handleMatrixChange = (e) => {
+    e.preventDefault();
+    const newMatrix = {
+      ...matrix,
+      blob_connection: {
+        azure_url: blobConnectionUrl,
+        azure_sas: blobConnectionSas,
+      },
+    };
+
+    dispatch(updateFastData({ customer: { matrix: newMatrix } }));
+  };
 
   if (currentURLArray.length === 2) {
     const cardIcon = { fontSize: 80, color: "#0d6efd" };
@@ -85,6 +131,54 @@ export default function FastData() {
         <Container sx={{ flexGrow: 1 }} disableGutters>
           <Card sx={{ mt: 1 }} className="fast-data-card">
             <CardContent>
+              <form onSubmit={handleMatrixChange}>
+                <FormControl fullWidth>
+                  <FormLabel>Blob storage Url:</FormLabel>
+
+                  <TextField
+                    type="text"
+                    label="Blob Url"
+                    helperText="Blob storage Url"
+                    value={blobConnectionUrl || ""}
+                    required={true}
+                    onChange={handleBlobConnectionUrlChange}
+                  />
+                </FormControl>
+
+                <Divider />
+
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Sas *
+                  </InputLabel>
+                  <OutlinedInput
+                    type={showSaskey ? "text" : "password"}
+                    required={true}
+                    value={blobConnectionSas || ""}
+                    onChange={handleBlobConnectionSasChange}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onMouseDown={handleClickShowSas}
+                          onMouseUp={handleClickShowSas}
+                          edge="end"
+                        >
+                          {showSaskey ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                  <FormHelperText id="outlined-weight-helper-text">
+                    Unique athentication string for Microsoft Blob Storage
+                  </FormHelperText>
+                </FormControl>
+
+                <Divider />
+                <SaveButton />
+              </form>
+
               <Grid container columns={{ xs: 4, sm: 12, md: 12 }}>
                 <Grid
                   item
