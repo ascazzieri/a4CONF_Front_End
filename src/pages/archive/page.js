@@ -144,7 +144,7 @@ export default function Archive() {
             })}
 
           <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
-            <Card sx={{ padding: 5 , margin: 2}}>
+            <Card sx={{ padding: 5 , margin: 1}}>
               <h1>Insert new Archive object</h1>
               <div>
                 <TextField

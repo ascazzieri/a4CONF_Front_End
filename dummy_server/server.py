@@ -45,3 +45,7 @@ async def get_json(request: Request, full_path: str):
             return content
     else:
         return {"error": "JSON not found"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=80)

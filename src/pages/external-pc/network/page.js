@@ -273,6 +273,15 @@ export default function ExternalNetwork() {
     loaderContext[1](false);
   };
 
+  if (customerNetwork?.dhcp && customerNetwork?.static?.ip?.length === 0) {
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "error",
+      message: `Unable to acquire ip address for data sender `,
+    });
+  }
+
   const handleAddHostList = () => {
     const newHost = currentHost ? currentHost : undefined;
     if (!newHost || newHost.length === 0 || newHost.trim() === "") {
@@ -676,7 +685,7 @@ export default function ExternalNetwork() {
               <Divider />
 
               <FormControl>
-                <FormLabel>FTP server port:</FormLabel>
+                <FormLabel>Ping number:</FormLabel>
 
                 <TextField
                   type="number"
@@ -788,6 +797,12 @@ export default function ExternalNetwork() {
                               if (!ip) {
                                 return <>Error on loading ping test results</>;
                               }
+                              let colorLabel = "white";
+                              for (const key in item[ip]) {
+                                if (item[ip][key]?.result !== true) {
+                                  colorLabel = "red";
+                                }
+                              }
                               return (
                                 <Fragment key={Math.random()}>
                                   <ListItemButton
@@ -802,6 +817,7 @@ export default function ExternalNetwork() {
                                     <ListItemText
                                       primary={ip}
                                       key={Math.random()}
+                                      style={{ color: colorLabel }}
                                     />
                                     {expandedListHosts.includes(ip) ? (
                                       <ExpandLess key={Math.random()} />

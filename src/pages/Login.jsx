@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Card, Container } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Divider } from "antd";
@@ -6,11 +6,32 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import ErrorCacher from "../components/Errors/ErrorCacher";
 import appliedLogo from "../media/img/applied_logo_cropped.png";
-import {  post_login } from "../utils/api";
+import { post_login } from "../utils/api";
+import { useLocation } from 'react-router-dom';
+import { SuperUserContext } from "../utils/context/SuperUser";
+import { ArrowBackIos } from "@mui/icons-material"
+import { useNavigate } from "react-router-dom";
+import { updateUserList } from "../utils/redux/reducers"
 
-export default function Login() {
+
+export default function Login(props) {
+
+  const navigate = useNavigate()
+
+  const { authenticated, setAuthenticated } = props
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const superUser = useContext(SuperUserContext)
+
+  const location = useLocation();
+  const elevation = location.state?.elevation || false;
+
+  useEffect(() => {
+    if (authenticated && !elevation) {
+      navigate("/")
+    }
+  })
 
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -22,18 +43,25 @@ export default function Login() {
 
   const handleLogin = async () => {
     if (username.trim() !== "" && password.trim() !== "") {
-      const result = await post_login({
+      const auth = await post_login({
         username: username,
         password: password,
       });
-      if (result) {
-        alert("accesso consentito");
+      if (auth?.result) {
+        updateUserList(username)
+        setAuthenticated(true)
+        if (auth?.role === "admin") {
+          superUser[1](true)
+        } else {
+          superUser[1](false)
+        }
+        navigate("/")
       } else {
-        alert("accesso negato: credenzieli non corrette");
+        setAuthenticated(false)
       }
-      
+
     } else {
-      alert("cannot login: there are empty spaces");
+      alert("Do not use empty spaces");
     }
   };
   return (
@@ -41,11 +69,11 @@ export default function Login() {
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ padding: 5, margin: 5 }}>
-          <Stack direction="row" spacing={40} style={{ width: "100%" }}>
-            <h1> Login </h1>
+          <Stack direction="row" justifyContent="center" spacing={2} style={{ width: "100%" }}>
+            {elevation ? <h1>Log as administrator </h1> : <h1>Authenticate</h1>}
             <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
           </Stack>
-          <Divider />
+          <Divider style={{ background: "white" }} />
           <div>
             <Stack direction="row" spacing={5} style={{ width: "100%" }}>
               <h2>Username:</h2>
@@ -76,12 +104,21 @@ export default function Login() {
             alignItems="center"
             style={{ width: "100%" }}
           >
-            <Button variant="contained" size="medium" onClick={handleLogin}>
+            {elevation ? <><Stack direction="row" spacing={4} alignItems="center">
+              <Button variant="outlined" color="secondary" startIcon={<ArrowBackIos />} onClick={() => { navigate("/") }}>
+                Back
+              </Button>
+              <Button variant="contained" onClick={handleLogin}>
+                Login
+              </Button>
+            </Stack></> : <Button variant="contained" onClick={handleLogin}>
               Login
-            </Button>
+            </Button>}
+
+
           </Stack>
         </Card>
       </Container>
-    </ErrorCacher>
+    </ErrorCacher >
   );
 }

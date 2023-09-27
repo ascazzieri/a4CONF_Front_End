@@ -11,6 +11,7 @@ import {
   createiotgw,
   machines_connected,
   saveKepwareProject,
+  reload_kepware,
   get_device_tags,
 } from "../../../utils/api";
 import { useLocation } from "react-router-dom";
@@ -1023,6 +1024,27 @@ export default function Kepware() {
     loaderContext[1](false);
   };
 
+  const handleReloadKepwareRuntime = async () => {
+    loaderContext[1](true);
+    const kepwareReload = await reload_kepware();
+    if (kepwareReload) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Kepware runtime reloaded successfully`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during Kepware runtime reload`,
+      });
+    }
+    loaderContext[1](false);
+  };
+
   const handleAddThingName = () => {
     const thingNameList = [...thingNames];
     if (thingName.trim() === "") {
@@ -1242,6 +1264,14 @@ export default function Kepware() {
                 </Button>
               </Stack>
             </FormControl>
+
+            <Divider />
+
+            <Typography>Kepware runtime:</Typography>
+
+            <Button variant="contained" onClick={handleReloadKepwareRuntime}>
+              Reload
+            </Button>
 
             <Divider />
           </>

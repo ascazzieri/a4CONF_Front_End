@@ -2,50 +2,68 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import { Stack } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { send_conf } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
+import { Typography } from "@mui/material";
 
 export default function ServiceHandler() {
-  const pathLocationServices = {
-    "/external-pc/sitemanager": "sitemanager",
-    "/external-pc/thingworx": "thingworx",
-    "/external-pc/opcua-server": "opcua",
-    "/external-pc/http-server": "http",
-  };
 
   const loaderContext = useContext(LoadingContext);
 
-  const location = useLocation().pathname;
+  const location = useLocation();
+  const isFastData = location?.pathname?.split("/")[1] === "fast-data"
+  const serviceName = location?.pathname?.split("/")[location?.pathname?.split("/").length - 1]
 
-  const pathValue = pathLocationServices[location];
+  const [serviceCommand, setServiceCommand] = useState("");
 
   const handleChange = (event) => {
     const command = event.target.value;
     setServiceCommand(command)
-    loaderContext[1](true);
-    manageService(pathValue, command);
-    loaderContext[1](false);
-    setServiceCommand(undefined)
+    manageService(serviceName, command);
   };
 
-  const [serviceCommand, setServiceCommand] = useState("");
 
   const manageService = async (service, cmd) => {
-    const body = {};
-    body["services"] = { [service]: cmd };
-    await send_conf({ body });
-  }
+    const middleFastDataKey = (service === 'ftp' || service === 'http') ? 'industrial' : null;
+
+    const body = isFastData
+      ? {
+        services: {
+          fastdata: {
+            ...(middleFastDataKey ? { [middleFastDataKey]: { [service]: { command: cmd } } } : { command: cmd })
+          }
+        }
+      }
+      : {
+        services: {
+          [service]: {
+            command: cmd
+          }
+        }
+      };
+
+    loaderContext[1](true);
+
+    try {
+      await send_conf({ body });
+      console.log(body);
+    } catch (error) {
+      console.error('Error during service handling', error);
+      // Gestisci l'errore come preferisci
+    } finally {
+      loaderContext[1](false);
+      setServiceCommand(undefined);
+    }
+  };
   return (
     <FormControl>
-      <FormLabel >{pathValue && pathValue.charAt(0).toUpperCase() + pathValue.slice(1)} service commands</FormLabel>
+      <Typography >{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
       <RadioGroup
         row
         name="position"
-        value={serviceCommand}
+        value={serviceCommand || ""}
         onChange={handleChange}
       >
         <FormControlLabel

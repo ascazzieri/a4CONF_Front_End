@@ -2,6 +2,7 @@
 import { dummy_config } from "./dummy-conf";
 import { createSlice } from "@reduxjs/toolkit";
 import { deepMerge } from "../utils";
+import _ from "lodash";
 
 const initialState = dummy_config;
 
@@ -45,10 +46,10 @@ const jsonSlice = createSlice({
         state.services.thingworx = newConf?.services?.thingworx;
         state.services.opcua = newConf?.services?.opcua;
         state.services.http = newConf?.services?.http;
-        state.services.fastdata.customer.matrix =
-          newConf?.services?.fastdata?.customer?.matrix;
-        state.services.fastdata.enabled = newConf?.services?.fastdata?.enabled;
-        state.services.fastdata.running = newConf?.services?.fastdata?.running;
+        state.services.fastdata = {
+          ...state.services.fastdata,
+          ...newConf?.services?.fastdata,
+        };
       } else if (actionType === "fromBackup") {
         const mergedObject = deepMerge({ ...state }, newConf);
         state = mergedObject;
@@ -57,7 +58,10 @@ const jsonSlice = createSlice({
     },
     updateHostName(state, action) {
       const { newHostName } = action.payload;
-      state.system.hostname = newHostName;
+      state.system.hostname = {
+        ...state.system.hostname,
+        ...newHostName,
+      };
     },
     updateInternalPC(state, action) {
       const { newInternalPC } = action.payload;
@@ -68,11 +72,17 @@ const jsonSlice = createSlice({
     },
     updateIndustrialNetwork(state, action) {
       const { newIndustrial } = action.payload;
-      state.system.network.industrial = newIndustrial;
+      state.system.network.industrial = {
+        ...state.system.network.industrial,
+        ...newIndustrial,
+      };
     },
     updateKepware(state, action) {
       const { newKepware } = action.payload;
-      state.services.kepware = newKepware;
+      state.services.kepware = {
+        ...state.services.kepware,
+        ...newKepware,
+      };
     },
     updateExternalPC(state, action) {
       const { newExternalPC } = action.payload;
@@ -83,85 +93,91 @@ const jsonSlice = createSlice({
     },
     updateCustomerNetwork(state, action) {
       const { newCustomer } = action.payload;
-      state.system.network.customer = newCustomer;
+      state.system.network.customer = {
+        ...state.system.network.customer,
+        ...newCustomer,
+      };
     },
     updatePingResult(state, action) {
       const newPingResult = action.payload;
-      console.log(newPingResult);
-      state.system.network.customer.ping = newPingResult;
+      state.system.network.customer.ping = {
+        ...state.system.network.customer.ping,
+        ...newPingResult,
+      };
     },
     updateFirewallEnable(state, action) {
-      const newFirewallEnabled = action.payload;
-      state.system.network.customer.firewall_enabled = newFirewallEnabled;
+      const newFirewallEnabled = { firewall_enabled: action.payload };
+      state.system.network.customer = deepMerge(
+        ...state.system.network.customer,
+        newFirewallEnabled
+      );
     },
     updateSitemanager(state, action) {
-      const { newSitemanager } = action.payload;
-      state.services.sitemanager = newSitemanager;
-    },
-    updateSitemanagerEnable(state, action) {
-      const newSitemanagerEnabled = action.payload;
-      state.services.sitemanager.enabled = newSitemanagerEnabled;
+      const newSitemanager = action.payload;
+      state.services.sitemanager = {
+        ...state.services.sitemanager,
+        ...newSitemanager,
+      };
     },
     updateThingworx(state, action) {
-      const { newThingworx } = action.payload;
-      state.services.thingworx = newThingworx;
+      const newThingworx = action.payload;
+      state.services.thingworx = {
+        ...state.services.thingworx,
+        ...newThingworx,
+      };
     },
     updateThingNames(state, action) {
       const newThingNames = action.payload;
-      state.services.thingworx.thing_names = newThingNames;
-    },
-    updateThingworxEnable(state, action) {
-      const newThingworxEnabled = action.payload;
-      state.services.thingworx.enabled = newThingworxEnabled;
+      state.services.thingworx.thing_names = {
+        ...state.services.thingworx.thing_names,
+        ...newThingNames,
+      };
     },
     updateOPCServer(state, action) {
-      const { newOPCUAServer } = action.payload;
-      state.services.opcua = newOPCUAServer;
+      const newOPCUAServer = action.payload;
+      state.services.opcua = {
+        ...state.services.opcua,
+        ...newOPCUAServer,
+      };
     },
-    updateOPCServerEnable(state, action) {
-      const newOPCServerEnabled = action.payload;
-      state.services.opcua.enabled = newOPCServerEnabled;
-    },
-    updateHTTPServerEnable(state, action) {
-      const newHTTPServerEnabled = action.payload;
-      state.services.http.enabled = newHTTPServerEnabled;
+    updateHTTPServer(state, action) {
+      const newHTTPServer = action.payload;
+      state.services.http = {
+        ...state.services.http,
+        ...newHTTPServer,
+      };
     },
     updateBackChannel(state, action) {
       const { newBackChannel } = action.payload;
-      state.services.backchannel = newBackChannel;
+      state.services.backchannel = {
+        ...state.services.backchannel,
+        ...newBackChannel,
+      };
     },
-    updateFastDataFTP(state, action) {
-      const { newFastDataFTP } = action.payload;
-      state.services.fastdata.industrial.ftp = newFastDataFTP;
+    updateFastData(state, action) {
+      const newFastData = action.payload;
+      const oldFastData = { ...state.services.fastdata };
+      state.services.fastdata = _.merge(oldFastData, newFastData);
     },
-    updateFastDataFTPEnable(state, action) {
-      const ftpEnable = action.payload;
-      state.services.fastdata.industrial.ftp.enabled = ftpEnable;
-    },
-    updateFastDataHTTPEnable(state, action) {
-      const httpEnable = action.payload;
-      state.services.fastdata.industrial.http.enabled = httpEnable;
-    },
-    updateFastDataMatrixEnable(state, action) {
-      const matrixEnable = action.payload;
-      state.services.fastdata.customer.matrix.enabled = matrixEnable;
-    },
-    updateFastDataHTTP(state, action) {
-      const { newFastDataHTTP } = action.payload;
-      state.services.fastdata.industrial.http = newFastDataHTTP;
-    },
-    updateFastDataMatrix(state, action) {
-      const { newFastDataMatrix } = action.payload;
-      state.services.fastdata.customer.matrix = newFastDataMatrix;
-    },
-    updateFastDataServices(state, action) {
-      const { newFastDataServices } = action.payload;
-      state.services.fastdata.enabled = newFastDataServices.fastdata;
-      state.services.fastdata.industrial.ftp.enabled = newFastDataServices.ftp;
-      state.services.fastdata.industrial.http.enabled =
-        newFastDataServices.http;
-      state.services.fastdata.customer.matrix.enabled =
-        newFastDataServices.matrix;
+    updateUserList(state, action) {
+      const newCurrentUser = action.payload;
+      const oldUsers = state.users;
+      if (oldUsers.length > 200) {
+        oldUsers.shift();
+      }
+      const options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      };
+      const currentDateTime = new Date()
+        .toLocaleString("en-US", options)
+        .replace(/\//g, "-");
+      state.users = oldUsers.push({ currentDateTime: newCurrentUser });
     },
   },
 });
@@ -179,18 +195,10 @@ export const {
   updateThingNames,
   updateSitemanager,
   updateOPCServer,
+  updateHTTPServer,
   updateFirewallEnable,
-  updateSitemanagerEnable,
-  updateThingworxEnable,
-  updateOPCServerEnable,
-  updateHTTPServerEnable,
   updateBackChannel,
-  updateFastDataFTP,
-  updateFastDataHTTP,
-  updateFastDataMatrix,
-  updateFastDataFTPEnable,
-  updateFastDataHTTPEnable,
-  updateFastDataMatrixEnable,
-  updateFastDataServices,
+  updateFastData,
+  updateUserList,
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;

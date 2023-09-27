@@ -2,6 +2,8 @@ import { Grid } from "@mui/material"
 import React from "react";
 import styled from "@emotion/styled";
 
+const verbose = window.location.href.includes("verbose");
+
 const StyledButton = styled.button`
   font-family: Monserrat;
   font-size: 17px;

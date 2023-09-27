@@ -1,44 +1,22 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataMatrix } from "../../../utils/redux/reducers";
+import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 import {
-  Button,
-  Card,
   Container,
-  Typography,
   Divider,
   FormControl,
   FormLabel,
   TextField,
-  InputLabel,
-  OutlinedInput,
-  InputAdornment,
-  IconButton,
-  FormHelperText,
 } from "@mui/material";
-import { VisibilityOff, Visibility } from "@mui/icons-material";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Stack from "@mui/material/Stack";
-import Item from "antd/es/list/Item";
-import DeleteIcon from "@mui/icons-material/Delete";
-import SimpleDialog from "@mui/material/Dialog";
-import { get_matrix } from "../../../utils/api";
-
-
 
 export default function Matrix() {
-
-
-
   const matrix = useSelector(
     (state) => state.services?.fastdata?.customer?.matrix
   );
@@ -49,21 +27,12 @@ export default function Matrix() {
   const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
-    ? ["Server", "Blob settings", "Matrix management", "JSON"]
-    : ["Server", "Blob settings", "Matrix management"];
+    ? ["Server", "Matrix management", "JSON"]
+    : ["Server", "Matrix management"];
 
   //Server
   const [serverIP, setServerIP] = useState(matrix?.http_server?.host);
   const [serverPort, setServerPort] = useState(matrix?.http_server?.port);
-  const [blobConnectionUrl, setBlobConnectionUrl] = useState(
-    matrix?.blob_connection?.azure_url
-  );
-  const [blobConnectionSas, setBlobConnectionSas] = useState(
-    matrix?.blob_connection?.azure_sas
-  );
-
-  const [showAppkey, setShowAppkey] = useState(false);
-  const handleClickShowPassword = () => setShowAppkey((show) => !show);
 
   const [matrixDataManagement, setMatrixDataManagement] = useState(
     matrix?.matrix_data_managment
@@ -73,8 +42,6 @@ export default function Matrix() {
   useEffect(() => {
     setServerIP(matrix?.http_server?.host);
     setServerPort(matrix?.http_server?.port);
-    setBlobConnectionUrl(matrix?.blob_connection?.azure_url);
-    setBlobConnectionSas(matrix?.blob_connection?.azure_sas);
     setMatrixDataManagement(matrix?.matrix_data_managment);
   }, [matrix]);
 
@@ -90,21 +57,9 @@ export default function Matrix() {
       setServerPort(port);
     }
   };
-  const handleBlobConnectionUrlChange = (event) => {
-    const blobUrl = event?.target?.value;
-    if (blobUrl) {
-      setBlobConnectionUrl(blobUrl);
-    }
-  };
 
-  const handleBlobConnectionSasChange = (event) => {
-    const blobSas = event?.target?.value;
-    if (blobSas) {
-      setBlobConnectionSas(blobSas);
-    }
-  };
-
-  const handleMatrixChange = () => {
+  const handleMatrixChange = (e) => {
+    e.preventDefault();
     const newMatrix = {
       ...matrix,
       http_server: {
@@ -255,7 +210,7 @@ export default function Matrix() {
       ],
     };
 
-    dispatch(updateFastDataMatrix({ newMatrix }));
+    dispatch(updateFastData({ customer: { matrix: { newMatrix } } }));
   };
 
   return (
@@ -306,58 +261,10 @@ export default function Matrix() {
 
           {currentTab === 1 && (
             <>
-              <FormControl fullWidth>
-                <FormLabel>Blob storage Url:</FormLabel>
-
-                <TextField
-                  type="text"
-                  label="Blob Url"
-                  helperText="Blob storage Url"
-                  value={blobConnectionUrl}
-                  required={true}
-                  onChange={handleBlobConnectionUrlChange}
-                />
-              </FormControl>
-
-              <Divider />
-
-              <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Appkey *
-                </InputLabel>
-                <OutlinedInput
-                  type={showAppkey ? "text" : "password"}
-                  required={true}
-                  defaultValue={blobConnectionSas}
-                  onChange={handleBlobConnectionSasChange}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onMouseDown={handleClickShowPassword}
-                        onMouseUp={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showAppkey ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-                <FormHelperText id="outlined-weight-helper-text">
-                  Unique athentication string for Microsoft Blob Storage
-                </FormHelperText>
-              </FormControl>
-
-              <Divider />
+              <h1>Work in progress...</h1>
             </>
           )}
-
           {currentTab === 2 && <>
-          
-           
- 
- 
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
@@ -418,65 +325,7 @@ export default function Matrix() {
                 </Accordion>
               );
             })}
-
-        {/*  <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
-            <Card sx={{ padding: 5 , margin: 2}}>
-              <h3>Insert new Matrix object</h3>
-              <div>
-                <TextField
-                  fullWidth= {true}
-                  id="outlined-textarea"
-                  label="Matrix Id"
-                  value={matrixId}
-                  onChange={(event) => {
-                    setMatrixId(event.target.value);
-                  }}
-                  multiline
-                />
-                <Divider />
-                <TextField
-                  fullWidth={true}
-                  id="outlined-texterea"
-                  label="JSON"
-                  multiline
-                  rows={5}
-                  value={content}
-                  onChange={(event) => {
-                    setContent(event.target.value);
-                  }}
-                />
-              </div>
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="flex-end"
-                alignItems="center"
-                style={{ width: "100%" }}
-              >
-                <Button variant="contained" size="small" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="contained" size="small" onClick={handleClear}>
-                  Clear
-                </Button>
-              </Stack>
-            </Card>
-          </SimpleDialog>*/}
-        </Card>
-      </Container>
-    </ErrorCacher>
-
-          
-          
-          
-          
-          </>}
-
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 2 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

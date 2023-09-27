@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastDataHTTP } from "../../../utils/redux/reducers";
+import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -18,6 +18,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import SaveButton from "../../../components/SaveButton/SaveButton";
 export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
@@ -143,7 +144,7 @@ export default function FTP() {
       ],
     };
 
-    dispatch(updateFastDataHTTP({ newHTTP }));
+    dispatch(updateFastData({ industrial: { http: { newHTTP } } }));
   };
 
   const blobColumnsData = [
@@ -294,11 +295,7 @@ export default function FTP() {
             </>
           )}
 
-          <FormControl fullWidth>
-            <Button type="submit" variant="contained">
-              Invia
-            </Button>
-          </FormControl>
+          {currentTab !== 3 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

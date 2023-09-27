@@ -11,6 +11,7 @@ import InternalPC from "./pages/internal-pc/page";
 import ExternalPC from "./pages/external-pc/page";
 import FastData from "./pages/fast-data/page";
 import BackChannel from "./pages/back-channel/page";
+import ManageUsers from "./pages/users/page";
 import InternalNetwork from "./pages/internal-pc/network/page";
 import Kepware from "./pages/internal-pc/kepware/page";
 import ExternalNetwork from "./pages/external-pc/network/page";
@@ -23,62 +24,32 @@ import HTTP from "./pages/fast-data/http/page";
 import Matrix from "./pages/fast-data/matrix/page";
 import Archive from "./pages/archive/page";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
+import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
-  /*  const [authenticate, setAuthenticate] = useState(true);
-  const [firstUser, setFirstUser] = useState(); */
+  const [authenticated, setAuthenticated] = useState(true);
 
-  /*  useEffect(() => {
-    (async () => {
-      const credentials = await check_credentials();
-      console.log(credentials)
-      console.log("loading account details");
-      if (credentials) {
-        setFirstUser(false);
-      } else {
-        setFirstUser(true);
-      }
-    })();
-  }, []);
-
-  if (firstUser) {
-    console.log(firstUser)
+  if (!authenticated) {
     return (
       <BrowserRouter>
-        <Navigate to="/register" />
+        <Navigate to="/login" />
         <Routes>
-          <Route path="/" element={<PrivateRoute authenticated={authenticated}><Layout />}>
-            <Route path="/register" element={<PrivateRoute authenticated={authenticated}><Register />} />
+          <Route path="/" element={<Layout />}>
+            <Route
+              path="/login"
+              element={
+                <Login
+                  authenticated={authenticated}
+                  setAuthenticated={setAuthenticated}
+                />
+              }
+            />
           </Route>
         </Routes>
       </BrowserRouter>
     );
   }
-
-  if (!authenticate) {
-    return (
-      <BrowserRouter>
-        <Navigate to="/login" />
-        <Routes>
-          <Route path="/" element={<PrivateRoute authenticated={authenticated}><Layout />}>
-            <Route path="/login" element={<PrivateRoute authenticated={authenticated}><Login />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    );
-  } */
-
-  const [authenticated, setAuthenticated] = useState(true);
-
-  useEffect(() => {
-    setAuthenticated(true);
-    /* // Controlla se l'utente è autenticato quando il componente si monta
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      setAuthenticated(true);
-    } */
-  }, []);
 
   return (
     <>
@@ -94,7 +65,7 @@ export default function App({ Component, pageProps }) {
               }
             />
             <Route
-              path="/internal-pc"
+              path="/data-collector"
               element={
                 <PrivateRoute authenticated={authenticated}>
                   <InternalPC />
@@ -119,7 +90,7 @@ export default function App({ Component, pageProps }) {
               />
             </Route>
             <Route
-              path="/external-pc"
+              path="/data-sender"
               element={
                 <PrivateRoute authenticated={authenticated}>
                   <ExternalPC />
@@ -203,7 +174,10 @@ export default function App({ Component, pageProps }) {
             <Route
               path="/back-channel"
               element={
-                <PrivateRoute authenticated={authenticated}>
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
                   <BackChannel />
                 </PrivateRoute>
               }
@@ -211,8 +185,33 @@ export default function App({ Component, pageProps }) {
             <Route
               path="/archive"
               element={
-                <PrivateRoute authenticated={authenticated}>
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
                   <Archive />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/manage-users"
+              element={
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
+                  <ManageUsers />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/advanced"
+              element={
+                <PrivateRoute
+                  authenticated={authenticated}
+                  superUserRequired={true}
+                >
+                  <Advanced />
                 </PrivateRoute>
               }
             />
@@ -222,7 +221,12 @@ export default function App({ Component, pageProps }) {
             />
             <Route
               path="/login"
-              element={<Login setAuthenticated={setAuthenticated} />}
+              element={
+                <Login
+                  authenticated={authenticated}
+                  setAuthenticated={setAuthenticated}
+                />
+              }
             />
             <Route
               path="*"

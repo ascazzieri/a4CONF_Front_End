@@ -1,10 +1,12 @@
 import * as helper from "./utils";
+const verbose = window.location.href.includes("verbose");
 
 export const get_version = async () => {
   try {
     const res = await helper.fetchData("/version", "GET");
     const version = res.replace("\n", "").replace("\r", "");
     const version_string = "Version: " + version;
+    verbose && console.log("version: " + version_string);
     return version_string;
   } catch (error) {
     console.error(error);
@@ -15,7 +17,7 @@ export const get_ready = async () => {
   //aggiungi il timer al componente che la chiama
   try {
     const res = await helper.fetchData("/ready", "GET");
-    console.log(res);
+    verbose && verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -25,7 +27,7 @@ export const get_confA = async () => {
   try {
     const res = await helper.fetchData("/confA", "GET");
     const conf = helper.confToHTML(res);
-    console.log(res);
+    verbose && console.log(res);
     return conf;
   } catch (e) {
     console.error(e);
@@ -36,7 +38,7 @@ export const get_confB = async () => {
   try {
     const res = await helper.fetchData("/confB", "GET");
     const conf = helper.confToHTML(res);
-    console.log(res);
+    verbose && console.log(res);
     return conf;
   } catch (e) {
     console.error(e);
@@ -46,7 +48,7 @@ export const send_conf = async (data) => {
   //aggiungi un controllo su cambio della network per avvertire che l'utente potrebbe perdere la sessione
   try {
     const res = await helper.fetchData("/post", "POST", data);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -71,7 +73,7 @@ export const createiotgw = async (
       "POST",
       tags_list
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -84,7 +86,7 @@ export const get_device_tags = async (channel, device) => {
       `/channel/device/tags/tree?channel=${channel}&device=${device}`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -95,11 +97,11 @@ export const loadiotgws = async (direction) => {
   try {
     if (direction === "from") {
       const res = await helper.fetchData("/iotgwhttp", "GET");
-      console.log(res);
+      verbose && console.log(res);
       return res;
     } else {
       const res = await helper.fetchData("/iotgwhttpserver", "GET");
-      console.log(res);
+      verbose && console.log(res);
       return res;
     }
   } catch (e) {
@@ -109,7 +111,7 @@ export const loadiotgws = async (direction) => {
 export const get_iot_gtws_http_client_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/enabled", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -118,7 +120,7 @@ export const get_iot_gtws_http_client_enabled = async () => {
 export const get_iot_gtws_http_client_disabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/disabled", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -127,7 +129,7 @@ export const get_iot_gtws_http_client_disabled = async () => {
 export const twx_connection_diagnostic = async () => {
   try {
     const res = await helper.fetchData("/conf/twx/diagnostic", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -136,7 +138,7 @@ export const twx_connection_diagnostic = async () => {
 export const get_iot_gtws_http_server_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/enabled", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -145,7 +147,7 @@ export const get_iot_gtws_http_server_enabled = async () => {
 export const get_iot_gtws_http_server_disabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/disabled", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -155,7 +157,7 @@ export const get_iot_gtws_http_server_disabled = async () => {
 export const machines_connected = async () => {
   try {
     const res = await helper.fetchData(`/machine/connections`, "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -164,7 +166,7 @@ export const machines_connected = async () => {
 export const monitor_logs_isWorking = async () => {
   try {
     const res = await helper.fetchData(`/monitor/logs/isWorking`, "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -173,7 +175,7 @@ export const monitor_logs_isWorking = async () => {
 export const monitor_a4monitor_status = async () => {
   try {
     const res = await helper.fetchData(`/monitor/logs/status`, "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -182,7 +184,7 @@ export const monitor_a4monitor_status = async () => {
 export const is_B_ready = async () => {
   try {
     const res = await helper.fetchData(`/ready`, "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -194,7 +196,7 @@ export const get_iot_gtws_opcua_reading_enabled = async () => {
       `/iotgw/http/client/enabled/opcua_from`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -206,7 +208,7 @@ export const get_iot_gtws_opcua_reading_disabled = async () => {
       `/iotgw/http/client/disabled/opcua_from`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -218,7 +220,7 @@ export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
       `/iotgw/http/client/enabled/opcua_to`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -230,7 +232,7 @@ export const enable_http_client_iot_gateway = async (name) => {
       `/iotgw/http/client/enable?iotgw_name=${name}`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -242,12 +244,20 @@ export const disable_http_client_iot_gateway = async (name) => {
       `/iotgw/http/client/disable&iotgw_name=${name}`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
   }
 };
+
+/**
+ * Retrieves data related to OPC UA reading and writing disabled status for IoT gateways.
+ * @returns {Promise} The response data from the API endpoint.
+ * @example
+ * const result = await get_iot_gtws_opcua_reading_writing_disabled();
+ * console.log(result); // Output: the response data from the API endpoint
+ */
 
 export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
   try {
@@ -255,7 +265,7 @@ export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
       `/iotgw/http/client/disabled/opcua_to`,
       "GET"
     );
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -264,7 +274,7 @@ export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
 export const check_bidir = async () => {
   try {
     const res = await helper.fetchData(`/a4gate/bidir`, "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -275,7 +285,7 @@ export const uploadKepwareProject = async (file) => {
   //upload file from an input
   try {
     const res = await helper.fetchData("/kepware/upload", "POST", file);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -299,7 +309,7 @@ export const get_a4monitor_logs = async () => {
 export const a4monitorStatus = async () => {
   try {
     const res = await helper.fetchData("/monitor/logs/status", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -308,7 +318,7 @@ export const a4monitorStatus = async () => {
 export const reloadA4monitor = async () => {
   try {
     const res = await helper.fetchData("/monitor/logs/reload", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -317,7 +327,7 @@ export const reloadA4monitor = async () => {
 export const loadChannels = async () => {
   try {
     const res = await helper.fetchData("/kepwaredevices", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -326,7 +336,7 @@ export const loadChannels = async () => {
 export const get_bidir_info = async () => {
   try {
     const res = await helper.fetchData("/a4gate/bidir", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -335,7 +345,7 @@ export const get_bidir_info = async () => {
 export const reload_kepware = async () => {
   try {
     const res = await helper.fetchData("/reload_kepware_now", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -375,7 +385,7 @@ export const downloadJSON = (object, reportName, hostname) => {
 export const get_archive = async () => {
   try {
     const res = await helper.fetchData("/conf/archive", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -384,7 +394,7 @@ export const get_archive = async () => {
 export const post_archive = async (data) => {
   try {
     const res = await helper.fetchData("/conf/archive", "POST", data);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -393,7 +403,7 @@ export const post_archive = async (data) => {
 export const post_login = async (data) => {
   try {
     const res = await helper.fetchData("/conf/login", "POST", data);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -402,7 +412,7 @@ export const post_login = async (data) => {
 export const post_register = async (data) => {
   try {
     const res = await helper.fetchData("/conf/register", "POST", data);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -411,7 +421,7 @@ export const post_register = async (data) => {
 export const check_credentials = async () => {
   try {
     const res = await helper.fetchData("/conf/check-credentials", "GET");
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -420,7 +430,7 @@ export const check_credentials = async () => {
 export const test_connection = async (data) => {
   try {
     const res = await helper.fetchData("/external/network/ping", "POST", data);
-    console.log(res);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -428,17 +438,8 @@ export const test_connection = async (data) => {
 };
 export const get_matrix = async () => {
   try {
-    const res = await helper.fetchData("/conf/matrix", "GET");
-    console.log(res);
-    return res;
-  } catch (e) {
-    console.error(e);
-  }
-};
-export const post_matrix = async () => {
-  try {
-    const res = await helper.fetchData("/conf/matrix", "POST");
-    console.log(res);
+    const res = await helper.fetchData("/fast-data/matrix", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);

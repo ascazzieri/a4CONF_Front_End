@@ -419,6 +419,6 @@ export const deepMerge = (obj1, obj2) => {
       }
     }
   }
-
+  console.log(result);
   return result;
 };

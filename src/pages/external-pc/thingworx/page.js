@@ -333,7 +333,7 @@ export default function Thingworx() {
       enabled: true,
       things: thingsTWX || {},
     };
-    dispatch(updateThingworx({ newThingworx }));
+    dispatch(updateThingworx(newThingworx));
   };
 
   const thingsColumnData = [
