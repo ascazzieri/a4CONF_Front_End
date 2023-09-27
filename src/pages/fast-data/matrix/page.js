@@ -37,68 +37,13 @@ import { get_matrix } from "../../../utils/api";
 
 export default function Matrix() {
 
-  const [archive, setArchive] = useState();
-
-
-  const [matrixId, setMatrixId] = useState();
-  const [content, setContent] = useState();
-  
-  const handleSave = () => {
-    const newArchive = { ...archive };
-    newArchive[matrixId] = content;
-    if(matrixId.trim() === "" || content.trim() === ""){
-      alert("inserire i valori prima di salvare")
-    }else{
-    setArchive(newArchive);
-    setMatrixId("");
-    setContent("");
-    setOpen(false);
-    }
-  };
-
-  const handleClear = () => {
-    setMatrixId("");
-    setContent("");
-  };
-
-  const archiveKeys = archive ? Object.keys(archive) : [];
-  const archiveValues = archive ? Object.values(archive) : [];
-  const handleDelete = (item) => {
-    const newArchive = { ...archive };
-    delete newArchive[item];
-
-    setArchive(newArchive);
-  };
-  const handleModify = (item) => {
-    setMatrixId(item);
-    setContent(archive[item]);
-    setOpen(true);
-  };
-
-  const handleAdd = () => {
-    setOpen(true);
-  };
-
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await get_matrix();
-        setArchive(response);
-      } catch (err) {
-        console.log('Error occured when fetching books');
-      }
-    })();
-  }, []);
-  console.log(get_matrix());
 
 
   const matrix = useSelector(
     (state) => state.services?.fastdata?.customer?.matrix
   );
+  console.log(matrix)
+
 
   const dispatch = useDispatch();
   const superUser = useContext(SuperUserContext)[0];
@@ -424,13 +369,13 @@ export default function Matrix() {
             spacing={2}
           >
             <h1>Matrix management archive</h1>
-            <Button variant="contained" size="small" onClick={handleAdd}>
+            <Button variant="contained" size="small" >
               Add
             </Button>
           </Stack>
-          {archive &&
-            archiveKeys.length !== 0 &&
-            archiveKeys.map((item, index) => {
+          {matrixDataManagement &&
+           matrixDataManagement.length !== 0 &&
+            matrixDataManagement.map((item, index) => {
               return (
                 <Accordion key={Math.random()}>
                   <AccordionSummary
@@ -438,7 +383,7 @@ export default function Matrix() {
                     expandIcon={<ExpandMoreIcon />}
                   >
                     <Typography key={Math.random()} sx={{ width: "70%" }}>
-                      <Item>{item}</Item>
+                      <Item>{item?.id}</Item>
                     </Typography>
                     <Stack
                       direction="row"
@@ -450,9 +395,7 @@ export default function Matrix() {
                       <Button
                         variant="contained"
                         size="small"
-                        onClick={() => {
-                          handleModify(item);
-                        }}
+
                       >
                         Modify
                       </Button>
@@ -461,26 +404,24 @@ export default function Matrix() {
                         variant="contained"
                         size="small"
                         startIcon={<DeleteIcon />}
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
+                       
                       >
                         Delete
                       </Button>
                     </Stack>
                   </AccordionSummary>
                   <AccordionDetails key={Math.random()}>
-                    <Typography key={Math.random()}>
-                      {archiveValues[index]}
-                    </Typography>
+                    
+                  <JSONTree  data={matrixDataManagement[index]}/>
+                 
                   </AccordionDetails>
                 </Accordion>
               );
             })}
 
-          <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
+        {/*  <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
             <Card sx={{ padding: 5 , margin: 2}}>
-              <h1>Insert new Matrix object</h1>
+              <h3>Insert new Matrix object</h3>
               <div>
                 <TextField
                   fullWidth= {true}
@@ -520,7 +461,7 @@ export default function Matrix() {
                 </Button>
               </Stack>
             </Card>
-          </SimpleDialog>
+          </SimpleDialog>*/}
         </Card>
       </Container>
     </ErrorCacher>
