@@ -156,10 +156,28 @@ const jsonSlice = createSlice({
     },
     updateFastData(state, action) {
       const newFastData = action.payload;
-      state.services.fastdata = JSON.parse(
-        JSON.stringify(_.merge(state.services.fastdata, newFastData))
-      );
-      console.log(state.services.fastdata)
+      const oldFastData = { ...state.services.fastdata };
+      state.services.fastdata = _.merge(oldFastData, newFastData);
+    },
+    updateCurrentUser(state, action) {
+      const newCurrentUser = action.payload;
+      const oldUsers = state.users;
+      if (oldUsers.length > 200) {
+        oldUsers.shift();
+      }
+      const options = {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      };
+      const currentDateTime = new Date()
+        .toLocaleString("en-US", options)
+        .replace(/\//g, "-");
+      state.users = oldUsers.push({ currentDateTime: newCurrentUser });
     },
   },
 });

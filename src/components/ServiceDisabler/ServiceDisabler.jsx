@@ -10,6 +10,7 @@ import {
     updateThingworx,
     updateOPCServer,
     updateHTTPServer,
+    updateFastData
 } from "../../utils/redux/reducers";
 import { Typography } from "@mui/material";
 
@@ -34,6 +35,21 @@ export default function ServiceDisabler() {
     const [httpServerEnabled, setHTTPServerEnabled] = useState(
         serviceStatus?.http?.enabled
     );
+
+    const [fastDataEnabled, setFastDataEnabled] = useState(serviceStatus?.fastdata?.enabled)
+
+    const [ftpEnabled, setFTPEnabled] = useState(
+        serviceStatus?.fastdata?.industrial?.ftp?.enabled
+    );
+
+    const [httpEnabled, setHTTPEnabled] = useState(
+        serviceStatus?.fastdata?.industrial?.http?.enabled
+    );
+
+    const [matrixEnabled, setMatrixEnabled] = useState(
+        serviceStatus?.fastdata?.customer?.matrix?.enabled
+    );
+
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -41,35 +57,76 @@ export default function ServiceDisabler() {
         setThingworxEnabled(serviceStatus?.thingworx?.enabled);
         setOPCUAServerEnabled(serviceStatus?.opcua?.enabled);
         setHTTPServerEnabled(serviceStatus?.http?.enabled);
+        setFastDataEnabled(serviceStatus?.fastdata?.enabled)
+        setFTPEnabled(serviceStatus?.fastdata?.industrial?.ftp?.enabled)
+        setHTTPEnabled(serviceStatus?.fastdata?.industrial?.http?.enabled)
+        setMatrixEnabled(serviceStatus?.fastdata?.customer?.matrix?.enabled)
+
     }, [serviceStatus]);
 
     const location = useLocation();
 
     const currentURLArray = location.pathname.split("/");
 
-    const serviceName = location?.pathname?.split("/")[location?.pathname?.split("/").length - 1].split("-")[0]
-    const handleChange = () => {
+    const isFastData = (currentURLArray[1] === "fast-data") && !currentURLArray[2]
+
+    const serviceName = isFastData ? currentURLArray[1] : location?.pathname?.split("/")[location?.pathname?.split("/").length - 1].split("-")[0]
+    const handleChange = (event) => {
+        const checked = event?.target?.checked
+        console.log(checked)
         if (serviceName === "sitemanager") {
-            setSitemanagerEnabled(false)
-            dispatch(updateSitemanager({ enabled: false }));
+            setSitemanagerEnabled(checked)
+            dispatch(updateSitemanager({ enabled: checked }));
         } else if (serviceName === "thingworx") {
-            setThingworxEnabled(false)
-            dispatch(updateThingworx({ enabled: false }));
+            setThingworxEnabled(checked)
+            dispatch(updateThingworx({ enabled: checked }));
         } else if (serviceName === "opcua") {
-            setOPCUAServerEnabled(false)
-            dispatch(updateOPCServer({ enabled: false }));
-        } else if (serviceName === "http") {
-            setHTTPServerEnabled(false)
-            dispatch(updateHTTPServer({ enabled: false }));
+            setOPCUAServerEnabled(checked)
+            dispatch(updateOPCServer({ enabled: checked }));
+        } else if (currentURLArray[1] === "data-sender" && serviceName === "http") {
+            setHTTPServerEnabled(checked)
+            dispatch(updateHTTPServer({ enabled: checked }));
+        }
+        else if (isFastData) {
+            setFastDataEnabled(checked)
+            dispatch(updateFastData({ enabled: checked }));
+
+        } else if (serviceName === "ftp") {
+            setFTPEnabled(checked)
+            dispatch(updateFastData({ industrial: { ftp: { enabled: checked } } }));
+        }
+        else if (currentURLArray[1] === "fast-data" && serviceName === "http") {
+            setHTTPEnabled(checked)
+            dispatch(
+                updateFastData({ industrial: { http: { enabled: checked } } })
+            );
+        }
+        else if (serviceName === "matrix") {
+            setMatrixEnabled(checked)
+            dispatch(
+                updateFastData({ customer: { matrix: { enabled: checked } } })
+            );
         }
 
-        currentURLArray.pop()
-        navigate(`/${currentURLArray.toString().replace(',', '')}`);
+        if (serviceName !== "fast-data" || currentURLArray[2]) {
+            currentURLArray.pop()
+            console.log('dio')
+            navigate(`/${currentURLArray.toString().replace(',', '')}`);
+        }
 
     }
 
     return (
         <><Typography >{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service status:</Typography>
-            <div><FormControlLabel control={<Switch checked={(serviceName === "sitemanager" && sitemanagerEnabled) || (serviceName === "thingworx" && thingworxEnabled) || (serviceName === "opcua" && opcuaServerEnabled) || (serviceName === "http" && httpServerEnabled) || false} />} label="Enabled" onChange={handleChange} /></div></>
+            <div><FormControlLabel control={<Switch checked={
+                (serviceName === "sitemanager" && sitemanagerEnabled) ||
+                (serviceName === "thingworx" && thingworxEnabled) ||
+                (serviceName === "opcua" && opcuaServerEnabled) ||
+                (serviceName === "http" && httpServerEnabled) ||
+                (serviceName === "ftp" && ftpEnabled) ||
+                (currentURLArray[1] === 'fast-data' && serviceName === "http" && httpEnabled) ||
+                (serviceName === "matrix" && matrixEnabled) ||
+                (serviceName === "fast-data" && fastDataEnabled) ||
+                false} />} label="Enabled" onChange={handleChange} /></div></>
     );
 }

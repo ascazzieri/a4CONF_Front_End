@@ -251,6 +251,14 @@ export const disable_http_client_iot_gateway = async (name) => {
   }
 };
 
+/**
+ * Retrieves data related to OPC UA reading and writing disabled status for IoT gateways.
+ * @returns {Promise} The response data from the API endpoint.
+ * @example
+ * const result = await get_iot_gtws_opcua_reading_writing_disabled();
+ * console.log(result); // Output: the response data from the API endpoint
+ */
+
 export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
   try {
     const res = await helper.fetchData(

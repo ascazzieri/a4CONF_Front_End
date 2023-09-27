@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
 import { updateFastData } from "../../utils/redux/reducers";
-import JSONPretty from "react-json-pretty";
 import { VisibilityOff, Visibility } from "@mui/icons-material";
+import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
+import ServiceDisabler from "../../components/ServiceDisabler/ServiceDisabler";
 import {
   Grid,
   Box,
@@ -25,17 +26,11 @@ import {
 import DriveFileMoveOutlinedIcon from "@mui/icons-material/DriveFileMoveOutlined";
 import HttpOutlinedIcon from "@mui/icons-material/HttpOutlined";
 import GridOnIcon from "@mui/icons-material/GridOn";
-import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
-import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import SaveButton from "../../components/SaveButton/SaveButton";
 export default function FastData() {
-  const fastData = useSelector((state) => state?.services?.fastdata);
-
-  const matrix = useSelector(
-    (state) => state.services?.fastdata?.customer?.matrix
-  );
+  const fastdata = useSelector((state) => state?.services?.fastdata);
 
   const dispatch = useDispatch();
   const location = useLocation();
@@ -44,37 +39,38 @@ export default function FastData() {
   const navigate = useNavigate();
 
   const [ftpEnabled, setFTPEnabled] = useState(
-    fastData?.industrial?.ftp?.enabled
+    fastdata?.industrial?.ftp?.enabled
   );
 
   const [httpEnabled, setHTTPEnabled] = useState(
-    fastData?.industrial?.http?.enabled
+    fastdata?.industrial?.http?.enabled
   );
 
   const [matrixEnabled, setMatrixEnabled] = useState(
-    fastData?.customer?.matrix?.enabled
+    fastdata?.customer?.matrix?.enabled
   );
 
   const [blobConnectionUrl, setBlobConnectionUrl] = useState(
-    matrix?.blob_connection?.azure_url
+    fastdata?.customer?.matrix?.blob_connection?.azure_url
   );
   const [blobConnectionSas, setBlobConnectionSas] = useState(
-    matrix?.blob_connection?.azure_sas
+    fastdata?.customer?.matrix?.blob_connection?.azure_sas
   );
 
   const [showSaskey, setShowSaskey] = useState(false);
   const handleClickShowSas = () => setShowSaskey((show) => !show);
 
   useEffect(() => {
-    setFTPEnabled(fastData?.industrial?.ftp?.enabled);
-    setHTTPEnabled(fastData?.industrial?.http?.enabled);
-    setMatrixEnabled(fastData?.customer?.matrix?.enabled);
-  }, [fastData]);
-
-  useEffect(() => {
-    setBlobConnectionUrl(matrix?.blob_connection?.azure_url);
-    setBlobConnectionSas(matrix?.blob_connection?.azure_sas);
-  }, [matrix]);
+    setFTPEnabled(fastdata?.industrial?.ftp?.enabled);
+    setHTTPEnabled(fastdata?.industrial?.http?.enabled);
+    setMatrixEnabled(fastdata?.customer?.matrix?.enabled);
+    setBlobConnectionUrl(
+      fastdata?.customer?.matrix?.blob_connection?.azure_url
+    );
+    setBlobConnectionSas(
+      fastdata?.customer?.matrix?.blob_connection?.azure_sas
+    );
+  }, [fastdata]);
 
   useEffect(() => {
     dispatch(updateFastData({ industrial: { ftp: { enabled: ftpEnabled } } }));
@@ -113,7 +109,7 @@ export default function FastData() {
   const handleMatrixChange = (e) => {
     e.preventDefault();
     const newMatrix = {
-      ...matrix,
+      ...fastdata?.customer?.matrix,
       blob_connection: {
         azure_url: blobConnectionUrl,
         azure_sas: blobConnectionSas,
@@ -176,179 +172,207 @@ export default function FastData() {
                 </FormControl>
 
                 <Divider />
+                {fastdata?.enabled && (
+                  <>
+                    <Grid
+                      container
+                      columns={{ xs: 4, sm: 12, md: 12 }}
+                      sx={{ mt: 1 }}
+                    >
+                      <Grid
+                        item
+                        xs={2}
+                        sm={6}
+                        md={4}
+                        style={{
+                          textAlign: "center",
+                          padding: "0px 20px",
+                        }}
+                      >
+                        {ftpEnabled ? (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards"
+                            name="FTP"
+                            onClick={() => handleClick("ftp")}
+                          >
+                            <DriveFileMoveOutlinedIcon sx={cardIcon} />
+                            <CardContent
+                              sx={{ pt: 0 }}
+                              className="internal-menu-cards"
+                            >
+                              <Typography variant="h7" component="div">
+                                FTP
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ p: 1 }}
+                              >
+                                Exchange data by FTP method
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        ) : (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards-disabled"
+                          >
+                            <CardContent
+                              sx={{ mt: 6.5 }}
+                              className="internal-menu-cards"
+                            >
+                              <Switch
+                                checked={ftpEnabled}
+                                onChange={(event) => {
+                                  setFTPEnabled(event?.target?.checked);
+                                }}
+                              />
+                              <Typography>
+                                Fast Data FTP service disabled
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </Grid>
+                      <Grid
+                        item
+                        xs={2}
+                        sm={6}
+                        md={4}
+                        style={{
+                          textAlign: "center",
+                          padding: "0px 20px",
+                        }}
+                      >
+                        {httpEnabled ? (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards"
+                            name="HTTP"
+                            onClick={() => handleClick("http")}
+                          >
+                            <HttpOutlinedIcon style={cardIcon} />
+                            <CardContent
+                              sx={{ pt: 0 }}
+                              className="internal-menu-cards"
+                            >
+                              <Typography variant="h7" component="div">
+                                HTTP
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ p: 1 }}
+                              >
+                                Exchange data by HTTP method
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        ) : (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards-disabled"
+                          >
+                            <CardContent
+                              sx={{ mt: 6.5 }}
+                              className="internal-menu-cards"
+                            >
+                              <Switch
+                                checked={httpEnabled}
+                                onChange={(event) => {
+                                  setHTTPEnabled(event?.target?.checked);
+                                }}
+                              />
+                              <Typography>
+                                Fast Data HTTP service disabled
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </Grid>
+                      <Grid
+                        item
+                        xs={2}
+                        sm={6}
+                        md={4}
+                        style={{
+                          textAlign: "center",
+                          padding: "0px 20px",
+                        }}
+                      >
+                        {matrixEnabled ? (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards"
+                            name="thingworx"
+                            onClick={() => handleClick("matrix")}
+                          >
+                            <GridOnIcon style={cardIcon} />
+                            <CardContent
+                              sx={{ pt: 0 }}
+                              className="internal-menu-cards"
+                            >
+                              <Typography variant="h7" component="div">
+                                Matrix
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ p: 1 }}
+                              >
+                                Exchange data by Matrix method
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        ) : (
+                          <Card
+                            sx={{ height: 200, width: 250 }}
+                            className="menu-cards-disabled"
+                            name="http-server"
+                          >
+                            <CardContent
+                              sx={{ mt: 6.5 }}
+                              className="internal-menu-cards"
+                            >
+                              <Switch
+                                checked={matrixEnabled}
+                                onChange={(event) => {
+                                  setMatrixEnabled(event?.target?.checked);
+                                }}
+                              />
+                              <Typography>
+                                Fast Data Matrix service disabled
+                              </Typography>
+                            </CardContent>
+                          </Card>
+                        )}
+                      </Grid>
+                    </Grid>
+                    <Divider />
+                  </>
+                )}
+
                 <SaveButton />
               </form>
-
-              <Grid container columns={{ xs: 4, sm: 12, md: 12 }}>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  {ftpEnabled ? (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards"
-                      name="FTP"
-                      onClick={() => handleClick("ftp")}
-                    >
-                      <DriveFileMoveOutlinedIcon sx={cardIcon} />
-                      <CardContent
-                        sx={{ pt: 0 }}
-                        className="internal-menu-cards"
-                      >
-                        <Typography variant="h7" component="div">
-                          FTP
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ p: 1 }}
-                        >
-                          Exchange data by FTP method
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards-disabled"
-                    >
-                      <CardContent
-                        sx={{ mt: 6.5 }}
-                        className="internal-menu-cards"
-                      >
-                        <Switch
-                          checked={ftpEnabled}
-                          onChange={(event) => {
-                            setFTPEnabled(event?.target?.checked);
-                          }}
-                        />
-                        <Typography>Fast Data FTP service disabled</Typography>
-                      </CardContent>
-                    </Card>
-                  )}
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  {httpEnabled ? (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards"
-                      name="HTTP"
-                      onClick={() => handleClick("http")}
-                    >
-                      <HttpOutlinedIcon style={cardIcon} />
-                      <CardContent
-                        sx={{ pt: 0 }}
-                        className="internal-menu-cards"
-                      >
-                        <Typography variant="h7" component="div">
-                          HTTP
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ p: 1 }}
-                        >
-                          Exchange data by HTTP method
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards-disabled"
-                    >
-                      <CardContent
-                        sx={{ mt: 6.5 }}
-                        className="internal-menu-cards"
-                      >
-                        <Switch
-                          checked={httpEnabled}
-                          onChange={(event) => {
-                            setHTTPEnabled(event?.target?.checked);
-                          }}
-                        />
-                        <Typography>Fast Data HTTP service disabled</Typography>
-                      </CardContent>
-                    </Card>
-                  )}
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={4}
-                  style={{
-                    textAlign: "center",
-                    padding: "0px 20px",
-                  }}
-                >
-                  {matrixEnabled ? (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards"
-                      name="thingworx"
-                      onClick={() => handleClick("matrix")}
-                    >
-                      <GridOnIcon style={cardIcon} />
-                      <CardContent
-                        sx={{ pt: 0 }}
-                        className="internal-menu-cards"
-                      >
-                        <Typography variant="h7" component="div">
-                          Matrix
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ p: 1 }}
-                        >
-                          Exchange data by Matrix method
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <Card
-                      sx={{ height: 200, width: 250 }}
-                      className="menu-cards-disabled"
-                      name="http-server"
-                    >
-                      <CardContent
-                        sx={{ mt: 6.5 }}
-                        className="internal-menu-cards"
-                      >
-                        <Switch
-                          checked={matrixEnabled}
-                          onChange={(event) => {
-                            setMatrixEnabled(event?.target?.checked);
-                          }}
-                        />
-                        <Typography>
-                          Fast Data Matrix service disabled
-                        </Typography>
-                      </CardContent>
-                    </Card>
-                  )}
-                </Grid>
-              </Grid>
-              {/* o vi */}
             </CardContent>
           </Card>
+          <Grid container spacing={2}>
+            <Grid item xs={4} sx={{ display: "flex" }}>
+              <Card sx={{ width: "100%", height: 100 }}>
+                <CardContent>
+                  <ServiceDisabler />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={8} sx={{ display: "flex" }}>
+              <Card sx={{ width: "100%", height: 100 }}>
+                <CardContent>
+                  <ServiceHandler />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Container>
       </ErrorCacher>
     );
@@ -371,6 +395,22 @@ export default function FastData() {
             </Box>
           </CardContent>
         </Card>
+        <Grid container spacing={2}>
+          <Grid item xs={4} sx={{ display: "flex" }}>
+            <Card sx={{ width: "100%", height: 100 }}>
+              <CardContent>
+                <ServiceDisabler />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={8} sx={{ display: "flex" }}>
+            <Card sx={{ width: "100%", height: 100 }}>
+              <CardContent>
+                <ServiceHandler />
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Container>
     </ErrorCacher>
   );
