@@ -4,7 +4,12 @@ import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateFastData } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import CustomTable from "../../../components/Table/Table";
+import {
+  JsonView,
+  allExpanded,
+  darkStyles,
+} from "react-json-view-lite";
+import 'react-json-view-lite/dist/index.css';
 import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
@@ -22,7 +27,7 @@ import {
   FormControl,
   FormLabel,
   TextField,
-  Typography
+  Typography,
 } from "@mui/material";
 
 export default function Matrix() {
@@ -269,48 +274,47 @@ export default function Matrix() {
           {currentTab === 1 && (
             <>
               {matrixDataManagement &&
-            matrixDataManagement.length !== 0 &&
-            matrixDataManagement.map((item, index) => {
-              return (
-                <Accordion key={Math.random()}>
-                  <AccordionSummary
-                    key={Math.random()}
-                    expandIcon={<ExpandMoreIcon />}
-                  >
-                    <Typography key={Math.random()} sx={{ width: "70%" }}>
-                      <Item>{item?.id}</Item>
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      justifyContent="flex-end"
-                      alignItems="center"
-                      style={{ width: "100%" }}
-                    >
-                      <Button
-                        variant="contained"
-                        size="small"
-                      
+                matrixDataManagement.length !== 0 &&
+                matrixDataManagement.map((item, index) => {
+                  return (
+                    <Accordion key={Math.random()}>
+                      <AccordionSummary
+                        key={Math.random()}
+                        expandIcon={<ExpandMoreIcon />}
                       >
-                        Modify
-                      </Button>
+                        <Typography key={Math.random()} sx={{ width: "70%" }}>
+                          <Item>{item?.id}</Item>
+                        </Typography>
+                        <Stack
+                          direction="row"
+                          spacing={2}
+                          justifyContent="flex-end"
+                          alignItems="center"
+                          style={{ width: "100%" }}
+                        >
+                          <Button variant="contained" size="small">
+                            Modify
+                          </Button>
 
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                      
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails key={Math.random()}>
-                    <JSONTree data={matrixDataManagement[index]} />
-                  </AccordionDetails>
-                </Accordion>
-              );
-            })}
+                          <Button
+                            variant="contained"
+                            size="small"
+                            startIcon={<DeleteIcon />}
+                          >
+                            Delete
+                          </Button>
+                        </Stack>
+                      </AccordionSummary>
+                      <AccordionDetails key={Math.random()}>
+                        <JsonView
+                          data={matrixDataManagement[index]}
+                          shouldExpandNode={allExpanded}
+                          style={darkStyles}
+                        />
+                      </AccordionDetails>
+                    </Accordion>
+                  );
+                })}
             </>
           )}
 

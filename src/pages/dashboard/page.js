@@ -57,7 +57,6 @@ export default function Dashboard() {
       : ""
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
-  console.log(dashboardStatus);
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
@@ -66,7 +65,7 @@ export default function Dashboard() {
     );
   }, [system]);
   useEffect(() => {
-    if (Object.keys(dashboardStatus).length === 0) {
+    if (dashboardStatus && Object.keys(dashboardStatus).length === 0) {
       loaderContext[1](true); // Imposta lo stato di caricamento iniziale
     } else {
       loaderContext[1](false); // Non è più in fase di caricamento
@@ -100,7 +99,6 @@ export default function Dashboard() {
       "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE";
   }
   const [isInDashboard, setIsInDashboard] = useState(false);
-  console.log(dashboardStatus);
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
   const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
@@ -164,7 +162,6 @@ export default function Dashboard() {
     }
   }, [location.pathname]);
 
-  console.log(dashboardStatus?.machines);
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>

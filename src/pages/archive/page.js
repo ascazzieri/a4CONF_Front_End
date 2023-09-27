@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
-import {
-  Card,
-  Container,
-  Typography,
-} from "@mui/material";
+import { Card, Container, Typography } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import TextField from "@mui/material/TextField";
-import {Divider} from "@mui/material";
+import { Divider } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
@@ -22,20 +18,19 @@ import { useEffect } from "react";
 export default function Archive() {
   const [archive, setArchive] = useState();
 
-
   const [title, setTitle] = useState();
   const [content, setContent] = useState();
-  
+
   const handleSave = () => {
     const newArchive = { ...archive };
     newArchive[title] = content;
-    if(title.trim() === "" || content.trim() === ""){
-      alert("inserire i valori prima di salvare")
-    }else{
-    setArchive(newArchive);
-    setTitle("");
-    setContent("");
-    setOpen(false);
+    if (title.trim() === "" || content.trim() === "") {
+      alert("inserire i valori prima di salvare");
+    } else {
+      setArchive(newArchive);
+      setTitle("");
+      setContent("");
+      setOpen(false);
     }
   };
 
@@ -72,16 +67,16 @@ export default function Archive() {
         const response = await get_archive();
         setArchive(response);
       } catch (err) {
-        console.log('Error occured when fetching books');
+        console.log("Error occured when fetching books");
       }
     })();
   }, []);
-  console.log(get_archive());
   return (
     <ErrorCacher>
+
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
-        <Card sx={{ mt: 1, p:2 }}>
+        <Card sx={{ mt: 1, p: 2 }}>
           <Stack
             direction="row"
             alignItems="center"
@@ -143,12 +138,12 @@ export default function Archive() {
               );
             })}
 
-          <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
-            <Card sx={{ padding: 5 , margin: 1}}>
+          <SimpleDialog open={open} onClose={handleClose} sx={{ padding: 5 }}>
+            <Card sx={{ padding: 5, margin: 1 }}>
               <h1>Insert new Archive object</h1>
               <div>
                 <TextField
-                  fullWidth= {true}
+                  fullWidth={true}
                   id="outlined-textarea"
                   label="Title"
                   value={title}
