@@ -446,3 +446,12 @@ export const get_matrix = async () => {
     console.error(e);
   }
 };
+export const post_users = async (data) => {
+  try {
+    const res = await helper.fetchData("/conf/users", "POST", data);
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
