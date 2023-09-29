@@ -455,3 +455,12 @@ export const post_users = async (data) => {
     console.error(e);
   }
 };
+export const get_users = async () => {
+  try {
+    const res = await helper.fetchData("/conf/user", "GET",);
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
