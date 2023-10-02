@@ -9,10 +9,10 @@ import { Snackbar, Alert, Backdrop, Typography } from "@mui/material"
 import { SnackbarContext } from "../utils/context/SnackbarContext"
 import Loader from "../components/Loader/Loader";
 import { LoadingContext } from "../utils/context/Loading";
-import MainButtons from "../components/MainButtons/MainButtons";
 import applied_logo from "../media/img/applied_logo.png";
 import { useLocation } from "react-router-dom";
 import React from "react";
+import styled, { keyframes } from 'styled-components';
 
 const applied_background = {
   position: "fixed",
@@ -44,6 +44,8 @@ const Layout = () => {
   };
 
   const loaderContext = useContext(LoadingContext);
+
+  const [isAnimated, setIsAnimated] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -147,7 +149,10 @@ const Layout = () => {
           <Alert severity={severity}>{message}</Alert>
         </Snackbar>
         {/*  <Checklist /> */}
-        {location?.pathname === "/" && <video src="/img/home-video.mp4" width="100%" loop autoPlay muted style={{position: 'absolute', right:0, top:80}} />}
+        {location?.pathname === "/" && <div>
+          
+          <video src="/img/a4GATE-video.mp4" width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }} />
+        </div>}
         <Outlet />
 
       </MiniDrawer>
