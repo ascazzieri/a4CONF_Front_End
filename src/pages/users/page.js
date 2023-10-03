@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
-import { Card, Container, Typography } from "@mui/material";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Card, Container, Typography, MenuItem } from "@mui/material";
 import TextField from "@mui/material/TextField";
-import { Divider ,OutlinedInput} from "@mui/material";
+import { Divider, OutlinedInput } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
@@ -17,6 +13,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
+
 
 export default function ManageUsers() {
   const [user, setUser] = useState();
@@ -70,6 +67,7 @@ export default function ManageUsers() {
       setUsername("");
       setPassword("");
       setOpen(false);
+      setMod(false)
     }
   };
 
@@ -78,21 +76,25 @@ export default function ManageUsers() {
     delete newArchive[item];
     setUser(newArchive);
   };
+  const [mod,setMod] = useState(false);
   const handleModify = (item) => {
     setUsername(item);
     setPassword(user[item]);
-    setOpen(true);
+    setMod(true);
   };
-
+const closeMod = () => {
+  setMod(false)
+}
   const handleAdd = () => {
+    handleClear(user)
     setOpen(true);
   };
-
+ 
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
-
+ 
   function userIsValid(user) {
     var regex_email_valida =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -116,24 +118,34 @@ export default function ManageUsers() {
   }
 
   const [blobConnectionUrl, setBlobConnectionUrl] = useState(
-    user?.customer?.matrix?.blob_connection?.azure_sas);
+    user?.customer?.matrix?.blob_connection?.azure_sas
+  );
   const [blobConnectionSas, setBlobConnectionSas] = useState(
     user?.customer?.matrix?.blob_connection?.azure_sas
   );
 
   useEffect(() => {
-    setBlobConnectionUrl(
-      user?.customer?.matrix?.blob_connection?.azure_url
-    );
-    setBlobConnectionSas(
-      user?.customer?.matrix?.blob_connection?.azure_sas
-    );
+    setBlobConnectionUrl(user?.customer?.matrix?.blob_connection?.azure_url);
+    setBlobConnectionSas(user?.customer?.matrix?.blob_connection?.azure_sas);
   }, [user]);
-
-  const [showSaskey, setShowSaskey] = useState(false);
-  const handleClickShowSas = () => setShowSaskey((show) => !show);
-
-  
+  const [visibleUsers, setVisibleUser] = useState([]);
+  const handleClickShowSas = (user, action) => {
+    if (action === "add") {
+      setVisibleUser((prevArray) => {
+        const newArray = [...visibleUsers]
+        newArray.push(user)
+        console.log(newArray)
+        return newArray
+      });
+    } else if (action === "delete" && visibleUsers.length !== 0) {
+      setVisibleUser((prevArray) => {
+        const newArray =  prevArray.filter((element) => element !== user);
+       console.log(newArray)
+        return newArray
+        
+      });
+    }
+  };
 
   const handleBlobConnectionSasChange = (event) => {
     const blobSas = event?.target?.value;
@@ -141,7 +153,7 @@ export default function ManageUsers() {
       setBlobConnectionSas(blobSas);
     }
   };
-  
+
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
@@ -162,73 +174,104 @@ export default function ManageUsers() {
             userKeys.length !== 0 &&
             userKeys.map((item, index) => {
               return (
-                <Accordion key={Math.random()} TransitionProps={{ unmountOnExit: true }}>
-                  <AccordionSummary
-                    key={Math.random()}
-                    expandIcon={<ExpandMoreIcon />}
-                  >
-                    <Typography key={Math.random()} sx={{ width: "70%" }}>
-                      <Item>{item}</Item>
-                    </Typography>
-                    <Stack
-                      direction="row"
-                      spacing={2}
-                      justifyContent="flex-end"
-                      alignItems="center"
-                      style={{ width: "100%" }}
-                    >
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => {
-                          handleModify(item);
-                        }}
-                      >
-                        Modify
-                      </Button>
-
-                      <Button
-                        variant="contained"
-                        size="small"
-                        startIcon={<DeleteIcon />}
-                        onClick={() => {
-                          handleDelete(item);
-                        }}
-                      >
-                        Delete
-                      </Button>
-                    </Stack>
-                  </AccordionSummary>
-                  <AccordionDetails key={Math.random()} >
-                    <Typography key={Math.random()}>
+                <MenuItem>
+                  <Typography key={Math.random()} sx={{ width: "70%" }}>
+                    <Item>{item}</Item>
                     <OutlinedInput
-                    type={showSaskey ? "text" : "password"}
-                    required={true}
-                    value={userValues[index]}
-                    readOnly = {true}
-                    onChange={handleBlobConnectionSasChange}
-                    endAdornment={
-                      <InputAdornment position="end" >
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onMouseDown={handleClickShowSas}
-                          onMouseUp={handleClickShowSas}
-                          edge="end"
-                         
-                        >
-                          {showSaskey ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    
-                  />
-                      
-                    </Typography>
-                  </AccordionDetails>
-                </Accordion>
+                      type={visibleUsers.includes(item)  ? "text" : "password"}
+                      required={true}
+                      value={userValues[index]}
+                      readOnly={true}
+                      onChange={handleBlobConnectionSasChange}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onMouseDown={() => handleClickShowSas(item, "add")}
+                            onMouseUp={() => handleClickShowSas(item, "delete")}
+                            edge="end"
+                          >
+                            {visibleUsers.includes(item) ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                    />
+                  </Typography>
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    justifyContent="flex-end"
+                    alignItems="center"
+                    style={{ width: "100%" }}
+                  >
+                    <Typography key={Math.random()}></Typography>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={() => {
+                        handleModify(item);
+                      }}
+                    >
+                      Modify
+                    </Button>
+
+                    <Button
+                      variant="contained"
+                      size="small"
+                      startIcon={<DeleteIcon />}
+                      onClick={() => {
+                        handleDelete(item);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </Stack>
+                </MenuItem>
               );
             })}
-
+          <SimpleDialog open={mod} onClose={closeMod} sx={{ padding: 10 }}>
+            <Card sx={{ padding: 10, margin: 1 }}>
+              <h1>Modify user</h1>
+              <div>
+                <TextField
+                  fullWidth={true}
+                  id="outlined-textarea"
+                  label="Username"
+                  value={username}
+                  readOnly = {true}
+                  multiline
+                />
+                <Divider />
+                <TextField
+                  fullWidth={true}
+                  id="outlined-texterea"
+                  label="Password"
+                  value={password}
+                  onChange={(event) => {
+                    setPassword(event.target.value);
+                  }}
+                />
+              </div>
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="flex-end"
+                alignItems="center"
+                style={{ width: "100%" }}
+              >
+                <Button variant="contained" size="small" onClick={handleSave}>
+                  Save
+                </Button>
+                <Button variant="contained" size="small" onClick={handleClear}>
+                  Clear
+                </Button>
+              </Stack>
+            </Card>
+          </SimpleDialog>
           <SimpleDialog open={open} onClose={handleClose} sx={{ padding: 10 }}>
             <Card sx={{ padding: 10, margin: 1 }}>
               <h1>Insert new User</h1>
@@ -241,6 +284,7 @@ export default function ManageUsers() {
                   onChange={(event) => {
                     setUsername(event.target.value);
                   }}
+                  
                   multiline
                 />
                 <Divider />
