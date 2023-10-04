@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect , useContext} from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { Card, Container, Typography, MenuItem } from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -13,13 +13,14 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
-
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 
 export default function ManageUsers() {
   const [user, setUser] = useState();
 
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [oldUser, setOldUser] = useState();
 
   const userKeys = user ? Object.keys(user) : [];
   const userValues = user ? Object.values(user) : [];
@@ -28,7 +29,24 @@ export default function ManageUsers() {
     (async () => {
       try {
         const response = await get_users();
-        setUser(response);
+        if(response){
+          setUser(response)
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `users configuration request OK`,
+          });
+        }
+        else{
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred on change users configuration`,
+          });
+        }
+        console.log(response)
       } catch (err) {
         console.log("Error occured when fetching books");
       }
@@ -39,13 +57,23 @@ export default function ManageUsers() {
     setUsername("");
     setPassword("");
   };
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   const handleSave = () => {
     const newUser = { ...user };
-    newUser[username] = password;
+    if(oldUser === username){
+      newUser[username] = password
+    }else {
+      newUser[username] = password
+      if(oldUser)
+      delete newUser[oldUser]
+    }
+    
     const postUser = {
       user: username,
-      password: password,
+      password: password
     };
     if (
       userIsValid(username) === false ||
@@ -57,9 +85,24 @@ export default function ManageUsers() {
     } else {
       (async () => {
         try {
-          await post_users({ postUser });
           setUser(newUser);
-          console.log(postUser);
+          const response = await post_users({ postUser });
+          if(response === true){
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "success",
+              message: `users configuration request OK`,
+            });
+          }
+          else{
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "error",
+              message: `An error occurred on change users configuration`,
+            });
+          }
         } catch (err) {
           console.log("Error occured when fetching books");
         }
@@ -81,6 +124,7 @@ export default function ManageUsers() {
     setUsername(item);
     setPassword(user[item]);
     setMod(true);
+    setOldUser(item)
   };
 const closeMod = () => {
   setMod(false)
@@ -242,7 +286,9 @@ const closeMod = () => {
                   id="outlined-textarea"
                   label="Username"
                   value={username}
-                  readOnly = {true}
+                  onChange={(event) => {
+                    setUsername(event.target.value);
+                  }}
                   multiline
                 />
                 <Divider />
@@ -284,7 +330,6 @@ const closeMod = () => {
                   onChange={(event) => {
                     setUsername(event.target.value);
                   }}
-                  
                   multiline
                 />
                 <Divider />

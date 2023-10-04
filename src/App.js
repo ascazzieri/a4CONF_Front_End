@@ -28,7 +28,7 @@ import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
-  const [authenticated, setAuthenticated] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
 
   if (!authenticated) {
     return (
