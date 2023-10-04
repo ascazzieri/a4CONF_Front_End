@@ -290,10 +290,6 @@
         "from": ["from1", "from2", "from3"],
         "to": ["to1", "to2", "to3"]
       },
-
-      "http": {
-        "port": 48400
-      },
       "server_name": "OPC-UA-SERVER",
       "namespace": "A4Gate"
     },

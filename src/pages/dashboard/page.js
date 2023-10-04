@@ -5,7 +5,7 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { LoadingContext } from "../../utils/context/Loading";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
-import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import {
   machines_connected,
   monitor_logs_isWorking,
@@ -48,6 +48,13 @@ export default function Dashboard() {
   const location = useLocation();
 
   const loaderContext = useContext(LoadingContext);
+
+  const snackBarContext = useContext(SnackbarContext);
+
+  //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
 
   //const dashboardPage = currentURLArray.filter((item) => item === "dashboard");
 
@@ -102,6 +109,15 @@ export default function Dashboard() {
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
   const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
+
+  if (system?.u2u?.firmware?.check === false) {
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "error",
+      message: `U2U firmare version is not compatible! Please contact a4GATE support`,
+    });
+  }
 
   const handleOpenKepware = (event) => {
     setKepwareAnchor(event.currentTarget);
@@ -161,7 +177,6 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
-  console.log(dashboardStatus);
 
   return (
     <ErrorCacher>
@@ -261,15 +276,11 @@ export default function Dashboard() {
                           </div>
                         </>
                       ) : (
-                        <div style={{color: 'red'}}>
-                          Closed
-                        </div>
+                        <div style={{ color: "red" }}>Closed</div>
                       )
                     ) : (
                       <>
-                        <div>
-                          Checking...
-                        </div>
+                        <div>Checking...</div>
                       </>
                     )}
                   </Grid>

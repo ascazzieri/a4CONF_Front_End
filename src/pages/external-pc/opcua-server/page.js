@@ -59,6 +59,7 @@ export default function OPCServer() {
         "Expose Iot Gateway",
         "Manage Iot Gateways",
         "Shift nodes",
+        "Host",
         "Port",
         "Security",
         "JSON",
@@ -67,6 +68,7 @@ export default function OPCServer() {
         "Expose Iot Gateway",
         "Manage Iot Gateways",
         "Shift nodes",
+        "Host",
         "Port",
         "Security",
       ];
@@ -115,6 +117,7 @@ export default function OPCServer() {
   const [customPort, setCustomPort] = useState(opcua?.opcua?.custom_port);
 
   const [serverAuth, setServerAuth] = useState(opcua?.security?.user_auth);
+  const [hostBinding, setHostBinding] = useState(opcua?.opcua?.host);
 
   const [usersTableData, setUsersTableData] = useState(
     getArrayOfObjects(opcua?.security?.users, "username", "password")
@@ -136,6 +139,7 @@ export default function OPCServer() {
     setCustomPortEnable(opcua?.opcua?.custom_port_enable);
     setCustomPort(opcua?.opcua?.custom_port);
     setServerAuth(opcua?.security?.user_auth);
+    setHostBinding(opcua?.opcua?.host);
     setUsersTableData(
       getArrayOfObjects(opcua?.security?.users, "username", "password")
     );
@@ -407,11 +411,12 @@ export default function OPCServer() {
 
     const newOPCUAServer = {
       enabled: false,
-      shift_property_from_kepware: shiftFromKepware?.toString(),
-      shift_property_to_kepware: shiftToKepware?.toString(),
+      shift_property_from_kepware: shiftFromKepware,
+      shift_property_to_kepware: shiftToKepware,
       opcua: {
         custom_port_enable: customPortEnable,
-        custom_port: customPort?.toString(),
+        custom_port: customPort,
+        host: hostBinding,
       },
       security: {
         user_auth: serverAuth,
@@ -507,7 +512,7 @@ export default function OPCServer() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && superUser && <JSONTree data={opcua} />}
+        {currentTab === 6 && superUser && <JSONTree data={opcua} />}
 
         <form onSubmit={handleOPCUAServerChange}>
           {currentTab === 0 && (
@@ -920,17 +925,41 @@ export default function OPCServer() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
+                <Autocomplete
+                  disablePortal
+                  options={["127.0.0.1", "0.0.0.0"]}
+                  onChange={(event, newValue) => {
+                    setHostBinding(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select OPCUA host address binding"
+                    />
+                  )}
+                />
+              </FormControl>
+              <Divider />
+            </>
+          )}
+          {currentTab === 4 && (
+            <>
+              <FormControl fullWidth>
                 <FormLabel>OPCUA Server Port:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Use Default Port - 4840</Typography>
+                  <Typography>
+                    Use Default Port {customPortEnable ? "" : 4840}
+                  </Typography>
 
                   <Switch
                     checked={customPortEnable}
                     onChange={handleCustomPortEnableChange}
                   />
 
-                  <Typography>Use Custom Port</Typography>
+                  <Typography>
+                    Use Custom Port {customPortEnable ? customPort : ""}
+                  </Typography>
                 </Stack>
               </FormControl>
 
@@ -956,7 +985,7 @@ export default function OPCServer() {
             </>
           )}
 
-          {currentTab === 4 && (
+          {currentTab === 5 && (
             <>
               <FormControl fullWidth>
                 <FormLabel>
@@ -981,7 +1010,7 @@ export default function OPCServer() {
                 <>
                   <FormLabel>Users:</FormLabel>
 
-                  <Table
+                  <CustomTable
                     tableData={usersTableData}
                     setTableData={setUsersTableData}
                     columnsData={usersColumnData}
@@ -993,7 +1022,7 @@ export default function OPCServer() {
             </>
           )}
 
-          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
+          {currentTab !== 1 && currentTab !== 6 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

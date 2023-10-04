@@ -429,7 +429,7 @@ export default function Thingworx() {
                   }
                   label="Password"
                 />
-                <FormHelperText id="outlined-weight-helper-text">
+                <FormHelperText>
                   Unique string Sentinel authentication
                 </FormHelperText>
               </FormControl>
@@ -668,7 +668,7 @@ export default function Thingworx() {
                       aria-label="open drawer"
                       sx={{ ml: 2 }}
                     >
-                      {agentDiagnosis && agentDiagnosis["TW is connected"] ? (
+                      {agentDiagnosis && agentDiagnosis["TW_is_connected"] ? (
                         <CheckCircleOutlineOutlinedIcon color="success" />
                       ) : (
                         <DangerousOutlinedIcon color="error" />
@@ -724,9 +724,9 @@ export default function Thingworx() {
                       aria-labelledby="nested-list-subheader"
                     >
                       {agentDiagnosis &&
-                        agentDiagnosis["Bound Thing Properties"] &&
-                        agentDiagnosis["Bound Thing Properties"].length !== 0 &&
-                        agentDiagnosis["Bound Thing Properties"].map(
+                        agentDiagnosis["Bound_Thing_Properties"] &&
+                        agentDiagnosis["Bound_Thing_Properties"].length !== 0 &&
+                        agentDiagnosis["Bound_Thing_Properties"].map(
                           (item, index) => {
                             const rtName = Object.keys(item)[0];
                             return (
@@ -769,7 +769,7 @@ export default function Thingworx() {
                                         <DoneAllIcon />
                                       </ListItemIcon>
                                       <ListItemText
-                                        primary={`TW Bound Properties: ${item[rtName]["TW Bound Properties"]} `}
+                                        primary={`TW Bound Properties: ${item[rtName]["TW_Bound_Properties"]} `}
                                         key={Math.random()}
                                       />
                                     </ListItemButton>
@@ -781,7 +781,7 @@ export default function Thingworx() {
                                         <CallMergeIcon />
                                       </ListItemIcon>
                                       <ListItemText
-                                        primary={`Ingestion Properties: ${item[rtName]["Ingestion Properties"]} `}
+                                        primary={`Ingestion Properties: ${item[rtName]["Ingestion_Properties"]} `}
                                         key={Math.random()}
                                       />
                                     </ListItemButton>
@@ -793,7 +793,7 @@ export default function Thingworx() {
                                         <PendingOutlinedIcon />
                                       </ListItemIcon>
                                       <ListItemText
-                                        primary={`Pending Updates: ${item[rtName]["Pending Updates"]} `}
+                                        primary={`Pending Updates: ${item[rtName]["Pending_Updates"]} `}
                                         key={Math.random()}
                                       />
                                     </ListItemButton>
@@ -812,9 +812,9 @@ export default function Thingworx() {
                       component="div"
                       sx={{ flexGrow: 1 }}
                     >
-                      Agent version:{" "}
-                      {agentDiagnosis && agentDiagnosis["Agent version"]
-                        ? agentDiagnosis["Agent version"]
+                     
+                      {agentDiagnosis && agentDiagnosis["Agent_version"]
+                        ? agentDiagnosis["Agent_version"]
                         : "not defined"}
                     </Typography>
                   </Box>
