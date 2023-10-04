@@ -5,7 +5,7 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { LoadingContext } from "../../utils/context/Loading";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
-import DoNotDisturbOnOutlinedIcon from "@mui/icons-material/DoNotDisturbOnOutlined";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import {
   machines_connected,
   monitor_logs_isWorking,
@@ -49,6 +49,13 @@ export default function Dashboard() {
 
   const loaderContext = useContext(LoadingContext);
 
+  const snackBarContext = useContext(SnackbarContext);
+
+  //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
+
   //const dashboardPage = currentURLArray.filter((item) => item === "dashboard");
 
   const [hostName, setHostName] = useState(
@@ -57,7 +64,6 @@ export default function Dashboard() {
       : ""
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
-  console.log(dashboardStatus);
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
@@ -66,7 +72,7 @@ export default function Dashboard() {
     );
   }, [system]);
   useEffect(() => {
-    if (Object.keys(dashboardStatus).length === 0) {
+    if (dashboardStatus && Object.keys(dashboardStatus).length === 0) {
       loaderContext[1](true); // Imposta lo stato di caricamento iniziale
     } else {
       loaderContext[1](false); // Non è più in fase di caricamento
@@ -100,10 +106,18 @@ export default function Dashboard() {
       "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE";
   }
   const [isInDashboard, setIsInDashboard] = useState(false);
-  console.log(dashboardStatus);
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
   const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
+
+  if (system?.u2u?.firmware?.check === false) {
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "error",
+      message: `U2U firmare version is not compatible! Please contact a4GATE support`,
+    });
+  }
 
   const handleOpenKepware = (event) => {
     setKepwareAnchor(event.currentTarget);
@@ -164,7 +178,6 @@ export default function Dashboard() {
     }
   }, [location.pathname]);
 
-  console.log(dashboardStatus?.machines);
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
@@ -254,16 +267,21 @@ export default function Dashboard() {
                     <div>Bidir.</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.bidir === false &&
-                    !dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
-                      <DoNotDisturbOnOutlinedIcon
-                        sx={{ color: "red", fontSize: 20 }}
-                      />
+                    {dashboardStatus?.bidir ? (
+                      dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
+                        <>
+                          <div style={{ color: "green" }}>
+                            {dashboardStatus?.bidir &&
+                              dashboardStatus?.bidir["a4GATE.U2U.RT"]}
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ color: "red" }}>Closed</div>
+                      )
                     ) : (
-                      <div style={{ color: "green" }}>
-                        {dashboardStatus?.bidir &&
-                          dashboardStatus?.bidir["a4GATE.U2U.RT"]}
-                      </div>
+                      <>
+                        <div>Checking...</div>
+                      </>
                     )}
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>

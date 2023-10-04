@@ -1,3 +1,4 @@
+import { truncate } from "lodash";
 import * as helper from "./utils";
 const verbose = window.location.href.includes("verbose");
 
@@ -157,7 +158,6 @@ export const get_iot_gtws_http_server_disabled = async () => {
 export const machines_connected = async () => {
   try {
     const res = await helper.fetchData(`/machine/connections`, "GET");
-    console.log(res)
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -284,12 +284,45 @@ export const check_bidir = async () => {
 
 export const uploadKepwareProject = async (file) => {
   //upload file from an input
+  const body = document.body;
   try {
+    body.classList.add("user-block");
     const res = await helper.fetchData("/kepware/upload", "POST", file);
     verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
+  } finally {
+    body.classList.remove("user-block");
+  }
+};
+export const downloadKepwareProject = async () => {
+  const body = document.body;
+  try {
+    body.classList.add("user-block");
+    const json = await helper.fetchData(`/kepware/backup`, "GET");
+    verbose && console.log(json);
+
+    const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
+    const fileName = `kepware_backup_${utcDate}.json`;
+
+    const data = JSON.stringify(json);
+
+    const blob = new Blob([data], { type: "application/json" });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+
+    URL.revokeObjectURL(url);
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  } finally {
+    body.classList.remove("user-block");
   }
 };
 export const get_a4monitor_logs = async () => {
@@ -446,6 +479,16 @@ export const get_matrix = async () => {
     console.error(e);
   }
 };
+export const get_users = async () => {
+  try {
+    const res = await helper.fetchData("/conf/user", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}
+   
 export const post_users = async (data) => {
   try {
     const res = await helper.fetchData("/conf/users/create", "POST", data);
@@ -455,9 +498,26 @@ export const post_users = async (data) => {
     console.error(e);
   }
 };
-export const get_users = async () => {
+export const ntp_start = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/user", "GET");
+    const res = await helper.fetchData(
+      "/confA/ntp/timesync/start",
+      "POST",
+      data
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const ntp_resinc = async (data) => {
+  try {
+    const res = await helper.fetchData(
+      "/confA/ntp/servers/resync",
+      "POST",
+      data
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {

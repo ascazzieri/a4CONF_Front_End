@@ -1,11 +1,11 @@
 {
-  "TW is connected": true,
+  "TW_is_connected": true,
   "appkey_NOT_set": false,
   "server_NOT_set": false,
   "server_name_dns_resolve": true,
   "server_ip_reachable": true,
   "connection_error": "Problem",
-  "Thingworx Configuration": {
+  "Thingworx_Configuration": {
     "Tunneling: ": false,
     "Pipe Count: ": 1,
     "Block Size: ": 81920,
@@ -27,57 +27,57 @@
     "Thread Timeout: ": "10000 ms",
     "Max File Size: ": 800000000
   },
-  "Bound Thing Properties": [
+  "Bound_Thing_Properties": [
     {
       "rt_N_8178_V2": {
-        "TW Bound Properties": 2494,
-        "Ingestion Properties": 2494,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 2494,
+        "Ingestion_Properties": 2494,
+        "Pending_Updates": 0
       }
     },
     {
       "A4Gate_A207020000_0014": {
-        "TW Bound Properties": 25,
-        "Ingestion Properties": 0,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 25,
+        "Ingestion_Properties": 0,
+        "Pending_Updates": 0
       }
     },
     {
       "rt_G0011012": {
-        "TW Bound Properties": 294,
-        "Ingestion Properties": 288,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 294,
+        "Ingestion_Properties": 288,
+        "Pending_Updates": 0
       }
     },
     {
       "rt_test_N_8186": {
-        "TW Bound Properties": 173,
-        "Ingestion Properties": 167,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 173,
+        "Ingestion_Properties": 167,
+        "Pending_Updates": 0
       }
     },
     {
       "rt_51725V0": {
-        "TW Bound Properties": 65,
-        "Ingestion Properties": 59,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 65,
+        "Ingestion_Properties": 59,
+        "Pending_Updates": 0
       }
     },
     {
       "rt_54271O0": {
-        "TW Bound Properties": 41,
-        "Ingestion Properties": 35,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 41,
+        "Ingestion_Properties": 35,
+        "Pending_Updates": 0
       }
     },
     {
       "rt_G068": {
-        "TW Bound Properties": 39,
-        "Ingestion Properties": 33,
-        "Pending Updates": 0
+        "TW_Bound_Properties": 39,
+        "Ingestion_Properties": 33,
+        "Pending_Updates": 0
       }
     }
   ],
-  "Agent version": "2.9",
-  "MQTT is connected": true
+  "Agent_version": "2.9",
+  "MQTT_is_connected": true
 }

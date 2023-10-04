@@ -10,7 +10,8 @@ import {
   loadChannels,
   createiotgw,
   machines_connected,
-  saveKepwareProject,
+  downloadKepwareProject,
+  uploadKepwareProject,
   reload_kepware,
   get_device_tags,
 } from "../../../utils/api";
@@ -65,6 +66,7 @@ import SettingsEthernetIcon from "@mui/icons-material/SettingsEthernet";
 import NumbersIcon from "@mui/icons-material/Numbers";
 import DataArrayIcon from "@mui/icons-material/DataArray";
 import RestoreIcon from "@mui/icons-material/Restore";
+import { styled } from "@mui/material/styles";
 
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
@@ -87,6 +89,18 @@ const buildRows = (data) => {
   }
   return channelsData;
 };
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
+
 const Row = (props) => {
   const { row, thingNames, handleButtonClickFeedback } = props;
   const [open, setOpen] = useState(false);
@@ -851,6 +865,7 @@ export default function Kepware() {
   const superUser = useContext(SuperUserContext)[0];
 
   const snackBarContext = useContext(SnackbarContext);
+  const loadingContext = useContext(LoadingContext);
 
   //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
   const handleRequestFeedback = (newState) => {
@@ -939,7 +954,7 @@ export default function Kepware() {
   }, [isInKepware]);
 
   useEffect(() => {
-    if (location.pathname === "/internal-pc/kepware") {
+    if (location.pathname === "/data-collector/kepware") {
       setIsInKepware(true);
     } else {
       setIsInKepware(false);
@@ -960,6 +975,8 @@ export default function Kepware() {
   const handleKepwareModeChange = (event) => {
     setKepwareMode(event.target.checked);
   };
+
+  const [uploading, setUploading] = useState(false);
 
   const handleKepwareChange = (event) => {
     const newKepware = {
@@ -999,27 +1016,72 @@ export default function Kepware() {
     }
     loaderContext[1](false);
   };
+  const handleUploadKepwareProject = async (event) => {
+    loadingContext[1](true);
+    const file = event.target.files[0];
+
+    setUploading(true);
+
+    const fileContent = await new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        resolve(event.target.result);
+      };
+      reader.readAsText(file);
+    });
+
+    try {
+      const jsonObject = JSON.parse(fileContent);
+      if (jsonObject?.crashed_page) {
+        delete jsonObject.crashed_page;
+        console.log("crashed")
+      }
+      const res = await uploadKepwareProject(jsonObject);
+      if (res) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: "Uploaded Kepware project",
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: "An error occurred on Kepware project upload",
+        });
+      }
+    } catch (error) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: "Error parsing JSON file",
+      });
+    }
+
+    setUploading(false);
+    loadingContext[1](false);
+  };
+
   const handleDownloadKepwareProject = async () => {
     loaderContext[1](true);
-    try {
-      const res = await helper.fetchData("kepware/backup", "GET");
-      const now = new Date()
-        .toISOString()
-        .split(".")[0]
-        .replaceAll("-", "")
-        .replaceAll(":", "")
-        .replace("T", "_");
-      const file_name = "Kepware_" + now + ".json";
-
-      return (
-        <ReactDownloadLink
-          filename={file_name}
-          label="Download"
-          exportFile={() => JSON.stringify(res)}
-        />
-      );
-    } catch (e) {
-      console.error(e);
+    const kepwareDownload = await downloadKepwareProject();
+    if (kepwareDownload) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Kepware project saved successfully`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during Kepware project download`,
+      });
     }
     loaderContext[1](false);
   };
@@ -1147,8 +1209,6 @@ export default function Kepware() {
         >
           <Alert severity={severity}>{message}</Alert>
         </Snackbar>
-
-        {/*    <form onSubmit={handleKepwareChange}> */}
         {currentTab === 0 && (
           <>
             <Stack
@@ -1255,7 +1315,14 @@ export default function Kepware() {
                 justifyContent="flex-start"
                 alignItems="center"
               >
-                <Button variant="contained">Upload</Button>
+                <Button component="label" variant="contained">
+                  Upload
+                  <VisuallyHiddenInput
+                    type="file"
+                    accept=".json"
+                    onChange={handleUploadKepwareProject}
+                  />
+                </Button>
                 <Button
                   variant="contained"
                   onClick={handleDownloadKepwareProject}
@@ -1322,16 +1389,20 @@ export default function Kepware() {
                     channelList.map((channel, index) => {
                       const deviceInside = device_connected[channel];
                       return (
-                        <>
+                        <Fragment key={Math.random()}>
                           <ListItemButton
                             onClick={(event) =>
                               handleExpandableListChannels(event, channel)
                             }
+                            key={Math.random()}
                           >
-                            <ListItemIcon>
+                            <ListItemIcon key={Math.random()}>
                               <LabelImportantIcon />
                             </ListItemIcon>
-                            <ListItemText primary={channel} />
+                            <ListItemText
+                              primary={channel}
+                              key={Math.random()}
+                            />
                             {expandedListChannels.includes(channel) ? (
                               <ExpandLess />
                             ) : (
@@ -1342,6 +1413,7 @@ export default function Kepware() {
                             in={expandedListChannels.includes(channel)}
                             timeout="auto"
                             unmountOnExit
+                            key={Math.random()}
                           >
                             {deviceInside &&
                               deviceInside.length !== 0 &&
@@ -1427,7 +1499,7 @@ export default function Kepware() {
                                 );
                               })}
                           </Collapse>
-                        </>
+                        </Fragment>
                       );
                     })}
                 </List>

@@ -1,5 +1,3 @@
-import { useSelector, useDispatch } from "react-redux";
-import { updateInternalPC } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import JSONPretty from "react-json-pretty";
 import {
@@ -16,17 +14,6 @@ import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
 
 export default function InternalPC() {
-  const internalPC = useSelector((state) => state?.system);
-
-  let onlyInternalPC = Object.keys(internalPC)
-    .filter(
-      (key) => key !== "network" && key !== "hostname" && key !== "reboot"
-    )
-    .reduce((obj, key) => {
-      obj[key] = internalPC[key];
-      return obj;
-    }, {});
-  const dispatch = useDispatch();
 
   const location = useLocation();
   const currentURLArray = location.pathname.split("/");
@@ -35,14 +22,6 @@ export default function InternalPC() {
 
   const handleClick = (name) => {
     navigate(`/data-collector/${name}`);
-  };
-
-  const handleInternalPCChange = () => {
-    const newInternalPC = {
-      onlyinternal: true,
-      toProduction: true,
-    };
-    dispatch(updateInternalPC({ newInternalPC }));
   };
 
   if (currentURLArray.length === 2) {
@@ -145,26 +124,6 @@ export default function InternalPC() {
             </VerticalTab> */}
           </CardContent>
         </Card>
-        <Grid container spacing={2}>
-          <Grid item xs={4} sx={{ display: "flex" }}>
-            <Card sx={{ width: "100%" }}>
-              <CardContent>
-                <JSONPretty data={onlyInternalPC} />
-                <button onClick={handleInternalPCChange}>
-                  Change External PC
-                </button>
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={8} sx={{ display: "flex" }}>
-            <Card sx={{ width: "100%" }}>
-              <CardContent style={{ paddingBottom: 16 }}>
-                {/* <VerticalTabs tabsData={tabsData} /> */}
-                <ServiceHandler />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
       </Container>
     </ErrorCacher>
   );
