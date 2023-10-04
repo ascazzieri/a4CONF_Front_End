@@ -425,16 +425,16 @@ export const get_archive = async () => {
     console.error(e);
   }
 };
-export const post_archive = async (data) => {
+export const send_archive = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/archive", "POST", data);
+    const res = await helper.fetchData("/conf/archive/set", "POST", data);
     verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
   }
 };
-export const post_login = async (data) => {
+export const send_login = async (data) => {
   try {
     const res = await helper.fetchData("/conf/login", "POST", data);
     verbose && console.log(res);
@@ -473,6 +473,25 @@ export const test_connection = async (data) => {
 export const get_matrix = async () => {
   try {
     const res = await helper.fetchData("/fast-data/matrix", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_users = async () => {
+  try {
+    const res = await helper.fetchData("/conf/user", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}
+   
+export const post_users = async (data) => {
+  try {
+    const res = await helper.fetchData("/conf/users/create", "POST", data);
     verbose && console.log(res);
     return res;
   } catch (e) {
