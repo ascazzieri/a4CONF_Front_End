@@ -445,3 +445,21 @@ export const get_matrix = async () => {
     console.error(e);
   }
 };
+export const ntp_start = async (data) => {
+  try {
+    const res = await helper.fetchData("/confA/ntp/timesync/start", "POST", data);
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const ntp_resinc = async (data) => {
+  try {
+    const res = await helper.fetchData("/confA/ntp/servers/resync", "POST", data);
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};

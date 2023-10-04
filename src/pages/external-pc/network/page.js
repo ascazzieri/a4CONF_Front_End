@@ -188,7 +188,8 @@ export default function ExternalNetwork() {
     setConnection(event.target.value);
   };
   const handleIPAddressChange = (event) => {
-    setIPAddress(event.target.value);
+    const ip_addr = event?.target?.value?.split(",") || event?.target?.value;
+    setIPAddress(ip_addr);
   };
   const handleDefaultGatewayChange = (event) => {
     setDefaultGateway(event.target.value);
@@ -515,7 +516,7 @@ export default function ExternalNetwork() {
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="row-radio-buttons-group"
-                  value={connection}
+                  value={connection || ""}
                   onChange={handleConnectionChange}
                 >
                   <FormControlLabel
@@ -540,7 +541,7 @@ export default function ExternalNetwork() {
                   type="text"
                   label="IP Address"
                   helperText="Ip device address"
-                  defaultValue={ipAddress}
+                  value={ipAddress || ""}
                   required={true}
                   onChange={handleIPAddressChange}
                 />

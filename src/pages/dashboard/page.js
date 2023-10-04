@@ -161,6 +161,7 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
+  console.log(dashboardStatus);
 
   return (
     <ErrorCacher>
@@ -251,16 +252,25 @@ export default function Dashboard() {
                     <div>Bidir.</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.bidir === false &&
-                    !dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
-                      <DoNotDisturbOnOutlinedIcon
-                        sx={{ color: "red", fontSize: 20 }}
-                      />
+                    {dashboardStatus?.bidir ? (
+                      dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
+                        <>
+                          <div style={{ color: "green" }}>
+                            {dashboardStatus?.bidir &&
+                              dashboardStatus?.bidir["a4GATE.U2U.RT"]}
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{color: 'red'}}>
+                          Closed
+                        </div>
+                      )
                     ) : (
-                      <div style={{ color: "green" }}>
-                        {dashboardStatus?.bidir &&
-                          dashboardStatus?.bidir["a4GATE.U2U.RT"]}
-                      </div>
+                      <>
+                        <div>
+                          Checking...
+                        </div>
+                      </>
                     )}
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>

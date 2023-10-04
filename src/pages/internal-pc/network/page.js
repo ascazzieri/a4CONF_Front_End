@@ -8,6 +8,10 @@ import BackButton from "../../../components/BackButton/BackButton";
 import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import SaveButton from "../../../components/SaveButton/SaveButton";
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import { ntp_resinc, ntp_start } from "../../../utils/api";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import { LoadingContext } from "../../../utils/context/Loading";
 import {
   Container,
   Divider,
@@ -24,7 +28,10 @@ import {
   TableCell,
   IconButton,
   TableBody,
+  Typography,
+  Switch,
   TableRow,
+  Grid,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -34,11 +41,27 @@ export default function InternalNetwork() {
     (state) => state.system?.network?.industrial
   );
   const dispatch = useDispatch();
+
+  const snackBarContext = useContext(SnackbarContext);
+
+  //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
+
+  const loaderContext = useContext(LoadingContext);
+
   const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
-    ? ["Connection parameters", "Static Routes", "Scan Exception", "JSON"]
-    : ["Connection parameters", "Static Routes", "Scan Exception"];
+    ? [
+        "Connection parameters",
+        "Static Routes",
+        "Scan Exception",
+        "NTP",
+        "JSON",
+      ]
+    : ["Connection parameters", "Static Routes", "Scan Exception", "NTP"];
 
   const [connection, setConnection] = useState(
     industrialNetwork?.dhcp ? "dhcp" : "static"
@@ -52,6 +75,12 @@ export default function InternalNetwork() {
     industrialNetwork?.net_scan
   );
   const [currentScanException, setCurrentScanException] = useState();
+  const [updateNTPfromB, setUpdateNTPFromB] = useState(
+    industrialNetwork?.ntp?.update_from_B
+  );
+  const [customNTPAddress, setCustomNTPAddress] = useState(
+    industrialNetwork?.ntp?.ip_addresses
+  );
 
   useEffect(() => {
     setConnection(industrialNetwork?.dhcp ? "dhcp" : "static");
@@ -60,13 +89,16 @@ export default function InternalNetwork() {
       getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
     );
     setScanException(industrialNetwork?.net_scan);
+    setUpdateNTPFromB(industrialNetwork?.ntp?.update_from_B);
+    setCustomNTPAddress(industrialNetwork?.ntp?.ip_addresses);
   }, [industrialNetwork]);
 
   const handleConnectionChange = (event) => {
     setConnection(event?.target?.value);
   };
   const handleIPAddressChange = (event) => {
-    setIPAddress(event?.target?.value);
+    const ip_addr = event?.target?.value?.split(",") || event?.target?.value;
+    setIPAddress(ip_addr);
   };
 
   const handleAddScanException = () => {
@@ -90,6 +122,63 @@ export default function InternalNetwork() {
     setScanException(scanExceptionList);
   };
 
+  const handleUpdateNTPFromBChange = (event) => {
+    const checked = event?.target?.checked;
+    setUpdateNTPFromB(checked);
+  };
+  const handleCustomNTPAddressChange = (event) => {
+    const value = event?.target?.value;
+    setCustomNTPAddress(value);
+  };
+
+  const handleResync = async () => {
+    const ntpSettings = {
+      update_from_B: updateNTPfromB,
+      ip_addresses: customNTPAddress,
+    };
+    loaderContext[1](true);
+    const res = await ntp_resinc(ntpSettings);
+    if (res) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `NTP Syncronized`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred`,
+      });
+    }
+    loaderContext[1](false);
+  };
+  const handleStart = async () => {
+    const ntpSettings = {
+      update_from_B: updateNTPfromB,
+    };
+    loaderContext[1](true);
+    const res = await ntp_start(ntpSettings);
+    if (res) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `NTP Syncronized`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred`,
+      });
+    }
+    loaderContext[1](false);
+  };
+
   const handleIndustrialChange = (event) => {
     event.preventDefault();
 
@@ -106,6 +195,7 @@ export default function InternalNetwork() {
       routes: staticRoutes,
       net_scan: scanException,
     };
+    console.log(ipAddress);
     dispatch(updateIndustrialNetwork({ newIndustrial }));
   };
 
@@ -136,7 +226,7 @@ export default function InternalNetwork() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 3 && superUser && <JSONTree data={industrialNetwork} />}
+        {currentTab === 4 && superUser && <JSONTree data={industrialNetwork} />}
 
         <form onSubmit={handleIndustrialChange}>
           {currentTab === 0 && (
@@ -147,7 +237,7 @@ export default function InternalNetwork() {
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="row-radio-buttons-group"
-                  value={connection}
+                  value={connection || ""}
                   onChange={handleConnectionChange}
                 >
                   <FormControlLabel
@@ -172,7 +262,7 @@ export default function InternalNetwork() {
                   type="text"
                   label="IP Address"
                   helperText="Ip device address"
-                  value={ipAddress}
+                  value={ipAddress || ""}
                   required={true}
                   onChange={handleIPAddressChange}
                 />
@@ -210,7 +300,7 @@ export default function InternalNetwork() {
                     type="text"
                     label="Scan Exception"
                     helperText="These ip will not be reported inside daily network scan"
-                    value={currentScanException}
+                    value={currentScanException || ""}
                     required={false}
                     onChange={(event) => {
                       setCurrentScanException(event?.target?.value);
@@ -250,7 +340,127 @@ export default function InternalNetwork() {
               <Divider />
             </>
           )}
-          {currentTab !== 3 && <SaveButton />}
+          {currentTab === 2 && (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <FormControl fullWidth>
+                  <FormLabel>Scan Exception list:</FormLabel>
+
+                  <TextField
+                    type="text"
+                    label="Scan Exception"
+                    helperText="These ip will not be reported inside daily network scan"
+                    value={currentScanException || ""}
+                    required={false}
+                    onChange={(event) => {
+                      setCurrentScanException(event?.target?.value);
+                    }}
+                  />
+                </FormControl>
+                <Button variant="contained" onClick={handleAddScanException}>
+                  Add
+                </Button>
+              </Stack>
+
+              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
+                <Table stickyHeader aria-label="sticky table" size="small">
+                  <TableBody>
+                    {scanException &&
+                      scanException.length !== 0 &&
+                      scanException.map((row) => {
+                        return (
+                          <TableRow hover key={row}>
+                            <TableCell align="center">{row}</TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                aria-label="delete"
+                                onClick={() => {
+                                  handleDeleteScanException(row);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Divider />
+            </>
+          )}
+          {currentTab === 3 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>NTP synchronization settings</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Use custom NTP server</Typography>
+
+                  <Switch
+                    checked={updateNTPfromB}
+                    onChange={handleUpdateNTPFromBChange}
+                  />
+
+                  <Typography>Use Data Sender signal</Typography>
+                </Stack>
+              </FormControl>
+
+              <Divider />
+
+              {updateNTPfromB === false ? (
+                <>
+                  <FormControl fullWidth>
+                    <TextField
+                      type="text"
+                      label="NTP Server address"
+                      helperText="Insert IP address of NTP server on machine network"
+                      value={customNTPAddress || ""}
+                      onChange={handleCustomNTPAddressChange}
+                    />
+                  </FormControl>
+                  <Divider />
+                  <Grid container spacing={2}>
+                    <Grid item xs={10}>Synchronize NTP with custom server on machine network</Grid>
+                    <Grid item xs={2}>
+                      <Button
+                        variant="contained"
+                        onClick={handleResync}
+                        endIcon={<AccessTimeOutlinedIcon />}
+                      >
+                        Synchronize
+                      </Button>
+                    </Grid>
+                  </Grid>
+
+                  <Divider />
+                </>
+              ) : (
+                <>
+                  <Grid container spacing={2}>
+                    <Grid item xs={10}>Synchronize NTP with Data Sender</Grid>
+                    <Grid item xs={2}>
+                      <Button
+                        variant="contained"
+                        onClick={handleStart}
+                        endIcon={<AccessTimeOutlinedIcon />}
+                      >
+                        Synchronize
+                      </Button>
+                    </Grid>
+                  </Grid>
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+          {currentTab !== 4 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>
