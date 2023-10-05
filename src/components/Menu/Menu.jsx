@@ -193,13 +193,13 @@ export default function MiniDrawer(props) {
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
 
-              {!currentURLArray.includes('login') && <MainButtons />}
+              {!currentURLArray.includes('login') && !currentURLArray.includes('register') && <MainButtons />}
 
             </Grid>
           </Grid>
         </Toolbar>
       </AppBar>
-      {!currentURLArray.includes('login') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
+      {!currentURLArray.includes('login')  &&  !currentURLArray.includes('register') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
         <DrawerHeader style={{ justifyContent: 'center' }}>
           <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
         </DrawerHeader>
