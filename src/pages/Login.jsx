@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Card, Container } from "@mui/material";
+import { Card, FormControl, Grid, Box } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Divider } from "antd";
 import Stack from "@mui/material/Stack";
@@ -31,7 +31,6 @@ export default function Login(props) {
 
   useEffect(() => {
     if (authenticated && !elevation) {
-      console.log("autenticato redirect home");
       navigate("/");
     }
   });
@@ -96,8 +95,78 @@ export default function Login(props) {
   };
   return (
     <ErrorCacher>
-      <Container sx={{ flexGrow: 1 }} disableGutters></Container>
-      <Container sx={{ flexGrow: 1 }} disableGutters>
+      <Card sx={{ padding: 5 }}>
+        <Stack direction="row" spacing={2} justifyContent="center" style={{ width: "100%" }}>
+          {elevation ? <h1 style={{ margin: 0 }}>Log as administrator </h1> : <h1 style={{ margin: 0 }}>Authenticate</h1>}
+          <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
+        </Stack>
+        <Divider style={{ background: "white" }} />
+        <Grid container spacing={2}>
+          <Grid item md={8} sx={{ display: "flex" }}>
+
+            <video autoPlay muted loop width='100%' style={{ margin: '4% 0' }}>
+              <source src="/img/APL_loop_campagna_low.mp4" type="video/mp4" />
+            </video>
+
+          </Grid>
+          <Grid container md={4} justify="flex-end" alignItems="center" sx={{ p: 2 }}>
+            <Box>
+              <FormControl fullWidth>
+                <TextField
+                  label="Username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  style={{ margin: 0, padding: 0 }}
+                /></FormControl>
+              <FormControl fullWidth>
+                <TextField
+                  fullWidth={true}
+                  label="Password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  style={{ margin: 0, padding: 0 }}
+                />
+              </FormControl>
+              <Stack
+                direction="row"
+                spacing={2}
+                justifyContent="flex-end"
+                alignItems="center"
+                style={{ width: "100%" }}
+              >
+                {elevation ? (
+                  <>
+                    <Stack direction="row" spacing={4} alignItems="center">
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        startIcon={<ArrowBackIos />}
+                        onClick={() => {
+                          navigate("/");
+                        }}
+                      >
+                        Back
+                      </Button>
+                      <Button variant="contained" onClick={handleLogin}>
+                        Login
+                      </Button>
+                    </Stack>
+                  </>
+                ) : (
+                  <FormControl fullWidth>
+                    <Button variant="contained" onClick={handleLogin}>Login</Button>
+                  </FormControl>
+                )}
+              </Stack>
+
+            </Box>
+
+
+
+          </Grid>
+        </Grid>
+      </Card>
+      {/* <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ padding: 5, margin: 5 }}>
           <Stack
             direction="row"
@@ -165,7 +234,7 @@ export default function Login(props) {
             )}
           </Stack>
         </Card>
-      </Container>
+      </Container> */}
     </ErrorCacher>
   );
 }
