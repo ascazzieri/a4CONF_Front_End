@@ -81,8 +81,8 @@ export default function Dashboard() {
 
   const handleHostNameChange = () => {
     const newHostName = {
-      customer: hostName,
-      industrial: hostName,
+      customer: hostName?.trim(),
+      industrial: hostName?.trim(),
     };
     dispatch(updateHostName({ newHostName }));
   };

@@ -625,10 +625,6 @@ export default function ExternalNetwork() {
                             })}
                           </TextField>
 
-                          <IconButton aria-label="reload">
-                            <CachedIcon />
-                          </IconButton>
-
                           <Button onClick={handleAddSSID} variant="contained">
                             Add SSID
                           </Button>

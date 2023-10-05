@@ -1,6 +1,6 @@
 // App.js
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import "./App.css";
 import Layout from "./pages/Layout";
 import Dashboard from "./pages/dashboard/page";
@@ -28,7 +28,7 @@ import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(true);
 
   if (!authenticated) {
     return (

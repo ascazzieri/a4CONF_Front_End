@@ -60,7 +60,7 @@ export default function InternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Connect PCA to machine network
+                        Data Collector machine network
                       </Typography>
                     </CardContent>
                   </Card>

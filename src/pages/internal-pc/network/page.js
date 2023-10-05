@@ -4,6 +4,11 @@ import { updateIndustrialNetwork } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CustomTable from "../../../components/Table/Table";
+import {
+  verifyIPCIDR,
+  verifyIPnotbroadcast,
+  verifyIP,
+} from "../../../utils/utils";
 import BackButton from "../../../components/BackButton/BackButton";
 import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
@@ -52,16 +57,17 @@ export default function InternalNetwork() {
   const loaderContext = useContext(LoadingContext);
 
   const superUser = useContext(SuperUserContext)[0];
+
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
         "Connection parameters",
         "Static Routes",
-        "Scan Exception",
         "NTP",
+        "Scan Exception",
         "JSON",
       ]
-    : ["Connection parameters", "Static Routes", "Scan Exception", "NTP"];
+    : ["Connection parameters", "Static Routes", "NTP"];
 
   const [connection, setConnection] = useState(
     industrialNetwork?.dhcp ? "dhcp" : "static"
@@ -127,8 +133,8 @@ export default function InternalNetwork() {
     setUpdateNTPFromB(checked);
   };
   const handleCustomNTPAddressChange = (event) => {
-    const value = event?.target?.value;
-    setCustomNTPAddress(value);
+    const ip_addr = event?.target?.value?.split(",") || event?.target?.value;
+    setCustomNTPAddress(ip_addr);
   };
 
   const handleResync = async () => {
@@ -182,20 +188,79 @@ export default function InternalNetwork() {
   const handleIndustrialChange = (event) => {
     event.preventDefault();
 
+    if (
+      !ipAddress.every(verifyIPCIDR) ||
+      !ipAddress.every(verifyIPnotbroadcast)
+    ) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong IP address format for data collector`,
+      });
+      return;
+    }
+
     let staticRoutes = {};
     if (routeTableData.length !== 0) {
       routeTableData.map(
         (item, index) => (staticRoutes[`${item?.subnet}`] = item?.gateway)
       );
     }
-
+    Object.keys(staticRoutes).map((item) => item?.trim());
+    Object.values(staticRoutes).map((item) => item?.trim());
+    if (
+      !Object.keys(staticRoutes).every(verifyIPCIDR) ||
+      !Object.keys(staticRoutes).every(verifyIPnotbroadcast) ||
+      !Object.values(staticRoutes).every(verifyIP)
+    ) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong IP address format for static routes`,
+      });
+      return;
+    }
+    customNTPAddress?.map((item) => item?.trim());
+    if (updateNTPfromB === false && !customNTPAddress.every(verifyIP)) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong IP address format for ntp server ip addresses`,
+      });
+      return;
+    }
+    if (
+      superUser &&
+      (!scanException.every(verifyIPCIDR) ||
+        !scanException.every(verifyIPnotbroadcast))
+    ) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong IP address format for scan exception`,
+      });
+      return;
+    }
     const newIndustrial = {
       dhcp: connection === "static" ? false : true,
-      ip: ipAddress,
+      ip: ipAddress?.map((item) => item.trim()),
       routes: staticRoutes,
+      ntp: {
+        update_from_B: updateNTPfromB,
+        ip_addresses: customNTPAddress,
+      },
       net_scan: scanException,
     };
-    console.log(ipAddress);
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Network configuration of data collector temporarly saved. Click Apply button to send changes to a4GATE`,
+    });
     dispatch(updateIndustrialNetwork({ newIndustrial }));
   };
 
@@ -231,12 +296,11 @@ export default function InternalNetwork() {
         <form onSubmit={handleIndustrialChange}>
           {currentTab === 0 && (
             <>
-              <FormControl fullWidth>
+              <FormControl fullWidth required={true}>
                 <FormLabel>Connection:</FormLabel>
                 <RadioGroup
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
-                  name="row-radio-buttons-group"
                   value={connection || ""}
                   onChange={handleConnectionChange}
                 >
@@ -287,116 +351,6 @@ export default function InternalNetwork() {
 
           {currentTab === 2 && (
             <>
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
-
-                  <TextField
-                    type="text"
-                    label="Scan Exception"
-                    helperText="These ip will not be reported inside daily network scan"
-                    value={currentScanException || ""}
-                    required={false}
-                    onChange={(event) => {
-                      setCurrentScanException(event?.target?.value);
-                    }}
-                  />
-                </FormControl>
-                <Button variant="contained" onClick={handleAddScanException}>
-                  Add
-                </Button>
-              </Stack>
-
-              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
-                <Table stickyHeader aria-label="sticky table" size="small">
-                  <TableBody>
-                    {scanException &&
-                      scanException.length !== 0 &&
-                      scanException.map((row) => {
-                        return (
-                          <TableRow hover key={row}>
-                            <TableCell align="center">{row}</TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => {
-                                  handleDeleteScanException(row);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Divider />
-            </>
-          )}
-          {currentTab === 2 && (
-            <>
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
-
-                  <TextField
-                    type="text"
-                    label="Scan Exception"
-                    helperText="These ip will not be reported inside daily network scan"
-                    value={currentScanException || ""}
-                    required={false}
-                    onChange={(event) => {
-                      setCurrentScanException(event?.target?.value);
-                    }}
-                  />
-                </FormControl>
-                <Button variant="contained" onClick={handleAddScanException}>
-                  Add
-                </Button>
-              </Stack>
-
-              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
-                <Table stickyHeader aria-label="sticky table" size="small">
-                  <TableBody>
-                    {scanException &&
-                      scanException.length !== 0 &&
-                      scanException.map((row) => {
-                        return (
-                          <TableRow hover key={row}>
-                            <TableCell align="center">{row}</TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => {
-                                  handleDeleteScanException(row);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Divider />
-            </>
-          )}
-          {currentTab === 3 && (
-            <>
               <FormControl fullWidth>
                 <FormLabel>NTP synchronization settings</FormLabel>
 
@@ -427,7 +381,9 @@ export default function InternalNetwork() {
                   </FormControl>
                   <Divider />
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with custom server on machine network</Grid>
+                    <Grid item xs={10}>
+                      Synchronize NTP with custom server on machine network
+                    </Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
@@ -444,7 +400,9 @@ export default function InternalNetwork() {
               ) : (
                 <>
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with Data Sender</Grid>
+                    <Grid item xs={10}>
+                      Synchronize NTP with Data Sender
+                    </Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
@@ -458,6 +416,61 @@ export default function InternalNetwork() {
                   <Divider />
                 </>
               )}
+            </>
+          )}
+          {currentTab === 3 && (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <FormControl fullWidth>
+                  <FormLabel>Scan Exception list:</FormLabel>
+
+                  <TextField
+                    type="text"
+                    label="Scan Exception"
+                    helperText="These ip will not be reported inside daily network scan"
+                    value={currentScanException || ""}
+                    required={false}
+                    onChange={(event) => {
+                      setCurrentScanException(event?.target?.value);
+                    }}
+                  />
+                </FormControl>
+                <Button variant="contained" onClick={handleAddScanException}>
+                  Add
+                </Button>
+              </Stack>
+
+              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
+                <Table stickyHeader aria-label="sticky table" size="small">
+                  <TableBody>
+                    {scanException &&
+                      scanException.length !== 0 &&
+                      scanException.map((row) => {
+                        return (
+                          <TableRow hover key={row}>
+                            <TableCell align="center">{row}</TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                aria-label="delete"
+                                onClick={() => {
+                                  handleDeleteScanException(row);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Divider />
             </>
           )}
           {currentTab !== 4 && <SaveButton />}
