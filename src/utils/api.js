@@ -443,7 +443,7 @@ export const send_login = async (data) => {
     console.error(e);
   }
 };
-export const post_register = async (data) => {
+export const send_register = async (data) => {
   try {
     const res = await helper.fetchData("/conf/register", "POST", data);
     verbose && console.log(res);

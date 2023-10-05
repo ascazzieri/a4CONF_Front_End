@@ -121,7 +121,7 @@ export default function Login(props) {
               />
             </Stack>
             <Divider />
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
+            <Stack direction="row" spacing={5} style={{ width: "100%" }} >
               <h2>Password:</h2>
               <TextField
                 fullWidth={true}
@@ -129,6 +129,7 @@ export default function Login(props) {
                 rows={1}
                 value={password}
                 onChange={handlePasswordChange}
+                type="password"
               />
             </Stack>
           </div>
