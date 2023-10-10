@@ -180,7 +180,7 @@ export async function fetchData(url, method, body) {
   try {
     const path = window.location.origin;
     const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-    const response = await fetch(`${pathWithoutPort}:80${url}`, requestOptions);
+    const response = await fetch(pathWithoutPort+':80'+url, requestOptions);
 
     if (!response.ok) {
       throw new Error(response.status);

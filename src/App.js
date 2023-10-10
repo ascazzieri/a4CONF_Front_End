@@ -36,7 +36,7 @@ export default function App({ Component, pageProps }) {
       const credentials = await check_credentials();
       if (credentials === false) {
         setFirstUser(true);
-      } else {
+      } else if (credentials === true) {
         setFirstUser(false);
       }
     })();
