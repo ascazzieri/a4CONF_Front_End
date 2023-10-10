@@ -7,14 +7,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TransferComponent from "./TransferComponent/TransferComponent"
-import AntdBrowseTags from "./TransferComponent/AntdBrowseTags"
-import Treeview from "./TransferComponent/TreeView/Treeview"
 import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { createiotgw } from '../../utils/api';
 
 export default function MaxWidthDialog(props) {
     const { open, setOpen, deviceName, provider, endPoint, folder, publishRate, scanRate, samplingTime, samplingNumberStartIndex, samplingNumber, tags } = props
-    const channel = Object.keys(deviceName)
+    const channel = Object.keys(deviceName)?.toString()
     const device = deviceName[channel]
     const [iotGatewayCart, setIotGatewayCart] = useState([])
 
@@ -78,15 +76,12 @@ export default function MaxWidthDialog(props) {
             finalShoppingList.push(...matches)
         })
 
-        console.log(finalShoppingList)
         return finalShoppingList
 
     }
 
     const handleCreate = async (event) => {
         const totalTagList = transformIotGatewayCart(tags, channel, device)
-        console.log(totalTagList)
-        console.log(iotGatewayCart)
         const finalTagList = findMatches(iotGatewayCart, totalTagList)
         const response = await createiotgw(
             provider,
@@ -149,8 +144,6 @@ export default function MaxWidthDialog(props) {
                         }}
                     >
                         <TransferComponent tags={tags} iotGatewayCart={iotGatewayCart} setIotGatewayCart={setIotGatewayCart} />
-                        {/* <AntdBrowseTags /> */}
-                        {/* <Treeview tags={tags} /> */}
                     </Box>
                 </DialogContent>
                 <DialogActions>

@@ -49,21 +49,20 @@ export default function SelectAllTransferList(props) {
             const element = inputArray[i];
             const part = element.split('.');
             const lastLeaf = part[part.length - 1];
-            //console.log("element: " + element)
-            //console.log("last leaf: " + lastLeaf)
+
 
             for (let j = 0; j < inputArray.length; j++) {
                 if (i !== j) {
                     const item = inputArray[j];
-                    //console.log("item: " + item)
+    
                     const splittedItem = item.split('.');
                     for (let k = 0; k < splittedItem.length - 1; k++) {
 
                         if (splittedItem[k] === lastLeaf) {
-                            //console.log(splittedItem[k] + " uguale a: " + lastLeaf + ", cancello: " + shallowArray[shallowArray.indexOf(item)])
+
                             shallowArray.splice(shallowArray.indexOf(item), 1)
                         } else {
-                            //console.log(splittedItem[k] + " diverso da: " + lastLeaf)
+ 
                         }
                     }
                 }
@@ -84,7 +83,7 @@ export default function SelectAllTransferList(props) {
                         variant="outlined"
                         size="small"
                         onClick={() => { setIotGatewayCart((prevState) => filterImplicitComponents([...prevState, ...channelCart])) }}
-                        disabled={channelCart.length === 0}
+                        disabled={channelCart?.length === 0}
                         aria-label="move selected right"
                     >
                         &gt;

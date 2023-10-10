@@ -70,7 +70,26 @@ export const createiotgw = async (
 ) => {
   try {
     const res = await helper.fetchData(
-      `/createiotgw?channel=${channel}&device=${device}&type=${type}&publish_rate_ms=${publish_rate}&items_scan_rate=${scan_rate}&thing_name=${thingName}&machine_id=${blob_folder}&sampling_time=${sampling_time}&sampling_number_start_index=${sampling_number_start_index}&sampling_number=${sampling_number}`,
+      "/createiotgw?channel=" +
+        channel +
+        "&device=" +
+        device +
+        "&type=" +
+        type +
+        "&publish_rate_ms=" +
+        publish_rate +
+        "&items_scan_rate=" +
+        scan_rate +
+        "&thing_name=" +
+        thingName +
+        "&machine_id=" +
+        blob_folder +
+        "&sampling_time=" +
+        sampling_time +
+        "&sampling_number_start_index=" +
+        sampling_number_start_index +
+        "&sampling_number=" +
+        sampling_number,
       "POST",
       tags_list
     );
@@ -450,8 +469,12 @@ export const send_login = async (data) => {
 };
 export const send_register = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/register", "POST", data);
+    const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
+
+    if (res && res.access_token) {
+      localStorage.setItem("jwtToken", res.access_token);
+    }
     return res;
   } catch (e) {
     console.error(e);

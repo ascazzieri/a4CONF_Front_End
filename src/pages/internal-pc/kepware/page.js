@@ -106,7 +106,7 @@ const Row = (props) => {
   const [open, setOpen] = useState(false);
   const [rowData, setRowData] = useState(row);
   const [tagsSelectionDialog, setTagsSelectionDialog] = useState(false);
-  const [iotGatewayType, setIotGatewayType] = useState(undefined);
+  const [iotGatewayType, setIotGatewayType] = useState();
   const [channelDevice, setChannelDevice] = useState({});
   const [provider, setProvider] = useState();
   const [endPoint, setEndPoint] = useState();
@@ -117,7 +117,6 @@ const Row = (props) => {
   const [samplingTime, setSamplingTime] = useState(16);
   const [samplingNumberStartIndex, setSamplingNumberStartIndex] = useState(0);
   const [samplingNumber, setSamplingNumber] = useState(100);
-
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
     const name = event?.target?.name;
@@ -167,6 +166,7 @@ const Row = (props) => {
 
     updatedDevice.endpoint = value;
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    console.log(updatedRowData);
     setRowData(updatedRowData);
   };
   const handleFolderChange = (event) => {
@@ -274,7 +274,7 @@ const Row = (props) => {
   const handleCreate = async (event, device) => {
     console.log(device);
     if (
-      event?.target?.name !== "matrix" &&
+      event?.target?.name === "twa" &&
       (!device?.endpoint || device?.endpoint?.trim() === "")
     ) {
       handleButtonClickFeedback({
@@ -294,39 +294,32 @@ const Row = (props) => {
       });
       return;
     }
-    //let endpoint = "";
-    //const folder = device?.folder ? device?.folder : "blob_test";
-    //const publish_rate = device?.publish_rate ? device?.publish_rate : 1000;
-    //const scan_rate = device?.scan_rate ? device?.scan_rate : 1000;
-
-    //const sampling_time = device?.sampling_time ? device?.sampling_time : 16;
-    /*const sampling_number_start_index = device?.sampling_number_start_index
-      ? device?.sampling_number_start_index
-      : 0;*/
-    /*const sampling_number = device?.sampling_number
-      ? device?.sampling_number
-      : 100;*/
+    let endpoint = "";
     if (event?.target?.name !== "matrix") {
-      if (!endPoint.includes("rt_")) {
-        setEndPoint(`rt_${endPoint}`);
+      if (!device?.endpoint.includes("rt_")) {
+        endpoint = `rt_${device?.endpoint}`;
+      } else {
+        endpoint = device?.endpoint;
       }
     }
+    const channel = row?.name;
+    const deviceName = device?.name;
 
+    setEndPoint(endpoint);
+    setProvider(event?.target?.name);
+    setFolder(device?.folder ? device?.folder : "blob_test");
+    setScanRate(device?.scan_rate ? device?.scan_rate : 1000);
+    setPublishRate(device?.publish_rate ? device?.publish_rate : 1000);
+    setSamplingTime(device?.sampling_time ? device?.sampling_time : 16);
+    setSamplingNumberStartIndex(
+      device?.sampling_number_start_index
+        ? device?.sampling_number_start_index
+        : 0
+    );
+    setSamplingNumber(device?.sampling_number ? device?.sampling_number : 100);
     if (device?.choose_tags) {
       const tags = await get_device_tags(row?.name, device?.name);
-      const channel = row?.name;
-      const deviceName = device?.name;
-      /*const folder = device?.folder; */
-
-      setEndPoint(endPoint);
-      setProvider(event?.target?.name);
       setDeviceTags(tags);
-      setFolder(folder);
-      setScanRate(scanRate);
-      setPublishRate(publishRate);
-      setSamplingTime(samplingTime);
-      setSamplingNumberStartIndex(samplingNumberStartIndex);
-      setSamplingNumber(samplingNumber);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
@@ -334,13 +327,37 @@ const Row = (props) => {
         event?.target?.name, //type
         row?.name, //channel name
         device?.name, //device name
-        event?.target?.name === "twa" ? endPoint : null, //endpoint
-        event?.target?.name === "matrix" ? folder : null, //folder for matrix
-        event?.target?.name === "matrix" ? scanRate : null, //scan rate for matrix
-        event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
-        event?.target?.name === "matrix" ? samplingTime : null, //sampling time for matrix
-        event?.target?.name === "matrix" ? samplingNumberStartIndex : null, //sampling number start index for matrix
-        event?.target?.name === "matrix" ? samplingNumber : null, //sampling number for matrix
+        event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
+        event?.target?.name === "matrix"
+          ? device?.folder
+            ? device?.folder
+            : "blob_test"
+          : null, //folder for matrix
+        event?.target?.name === "matrix"
+          ? device?.scan_rate
+            ? device?.scan_rate
+            : 1000
+          : null, //scan rate for matrix
+        event?.target?.name === "matrix"
+          ? device?.publish_rate
+            ? device?.publish_rate
+            : 1000
+          : null, //publish rate for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_time
+            ? device?.sampling_time
+            : 16
+          : null, //sampling time for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_number_start_index
+            ? device?.sampling_number_start_index
+            : 0
+          : null, //sampling number start index for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_number
+            ? device?.sampling_number
+            : 100
+          : null, //sampling number for matrix
         []
       );
       if (response?.iotgw && response?.time && response?.thing_name)
@@ -508,7 +525,7 @@ const Row = (props) => {
                                     select
                                     label="Local Things"
                                     name={device?.name}
-                                    defaultValue=""
+                                    value={device?.endpoint || ""}
                                     onChange={handleEndpointChange}
                                     style={{ minWidth: 150 }}
                                   >
@@ -1143,7 +1160,10 @@ export default function Kepware() {
     const thing_names = [...thingNames];
 
     // Verificare se l'elemento è già presente nell'array
-    if (!thing_names.includes(machineSerial.trim()) && !thing_names.includes(`rt_${machineSerial.trim()}`)) {
+    if (
+      !thing_names.includes(machineSerial.trim()) &&
+      !thing_names.includes(`rt_${machineSerial.trim()}`)
+    ) {
       // Se non è presente, aggiungerlo
       if (machineSerial.includes("rt_")) {
         thing_names.push(machineSerial.trim());
@@ -1399,7 +1419,7 @@ export default function Kepware() {
           {currentTab === 4 && (
             <>
               <Box sx={{ flexGrow: 1 }}>
-                <FormLabel>Kepware device configured:</FormLabel>
+                <FormLabel>Kepware channels info:</FormLabel>
 
                 <Box component="main" sx={{ p: 3 }}>
                   <Typography
@@ -1453,7 +1473,7 @@ export default function Kepware() {
                                 deviceInside.map((insideItem, insideIndex) => {
                                   const deviceName = insideItem?.device;
                                   return (
-                                    <>
+                                    <Fragment key={Math.random()}>
                                       <ListItemButton
                                         onClick={(event) =>
                                           handleExpandableListDevices(
@@ -1528,7 +1548,7 @@ export default function Kepware() {
                                           </ListItemButton>
                                         </List>
                                       </Collapse>
-                                    </>
+                                    </Fragment>
                                   );
                                 })}
                             </Collapse>
