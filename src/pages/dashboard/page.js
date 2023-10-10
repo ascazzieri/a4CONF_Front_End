@@ -33,6 +33,9 @@ import TableRow from "@mui/material/TableRow";
 import Popover from "@mui/material/Popover";
 import { useLocation } from "react-router-dom";
 import { Typography } from "antd";
+import {host_name_desc , a4gate_status_desc , pcb_ready_desc , pcb_network_desc, bidir_desc ,
+  kepserver_desc , version_desc , services_desc , a4monitor_desc , back_channel_desc ,
+  data_transfer_desc , configuration_desc , broker_desc, plugins_desc, sitemanager_board_desc, thingworx, thingworx_board_desc, opcua_server_board_desc, http_server_board_desc, fast_data_board_desc, device_connected_desc} from "../../utils/titles";
 
 export default function Dashboard() {
   const system = useSelector((state) => state?.system);
@@ -206,6 +209,7 @@ export default function Dashboard() {
 
                     <TextField
                       type="text"
+                      title={host_name_desc}
                       label="a4GATE hostname"
                       helperText={hostNameHelperText}
                       className="a4gate-hostname-form"
@@ -240,7 +244,7 @@ export default function Dashboard() {
                   border: "1px inset white",
                 }}
               >
-                <h3>a4GATE Status</h3>
+                <h3 title={a4gate_status_desc}>a4GATE Status</h3>
                 <Divider />
 
                 <Grid
@@ -278,9 +282,11 @@ export default function Dashboard() {
                           <div style={{ color: "red" }}>Closed</div>
                         )
                       ) : (
+
                         <>
                           <div>Checking...</div>
                         </>
+
                       )}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
@@ -344,6 +350,7 @@ export default function Dashboard() {
                     <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                       <div style={{ marginBottom: 5 }}>Version:</div>
                     </Grid>
+
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {system?.a4updater_version?.industrial ===
                       system?.a4updater_version?.customer ? (
@@ -433,7 +440,7 @@ export default function Dashboard() {
                   border: "1px inset white",
                 }}
               >
-                <h3>Plugins</h3>
+                <h3 title={plugins_desc}>Plugins</h3>
                 <Divider />
                 <Grid
                   container
@@ -442,7 +449,7 @@ export default function Dashboard() {
                   alignItems="center"
                 >
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    <div>Sitemanager</div>
+                    <div title={sitemanager_board_desc}>Sitemanager</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
                     {plugins_status?.sitemanager?.connected
@@ -450,7 +457,7 @@ export default function Dashboard() {
                       : badStatus()}
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    <div>Thingworx</div>
+                    <div title={thingworx_board_desc}>Thingworx</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
                     {plugins_status?.thingworx?.connected
@@ -458,7 +465,7 @@ export default function Dashboard() {
                       : badStatus()}
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    <div>OPCUA Server</div>
+                    <div title={opcua_server_board_desc}>OPCUA Server</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
                     {plugins_status?.opcua?.running
@@ -466,7 +473,7 @@ export default function Dashboard() {
                       : badStatus()}
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
-                    <div>HTTP Server</div>
+                    <div title={http_server_board_desc}>HTTP Server</div>
                   </Grid>
                   <Grid item xs={6} sx={{ p: 1 }}>
                     <div>value</div>
@@ -476,6 +483,7 @@ export default function Dashboard() {
                       variant="contained"
                       sx={{ mb: 1, mt: 0 }}
                       onClick={handleOpenFastData}
+                      title={fast_data_board_desc}
                     >
                       Fast Data
                     </Button>
@@ -539,7 +547,8 @@ export default function Dashboard() {
                   border: "1px inset white",
                 }}
               >
-                <h3>Connected device</h3>
+                <h3 title={device_connected_desc}>Connected device</h3>
+
                 <Divider />
                 <Grid
                   container

@@ -20,6 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { ftp_blob_table_desc, ftp_connection_ftp, ftp_connection_ftp_desc, ftp_connection_ip, ftp_connection_ip_desc, ftp_custom_port_desc, ftp_ipaddress_desc, ftp_server_type_desc, ftp_timestamp_file_desc, ftp_timestamp_millisecond_desc, ftp_users_desc } from "../../../utils/titles";
 export default function FTP() {
   const ftp = useSelector((state) => state.services?.fastdata?.industrial?.ftp);
 
@@ -228,9 +229,10 @@ export default function FTP() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Binding IP address of FTP server:</FormLabel>
+                <FormLabel title={ftp_ipaddress_desc}>Binding IP address of FTP server:</FormLabel>
 
                 <TextField
+                  title={ftp_ipaddress_desc}
                   type="text"
                   label="IP Address"
                   helperText="FTP server address"
@@ -241,7 +243,7 @@ export default function FTP() {
               </FormControl>
               <Divider />
 
-              <FormControl fullWidth>
+              <FormControl fullWidth title={ftp_server_type_desc}>
                 <Autocomplete
                   disablePortal
                   options={["standard", "multi-thread", "multi-process"]}
@@ -257,7 +259,7 @@ export default function FTP() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>Custom port:</FormLabel>
+                <FormLabel title={ftp_custom_port_desc}>Custom port:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>
@@ -265,6 +267,7 @@ export default function FTP() {
                   </Typography>
 
                   <Switch
+                    title={ftp_custom_port_desc}
                     checked={customPortEnable}
                     onChange={handleCustomPortEnableChange}
                   />
@@ -296,11 +299,12 @@ export default function FTP() {
               )}
 
               <FormControl fullWidth>
-                <FormLabel>
+                <FormLabel title={ftp_connection_ftp_desc}>
                   Maximum number of connection to ftp server:
                 </FormLabel>
 
                 <TextField
+                  title={ftp_connection_ftp_desc}
                   type="number"
                   inputProps={{
                     inputMode: "numeric",
@@ -316,12 +320,13 @@ export default function FTP() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>
+                <FormLabel title={ftp_connection_ip_desc}>
                   Maximum number of connection to ftp server from the same IP
                   address:
                 </FormLabel>
 
                 <TextField
+                  title={ftp_connection_ip_desc}
                   type="number"
                   inputProps={{
                     inputMode: "numeric",
@@ -340,7 +345,7 @@ export default function FTP() {
 
           {currentTab === 1 && (
             <>
-              <FormLabel>Users:</FormLabel>
+              <FormLabel title={ftp_users_desc}>Users:</FormLabel>
 
               <Table
                 tableData={usersTableData}
@@ -354,7 +359,7 @@ export default function FTP() {
 
           {currentTab === 2 && (
             <>
-              <FormLabel>Blob settings:</FormLabel>
+              <FormLabel title={ftp_blob_table_desc}>Blob settings:</FormLabel>
 
               <Table
                 tableData={blobTableData}
@@ -397,12 +402,13 @@ export default function FTP() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Add timestamp to file name:</FormLabel>
+                <FormLabel title={ftp_timestamp_file_desc}>Add timestamp to file name:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Add timestamp</Typography>
 
                   <Switch
+                    title={ftp_timestamp_file_desc}
                     checked={addTimestamp}
                     onChange={handleAddTimestampChange}
                   />
@@ -414,12 +420,13 @@ export default function FTP() {
               {addTimestamp && (
                 <>
                   <FormControl fullWidth>
-                    <FormLabel>Add also millieconds to timestamp:</FormLabel>
+                    <FormLabel title={ftp_timestamp_millisecond_desc}>Add also millieconds to timestamp:</FormLabel>
 
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>Add milliseconds</Typography>
 
                       <Switch
+                        title={ftp_timestamp_millisecond_desc}
                         checked={addTimestampMilliseconds}
                         onChange={handleAddTimestampMilliseconds}
                       />

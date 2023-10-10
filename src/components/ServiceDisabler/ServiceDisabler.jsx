@@ -13,6 +13,7 @@ import {
     updateFastData
 } from "../../utils/redux/reducers";
 import { Typography } from "@mui/material";
+import { service_status_desc } from "../../utils/titles";
 
 export default function ServiceDisabler() {
 
@@ -124,7 +125,7 @@ export default function ServiceDisabler() {
     }
 
     return (
-        <><Typography >{serviceName && serviceName.charAt(0).replace('n', 'f').toUpperCase() + serviceName.slice(1).replace('etwork', 'irewall')} service status:</Typography>
+        <><Typography title={service_status_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service status:</Typography>
             <div><FormControlLabel control={<Switch checked={
                 (serviceName === "network" && firewallEnabled) ||
                 (serviceName === "sitemanager" && sitemanagerEnabled) ||

@@ -39,6 +39,7 @@ import {
 import CachedIcon from "@mui/icons-material/Cached";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
+import { http_gateway_read_desc, http_gateway_write_desc, http_manage_desc, http_remote_things_desc, http_security_desc, http_server_port_desc, http_shift_fromkep_desc, http_shift_tokep_desc } from "../../../utils/titles";
 
 export default function HTTPServer() {
   const http = useSelector((state) => state?.services?.http);
@@ -510,7 +511,7 @@ export default function HTTPServer() {
         <form onSubmit={handleHTTPServerChange}>
           {currentTab === 0 && (
             <>
-              <FormLabel>
+              <FormLabel title={http_gateway_read_desc}>
                 Expose IoT gateways with HTTP Server only in read mode
               </FormLabel>
               <Stack
@@ -529,6 +530,7 @@ export default function HTTPServer() {
                     }}
                     renderInput={(params) => (
                       <TextField
+                      title={http_gateway_read_desc}
                         {...params}
                         label="IoT Gateways for HTTP server read only list"
                       />
@@ -549,7 +551,7 @@ export default function HTTPServer() {
                 </Button>
               </Stack>
 
-              <FormLabel>Remote Things configuration</FormLabel>
+              <FormLabel title={http_remote_things_desc}>Remote Things configuration</FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysFromTableData}
@@ -559,7 +561,7 @@ export default function HTTPServer() {
 
               <Divider />
 
-              <FormLabel>
+              <FormLabel title={http_gateway_write_desc}>
                 Expose IoT gateways with HTTP Server in read and write mode
               </FormLabel>
               <Stack
@@ -594,6 +596,7 @@ export default function HTTPServer() {
                     }}
                     renderInput={(params) => (
                       <TextField
+                      title={http_gateway_write_desc}
                         {...params}
                         label="IoT Gateways for HTTP server read and write list"
                       />
@@ -614,7 +617,7 @@ export default function HTTPServer() {
                 </Button>
               </Stack>
 
-              <FormLabel>Remote Things configuration</FormLabel>
+              <FormLabel title={http_remote_things_desc}>Remote Things configuration</FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysToTableData}
@@ -627,7 +630,7 @@ export default function HTTPServer() {
           )}
           {currentTab === 1 && (
             <>
-              <FormLabel>
+              <FormLabel title={http_manage_desc}>
                 Kepware IoT Gateways list for HTTP Server with read only
                 permission
               </FormLabel>
@@ -893,9 +896,10 @@ export default function HTTPServer() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>From Kepware:</FormLabel>
+                <FormLabel title={http_shift_fromkep_desc}>From Kepware:</FormLabel>
 
                 <TextField
+                title={http_shift_fromkep_desc}
                   type="text"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   label="Shift from Kepware"
@@ -908,9 +912,10 @@ export default function HTTPServer() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>To Kepware:</FormLabel>
+                <FormLabel title={http_shift_tokep_desc}>To Kepware:</FormLabel>
 
                 <TextField
+                title={http_shift_tokep_desc}
                   type="number"
                   label="Shift to Kepware"
                   helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
@@ -925,12 +930,13 @@ export default function HTTPServer() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>HTTP Server Port:</FormLabel>
+                <FormLabel title={http_server_port_desc}>HTTP Server Port:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use Default Port - 4840</Typography>
 
                   <Switch
+                    title={http_server_port_desc}
                     checked={customPortEnable}
                     onChange={handleCustomPortEnableChange}
                   />
@@ -964,7 +970,7 @@ export default function HTTPServer() {
           {currentTab === 4 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>
+                <FormLabel title={http_security_desc}>
                   Enable/Disable HTTP Server authentication:
                 </FormLabel>
 
@@ -972,6 +978,7 @@ export default function HTTPServer() {
                   <Typography>Disable</Typography>
 
                   <Switch
+                    title={http_security_desc}
                     checked={serverAuth}
                     onChange={handleServerAuthChange}
                   />

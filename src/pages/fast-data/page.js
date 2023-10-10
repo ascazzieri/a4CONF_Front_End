@@ -29,6 +29,7 @@ import GridOnIcon from "@mui/icons-material/GridOn";
 
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import SaveButton from "../../components/SaveButton/SaveButton";
+import { fast_blob_url_desc, fast_sas_desc } from "../../utils/titles";
 export default function FastData() {
   const fastdata = useSelector((state) => state?.services?.fastdata);
 
@@ -129,9 +130,10 @@ export default function FastData() {
             <CardContent>
               <form onSubmit={handleMatrixChange}>
                 <FormControl fullWidth>
-                  <FormLabel>Blob storage Url:</FormLabel>
+                  <FormLabel title={fast_blob_url_desc}>Blob storage Url:</FormLabel>
 
                   <TextField
+                    title={fast_blob_url_desc}
                     type="text"
                     label="Blob Url"
                     helperText="Blob storage Url"
@@ -144,10 +146,11 @@ export default function FastData() {
                 <Divider />
 
                 <FormControl fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password">
+                  <InputLabel htmlFor="outlined-adornment-password" title={fast_sas_desc}>
                     Sas *
                   </InputLabel>
                   <OutlinedInput
+                    title={fast_sas_desc}
                     type={showSaskey ? "text" : "password"}
                     required={true}
                     value={blobConnectionSas || ""}

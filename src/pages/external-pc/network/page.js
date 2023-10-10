@@ -53,6 +53,7 @@ import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
 import NetworkPingIcon from "@mui/icons-material/NetworkPing";
 import LabelImportantIcon from "@mui/icons-material/LabelImportant";
 import DvrIcon from "@mui/icons-material/Dvr";
+import { network_alis_desc, network_connection_desc, network_defgateway_desc, network_dns_desc, network_firewall_desc, network_forwarding_desc, network_ipaddress_desc, network_machine_internet_desc, network_nat_feature_desc, network_ntp_custom_desc, network_ntp_server_desc, network_ping_address_desc, network_ping_list_debugger, network_ping_list_desc, network_ping_number_desc, network_static_routes_desc, network_typeconnection_desc } from "../../../utils/titles";
 
 const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
 
@@ -511,7 +512,7 @@ export default function ExternalNetwork() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Connection:</FormLabel>
+                <FormLabel title={network_connection_desc}>Connection:</FormLabel>
                 <RadioGroup
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
@@ -535,7 +536,7 @@ export default function ExternalNetwork() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>IP Address:</FormLabel>
+                <FormLabel title={network_ipaddress_desc}>IP Address:</FormLabel>
 
                 <TextField
                   type="text"
@@ -548,7 +549,7 @@ export default function ExternalNetwork() {
               </FormControl>
               <Divider />
               <FormControl fullWidth>
-                <FormLabel>Default Gateway:</FormLabel>
+                <FormLabel title={network_defgateway_desc}>Default Gateway:</FormLabel>
 
                 <TextField
                   type="text"
@@ -560,7 +561,7 @@ export default function ExternalNetwork() {
               </FormControl>
               <Divider />
               <FormControl fullWidth>
-                <FormLabel>DNS server:</FormLabel>
+                <FormLabel title={network_dns_desc}>DNS server:</FormLabel>
 
                 <TextField
                   type="text"
@@ -572,7 +573,7 @@ export default function ExternalNetwork() {
               </FormControl>
               <Divider />
               <FormControl fullWidth>
-                <FormLabel>Connection type:</FormLabel>
+                <FormLabel title={network_typeconnection_desc}>Connection type:</FormLabel>
 
                 <RadioGroup
                   row
@@ -663,7 +664,7 @@ export default function ExternalNetwork() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel>Add new address to ping test:</FormLabel>
+                  <FormLabel title={network_ping_address_desc}>Add new address to ping test:</FormLabel>
 
                   <TextField
                     type="text"
@@ -682,7 +683,7 @@ export default function ExternalNetwork() {
               <Divider />
 
               <FormControl>
-                <FormLabel>Ping number:</FormLabel>
+                <FormLabel title={network_ping_number_desc}>Ping number:</FormLabel>
 
                 <TextField
                   type="number"
@@ -701,7 +702,7 @@ export default function ExternalNetwork() {
 
               {hostList && hostList.length !== 0 && (
                 <>
-                  <FormLabel>Ping list:</FormLabel>
+                  <FormLabel title={network_ping_list_desc}>Ping list:</FormLabel>
                   <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
@@ -742,7 +743,7 @@ export default function ExternalNetwork() {
               {hostList && hostList.length !== 0 && (
                 <>
                   <Box sx={{ flexGrow: 1 }}>
-                    <FormLabel>External PC network debugger:</FormLabel>
+                    <FormLabel title={network_ping_list_debugger}>External PC network debugger:</FormLabel>
                     <AppBar position="static" sx={{ background: "#1F293F" }}>
                       <Toolbar>
                         <Button
@@ -944,7 +945,7 @@ export default function ExternalNetwork() {
 
           {currentTab === 2 && (
             <>
-              <FormLabel>Routes:</FormLabel>
+              <FormLabel title={network_static_routes_desc}>Routes:</FormLabel>
 
               <CustomTable
                 tableData={routeTableData || []}
@@ -959,7 +960,7 @@ export default function ExternalNetwork() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>NTP Server:</FormLabel>
+                <FormLabel title={network_ntp_server_desc}>NTP Server:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use NTP from Gatemanager</Typography>
@@ -976,6 +977,7 @@ export default function ExternalNetwork() {
                 <>
                   <FormControl fullWidth>
                     <TextField
+                      title={network_ntp_custom_desc}
                       type="text"
                       label="Custom NTP"
                       helperText="Custom NTP server address"
@@ -992,7 +994,7 @@ export default function ExternalNetwork() {
           {currentTab === 4 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>NAT feature:</FormLabel>
+                <FormLabel title={network_nat_feature_desc}>NAT feature:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Disable NAT</Typography>
@@ -1013,7 +1015,7 @@ export default function ExternalNetwork() {
               {NATFeatures && (
                 <>
                   <FormControl fullWidth>
-                    <FormLabel>Machine to internet:</FormLabel>
+                    <FormLabel title={network_machine_internet_desc}>Machine to internet:</FormLabel>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>Disable</Typography>
                       <Switch
@@ -1035,7 +1037,7 @@ export default function ExternalNetwork() {
 
           {currentTab === 5 && (
             <>
-              <FormLabel>Alias:</FormLabel>
+              <FormLabel title={network_alis_desc}>Alias:</FormLabel>
 
               <CustomTable
                 tableData={aliasTableData || []}
@@ -1049,7 +1051,7 @@ export default function ExternalNetwork() {
 
           {currentTab === 6 && (
             <>
-              <FormLabel>Set TCP ports rules in input WAN:</FormLabel>
+              <FormLabel title={network_firewall_desc}>Set TCP ports rules in input WAN:</FormLabel>
 
               <CustomTable
                 tableData={portsAllowedTableData || []}
@@ -1066,7 +1068,7 @@ export default function ExternalNetwork() {
             <>
               {NATFeatures ? (
                 <>
-                  <FormLabel>Foreward TCP port:</FormLabel>
+                  <FormLabel title={network_forwarding_desc}>Foreward TCP port:</FormLabel>
 
                   <CustomTable
                     tableData={inputNATTableData || []}
