@@ -70,7 +70,6 @@ import { styled } from "@mui/material/styles";
 
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
-import { kepware_channels_desc, kepware_device_desc, kepware_devicenumber_desc, kepware_gateway_row_desc, kepware_licence_desc, kepware_machine_serial_desc, kepware_project_desc, kepware_runtime_desc } from "../../../utils/titles";
 
 const buildRows = (data) => {
   let channelsData = [];
@@ -1361,96 +1360,7 @@ export default function Kepware() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel >Machine serial number:</FormLabel>
-
-                <TextField
-                  type="text"
-                  label="Machine serial"
-                  helperText="Create a new machine serial number and add it to the list below"
-                  value={thingName}
-                  required={false}
-                  onChange={(event) => {
-                    setThingName(event?.target?.value);
-                  }}
-                />
-              </FormControl>
-              <Button variant="contained" onClick={handleAddThingName}>
-                Add
-              </Button>
-            </Stack>
-
-            <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
-              <Table stickyHeader aria-label="sticky table" size="small">
-                <TableBody>
-                  {thingNames &&
-                    thingNames.length !== 0 &&
-                    thingNames.map((row) => {
-                      return (
-                        <TableRow hover key={row}>
-                          <TableCell align="center">
-                            {row.substring(3, row.length)}
-                          </TableCell>
-                          <TableCell align="center">
-                            <IconButton
-                              aria-label="delete"
-                              onClick={() => {
-                                handleThingNameDelete(row);
-                              }}
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </>
-        )}
-        {currentTab === 1 && (
-          <>
-            <TableContainer component={Paper}>
-              <Table aria-label="collapsible table">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>
-                      <Button
-                        onClick={handleChannelRefresh}
-                        variant="outlined"
-                        endIcon={<CachedIcon />}
-                      >
-                        Refresh
-                      </Button>
-                    </TableCell>
-                    <TableCell>KEPWARE CHANNELS</TableCell>
-                    <TableCell>DEVICE NUMBER</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {channelRows &&
-                    channelRows.lenght !== 0 &&
-                    channelRows.map((row) => {
-                      return (
-                        <Row
-                          key={row.name + row.device_number}
-                          row={row}
-                          thingNames={thingNames}
-                          handleButtonClickFeedback={handleClick}
-                        />
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <Divider />
-          </>
-        )}
-
-        {currentTab === 2 && (
-          <>
-            <FormControl fullWidth>
-              <Typography>Kepware project:</Typography>
+                <Typography>Kepware project:</Typography>
 
                 <Stack
                   direction="row"
@@ -1477,20 +1387,20 @@ export default function Kepware() {
 
               <Divider />
 
-            <Typography>Kepware runtime:</Typography>
+              <Typography>Kepware runtime:</Typography>
 
-            <Button variant="contained" onClick={handleReloadKepwareRuntime}>
-              Reload
-            </Button>
+              <Button variant="contained" onClick={handleReloadKepwareRuntime}>
+                Reload
+              </Button>
 
               <Divider />
             </>
           )}
 
-        {currentTab === 3 && (
-          <>
-            <FormControl fullWidth>
-              <FormLabel>Kepware mode:</FormLabel>
+          {currentTab === 3 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>Kepware mode:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>License mode</Typography>
@@ -1655,5 +1565,5 @@ export default function Kepware() {
         </form>
       </Container>
     </ErrorCacher>
-);
+  );
 }
