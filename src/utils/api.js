@@ -524,3 +524,18 @@ export const ntp_resinc = async (data) => {
     console.error(e);
   }
 };
+export const get_advanced = async (
+  service,
+  command
+) => {
+  try {
+    const res = await helper.fetchData(
+      `/pca/services/action?service=${service}&command=${command}`,
+      "GET"
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};

@@ -19,6 +19,7 @@ import {
   Typography,
 } from "@mui/material";
 import SaveButton from "../../../components/SaveButton/SaveButton";
+import { fast_http_blob_table_desc, fast_http_file_desc, fast_http_host_desc, fast_http_port_desc, fast_http_suffix_desc } from "../../../utils/titles";
 export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
@@ -181,9 +182,10 @@ export default function FTP() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Binding IP address of FTP server:</FormLabel>
+                <FormLabel title={fast_http_host_desc}>Binding IP address of FTP server:</FormLabel>
 
                 <TextField
+                  title={fast_http_host_desc}
                   type="text"
                   label="Host bindind"
                   helperText="HTTP server bind addresses"
@@ -195,14 +197,15 @@ export default function FTP() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>Custom port:</FormLabel>
+                <FormLabel title={fast_http_port_desc}>Custom port:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>
+                  <Typography >
                     Port: {customPortEnable ? serverPort : 8080}
                   </Typography>
 
                   <Switch
+                    title={fast_http_port_desc}
                     checked={customPortEnable}
                     onChange={handleCustomPortEnableChange}
                   />
@@ -232,9 +235,10 @@ export default function FTP() {
               )}
 
               <FormControl fullWidth>
-                <FormLabel>Add format to file:</FormLabel>
+                <FormLabel title={fast_http_file_desc}>Add format to file:</FormLabel>
 
                 <TextField
+                  title={fast_http_file_desc}
                   type="text"
                   label="File format"
                   helperText="Add format to file"
@@ -250,10 +254,11 @@ export default function FTP() {
           {currentTab === 1 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Add file suffix:</FormLabel>
+                <FormLabel title={fast_http_suffix_desc}>Add file suffix:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Switch
+                    title={fast_http_suffix_desc}
                     checked={addFileSuffixEnable}
                     onChange={handleAddSuffixEnableChange}
                   />
@@ -283,7 +288,7 @@ export default function FTP() {
 
           {currentTab === 2 && (
             <>
-              <FormLabel>Blob settings:</FormLabel>
+              <FormLabel title={fast_http_blob_table_desc}>Blob settings:</FormLabel>
 
               <Table
                 tableData={blobTableData}

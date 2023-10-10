@@ -35,6 +35,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
+import { connection_network_desc, data_sender_syncro_desc, ipaddress_network_desc, ntp_custom_syncro_desc, ntp_server_address_desc, ntp_syncro_settings_desc, routes_network_desc, scan_exception_desc } from "../../../utils/titles";
 
 export default function InternalNetwork() {
   const industrialNetwork = useSelector(
@@ -232,7 +233,7 @@ export default function InternalNetwork() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Connection:</FormLabel>
+                <FormLabel title={connection_network_desc}>Connection:</FormLabel>
                 <RadioGroup
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
@@ -256,7 +257,7 @@ export default function InternalNetwork() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>IP Address:</FormLabel>
+                <FormLabel title={ipaddress_network_desc}>IP Address:</FormLabel>
 
                 <TextField
                   type="text"
@@ -265,6 +266,7 @@ export default function InternalNetwork() {
                   value={ipAddress || ""}
                   required={true}
                   onChange={handleIPAddressChange}
+                  title={ipaddress_network_desc}
                 />
               </FormControl>
               <Divider />
@@ -273,7 +275,7 @@ export default function InternalNetwork() {
 
           {currentTab === 1 && (
             <>
-              <FormLabel>Routes:</FormLabel>
+              <FormLabel title={routes_network_desc}>Routes:</FormLabel>
 
               <CustomTable
                 tableData={routeTableData}
@@ -294,7 +296,7 @@ export default function InternalNetwork() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
+                  <FormLabel title={scan_exception_desc}>Scan Exception list:</FormLabel>
 
                   <TextField
                     type="text"
@@ -302,6 +304,7 @@ export default function InternalNetwork() {
                     helperText="These ip will not be reported inside daily network scan"
                     value={currentScanException || ""}
                     required={false}
+                    title={scan_exception_desc}
                     onChange={(event) => {
                       setCurrentScanException(event?.target?.value);
                     }}
@@ -349,7 +352,7 @@ export default function InternalNetwork() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
+                  <FormLabel title={scan_exception_desc}>Scan Exception list:</FormLabel>
 
                   <TextField
                     type="text"
@@ -357,6 +360,7 @@ export default function InternalNetwork() {
                     helperText="These ip will not be reported inside daily network scan"
                     value={currentScanException || ""}
                     required={false}
+                    title={scan_exception_desc}
                     onChange={(event) => {
                       setCurrentScanException(event?.target?.value);
                     }}
@@ -398,7 +402,7 @@ export default function InternalNetwork() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>NTP synchronization settings</FormLabel>
+                <FormLabel title={ntp_syncro_settings_desc}>NTP synchronization settings</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use custom NTP server</Typography>
@@ -423,11 +427,12 @@ export default function InternalNetwork() {
                       helperText="Insert IP address of NTP server on machine network"
                       value={customNTPAddress || ""}
                       onChange={handleCustomNTPAddressChange}
+                      title={ntp_server_address_desc}
                     />
                   </FormControl>
                   <Divider />
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with custom server on machine network</Grid>
+                    <Grid item xs={10} title={ntp_custom_syncro_desc}>Synchronize NTP with custom server on machine network</Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
@@ -444,12 +449,13 @@ export default function InternalNetwork() {
               ) : (
                 <>
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with Data Sender</Grid>
+                    <Grid item xs={10} title={data_sender_syncro_desc}>Synchronize NTP with Data Sender</Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
                         onClick={handleStart}
                         endIcon={<AccessTimeOutlinedIcon />}
+                        title={data_sender_syncro_desc}
                       >
                         Synchronize
                       </Button>

@@ -63,6 +63,14 @@ import {
 } from "@mui/icons-material";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
+import {
+  thingworx_agent_desc,
+  thingworx_appkey_desc,
+  thingworx_iotkep_desc,
+  thingworx_ipaddress_desc,
+  thingworx_manage_iot_desc,
+  thingworx_remote_config_desc,
+} from "../../../utils/titles";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -392,9 +400,12 @@ export default function Thingworx() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>IP Address:</FormLabel>
+                <FormLabel title={thingworx_ipaddress_desc}>
+                  IP Address:
+                </FormLabel>
 
                 <TextField
+                  title={thingworx_ipaddress_desc}
                   type="text"
                   label="Host"
                   helperText="Sentinel server endpoint"
@@ -406,10 +417,14 @@ export default function Thingworx() {
               <Divider />
 
               <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password">
+                <InputLabel
+                  htmlFor="outlined-adornment-password"
+                  title={thingworx_appkey_desc}
+                >
                   Appkey *
                 </InputLabel>
                 <OutlinedInput
+                  title={thingworx_appkey_desc}
                   id="outlined-adornment-password"
                   type={showAppkey ? "text" : "password"}
                   required={true}
@@ -447,6 +462,7 @@ export default function Thingworx() {
               >
                 <FormControl fullWidth>
                   <TextField
+                    title={thingworx_iotkep_desc}
                     select
                     label="Choose iot gateway from Kepware"
                     defaultValue=""
@@ -485,9 +501,12 @@ export default function Thingworx() {
                 </Button>
               </Stack>
 
-              <FormLabel>Remote Things configuration</FormLabel>
+              <FormLabel title={thingworx_remote_config_desc}>
+                Remote Things configuration
+              </FormLabel>
 
               <CustomTable
+                title={thingworx_remote_config_desc}
                 tableData={thingsTableData}
                 setTableData={setThingsTableData}
                 columnsData={thingsColumnData}
@@ -498,7 +517,7 @@ export default function Thingworx() {
           )}
           {currentTab === 2 && (
             <>
-              <FormLabel>
+              <FormLabel title={thingworx_manage_iot_desc}>
                 Kepware IoT Gateways list for OPCUA Server with read only
                 permission
               </FormLabel>
@@ -651,10 +670,13 @@ export default function Thingworx() {
           {currentTab === 3 && (
             <>
               <Box sx={{ flexGrow: 1 }}>
-                <FormLabel>Thingworx agent logs:</FormLabel>
+                <FormLabel title={thingworx_agent_desc}>
+                  Thingworx agent logs:
+                </FormLabel>
                 <AppBar position="static" sx={{ background: "#1F293F" }}>
                   <Toolbar>
                     <Button
+                      title={thingworx_agent_desc}
                       variant="contained"
                       onClick={handleTestConnection}
                       endIcon={<CloudUploadOutlined />}
@@ -812,7 +834,6 @@ export default function Thingworx() {
                       component="div"
                       sx={{ flexGrow: 1 }}
                     >
-                     
                       {agentDiagnosis && agentDiagnosis["Agent_version"]
                         ? agentDiagnosis["Agent_version"]
                         : "not defined"}

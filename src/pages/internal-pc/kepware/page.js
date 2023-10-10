@@ -70,6 +70,7 @@ import { styled } from "@mui/material/styles";
 
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
+import { kepware_channels_desc, kepware_device_desc, kepware_devicenumber_desc, kepware_gateway_row_desc, kepware_licence_desc, kepware_machine_serial_desc, kepware_project_desc, kepware_runtime_desc } from "../../../utils/titles";
 
 const buildRows = (data) => {
   let channelsData = [];
@@ -1218,13 +1219,14 @@ export default function Kepware() {
               spacing={2}
             >
               <FormControl fullWidth>
-                <FormLabel>Machine serial number:</FormLabel>
+                <FormLabel >Machine serial number:</FormLabel>
 
                 <TextField
                   type="text"
                   label="Machine serial"
                   helperText="Create a new machine serial number and add it to the list below"
                   value={thingName}
+                  title={kepware_machine_serial_desc}
                   required={false}
                   onChange={(event) => {
                     setThingName(event?.target?.value);
@@ -1280,11 +1282,11 @@ export default function Kepware() {
                         Refresh
                       </Button>
                     </TableCell>
-                    <TableCell>KEPWARE CHANNELS</TableCell>
-                    <TableCell>DEVICE NUMBER</TableCell>
+                    <TableCell title={kepware_channels_desc}>KEPWARE CHANNELS</TableCell>
+                    <TableCell title={kepware_devicenumber_desc}>DEVICE NUMBER</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody   title = {kepware_gateway_row_desc}>
                   {channelRows &&
                     channelRows.lenght !== 0 &&
                     channelRows.map((row) => {
@@ -1307,7 +1309,7 @@ export default function Kepware() {
         {currentTab === 2 && (
           <>
             <FormControl fullWidth>
-              <Typography>Kepware project:</Typography>
+              <Typography title={kepware_project_desc}>Kepware project:</Typography>
 
               <Stack
                 direction="row"
@@ -1334,9 +1336,9 @@ export default function Kepware() {
 
             <Divider />
 
-            <Typography>Kepware runtime:</Typography>
+            <Typography title={kepware_runtime_desc}>Kepware runtime:</Typography>
 
-            <Button variant="contained" onClick={handleReloadKepwareRuntime}>
+            <Button variant="contained" onClick={handleReloadKepwareRuntime} >
               Reload
             </Button>
 
@@ -1347,7 +1349,7 @@ export default function Kepware() {
         {currentTab === 3 && (
           <>
             <FormControl fullWidth>
-              <FormLabel>Kepware mode:</FormLabel>
+              <FormLabel title={kepware_licence_desc}>Kepware mode:</FormLabel>
 
               <Stack direction="row" spacing={1} alignItems="center">
                 <Typography>License mode</Typography>
@@ -1366,7 +1368,7 @@ export default function Kepware() {
         {currentTab === 4 && (
           <>
             <Box sx={{ flexGrow: 1 }}>
-              <FormLabel>Kepware device configured:</FormLabel>
+              <FormLabel title={kepware_device_desc}>Kepware device configured:</FormLabel>
 
               <Box component="main" sx={{ p: 3 }}>
                 <Typography

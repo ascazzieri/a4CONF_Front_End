@@ -7,6 +7,7 @@ import { send_conf } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
 import { Typography } from "@mui/material";
+import { service_command_desc } from "../../utils/titles";
 
 export default function ServiceHandler() {
 
@@ -59,7 +60,7 @@ export default function ServiceHandler() {
   };
   return (
     <FormControl>
-      <Typography >{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
+      <Typography title={service_command_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
       <RadioGroup
         row
         name="position"

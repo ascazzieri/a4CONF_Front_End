@@ -20,6 +20,7 @@ import {
   Typography,
 } from "@mui/material";
 import SaveButton from "../../../components/SaveButton/SaveButton";
+import { sitemanager_activation_desc, sitemanager_device_name_desc, sitemanager_domain_desc , sitemanger_agents_desc, sitemanger_server_address_desc} from "../../../utils/titles";
 
 export default function Sitemanager() {
   const sitemanager = useSelector((state) => state.services?.sitemanager);
@@ -167,9 +168,10 @@ export default function Sitemanager() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Gatemanager domain path:</FormLabel>
+                <FormLabel title={sitemanager_domain_desc}>Gatemanager domain path:</FormLabel>
 
                 <TextField
+                title={sitemanager_domain_desc}
                   type="text"
                   label="Domain"
                   helperText="Gate Manager Domain"
@@ -181,7 +183,7 @@ export default function Sitemanager() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>Server address:</FormLabel>
+                <FormLabel title={sitemanger_server_address_desc}>Server address:</FormLabel>
 
                 <TextField
                   type="text"
@@ -197,7 +199,7 @@ export default function Sitemanager() {
           {currentTab === 1 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>Sitemanager activation</FormLabel>
+                <FormLabel title={sitemanager_activation_desc}>Sitemanager activation</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Always</Typography>
@@ -214,7 +216,7 @@ export default function Sitemanager() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>Gatemanager device name</FormLabel>
+                <FormLabel title={sitemanager_device_name_desc}>Gatemanager device name</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use a custom name for Gate Manager</Typography>
@@ -251,7 +253,7 @@ export default function Sitemanager() {
 
           {currentTab === 2 && (
             <>
-              <FormLabel>Agents</FormLabel>
+              <FormLabel title={sitemanger_agents_desc}>Agents</FormLabel>
 
               <Table
                 tableData={agentsTableData}

@@ -24,6 +24,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { matrix_address_desc, matrix_server_port_desc } from "../../../utils/titles";
 
 export default function Matrix() {
   const matrix = useSelector(
@@ -235,9 +236,10 @@ export default function Matrix() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>HTTP server settings:</FormLabel>
+                <FormLabel title={matrix_address_desc}>HTTP server settings:</FormLabel>
 
                 <TextField
+                  title={matrix_address_desc}
                   type="text"
                   label="IP Address"
                   helperText="HTTP server address"
@@ -249,9 +251,10 @@ export default function Matrix() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel>HTTP server port:</FormLabel>
+                <FormLabel title={matrix_server_port_desc}>HTTP server port:</FormLabel>
 
                 <TextField
+                  title={matrix_server_port_desc}
                   type="number"
                   inputProps={{
                     inputMode: "numeric",
