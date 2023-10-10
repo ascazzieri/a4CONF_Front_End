@@ -294,23 +294,21 @@ const Row = (props) => {
       });
       return;
     }
-    let endpoint = "";
-    const folder = device?.folder ? device?.folder : "blob_test";
-    const publish_rate = device?.publish_rate ? device?.publish_rate : 1000;
-    const scan_rate = device?.scan_rate ? device?.scan_rate : 1000;
+    //let endpoint = "";
+    //const folder = device?.folder ? device?.folder : "blob_test";
+    //const publish_rate = device?.publish_rate ? device?.publish_rate : 1000;
+    //const scan_rate = device?.scan_rate ? device?.scan_rate : 1000;
 
-    const sampling_time = device?.sampling_time ? device?.sampling_time : 16;
-    const sampling_number_start_index = device?.sampling_number_start_index
+    //const sampling_time = device?.sampling_time ? device?.sampling_time : 16;
+    /*const sampling_number_start_index = device?.sampling_number_start_index
       ? device?.sampling_number_start_index
-      : 0;
-    const sampling_number = device?.sampling_number
+      : 0;*/
+    /*const sampling_number = device?.sampling_number
       ? device?.sampling_number
-      : 100;
+      : 100;*/
     if (event?.target?.name !== "matrix") {
-      if (!device?.endpoint.includes("rt_")) {
-        endpoint = `rt_${device?.endpoint}`;
-      } else {
-        endpoint = device?.endpoint;
+      if (!endPoint.includes("rt_")) {
+        setEndPoint(`rt_${endPoint}`);
       }
     }
 
@@ -318,17 +316,17 @@ const Row = (props) => {
       const tags = await get_device_tags(row?.name, device?.name);
       const channel = row?.name;
       const deviceName = device?.name;
-      const folder = device?.folder;
+      /*const folder = device?.folder; */
 
-      setEndPoint(endpoint);
+      setEndPoint(endPoint);
       setProvider(event?.target?.name);
       setDeviceTags(tags);
       setFolder(folder);
-      setScanRate(scan_rate);
-      setPublishRate(publish_rate);
-      setSamplingTime(sampling_time);
-      setSamplingNumberStartIndex(sampling_number_start_index);
-      setSamplingNumber(sampling_number);
+      setScanRate(scanRate);
+      setPublishRate(publishRate);
+      setSamplingTime(samplingTime);
+      setSamplingNumberStartIndex(samplingNumberStartIndex);
+      setSamplingNumber(samplingNumber);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
@@ -336,7 +334,7 @@ const Row = (props) => {
         event?.target?.name, //type
         row?.name, //channel name
         device?.name, //device name
-        event?.target?.name === "twa" ? endpoint : null, //endpoint
+        event?.target?.name === "twa" ? endPoint : null, //endpoint
         event?.target?.name === "matrix" ? folder : null, //folder for matrix
         event?.target?.name === "matrix" ? scanRate : null, //scan rate for matrix
         event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
@@ -388,7 +386,14 @@ const Row = (props) => {
           tags={deviceTags}
         />
       )}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, maxWidth: 600, overflowX: 'auto', p:5 }}>
+      <TableRow
+        sx={{
+          "& > *": { borderBottom: "unset" },
+          maxWidth: 600,
+          overflowX: "auto",
+          p: 5,
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -901,7 +906,7 @@ export default function Kepware() {
         "Machines Configured",
       ];
 
-  const [thingName, setThingName] = useState();
+  const [machineSerial, setMachineSerial] = useState();
 
   const [count, setCount] = useState(0);
   const [isInKepware, setIsInKepware] = useState(false);
@@ -1124,7 +1129,7 @@ export default function Kepware() {
   };
 
   const handleAddThingName = (event) => {
-    if (!event?.target?.value || event?.target?.value?.trim() === "") {
+    if (!machineSerial || machineSerial?.trim() === "") {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -1138,9 +1143,14 @@ export default function Kepware() {
     const thing_names = [...thingNames];
 
     // Verificare se l'elemento è già presente nell'array
-    if (!thing_names.includes(event?.target?.value?.trim())) {
+    if (!thing_names.includes(machineSerial.trim()) && !thing_names.includes(`rt_${machineSerial.trim()}`)) {
       // Se non è presente, aggiungerlo
-      thing_names.push(event?.target?.value?.trim());
+      if (machineSerial.includes("rt_")) {
+        thing_names.push(machineSerial.trim());
+      } else {
+        thing_names.push(`rt_${machineSerial.trim()}`);
+      }
+
       setThingNames(thing_names);
     }
   };
@@ -1248,10 +1258,9 @@ export default function Kepware() {
                     type="text"
                     label="Machine serial"
                     helperText="Create a new machine serial number and add it to the list below"
-                    value={thingName}
-                    required={false}
+                    value={machineSerial || ""}
                     onChange={(event) => {
-                      setThingName(event?.target?.value);
+                      setMachineSerial(event?.target?.value);
                     }}
                   />
                 </FormControl>

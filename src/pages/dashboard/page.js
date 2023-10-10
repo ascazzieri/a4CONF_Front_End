@@ -539,7 +539,7 @@ export default function Dashboard() {
                   border: "1px inset white",
                 }}
               >
-                <h3>Device Connected</h3>
+                <h3>Connected device</h3>
                 <Divider />
                 <Grid
                   container

@@ -4,6 +4,9 @@ import TextField from "@mui/material/TextField";
 import { Divider } from "antd";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import { OutlinedInput, InputAdornment, InputLabel, IconButton } from "@mui/material"
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ErrorCacher from "../components/Errors/ErrorCacher";
 import appliedLogo from "../media/img/applied_logo_cropped.png";
 import { send_login } from "../utils/api";
@@ -20,6 +23,11 @@ export default function Login(props) {
   const { authenticated, setAuthenticated } = props;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
 
   const superUser = useContext(SuperUserContext);
   const snackBarContext = useContext(SnackbarContext);
@@ -47,15 +55,15 @@ export default function Login(props) {
     if (username.trim() !== "" && password.trim() !== "") {
       (async () => {
         try {
-          const auth = await send_login({
+          const res = await send_login({
             username: username,
             password: password,
           });
-          console.log(auth);
-          if (auth?.result) {
+          console.log(res);
+          if (res) {
             updateUserList(username);
             setAuthenticated(true);
-            if (auth?.role === "admin") {
+            if (res?.role === "admin") {
               superUser[1](true);
               //feeback positivo per admin
               handleRequestFeedback({
@@ -101,7 +109,7 @@ export default function Login(props) {
           <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
         </Stack>
         <Divider style={{ background: "white" }} />
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="center">
           <Grid item md={8} sx={{ display: "flex" }}>
 
             <video autoPlay muted loop width='100%' style={{ margin: '4% 0' }}>
@@ -109,8 +117,9 @@ export default function Login(props) {
             </video>
 
           </Grid>
-          <Grid container md={4} justify="flex-end" alignItems="center" sx={{ p: 2 }}>
+          <Grid item md={4} justify="flex-end" alignItems="center" sx={{ p: 2 }}>
             <Box>
+              <h2 style={{ textAlign: 'center' }}>Login</h2>
               <FormControl fullWidth>
                 <TextField
                   label="Username"
@@ -119,12 +128,27 @@ export default function Login(props) {
                   style={{ margin: 0, padding: 0 }}
                 /></FormControl>
               <FormControl fullWidth>
-                <TextField
-                  fullWidth={true}
-                  label="Password"
-                  value={password}
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? "text" : "password"}
+                  value={password || ""}
                   onChange={handlePasswordChange}
-                  style={{ margin: 0, padding: 0 }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onMouseDown={handleClickShowPassword}
+                        onMouseUp={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
                 />
               </FormControl>
               <Stack

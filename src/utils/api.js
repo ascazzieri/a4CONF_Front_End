@@ -436,11 +436,16 @@ export const send_archive = async (data) => {
 };
 export const send_login = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/login", "POST", data);
+    const res = await helper.fetchData("/conf/login", "POST", data, true);
     verbose && console.log(res);
+
+    if (res && res.access_token) {
+      localStorage.setItem("jwtToken", res.access_token);
+    }
     return res;
   } catch (e) {
     console.error(e);
+    return false;
   }
 };
 export const send_register = async (data) => {
@@ -454,7 +459,7 @@ export const send_register = async (data) => {
 };
 export const check_credentials = async () => {
   try {
-    const res = await helper.fetchData("/conf/check-credentials", "GET");
+    const res = await helper.fetchData("/conf/check-credentials", "GET", true);
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -487,8 +492,8 @@ export const get_users = async () => {
   } catch (e) {
     console.error(e);
   }
-}
-   
+};
+
 export const post_users = async (data) => {
   try {
     const res = await helper.fetchData("/conf/users/create", "POST", data);

@@ -133,7 +133,7 @@ export default function MaxWidthDialog(props) {
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>Tags browse for channel: {channel}, device: {device}</DialogTitle>
+                <DialogTitle>Tags browse for channel: {channel}, device: {device} {endPoint ? `with endpoint: ${endPoint}` : ""}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Choose which data you want to import from channel's device to IoT Gateway
