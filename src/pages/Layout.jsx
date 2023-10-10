@@ -12,7 +12,7 @@ import { LoadingContext } from "../utils/context/Loading";
 import applied_logo from "../media/img/applied_logo.png";
 import { useLocation } from "react-router-dom";
 import React from "react";
-import styled, { keyframes } from 'styled-components';
+import { getAuthToken } from "../utils/utils";
 
 const applied_background = {
   position: "fixed",
@@ -27,7 +27,6 @@ const applied_background = {
 };
 
 const Layout = () => {
-  const [bReady, setBReady] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -45,51 +44,53 @@ const Layout = () => {
 
   const loaderContext = useContext(LoadingContext);
 
-  const [isAnimated, setIsAnimated] = useState(false);
-
   useEffect(() => {
     (async () => {
-      loaderContext[1](true);
-      const confA = await get_confA();
-      console.log("get conf A");
-      if (confA) {
-        dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
+      const token = getAuthToken()
+      const pathName = location?.pathname
+      if(token && pathName !== "/login" && pathName !== "/register"){
+        loaderContext[1](true);
+        const confA = await get_confA();
+        console.log("get conf A");
+        if (confA) {
+          dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
+        }
+        const confB = await get_confB();
+        console.log("get conf B");
+        if (confB) {
+          dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
+        }
+        if (confA && confB) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `Configuration correctly loaded from both PCs`,
+          });
+        } else if (!confA && confB) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Error on loading PCA configuration`,
+          });
+        } else if (confA && !confB) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Error on loading PCB configuration`,
+          });
+        } else if (!confA && !confB) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Error on loading configuration from both PCs`,
+          });
+        }
+        loaderContext[1](false);
       }
-      const confB = await get_confB();
-      console.log("get conf B");
-      if (confB) {
-        dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
-      }
-      if (confA && confB) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "success",
-          message: `Configuration correctly loaded from both PCs`,
-        });
-      } else if (!confA && confB) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Error on loading PCA configuration`,
-        });
-      } else if (confA && !confB) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Error on loading PCB configuration`,
-        });
-      } else if (!confA && !confB) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Error on loading configuration from both PCs`,
-        });
-      }
-      loaderContext[1](false);
       //setBReady(true)
     })();
   }, []);
@@ -119,10 +120,6 @@ const Layout = () => {
         </Typography>
       </Backdrop>
     );
-  }
-
-  if (!bReady) {
-    return <h1>Loading...</h1>;
   }
 
   return (

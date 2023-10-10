@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const ipformat =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -64,7 +66,9 @@ export const agents_vendor_list = [
   "Weintek",
   "Yaskawa",
 ];
-
+export const getAuthToken = () => {
+  return localStorage.getItem("jwtToken");
+};
 export const getArrayOfObjects = (data, key1, key2) => {
   let arrayOfObjects = [];
   if (data) {
@@ -165,8 +169,8 @@ export const agent_vendor_device_type = {
   Weintek: ["Ethernet"],
   Yaskawa: ["Ethernet"],
 };
-export async function fetchData(url, method, body) {
-  const requestOptions = {
+export async function fetchData(url, method, body, noToken) {
+  const axiosConfig = {
     method: method,
     headers: {
       "Content-Type": "application/json",
@@ -174,22 +178,45 @@ export async function fetchData(url, method, body) {
   };
 
   if (method === "POST") {
-    requestOptions.body = JSON.stringify(body);
+    axiosConfig.data = body;
   }
+  if (noToken) {
+    try {
+      const path = window.location.origin;
+      const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+      const response = await axios(pathWithoutPort + ":80" + url, axiosConfig);
 
-  try {
-    const path = window.location.origin;
-    const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-    const response = await fetch(`${pathWithoutPort}:80${url}`, requestOptions);
-
-    if (!response.ok) {
-      throw new Error(response.status);
+      // Axios handles non-2xx status codes as errors automatically
+      const data = response.data;
+      return data;
+    } catch (error) {
+      throw new Error(`Axios error: ${error.message}`);
+    }
+  } else {
+    const token = getAuthToken();
+    if (!token) {
+      console.error("User not authenticated");
+      return;
     }
 
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    throw new Error(`Fetch error: ${error.message}`);
+    try {
+      const path = window.location.origin;
+      const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+
+      const response = await axios(pathWithoutPort + ":80" + url, {
+        ...axiosConfig,
+        headers: {
+          ...axiosConfig.headers,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      // Axios handles non-2xx status codes as errors automatically
+      const data = response.data;
+      return data;
+    } catch (error) {
+      throw new Error(`Axios error: ${error.message}`);
+    }
   }
 }
 export const confToHTML = (conf) => {
@@ -427,6 +454,5 @@ export const deepMerge = (obj1, obj2) => {
       }
     }
   }
-  console.log(result);
   return result;
 };

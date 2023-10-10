@@ -1,19 +1,32 @@
-import React, { useState , useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Container } from "@mui/material";
+import { Button, Card, Grid, FormControl, Box } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Divider } from "antd";
 import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
 import ErrorCacher from "../components/Errors/ErrorCacher";
 import appliedLogo from "../media/img/applied_logo_cropped.png";
+import { OutlinedInput, InputAdornment, InputLabel, IconButton } from "@mui/material"
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { send_register } from "../utils/api";
 import { SnackbarContext } from "../utils/context/SnackbarContext";
 
-export default function Register() {
+export default function Register(props) {
+  const { setAuthenticated, firstUser, setFirstUser } = props
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+
+  const handleClickShowPasswordConfirm = () => setShowPasswordConfirm((show) => !show);
+
   const navigate = useNavigate();
   const handleUsernameChange = (event) => {
     setUsername(event.target.value);
@@ -30,6 +43,13 @@ export default function Register() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+
+  useEffect(() => {
+    if (!firstUser) {
+      navigate("/");
+    }
+  });
+
   const handleRegister = async () => {
     if (
       username.trim() !== "" &&
@@ -53,7 +73,6 @@ export default function Register() {
               username: username,
               password: password,
             });
-            console.log(result);
             if (result) {
               handleRequestFeedback({
                 vertical: "bottom",
@@ -61,6 +80,8 @@ export default function Register() {
                 severity: "success",
                 message: `User ${username} create correctly`,
               });
+              setAuthenticated(true)
+              setFirstUser(false)
               navigate("/");
             } else {
               handleRequestFeedback({
@@ -71,18 +92,17 @@ export default function Register() {
               });
             }
           } catch (err) {
-            console.log("Error occured when fetching books");
+            console.error(err);
           }
         })();
       }
     } else {
-      
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `username o password not conformed.Username must have similar format: user@example.com . Paasword must includes : 8 caracters, a small letter, acapital letter and a special character`
-        });
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Username o password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`
+      });
     }
   };
   function userIsValid(user) {
@@ -94,75 +114,102 @@ export default function Register() {
     var strength = 0;
     if (password.length >= 8) {
       strength += 1;
+      console.log("1")
     }
     if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
       strength += 1;
+      console.log("2")
     }
     if (password.match(/\d/)) {
       strength += 1;
+      console.log("3")
     }
     if (password.match(/[^a-zA-Z\d]/)) {
       strength += 1;
+      console.log("4")
     }
     return strength;
   }
   return (
     <ErrorCacher>
-      <Container sx={{ flexGrow: 1 }} disableGutters></Container>
-      <Container sx={{ flexGrow: 1 }} disableGutters>
-        <Card sx={{ padding: 5, margin: 5 }}>
-          <Stack direction="row" spacing={30} style={{ width: "100%" }}>
-            <h1> Registration </h1>
-            <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
-          </Stack>
-          <Divider />
-          <div>
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Username:</h2>
-              <TextField
-                fullWidth={true}
-                name="username"
-                rows={1}
-                value={username}
-                onChange={handleUsernameChange}
-              />
-            </Stack>
-            <Divider />
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Password:</h2>
-              <TextField
-                fullWidth={true}
-                name="password"
-                rows={1}
-                value={password}
-                onChange={handlePasswordChange}
-              />
-            </Stack>
-            <Divider />
-            <Stack direction="row" spacing={5} style={{ width: "100%" }}>
-              <h2>Confirm Password</h2>
-              <TextField
-                fullWidth={true}
-                name="confirmPassword"
-                rows={1}
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-              />
-            </Stack>
-          </div>
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="flex-end"
-            alignItems="center"
-            style={{ width: "100%" }}
-          >
-            <Button variant="contained" size="medium" onClick={handleRegister}>
-              Register
-            </Button>
-          </Stack>
-        </Card>
-      </Container>
-    </ErrorCacher>
+      <Card sx={{ padding: 5 }}>
+        <Stack direction="row" spacing={2} justifyContent="center" style={{ width: "100%" }}>
+          <h1 style={{ margin: 0 }}> Create user details </h1>
+          <img src={appliedLogo} alt="appliedLogo" width="60" height="60" />
+        </Stack>
+        <Divider style={{ background: "white" }} />
+        <Grid container spacing={2} alignItems="center">
+          <Grid item md={8} sx={{ display: "flex" }}>
+
+            <video autoPlay muted loop width='100%' style={{ margin: '4% 0' }}>
+              <source src="/img/APL_loop_campagna_low.mp4" type="video/mp4" />
+            </video>
+
+          </Grid>
+          <Grid item md={4} justify="flex-end" alignItems="center" sx={{ p: 2 }}>
+            <Box>
+              <FormControl fullWidth>
+                <TextField
+                  label="Username"
+                  value={username}
+                  onChange={handleUsernameChange}
+                  style={{ margin: 0, padding: 0 }}
+                /></FormControl>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="outlined-adornment-password">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? "text" : "password"}
+                  value={password || ""}
+                  onChange={handleConfirmPasswordChange}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onMouseDown={handleClickShowPassword}
+                        onMouseUp={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <InputLabel htmlFor="outlined-adornment-password-confirm">
+                  Password
+                </InputLabel>
+                <OutlinedInput
+                  id="outlined-adornment-password-confirm"
+                  type={showPasswordConfirm ? "text" : "password"}
+                  value={password || ""}
+                  onChange={handlePasswordChange}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onMouseDown={handleClickShowPasswordConfirm}
+                        onMouseUp={handleClickShowPasswordConfirm}
+                        edge="end"
+                      >
+                        {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                />
+              </FormControl>
+              <FormControl fullWidth>
+                <Button variant="contained" onClick={handleRegister}>Register</Button>
+              </FormControl>
+            </Box>
+          </Grid>
+        </Grid>
+      </Card>
+    </ErrorCacher >
   );
 }

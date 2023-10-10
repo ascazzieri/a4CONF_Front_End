@@ -1,1 +1,7 @@
-true
+{
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJzeXNhZG1pbiIsInJvbGUiOiJhZG1pbiIsImV4cCI6MTY5NjkzNDgxMn0.7kBSATII6bG91b4BL0uYm2jAlC2piAb37B0o6Ew_iCY",
+
+  "token_type": "bearer",
+
+  "role": "admin"
+}

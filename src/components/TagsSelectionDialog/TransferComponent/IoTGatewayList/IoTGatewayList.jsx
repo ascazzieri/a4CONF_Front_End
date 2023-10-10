@@ -199,8 +199,6 @@ export default function IconTreeView(props) {
             defaultCollapseIcon={<ArrowDropDownIcon />}
             defaultExpandIcon={<ArrowRightIcon />}
             defaultEndIcon={<div style={{ width: 24 }} />}
-            iotGatewayCart={iotGatewayCart}
-            setIotGatewayCart={setIotGatewayCart}
             sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'auto' }}
         >
 

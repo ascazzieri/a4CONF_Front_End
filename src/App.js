@@ -1,6 +1,6 @@
 // App.js
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./App.css";
 import Layout from "./pages/Layout";
 import Dashboard from "./pages/dashboard/page";
@@ -29,6 +29,41 @@ import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
   const [authenticated, setAuthenticated] = useState(true);
+  const [firstUser, setFirstUser] = useState();
+
+  useEffect(() => {
+    (async () => {
+      const credentials = await check_credentials();
+      if (credentials === false) {
+        setFirstUser(true);
+      } else if (credentials === true) {
+        setFirstUser(false);
+      }
+    })();
+  }, []);
+
+  if (firstUser) {
+    return (
+      <BrowserRouter>
+        <Navigate to="/register" />
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route
+              path="/register"
+              element={
+                <Register
+                  authenticated={authenticated}
+                  setAuthenticated={setAuthenticated}
+                  firstUser={setFirstUser}
+                  setFirstUser={setFirstUser}
+                />
+              }
+            />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    );
+  }
 
   if (!authenticated) {
     return (
@@ -215,10 +250,10 @@ export default function App({ Component, pageProps }) {
                 </PrivateRoute>
               }
             />
-            <Route
+            {/*             <Route
               path="/register"
               element={<Register setAuthenticated={setAuthenticated} />}
-            />
+            /> */}
             <Route
               path="/login"
               element={

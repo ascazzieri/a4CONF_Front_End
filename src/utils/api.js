@@ -70,7 +70,26 @@ export const createiotgw = async (
 ) => {
   try {
     const res = await helper.fetchData(
-      `/createiotgw?channel=${channel}&device=${device}&type=${type}&publish_rate_ms=${publish_rate}&items_scan_rate=${scan_rate}&thing_name=${thingName}&machine_id=${blob_folder}&sampling_time=${sampling_time}&sampling_number_start_index=${sampling_number_start_index}&sampling_number=${sampling_number}`,
+      "/createiotgw?channel=" +
+        channel +
+        "&device=" +
+        device +
+        "&type=" +
+        type +
+        "&publish_rate_ms=" +
+        publish_rate +
+        "&items_scan_rate=" +
+        scan_rate +
+        "&thing_name=" +
+        thingName +
+        "&machine_id=" +
+        blob_folder +
+        "&sampling_time=" +
+        sampling_time +
+        "&sampling_number_start_index=" +
+        sampling_number_start_index +
+        "&sampling_number=" +
+        sampling_number,
       "POST",
       tags_list
     );
@@ -436,17 +455,26 @@ export const send_archive = async (data) => {
 };
 export const send_login = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/login", "POST", data);
+    const res = await helper.fetchData("/conf/login", "POST", data, true);
     verbose && console.log(res);
+
+    if (res && res.access_token) {
+      localStorage.setItem("jwtToken", res.access_token);
+    }
     return res;
   } catch (e) {
     console.error(e);
+    return false;
   }
 };
 export const send_register = async (data) => {
   try {
-    const res = await helper.fetchData("/conf/register", "POST", data);
+    const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
+
+    if (res && res.access_token) {
+      localStorage.setItem("jwtToken", res.access_token);
+    }
     return res;
   } catch (e) {
     console.error(e);
@@ -454,7 +482,7 @@ export const send_register = async (data) => {
 };
 export const check_credentials = async () => {
   try {
-    const res = await helper.fetchData("/conf/check-credentials", "GET");
+    const res = await helper.fetchData("/conf/check-credentials", "GET", true);
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -487,8 +515,8 @@ export const get_users = async () => {
   } catch (e) {
     console.error(e);
   }
-}
-   
+};
+
 export const post_users = async (data) => {
   try {
     const res = await helper.fetchData("/conf/users/create", "POST", data);
@@ -524,6 +552,7 @@ export const ntp_resinc = async (data) => {
     console.error(e);
   }
 };
+
 export const get_advanced = async (
   service,
   command
@@ -539,3 +568,4 @@ export const get_advanced = async (
     console.error(e);
   }
 };
+

@@ -107,7 +107,7 @@ const Row = (props) => {
   const [open, setOpen] = useState(false);
   const [rowData, setRowData] = useState(row);
   const [tagsSelectionDialog, setTagsSelectionDialog] = useState(false);
-  const [iotGatewayType, setIotGatewayType] = useState(undefined);
+  const [iotGatewayType, setIotGatewayType] = useState();
   const [channelDevice, setChannelDevice] = useState({});
   const [provider, setProvider] = useState();
   const [endPoint, setEndPoint] = useState();
@@ -118,7 +118,6 @@ const Row = (props) => {
   const [samplingTime, setSamplingTime] = useState(16);
   const [samplingNumberStartIndex, setSamplingNumberStartIndex] = useState(0);
   const [samplingNumber, setSamplingNumber] = useState(100);
-
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
     const name = event?.target?.name;
@@ -168,6 +167,7 @@ const Row = (props) => {
 
     updatedDevice.endpoint = value;
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    console.log(updatedRowData);
     setRowData(updatedRowData);
   };
   const handleFolderChange = (event) => {
@@ -275,7 +275,7 @@ const Row = (props) => {
   const handleCreate = async (event, device) => {
     console.log(device);
     if (
-      event?.target?.name !== "matrix" &&
+      event?.target?.name === "twa" &&
       (!device?.endpoint || device?.endpoint?.trim() === "")
     ) {
       handleButtonClickFeedback({
@@ -296,17 +296,6 @@ const Row = (props) => {
       return;
     }
     let endpoint = "";
-    const folder = device?.folder ? device?.folder : "blob_test";
-    const publish_rate = device?.publish_rate ? device?.publish_rate : 1000;
-    const scan_rate = device?.scan_rate ? device?.scan_rate : 1000;
-
-    const sampling_time = device?.sampling_time ? device?.sampling_time : 16;
-    const sampling_number_start_index = device?.sampling_number_start_index
-      ? device?.sampling_number_start_index
-      : 0;
-    const sampling_number = device?.sampling_number
-      ? device?.sampling_number
-      : 100;
     if (event?.target?.name !== "matrix") {
       if (!device?.endpoint.includes("rt_")) {
         endpoint = `rt_${device?.endpoint}`;
@@ -314,22 +303,24 @@ const Row = (props) => {
         endpoint = device?.endpoint;
       }
     }
+    const channel = row?.name;
+    const deviceName = device?.name;
 
+    setEndPoint(endpoint);
+    setProvider(event?.target?.name);
+    setFolder(device?.folder ? device?.folder : "blob_test");
+    setScanRate(device?.scan_rate ? device?.scan_rate : 1000);
+    setPublishRate(device?.publish_rate ? device?.publish_rate : 1000);
+    setSamplingTime(device?.sampling_time ? device?.sampling_time : 16);
+    setSamplingNumberStartIndex(
+      device?.sampling_number_start_index
+        ? device?.sampling_number_start_index
+        : 0
+    );
+    setSamplingNumber(device?.sampling_number ? device?.sampling_number : 100);
     if (device?.choose_tags) {
       const tags = await get_device_tags(row?.name, device?.name);
-      const channel = row?.name;
-      const deviceName = device?.name;
-      const folder = device?.folder;
-
-      setEndPoint(endpoint);
-      setProvider(event?.target?.name);
       setDeviceTags(tags);
-      setFolder(folder);
-      setScanRate(scan_rate);
-      setPublishRate(publish_rate);
-      setSamplingTime(sampling_time);
-      setSamplingNumberStartIndex(sampling_number_start_index);
-      setSamplingNumber(sampling_number);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
@@ -337,13 +328,37 @@ const Row = (props) => {
         event?.target?.name, //type
         row?.name, //channel name
         device?.name, //device name
-        event?.target?.name === "twa" ? endpoint : null, //endpoint
-        event?.target?.name === "matrix" ? folder : null, //folder for matrix
-        event?.target?.name === "matrix" ? scanRate : null, //scan rate for matrix
-        event?.target?.name === "matrix" ? publishRate : null, //publish rate for matrix
-        event?.target?.name === "matrix" ? samplingTime : null, //sampling time for matrix
-        event?.target?.name === "matrix" ? samplingNumberStartIndex : null, //sampling number start index for matrix
-        event?.target?.name === "matrix" ? samplingNumber : null, //sampling number for matrix
+        event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
+        event?.target?.name === "matrix"
+          ? device?.folder
+            ? device?.folder
+            : "blob_test"
+          : null, //folder for matrix
+        event?.target?.name === "matrix"
+          ? device?.scan_rate
+            ? device?.scan_rate
+            : 1000
+          : null, //scan rate for matrix
+        event?.target?.name === "matrix"
+          ? device?.publish_rate
+            ? device?.publish_rate
+            : 1000
+          : null, //publish rate for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_time
+            ? device?.sampling_time
+            : 16
+          : null, //sampling time for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_number_start_index
+            ? device?.sampling_number_start_index
+            : 0
+          : null, //sampling number start index for matrix
+        event?.target?.name === "matrix"
+          ? device?.sampling_number
+            ? device?.sampling_number
+            : 100
+          : null, //sampling number for matrix
         []
       );
       if (response?.iotgw && response?.time && response?.thing_name)
@@ -389,7 +404,14 @@ const Row = (props) => {
           tags={deviceTags}
         />
       )}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" }, maxWidth: 600, overflowX: 'auto', p:5 }}>
+      <TableRow
+        sx={{
+          "& > *": { borderBottom: "unset" },
+          maxWidth: 600,
+          overflowX: "auto",
+          p: 5,
+        }}
+      >
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -504,7 +526,7 @@ const Row = (props) => {
                                     select
                                     label="Local Things"
                                     name={device?.name}
-                                    defaultValue=""
+                                    value={device?.endpoint || ""}
                                     onChange={handleEndpointChange}
                                     style={{ minWidth: 150 }}
                                   >
@@ -902,7 +924,7 @@ export default function Kepware() {
         "Machines Configured",
       ];
 
-  const [thingName, setThingName] = useState();
+  const [machineSerial, setMachineSerial] = useState();
 
   const [count, setCount] = useState(0);
   const [isInKepware, setIsInKepware] = useState(false);
@@ -1125,7 +1147,7 @@ export default function Kepware() {
   };
 
   const handleAddThingName = (event) => {
-    if (!event?.target?.value || event?.target?.value?.trim() === "") {
+    if (!machineSerial || machineSerial?.trim() === "") {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -1139,9 +1161,17 @@ export default function Kepware() {
     const thing_names = [...thingNames];
 
     // Verificare se l'elemento è già presente nell'array
-    if (!thing_names.includes(event?.target?.value?.trim())) {
+    if (
+      !thing_names.includes(machineSerial.trim()) &&
+      !thing_names.includes(`rt_${machineSerial.trim()}`)
+    ) {
       // Se non è presente, aggiungerlo
-      thing_names.push(event?.target?.value?.trim());
+      if (machineSerial.includes("rt_")) {
+        thing_names.push(machineSerial.trim());
+      } else {
+        thing_names.push(`rt_${machineSerial.trim()}`);
+      }
+
       setThingNames(thing_names);
     }
   };
@@ -1244,14 +1274,92 @@ export default function Kepware() {
               >
                 <FormControl fullWidth>
                   <FormLabel>Machine serial number:</FormLabel>
-        {currentTab === 0 && (
-          <>
-            <Stack
-              direction="row"
-              justifyContent="center"
-              alignItems="center"
-              spacing={2}
-            >
+
+                  <TextField
+                    type="text"
+                    label="Machine serial"
+                    helperText="Create a new machine serial number and add it to the list below"
+                    value={machineSerial || ""}
+                    onChange={(event) => {
+                      setMachineSerial(event?.target?.value);
+                    }}
+                  />
+                </FormControl>
+                <Button variant="contained" onClick={handleAddThingName}>
+                  Add
+                </Button>
+              </Stack>
+
+              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
+                <Table stickyHeader aria-label="sticky table" size="small">
+                  <TableBody>
+                    {thingNames &&
+                      thingNames.length !== 0 &&
+                      thingNames.map((row) => {
+                        return (
+                          <TableRow hover key={row}>
+                            <TableCell align="center">
+                              {row.substring(3, row.length)}
+                            </TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                aria-label="delete"
+                                onClick={() => {
+                                  handleThingNameDelete(row);
+                                }}
+                              >
+                                <DeleteIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </>
+          )}
+          {currentTab === 1 && (
+            <>
+              <TableContainer component={Paper}>
+                <Table aria-label="collapsible table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <Button
+                          onClick={handleChannelRefresh}
+                          variant="outlined"
+                          endIcon={<CachedIcon />}
+                        >
+                          Refresh
+                        </Button>
+                      </TableCell>
+                      <TableCell>KEPWARE CHANNELS</TableCell>
+                      <TableCell>DEVICE NUMBER</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {channelRows &&
+                      channelRows.lenght !== 0 &&
+                      channelRows.map((row) => {
+                        return (
+                          <Row
+                            key={row.name + row.device_number}
+                            row={row}
+                            thingNames={thingNames}
+                            handleButtonClickFeedback={handleClick}
+                          />
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 2 && (
+            <>
               <FormControl fullWidth>
                 <FormLabel >Machine serial number:</FormLabel>
 
@@ -1392,16 +1500,16 @@ export default function Kepware() {
                     onChange={handleKepwareModeChange}
                   />
 
-                <Typography>Trial mode</Typography>
-              </Stack>
-            </FormControl>
-            <Divider />
-          </>
-        )}
-        {currentTab === 4 && (
-          <>
-            <Box sx={{ flexGrow: 1 }}>
-              <FormLabel>Kepware device configured:</FormLabel>
+                  <Typography>Trial mode</Typography>
+                </Stack>
+              </FormControl>
+              <Divider />
+            </>
+          )}
+          {currentTab === 4 && (
+            <>
+              <Box sx={{ flexGrow: 1 }}>
+                <FormLabel>Kepware channels info:</FormLabel>
 
                 <Box component="main" sx={{ p: 3 }}>
                   <Typography
@@ -1455,7 +1563,7 @@ export default function Kepware() {
                                 deviceInside.map((insideItem, insideIndex) => {
                                   const deviceName = insideItem?.device;
                                   return (
-                                    <>
+                                    <Fragment key={Math.random()}>
                                       <ListItemButton
                                         onClick={(event) =>
                                           handleExpandableListDevices(
@@ -1530,7 +1638,7 @@ export default function Kepware() {
                                           </ListItemButton>
                                         </List>
                                       </Collapse>
-                                    </>
+                                    </Fragment>
                                   );
                                 })}
                             </Collapse>

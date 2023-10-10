@@ -106,7 +106,7 @@ export default function Dashboard() {
     hostNameHelperText = "Write a4GATE serial number S/N";
   } else if (hostName === "") {
     hostNameHelperText =
-      "a4GATE hostname of PCA and PCB do not match. Please insert S/N as hostname and restart a4GATE";
+      "a4GATE hostname of Data Collector and Data Sender do not match. Please insert S/N as hostname and restart a4GATE";
   }
   const [isInDashboard, setIsInDashboard] = useState(false);
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
@@ -238,7 +238,7 @@ export default function Dashboard() {
                 item
                 xs={2}
                 sm={6}
-                md={3}
+                md={6}
                 style={{
                   textAlign: "center",
                   border: "1px inset white",
@@ -246,206 +246,190 @@ export default function Dashboard() {
               >
                 <h3 title={a4gate_status_desc}>a4GATE Status</h3>
                 <Divider />
+
                 <Grid
                   container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
                   style={{ overflowY: "auto" }}
                 >
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={pcb_ready_desc}>PCB Ready</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.is_B_ready?.ready
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={pcb_network_desc}>PCB Network</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {pcb_is_connected?.connected ? goodStatus() : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={bidir_desc}>Bidir.</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.bidir ? (
-                      dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
-                        <>
-                          <div style={{ color: "green" }}>
-                            {dashboardStatus?.bidir &&
-                              dashboardStatus?.bidir["a4GATE.U2U.RT"]}
-                          </div>
-                        </>
-                      ) : (
-                        <div style={{ color: "red" }}>Closed</div>
-                      )
-                    ) : (
-                      <>
-                        <div>Checking...</div>
-                      </>
-                    )}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <Button
-                      sx={{ mb: 1, mt: 0 }}
-                      variant="contained"
-                      onClick={handleOpenKepware}
-                      title={kepserver_desc}
-                    >
-                      KepServer
-                    </Button>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {plugins_status?.kepware?.server_runtime &&
-                    plugins_status?.kepware?.server_iotgateway &&
-                    plugins_status?.kepware?.config_api_service
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Popover
-                    open={kepwareOpen}
-                    anchorEl={kepwareAnchor}
-                    onClose={handleKepwareClose}
-                    anchorOrigin={{
-                      vertical: "bottom",
-                      horizontal: "left",
-                    }}
-                  >
-                    <Grid
-                      container
-                      rowSpacing={3}
-                      justifyContent="center"
-                      alignItems="center"
-                      sx={{ p: 2, pb: 0 }}
-                    >
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>Kepware</div>
-                      </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        {plugins_status?.kepware?.server_runtime
-                          ? goodStatus()
-                          : badStatus()}
-                      </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>IoT Gateway</div>
-                      </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        {plugins_status?.kepware?.server_iotgateway
-                          ? goodStatus()
-                          : badStatus()}
-                      </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>Config API</div>
-                      </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        {plugins_status?.kepware?.config_api_service
-                          ? goodStatus()
-                          : badStatus()}
-                      </Grid>
+                  <Grid container md={6}>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Data Sender ready</div>
                     </Grid>
-                  </Popover>
-                  <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                    <div style={{ marginBottom: 5 }} title={version_desc}>Version:</div>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.is_B_ready?.ready
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Data Sender network</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {pcb_is_connected?.connected ? goodStatus() : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Bidir.</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.bidir ? (
+                        dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
+                          <>
+                            <div style={{ color: "green" }}>
+                              {dashboardStatus?.bidir &&
+                                dashboardStatus?.bidir["a4GATE.U2U.RT"]}
+                            </div>
+                          </>
+                        ) : (
+                          <div style={{ color: "red" }}>Closed</div>
+                        )
+                      ) : (
+
+                        <>
+                          <div>Checking...</div>
+                        </>
+
+                      )}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <Button
+                        sx={{ mb: 1, mt: 0 }}
+                        variant="contained"
+                        onClick={handleOpenKepware}
+                      >
+                        KepServer
+                      </Button>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {plugins_status?.kepware?.server_runtime &&
+                      plugins_status?.kepware?.server_iotgateway &&
+                      plugins_status?.kepware?.config_api_service
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Popover
+                      open={kepwareOpen}
+                      anchorEl={kepwareAnchor}
+                      onClose={handleKepwareClose}
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "left",
+                      }}
+                    >
+                      <Grid
+                        container
+                        rowSpacing={3}
+                        justifyContent="center"
+                        alignItems="center"
+                        sx={{ p: 2, pb: 0 }}
+                      >
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          <div>Kepware Runtime</div>
+                        </Grid>
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          {plugins_status?.kepware?.server_runtime
+                            ? goodStatus()
+                            : badStatus()}
+                        </Grid>
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          <div>IoT Gateway</div>
+                        </Grid>
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          {plugins_status?.kepware?.server_iotgateway
+                            ? goodStatus()
+                            : badStatus()}
+                        </Grid>
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          <div>Config API</div>
+                        </Grid>
+                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                          {plugins_status?.kepware?.config_api_service
+                            ? goodStatus()
+                            : badStatus()}
+                        </Grid>
+                      </Grid>
+                    </Popover>
+                    <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <div style={{ marginBottom: 5 }}>Version:</div>
+                    </Grid>
+
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {system?.a4updater_version?.industrial ===
+                      system?.a4updater_version?.customer ? (
+                        system?.a4updater_version?.industrial
+                      ) : (
+                        <>
+                          <Button
+                            sx={{ mb: 1, mt: 0 }}
+                            variant="contained"
+                            color="error"
+                            onClick={handleOpenVersionWarning}
+                          >
+                            Error!
+                          </Button>
+                        </>
+                      )}
+                    </Grid>
+                    <Popover
+                      open={versionWarningOpen}
+                      anchorEl={versionWarningAnchor}
+                      onClose={handleCloseVersionWarning}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "right",
+                      }}
+                    >
+                      <div style={{ padding: 10, textAlign: "center" }}>
+                        <Typography style={{ color: "white" }}>
+                          The software version of Internal PC and External PC do
+                          not match!
+                        </Typography>
+                      </div>
+                    </Popover>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {system?.a4updater_version?.industrial ===
-                    system?.a4updater_version?.customer ? (
-                      system?.a4updater_version?.industrial
-                    ) : (
-                      <>
-                        <Button
-                          sx={{ mb: 1, mt: 0 }}
-                          variant="contained"
-                          color="error"
-                          onClick={handleOpenVersionWarning}
-                        >
-                          Error!
-                        </Button>
-                      </>
-                    )}
+                  <Grid container md={6}>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>a4Monitor</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.a4monitor_status?.status
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Back Channel</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Data Transfer</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.monitor_terafence_status?.tf_http_xfer
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Configuration</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      <div>Broker</div>
+                    </Grid>
+                    <Grid item xs={6} sx={{ p: 1 }}>
+                      {dashboardStatus?.monitor_terafence_status?.mosquitto
+                        ? goodStatus()
+                        : badStatus()}
+                    </Grid>
                   </Grid>
-                  <Popover
-                    open={versionWarningOpen}
-                    anchorEl={versionWarningAnchor}
-                    onClose={handleCloseVersionWarning}
-                    anchorOrigin={{
-                      vertical: "top",
-                      horizontal: "right",
-                    }}
-                  >
-                    <div style={{ padding: 10, textAlign: "center" }}>
-                      <Typography style={{ color: "white" }}>
-                        The software version of Internal PC and External PC do
-                        not match!
-                      </Typography>
-                    </div>
-                  </Popover>
                 </Grid>
               </Grid>
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={3}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                }}
-              >
-                <h3 title={services_desc}>Services</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                  style={{ overflowY: "auto" }}
-                >
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={a4monitor_desc}>a4Monitor</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.a4monitor_status?.status
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={back_channel_desc}>Back Channel</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.monitor_terafence_status?.tf_bchnld
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={data_transfer_desc}>Data Transfer</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.monitor_terafence_status?.tf_http_xfer
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={configuration_desc}>Configuration</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    <div title={broker_desc}>Broker</div>
-                  </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
-                    {dashboardStatus?.monitor_terafence_status?.mosquitto
-                      ? goodStatus()
-                      : badStatus()}
-                  </Grid>
-                </Grid>
-              </Grid>
+
               <Grid
                 item
                 xs={2}
@@ -526,7 +510,7 @@ export default function Dashboard() {
                       sx={{ p: 2, pb: 0 }}
                     >
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>FTP</div>
+                        <div>Fast Data FTP</div>
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.industrial?.ftp?.running
@@ -534,7 +518,7 @@ export default function Dashboard() {
                           : badStatus()}
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>HTTP</div>
+                        <div>Fast Data HTTP</div>
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.industrial?.http?.running
@@ -542,7 +526,7 @@ export default function Dashboard() {
                           : badStatus()}
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        <div>Matrix</div>
+                        <div>Fast Data Matrix</div>
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.customer?.matrix?.running
@@ -563,7 +547,8 @@ export default function Dashboard() {
                   border: "1px inset white",
                 }}
               >
-                <h3 title={device_connected_desc}>Device Connected</h3>
+                <h3 title={device_connected_desc}>Connected device</h3>
+
                 <Divider />
                 <Grid
                   container

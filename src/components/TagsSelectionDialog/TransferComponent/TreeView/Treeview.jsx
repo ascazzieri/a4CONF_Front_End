@@ -5,11 +5,9 @@ import Box from '@mui/material/Box';
 import TreeView from '@mui/lab/TreeView';
 import TreeItem, { treeItemClasses } from '@mui/lab/TreeItem';
 import Typography from '@mui/material/Typography';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Label from '@mui/icons-material/Label';
 import FolderIcon from '@mui/icons-material/Folder';
-import Stack from '@mui/material/Stack';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
@@ -60,7 +58,6 @@ function StyledTreeItem(props) {
         setChannelCart,
         ...other
     } = props;
-
     const styleProps = {
         '--tree-view-color': theme.palette.mode !== 'dark' ? color : colorForDarkMode,
         '--tree-view-bg-color':
@@ -198,8 +195,6 @@ export default function IconTreeView(props) {
             defaultCollapseIcon={<ArrowDropDownIcon />}
             defaultExpandIcon={<ArrowRightIcon />}
             defaultEndIcon={<div style={{ width: 24 }} />}
-            channelCart={channelCart}
-            setChannelCart={setChannelCart}
             sx={{ height: 264, flexGrow: 1, maxWidth: 400, overflowY: 'auto', overflowX: 'auto' }}
         >
 
