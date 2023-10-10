@@ -482,7 +482,7 @@ export const send_register = async (data) => {
 };
 export const check_credentials = async () => {
   try {
-    const res = await helper.fetchData("/conf/check-credentials", "GET", true);
+    const res = await helper.fetchData("/conf/check-credentials", "GET", null, true);
     verbose && console.log(res);
     return res;
   } catch (e) {

@@ -184,7 +184,11 @@ export async function fetchData(url, method, body, noToken) {
     try {
       const path = window.location.origin;
       const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-      const response = await axios(pathWithoutPort + ":80" + url, axiosConfig);
+      const completePath = encodeURIComponent(pathWithoutPort + url);
+      const compatibleEncodedUrl = decodeURIComponent(completePath);
+
+      console.log(compatibleEncodedUrl);
+      const response = await axios(compatibleEncodedUrl, axiosConfig);
 
       // Axios handles non-2xx status codes as errors automatically
       const data = response.data;
@@ -202,8 +206,11 @@ export async function fetchData(url, method, body, noToken) {
     try {
       const path = window.location.origin;
       const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+      const completePath = encodeURIComponent(pathWithoutPort + url);
+      const compatibleEncodedUrl = decodeURIComponent(completePath);
 
-      const response = await axios(pathWithoutPort + ":80" + url, {
+      console.log(compatibleEncodedUrl);
+      const response = await axios(compatibleEncodedUrl, {
         ...axiosConfig,
         headers: {
           ...axiosConfig.headers,

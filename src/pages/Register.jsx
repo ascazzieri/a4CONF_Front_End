@@ -14,6 +14,7 @@ import { SnackbarContext } from "../utils/context/SnackbarContext";
 
 export default function Register(props) {
   const { setAuthenticated, firstUser, setFirstUser } = props
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -58,7 +59,7 @@ export default function Register(props) {
       checkPasswordStrength(password) === 4 &&
       confirmPassword.trim() !== ""
     ) {
-      if (password !== confirmPassword) {
+      if (password?.trim() !== confirmPassword?.trim()) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -101,7 +102,7 @@ export default function Register(props) {
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Username o password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`
+        message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`
       });
     }
   };
@@ -114,19 +115,19 @@ export default function Register(props) {
     var strength = 0;
     if (password.length >= 8) {
       strength += 1;
-      console.log("1")
+
     }
     if (password.match(/[a-z]/) && password.match(/[A-Z]/)) {
       strength += 1;
-      console.log("2")
+
     }
     if (password.match(/\d/)) {
       strength += 1;
-      console.log("3")
+
     }
     if (password.match(/[^a-zA-Z\d]/)) {
       strength += 1;
-      console.log("4")
+
     }
     return strength;
   }
@@ -163,7 +164,7 @@ export default function Register(props) {
                   id="outlined-adornment-password"
                   type={showPassword ? "text" : "password"}
                   value={password || ""}
-                  onChange={handleConfirmPasswordChange}
+                  onChange={handlePasswordChange}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -181,13 +182,13 @@ export default function Register(props) {
               </FormControl>
               <FormControl fullWidth>
                 <InputLabel htmlFor="outlined-adornment-password-confirm">
-                  Password
+                  Confirm Password
                 </InputLabel>
                 <OutlinedInput
                   id="outlined-adornment-password-confirm"
                   type={showPasswordConfirm ? "text" : "password"}
-                  value={password || ""}
-                  onChange={handlePasswordChange}
+                  value={confirmPassword || ""}
+                  onChange={handleConfirmPasswordChange}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
