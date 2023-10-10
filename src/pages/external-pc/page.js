@@ -124,7 +124,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Connect PCB to plant network
+                        Data Sender plant network
                       </Typography>
                     </CardContent>
                   </Card>
@@ -393,24 +393,24 @@ export default function ExternalPC() {
             </Box>
           </CardContent>
         </Card>
-        {!currentURLArray.includes("network") && (
-          <Grid container spacing={2}>
-            <Grid item xs={4} sx={{ display: "flex" }}>
-              <Card sx={{ width: "100%", height: 100 }}>
-                <CardContent>
-                  <ServiceDisabler />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={8} sx={{ display: "flex" }}>
+        <Grid container spacing={2}>
+          <Grid item xs={4} sx={{ display: "flex" }}>
+            <Card sx={{ width: "100%", height: 100 }}>
+              <CardContent>
+                <ServiceDisabler />
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={8} sx={{ display: "flex" }}>
+            {!currentURLArray?.includes("network") && (
               <Card sx={{ width: "100%", height: 100 }}>
                 <CardContent>
                   <ServiceHandler />
                 </CardContent>
               </Card>
-            </Grid>
+            )}
           </Grid>
-        )}
+        </Grid>
       </Container>
     </ErrorCacher>
   );

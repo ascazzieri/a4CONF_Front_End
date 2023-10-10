@@ -270,13 +270,14 @@ export const clearEmpties = (o) => {
  *
  */
 export const verifyIPCIDR = (text) => {
-  const input = text.split("/");
-
-  if (input.length !== 2) return false;
-
-  if (input[1] < 0 || input[1] > 32) return false;
-
-  return verifyIP(input[0]);
+  try {
+    const input = text.trim().split("/");
+    if (input.length !== 2) return false;
+    if (input[1] < 0 || input[1] > 32) return false;
+    return verifyIP(input[0]);
+  } catch (e) {
+    return false;
+  }
 };
 
 /**
@@ -285,7 +286,11 @@ export const verifyIPCIDR = (text) => {
  * @returns if a string is formatted as an ipv4 address
  */
 export const verifyIP = (text) => {
-  return text.match(ipformat);
+  try {
+    return text.match(ipformat);
+  } catch (e) {
+    return false;
+  }
 };
 
 /**
@@ -295,19 +300,22 @@ export const verifyIP = (text) => {
  *
  */
 export const verifyIPnotbroadcast = (text) => {
-  const input = text.split("/");
+  try {
+    const input = text.trim().split("/");
 
-  if (input.length !== 2) return false;
+    if (input.length !== 2) return false;
 
-  if (input[1] < 0 || input[1] > 32) return false;
+    if (input[1] < 0 || input[1] > 32) return false;
 
-  let result = "";
+    let result = "";
 
-  input[0].split(".").forEach(function (octect) {
-    result += octecttobits(octect);
-  });
-
-  return result.slice(input[1]).includes("0");
+    input[0].split(".").forEach(function (octect) {
+      result += octecttobits(octect);
+    });
+    return result.slice(input[1]).includes("0");
+  } catch (e) {
+    return false;
+  }
 };
 
 export const octecttobits = (text) => {

@@ -2,7 +2,7 @@ import { useState, createContext } from "react";
 
 export const SuperUserContext = createContext(undefined);
 
-export default function LoadingProvider({ children }) {
+export default function SuperUserProvider({ children }) {
   const [superUser, setSuperUser] = useState(true);
   return (
     <SuperUserContext.Provider value={[superUser, setSuperUser]}>

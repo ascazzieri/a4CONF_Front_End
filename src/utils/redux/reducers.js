@@ -128,9 +128,9 @@ const jsonSlice = createSlice({
     },
     updateThingNames(state, action) {
       const newThingNames = action.payload;
-      state.services.thingworx.thing_names = {
-        ...state.services.thingworx.thing_names,
-        ...newThingNames,
+      state.services.thingworx = {
+        ...state.services.thingworx,
+        thing_names: newThingNames,
       };
     },
     updateOPCServer(state, action) {

@@ -19,7 +19,11 @@ export default function ServiceDisabler() {
 
     const serviceStatus = useSelector((state) => state?.services);
 
+    const firewallStatus = useSelector((state) => state?.system?.network?.customer?.firewall_enabled)
+
     const navigate = useNavigate()
+
+    const [firewallEnabled, setFirewallEnabled] = useState(firewallStatus)
 
     const [sitemanagerEnabled, setSitemanagerEnabled] = useState(
         serviceStatus?.sitemanager?.enabled
@@ -54,6 +58,7 @@ export default function ServiceDisabler() {
     const dispatch = useDispatch();
 
     useEffect(() => {
+        setFirewallEnabled(firewallEnabled)
         setSitemanagerEnabled(serviceStatus?.sitemanager?.enabled);
         setThingworxEnabled(serviceStatus?.thingworx?.enabled);
         setOPCUAServerEnabled(serviceStatus?.opcua?.enabled);
@@ -63,7 +68,7 @@ export default function ServiceDisabler() {
         setHTTPEnabled(serviceStatus?.fastdata?.industrial?.http?.enabled)
         setMatrixEnabled(serviceStatus?.fastdata?.customer?.matrix?.enabled)
 
-    }, [serviceStatus]);
+    }, [serviceStatus, firewallEnabled]);
 
     const location = useLocation();
 
@@ -74,8 +79,11 @@ export default function ServiceDisabler() {
     const serviceName = isFastData ? currentURLArray[1] : location?.pathname?.split("/")[location?.pathname?.split("/").length - 1].split("-")[0]
     const handleChange = (event) => {
         const checked = event?.target?.checked
-        console.log(checked)
-        if (serviceName === "sitemanager") {
+        if (serviceName === "network") {
+            setFirewallEnabled(checked)
+            dispatch(updateSitemanager({ enabled: checked }));
+        }
+        else if (serviceName === "sitemanager") {
             setSitemanagerEnabled(checked)
             dispatch(updateSitemanager({ enabled: checked }));
         } else if (serviceName === "thingworx") {
@@ -109,9 +117,8 @@ export default function ServiceDisabler() {
             );
         }
 
-        if (serviceName !== "fast-data" || currentURLArray[2]) {
+        if (serviceName !== "network" && (serviceName !== "fast-data" || currentURLArray[2])) {
             currentURLArray.pop()
-            console.log('dio')
             navigate(`/${currentURLArray.toString().replace(',', '')}`);
         }
 
@@ -120,6 +127,7 @@ export default function ServiceDisabler() {
     return (
         <><Typography title={service_status_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service status:</Typography>
             <div><FormControlLabel control={<Switch checked={
+                (serviceName === "network" && firewallEnabled) ||
                 (serviceName === "sitemanager" && sitemanagerEnabled) ||
                 (serviceName === "thingworx" && thingworxEnabled) ||
                 (serviceName === "opcua" && opcuaServerEnabled) ||
@@ -128,6 +136,6 @@ export default function ServiceDisabler() {
                 (currentURLArray[1] === 'fast-data' && serviceName === "http" && httpEnabled) ||
                 (serviceName === "matrix" && matrixEnabled) ||
                 (serviceName === "fast-data" && fastDataEnabled) ||
-                false} />} label="Enabled" onChange={handleChange} /></div></>
+                false} />} label={serviceName === "network" ? (firewallEnabled ? "Enabled" : "Disabled") : (isFastData ? (fastDataEnabled ? "Enabled" : "Disabled") : "Enabled")} onChange={handleChange} /></div></>
     );
 }

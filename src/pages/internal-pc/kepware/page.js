@@ -273,12 +273,16 @@ const Row = (props) => {
     setRowData(updatedRowData);
   };
   const handleCreate = async (event, device) => {
-    if (!device?.endpoint) {
+    console.log(device);
+    if (
+      event?.target?.name !== "matrix" &&
+      (!device?.endpoint || device?.endpoint?.trim() === "")
+    ) {
       handleButtonClickFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Device: ${device?.name} requires an endpoint`,
+        message: `Device: ${device?.name} requires a non-null endpoint`,
       });
       return;
     }
@@ -303,12 +307,14 @@ const Row = (props) => {
     const sampling_number = device?.sampling_number
       ? device?.sampling_number
       : 100;
-
-    if (!device?.endpoint.includes("rt_")) {
-      endpoint = `rt_${device?.endpoint}`;
-    } else {
-      endpoint = device?.endpoint;
+    if (event?.target?.name !== "matrix") {
+      if (!device?.endpoint.includes("rt_")) {
+        endpoint = `rt_${device?.endpoint}`;
+      } else {
+        endpoint = device?.endpoint;
+      }
     }
+
     if (device?.choose_tags) {
       const tags = await get_device_tags(row?.name, device?.name);
       const channel = row?.name;
@@ -383,7 +389,7 @@ const Row = (props) => {
           tags={deviceTags}
         />
       )}
-      <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+      <TableRow sx={{ "& > *": { borderBottom: "unset" }, maxWidth: 600, overflowX: 'auto', p:5 }}>
         <TableCell>
           <IconButton
             aria-label="expand row"
@@ -977,12 +983,26 @@ export default function Kepware() {
     setKepwareMode(event.target.checked);
   };
 
-  const [uploading, setUploading] = useState(false);
-
   const handleKepwareChange = (event) => {
+    event.preventDefault();
+    const updatedThingNames = thingNames?.map((element) => {
+      if (element.startsWith("rt_")) {
+        return element; // Se l'elemento inizia già con 'rt_', non fare nulla
+      } else {
+        return "rt_" + element; // Aggiungi 'rt_' all'inizio dell'elemento
+      }
+    });
     const newKepware = {
       trial: kepwareMode,
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Kepware configuration of data collector temporarly saved. Click Apply button to send changes to a4GATE`,
+    });
+
+    dispatch(updateThingNames(updatedThingNames));
     dispatch(updateKepware({ newKepware }));
   };
 
@@ -1021,8 +1041,6 @@ export default function Kepware() {
     loadingContext[1](true);
     const file = event.target.files[0];
 
-    setUploading(true);
-
     const fileContent = await new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -1035,7 +1053,7 @@ export default function Kepware() {
       const jsonObject = JSON.parse(fileContent);
       if (jsonObject?.crashed_page) {
         delete jsonObject.crashed_page;
-        console.log("crashed")
+        console.log("crashed");
       }
       const res = await uploadKepwareProject(jsonObject);
       if (res) {
@@ -1061,8 +1079,6 @@ export default function Kepware() {
         message: "Error parsing JSON file",
       });
     }
-
-    setUploading(false);
     loadingContext[1](false);
   };
 
@@ -1108,18 +1124,26 @@ export default function Kepware() {
     loaderContext[1](false);
   };
 
-  const handleAddThingName = () => {
-    const thingNameList = [...thingNames];
-    if (thingName.trim() === "") {
+  const handleAddThingName = (event) => {
+    if (!event?.target?.value || event?.target?.value?.trim() === "") {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Machine serial number cannot be empty`,
+      });
       return;
     }
-    if (!thingName.includes("rt_")) {
-      thingNameList.push(`rt_${thingName}`);
-    } else {
-      thingNameList.push(thingName);
-    }
 
-    dispatch(updateThingNames(thingNameList));
+    // Creare una copia dell'array scanException
+    const thing_names = [...thingNames];
+
+    // Verificare se l'elemento è già presente nell'array
+    if (!thing_names.includes(event?.target?.value?.trim())) {
+      // Se non è presente, aggiungerlo
+      thing_names.push(event?.target?.value?.trim());
+      setThingNames(thing_names);
+    }
   };
   const handleThingNameDelete = (value) => {
     const thingNameList = thingNames.filter((item) => item !== value);
@@ -1185,7 +1209,6 @@ export default function Kepware() {
   const device_connected = groupByChannel(connectedMachines)
     ? groupByChannel(connectedMachines)[1]
     : [];
-
   return (
     <ErrorCacher>
       <Container>
@@ -1210,6 +1233,17 @@ export default function Kepware() {
         >
           <Alert severity={severity}>{message}</Alert>
         </Snackbar>
+        <form onSubmit={handleKepwareChange}>
+          {currentTab === 0 && (
+            <>
+              <Stack
+                direction="row"
+                justifyContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <FormControl fullWidth>
+                  <FormLabel>Machine serial number:</FormLabel>
         {currentTab === 0 && (
           <>
             <Stack
@@ -1226,7 +1260,6 @@ export default function Kepware() {
                   label="Machine serial"
                   helperText="Create a new machine serial number and add it to the list below"
                   value={thingName}
-                  title={kepware_machine_serial_desc}
                   required={false}
                   onChange={(event) => {
                     setThingName(event?.target?.value);
@@ -1282,11 +1315,11 @@ export default function Kepware() {
                         Refresh
                       </Button>
                     </TableCell>
-                    <TableCell title={kepware_channels_desc}>KEPWARE CHANNELS</TableCell>
-                    <TableCell title={kepware_devicenumber_desc}>DEVICE NUMBER</TableCell>
+                    <TableCell>KEPWARE CHANNELS</TableCell>
+                    <TableCell>DEVICE NUMBER</TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody   title = {kepware_gateway_row_desc}>
+                <TableBody>
                   {channelRows &&
                     channelRows.lenght !== 0 &&
                     channelRows.map((row) => {
@@ -1309,55 +1342,55 @@ export default function Kepware() {
         {currentTab === 2 && (
           <>
             <FormControl fullWidth>
-              <Typography title={kepware_project_desc}>Kepware project:</Typography>
+              <Typography>Kepware project:</Typography>
 
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="flex-start"
-                alignItems="center"
-              >
-                <Button component="label" variant="contained">
-                  Upload
-                  <VisuallyHiddenInput
-                    type="file"
-                    accept=".json"
-                    onChange={handleUploadKepwareProject}
-                  />
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleDownloadKepwareProject}
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="flex-start"
+                  alignItems="center"
                 >
-                  Download
-                </Button>
-              </Stack>
-            </FormControl>
+                  <Button component="label" variant="contained">
+                    Upload
+                    <VisuallyHiddenInput
+                      type="file"
+                      accept=".json"
+                      onChange={handleUploadKepwareProject}
+                    />
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleDownloadKepwareProject}
+                  >
+                    Download
+                  </Button>
+                </Stack>
+              </FormControl>
 
-            <Divider />
+              <Divider />
 
-            <Typography title={kepware_runtime_desc}>Kepware runtime:</Typography>
+            <Typography>Kepware runtime:</Typography>
 
-            <Button variant="contained" onClick={handleReloadKepwareRuntime} >
+            <Button variant="contained" onClick={handleReloadKepwareRuntime}>
               Reload
             </Button>
 
-            <Divider />
-          </>
-        )}
+              <Divider />
+            </>
+          )}
 
         {currentTab === 3 && (
           <>
             <FormControl fullWidth>
-              <FormLabel title={kepware_licence_desc}>Kepware mode:</FormLabel>
+              <FormLabel>Kepware mode:</FormLabel>
 
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Typography>License mode</Typography>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>License mode</Typography>
 
-                <Switch
-                  checked={kepwareMode}
-                  onChange={handleKepwareModeChange}
-                />
+                  <Switch
+                    checked={kepwareMode}
+                    onChange={handleKepwareModeChange}
+                  />
 
                 <Typography>Trial mode</Typography>
               </Stack>
@@ -1368,150 +1401,151 @@ export default function Kepware() {
         {currentTab === 4 && (
           <>
             <Box sx={{ flexGrow: 1 }}>
-              <FormLabel title={kepware_device_desc}>Kepware device configured:</FormLabel>
+              <FormLabel>Kepware device configured:</FormLabel>
 
-              <Box component="main" sx={{ p: 3 }}>
-                <Typography
-                  variant="h6"
-                  noWrap
-                  component="div"
-                  sx={{ flexGrow: 1 }}
-                >
-                  Devices
-                </Typography>
-                <List
-                  sx={{
-                    width: "100%",
-                  }}
-                  component="nav"
-                  aria-labelledby="nested-list-subheader"
-                >
-                  {channelList &&
-                    channelList !== 0 &&
-                    channelList.map((channel, index) => {
-                      const deviceInside = device_connected[channel];
-                      return (
-                        <Fragment key={Math.random()}>
-                          <ListItemButton
-                            onClick={(event) =>
-                              handleExpandableListChannels(event, channel)
-                            }
-                            key={Math.random()}
-                          >
-                            <ListItemIcon key={Math.random()}>
-                              <LabelImportantIcon />
-                            </ListItemIcon>
-                            <ListItemText
-                              primary={channel}
+                <Box component="main" sx={{ p: 3 }}>
+                  <Typography
+                    variant="h6"
+                    noWrap
+                    component="div"
+                    sx={{ flexGrow: 1 }}
+                  >
+                    Devices
+                  </Typography>
+                  <List
+                    sx={{
+                      width: "100%",
+                    }}
+                    component="nav"
+                    aria-labelledby="nested-list-subheader"
+                  >
+                    {channelList &&
+                      channelList !== 0 &&
+                      channelList.map((channel, index) => {
+                        const deviceInside = device_connected[channel];
+                        return (
+                          <Fragment key={Math.random()}>
+                            <ListItemButton
+                              onClick={(event) =>
+                                handleExpandableListChannels(event, channel)
+                              }
                               key={Math.random()}
-                            />
-                            {expandedListChannels.includes(channel) ? (
-                              <ExpandLess />
-                            ) : (
-                              <ExpandMore />
-                            )}
-                          </ListItemButton>
-                          <Collapse
-                            in={expandedListChannels.includes(channel)}
-                            timeout="auto"
-                            unmountOnExit
-                            key={Math.random()}
-                          >
-                            {deviceInside &&
-                              deviceInside.length !== 0 &&
-                              deviceInside.map((insideItem, insideIndex) => {
-                                const deviceName = insideItem?.device;
-                                return (
-                                  <>
-                                    <ListItemButton
-                                      onClick={(event) =>
-                                        handleExpandableListDevices(
-                                          event,
-                                          channel,
-                                          deviceName
-                                        )
-                                      }
-                                      sx={{ pl: 5 }}
-                                    >
-                                      <ListItemIcon>
-                                        <DvrIcon />
-                                      </ListItemIcon>
-                                      <ListItemText primary={deviceName} />
-                                      {expandedListDevices.includes(
-                                        `${channel}.${deviceName}`
-                                      ) ? (
-                                        <ExpandLess />
-                                      ) : (
-                                        <ExpandMore />
-                                      )}
-                                    </ListItemButton>
-                                    <Collapse
-                                      in={expandedListDevices.includes(
-                                        `${channel}.${deviceName}`
-                                      )}
-                                      timeout="auto"
-                                      unmountOnExit
-                                    >
-                                      <List component="div" disablePadding>
-                                        <ListItemButton sx={{ pl: 10 }}>
-                                          <ListItemIcon>
-                                            <BorderColorIcon />
-                                          </ListItemIcon>
-                                          <ListItemText
-                                            primary={`Device: ${deviceName} `}
-                                          />
-                                        </ListItemButton>
-                                        <ListItemButton sx={{ pl: 10 }}>
-                                          <ListItemIcon>
-                                            <DataArrayIcon />
-                                          </ListItemIcon>
-                                          <ListItemText
-                                            primary={`Driver type: ${insideItem?.driver_type} `}
-                                          />
-                                        </ListItemButton>
-                                        <ListItemButton sx={{ pl: 10 }}>
-                                          <ListItemIcon>
-                                            <SettingsEthernetIcon />
-                                          </ListItemIcon>
-                                          <ListItemText
-                                            primary={`IP address: ${insideItem?.ip_address} `}
-                                          />
-                                        </ListItemButton>
-                                        <ListItemButton sx={{ pl: 10 }}>
-                                          <ListItemIcon>
-                                            <NumbersIcon />
-                                          </ListItemIcon>
-                                          <ListItemText
-                                            primary={`Port: ${insideItem?.port} `}
-                                          />
-                                        </ListItemButton>
-                                        <ListItemButton sx={{ pl: 10 }}>
-                                          <ListItemIcon>
-                                            <RestoreIcon />
-                                          </ListItemIcon>
-                                          <ListItemText
-                                            primary={`Last timestamp: ${new Date(
-                                              insideItem?.timestamp * 1000
-                                            )} `}
-                                          />
-                                        </ListItemButton>
-                                      </List>
-                                    </Collapse>
-                                  </>
-                                );
-                              })}
-                          </Collapse>
-                        </Fragment>
-                      );
-                    })}
-                </List>
+                            >
+                              <ListItemIcon key={Math.random()}>
+                                <LabelImportantIcon />
+                              </ListItemIcon>
+                              <ListItemText
+                                primary={channel}
+                                key={Math.random()}
+                              />
+                              {expandedListChannels.includes(channel) ? (
+                                <ExpandLess />
+                              ) : (
+                                <ExpandMore />
+                              )}
+                            </ListItemButton>
+                            <Collapse
+                              in={expandedListChannels.includes(channel)}
+                              timeout="auto"
+                              unmountOnExit
+                              key={Math.random()}
+                            >
+                              {deviceInside &&
+                                deviceInside.length !== 0 &&
+                                deviceInside.map((insideItem, insideIndex) => {
+                                  const deviceName = insideItem?.device;
+                                  return (
+                                    <>
+                                      <ListItemButton
+                                        onClick={(event) =>
+                                          handleExpandableListDevices(
+                                            event,
+                                            channel,
+                                            deviceName
+                                          )
+                                        }
+                                        sx={{ pl: 5 }}
+                                      >
+                                        <ListItemIcon>
+                                          <DvrIcon />
+                                        </ListItemIcon>
+                                        <ListItemText primary={deviceName} />
+                                        {expandedListDevices.includes(
+                                          `${channel}.${deviceName}`
+                                        ) ? (
+                                          <ExpandLess />
+                                        ) : (
+                                          <ExpandMore />
+                                        )}
+                                      </ListItemButton>
+                                      <Collapse
+                                        in={expandedListDevices.includes(
+                                          `${channel}.${deviceName}`
+                                        )}
+                                        timeout="auto"
+                                        unmountOnExit
+                                      >
+                                        <List component="div" disablePadding>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              <BorderColorIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`Device: ${deviceName} `}
+                                            />
+                                          </ListItemButton>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              <DataArrayIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`Driver type: ${insideItem?.driver_type} `}
+                                            />
+                                          </ListItemButton>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              <SettingsEthernetIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`IP address: ${insideItem?.ip_address} `}
+                                            />
+                                          </ListItemButton>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              <NumbersIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`Port: ${insideItem?.port} `}
+                                            />
+                                          </ListItemButton>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              <RestoreIcon />
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`Last timestamp: ${new Date(
+                                                insideItem?.timestamp * 1000
+                                              )} `}
+                                            />
+                                          </ListItemButton>
+                                        </List>
+                                      </Collapse>
+                                    </>
+                                  );
+                                })}
+                            </Collapse>
+                          </Fragment>
+                        );
+                      })}
+                  </List>
+                </Box>
               </Box>
-            </Box>
-          </>
-        )}
+            </>
+          )}
 
-        {(currentTab === 0 || currentTab === 3) && <SaveButton />}
+          {(currentTab === 0 || currentTab === 3) && <SaveButton />}
+        </form>
       </Container>
     </ErrorCacher>
-  );
+);
 }
