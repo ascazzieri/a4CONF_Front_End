@@ -243,10 +243,7 @@ export default function Dashboard() {
                 <h3>a4GATE Status</h3>
                 <Divider />
 
-                <Grid
-                  container
-                  style={{ overflowY: "auto" }}
-                >
+                <Grid container style={{ overflowY: "auto" }}>
                   <Grid container md={6}>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div>Data Sender ready</div>
@@ -278,9 +275,7 @@ export default function Dashboard() {
                           <div style={{ color: "red" }}>Closed</div>
                         )
                       ) : (
-                        <>
-                          <div>Checking...</div>
-                        </>
+                        "..."
                       )}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
@@ -319,25 +314,33 @@ export default function Dashboard() {
                           <div>Kepware Runtime</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.server_runtime
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.server_runtime !== undefined
+                            ? plugins_status?.kepware?.server_runtime
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>IoT Gateway</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.server_iotgateway
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.server_iotgateway !==
+                          undefined
+                            ? plugins_status?.kepware?.server_iotgateway
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>Config API</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.config_api_service
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.config_api_service !==
+                          undefined
+                            ? plugins_status?.kepware?.config_api_service
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                       </Grid>
                     </Popover>
@@ -383,41 +386,68 @@ export default function Dashboard() {
                       <div>a4Monitor</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.a4monitor_status?.status
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.a4monitor_status !== null &&
+                      dashboardStatus?.a4monitor_status !== undefined
+                        ? dashboardStatus?.a4monitor_status === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div>Back Channel</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_bchnld === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div>Data Transfer</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_http_xfer
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status
+                        ?.tf_http_xfer !== null &&
+                      dashboardStatus?.monitor_terafence_status
+                        ?.tf_http_xfer !== undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_http_xfer === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div>Configuration</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_cfgmng === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div>Broker</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.mosquitto
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.mosquitto !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.mosquitto !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.mosquitto === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                   </Grid>
                 </Grid>

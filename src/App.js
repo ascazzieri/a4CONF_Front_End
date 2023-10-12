@@ -28,19 +28,18 @@ import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 
 export default function App({ Component, pageProps }) {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(true);
   const [firstUser, setFirstUser] = useState();
 
   useEffect(() => {
     (async () => {
-      setFirstUser(true);
-      /* const credentials = await check_credentials();
-      console.log("check credentials")
+      const credentials = await check_credentials();
+      console.log("check credentials");
       if (credentials === false) {
         setFirstUser(true);
       } else if (credentials === true) {
         setFirstUser(false);
-      } */
+      }
     })();
   }, []);
 

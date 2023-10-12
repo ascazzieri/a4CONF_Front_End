@@ -468,6 +468,7 @@ export const send_login = async (data) => {
   }
 };
 export const send_register = async (data) => {
+  console.log(data)
   try {
     const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
