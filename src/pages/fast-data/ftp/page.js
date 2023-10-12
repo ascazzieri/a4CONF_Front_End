@@ -140,7 +140,8 @@ export default function FTP() {
     }
   };
 
-  const handleFTPChange = () => {
+  const handleFTPChange = (event) => {
+    event.preventDefault()
     const newFTP = {
       ...ftp,
       server: {

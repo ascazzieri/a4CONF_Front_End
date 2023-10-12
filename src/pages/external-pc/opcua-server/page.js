@@ -402,7 +402,8 @@ export default function OPCServer() {
     ]);
   };
 
-  const handleOPCUAServerChange = () => {
+  const handleOPCUAServerChange = (event) => {
+    event.preventDefault()
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
