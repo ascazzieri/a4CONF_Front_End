@@ -33,9 +33,8 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     (async () => {
-    
-       const credentials = await check_credentials();
-      console.log("check credentials")
+      const credentials = await check_credentials();
+      console.log("check credentials");
       if (credentials === false) {
         setFirstUser(true);
       } else if (credentials === true) {

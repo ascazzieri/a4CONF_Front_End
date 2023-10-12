@@ -585,7 +585,7 @@ export default function ExternalNetwork() {
                   <FormControlLabel
                     value="ethernet"
                     control={<Radio />}
-                    label="Static"
+                    label="Ethernet"
                   />
                   <FormControlLabel
                     value="wireless"

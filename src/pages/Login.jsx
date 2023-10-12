@@ -56,7 +56,7 @@ export default function Login(props) {
       (async () => {
         try {
           const res = await send_login({
-            username: username,
+            user: username,
             password: password,
           });
           console.log(res);

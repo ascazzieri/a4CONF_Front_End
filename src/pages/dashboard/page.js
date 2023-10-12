@@ -33,7 +33,27 @@ import TableRow from "@mui/material/TableRow";
 import Popover from "@mui/material/Popover";
 import { useLocation } from "react-router-dom";
 import { Typography } from "antd";
-import { a4gate_status_desc, a4monitor_desc, back_channel_desc, bidir_desc, broker_desc, configuration_desc, data_sender_network_desc, data_sender_ready_desc, data_transfer_desc, device_connected_desc, fast_data_board_desc, host_name_desc, http_server_board_desc, kepserver_desc, opcua_server_board_desc, plugins_desc, sitemanager_board_desc, thingworx_board_desc, version_desc } from "../../utils/titles";
+import {
+  a4gate_status_desc,
+  a4monitor_desc,
+  back_channel_desc,
+  bidir_desc,
+  broker_desc,
+  configuration_desc,
+  data_sender_network_desc,
+  data_sender_ready_desc,
+  data_transfer_desc,
+  device_connected_desc,
+  fast_data_board_desc,
+  host_name_desc,
+  http_server_board_desc,
+  kepserver_desc,
+  opcua_server_board_desc,
+  plugins_desc,
+  sitemanager_board_desc,
+  thingworx_board_desc,
+  version_desc,
+} from "../../utils/titles";
 
 export default function Dashboard() {
   const system = useSelector((state) => state?.system);
@@ -144,6 +164,7 @@ export default function Dashboard() {
   const fastDataOpen = Boolean(fastDataAnchor);
   const versionWarningOpen = Boolean(versionWarningAnchor);
 
+
   useEffect(() => {
     let timer;
 
@@ -203,7 +224,9 @@ export default function Dashboard() {
                   spacing={2}
                 >
                   <FormControl fullWidth>
-                    <FormLabel title={host_name_desc}>a4GATE serial number:</FormLabel>
+                    <FormLabel title={host_name_desc}>
+                      a4GATE serial number:
+                    </FormLabel>
 
                     <TextField
                       title={host_name_desc}
@@ -211,13 +234,10 @@ export default function Dashboard() {
                       label="a4GATE hostname"
                       helperText={hostNameHelperText}
                       className="a4gate-hostname-form"
-                      value={hostName ? hostName : ""}
+                      value={hostName || ""}
                       required={true}
                       onChange={(event) => {
-                        setHostName({
-                          industrial: event?.target?.value,
-                          customer: event?.target?.value,
-                        });
+                        setHostName(event?.target?.value);
                       }}
                     />
                   </FormControl>
@@ -245,13 +265,12 @@ export default function Dashboard() {
                 <h3 title={a4gate_status_desc}>a4GATE Status</h3>
                 <Divider />
 
-                <Grid
-                  container
-                  style={{ overflowY: "auto" }}
-                >
+                <Grid container style={{ overflowY: "auto" }}>
                   <Grid container md={6}>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      <div title={data_sender_ready_desc}>Data Sender ready</div>
+                      <div title={data_sender_ready_desc}>
+                        Data Sender ready
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {dashboardStatus?.is_B_ready?.ready
@@ -259,7 +278,9 @@ export default function Dashboard() {
                         : badStatus()}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      <div title={data_sender_network_desc}>Data Sender network</div>
+                      <div title={data_sender_network_desc}>
+                        Data Sender network
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {pcb_is_connected?.connected ? goodStatus() : badStatus()}
@@ -268,7 +289,8 @@ export default function Dashboard() {
                       <div title={bidir_desc}>Bidir.</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.bidir ? (
+                      {dashboardStatus?.bidir !== undefined &&
+                      dashboardStatus?.bidir !== null ? (
                         dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
                           <>
                             <div style={{ color: "green" }}>
@@ -280,9 +302,7 @@ export default function Dashboard() {
                           <div style={{ color: "red" }}>Closed</div>
                         )
                       ) : (
-                        <>
-                          <div>Checking...</div>
-                        </>
+                        "..."
                       )}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
@@ -322,30 +342,40 @@ export default function Dashboard() {
                           <div>Kepware Runtime</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.server_runtime
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.server_runtime !== undefined
+                            ? plugins_status?.kepware?.server_runtime
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>IoT Gateway</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.server_iotgateway
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.server_iotgateway !==
+                          undefined
+                            ? plugins_status?.kepware?.server_iotgateway
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>Config API</div>
                         </Grid>
                         <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                          {plugins_status?.kepware?.config_api_service
-                            ? goodStatus()
-                            : badStatus()}
+                          {plugins_status?.kepware?.config_api_service !==
+                          undefined
+                            ? plugins_status?.kepware?.config_api_service
+                              ? goodStatus()
+                              : badStatus()
+                            : "..."}
                         </Grid>
                       </Grid>
                     </Popover>
                     <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                      <div style={{ marginBottom: 5 }} title={version_desc}>Version:</div>
+                      <div style={{ marginBottom: 5 }} title={version_desc}>
+                        Version:
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {system?.a4updater_version?.industrial ===
@@ -386,41 +416,68 @@ export default function Dashboard() {
                       <div title={a4monitor_desc}>a4Monitor</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.a4monitor_status?.status
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.a4monitor_status !== null &&
+                      dashboardStatus?.a4monitor_status !== undefined
+                        ? dashboardStatus?.a4monitor_status === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div title={back_channel_desc}>Back Channel</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_bchnld === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div title={data_transfer_desc}>Data Transfer</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_http_xfer
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status
+                        ?.tf_http_xfer !== null &&
+                      dashboardStatus?.monitor_terafence_status
+                        ?.tf_http_xfer !== undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_http_xfer === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div title={configuration_desc}>Configuration</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.tf_cfgmng === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       <div title={broker_desc}>Broker</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.monitor_terafence_status?.mosquitto
-                        ? goodStatus()
-                        : badStatus()}
+                      {dashboardStatus?.monitor_terafence_status?.mosquitto !==
+                        null &&
+                      dashboardStatus?.monitor_terafence_status?.mosquitto !==
+                        undefined
+                        ? dashboardStatus?.monitor_terafence_status
+                            ?.mosquitto === true
+                          ? goodStatus()
+                          : badStatus()
+                        : "..."}
                     </Grid>
                   </Grid>
                 </Grid>

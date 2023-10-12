@@ -71,7 +71,7 @@ export default function Register(props) {
         (async () => {
           try {
             const result = await send_register({
-              username: username,
+              user: username,
               password: password,
             });
             if (result) {
