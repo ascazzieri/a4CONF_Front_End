@@ -32,7 +32,7 @@ export const CreateNewAccountModal = ({
   );
 
   const handleSubmit = () => {
-    //put your validation logic here
+    // put your validation logic here
     console.log(values);
     onSubmit(values);
     onClose();
@@ -51,7 +51,9 @@ export const CreateNewAccountModal = ({
     selectableObjectData &&
     selectableObjectData?.internal_key === undefined
   ) {
-    selectableObjectData.data.map((item, index) => MenuItemIterator.push(item));
+    selectableObjectData.data.map((item, index) =>
+      MenuItemIterator.push(item)
+    );
   }
 
   return (
@@ -66,6 +68,8 @@ export const CreateNewAccountModal = ({
             }}
           >
             {columns.map((column, index) => {
+              const isPasswordColumn = column.type === "password";
+
               if (
                 selectableObjectData?.enabled &&
                 selectableObjectData?.accessorKey === column?.accessorKey
@@ -76,13 +80,17 @@ export const CreateNewAccountModal = ({
                     key={index}
                     label={column.header}
                     name={column.accessorKey}
+                    type={isPasswordColumn ? "password" : "text"}
                     defaultValue={
                       selectableObjectData?.internal_key !== undefined
                         ? MenuItemIterator[0]
                         : selectableObjectData.data[0]
                     }
                     onBlur={(e) => {
-                      setValues({ ...values, [e.target.name]: e.target.value });
+                      setValues({
+                        ...values,
+                        [e.target.name]: e.target.value,
+                      });
                     }}
                   >
                     {MenuItemIterator.map((item) => (
@@ -98,8 +106,12 @@ export const CreateNewAccountModal = ({
                     key={index}
                     label={column.header}
                     name={column.accessorKey}
+                    type={isPasswordColumn ? "password" : "text"}
                     onBlur={(e) => {
-                      setValues({ ...values, [e.target.name]: e.target.value });
+                      setValues({
+                        ...values,
+                        [e.target.name]: e.target.value,
+                      });
                     }}
                   />
                 );
@@ -131,10 +143,17 @@ const Table = (props) => {
 
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
-      tableData[row.index] = values;
-      //send/receive api updates here, then refetch or update local table data for re-render
-      setTableData([...tableData]);
-      exitEditingMode(); //required to exit editing mode and close modal
+      // Crea una copia dell'array
+      const updatedTableData = [...tableData];
+
+      // Assegna il nuovo valore all'elemento specifico
+      updatedTableData[row.index] = values;
+
+      // Aggiorna lo stato con la nuova copia dell'array
+      setTableData(updatedTableData);
+
+      // Invia/receive le chiamate API qui, quindi refetch o aggiorna i dati della tabella locale per il re-render
+      exitEditingMode(); // Richiesto per uscire dalla modalità di modifica e chiudere la modale di modifica
     }
   };
 
@@ -168,45 +187,9 @@ const Table = (props) => {
 
   const csvExporter = new ExportToCsv(csvOptions);
 
-  const handleExportRows = (rows) => {
-    csvExporter.generateCsv(rows.map((row) => row.original));
-  };
-
   const handleExportData = () => {
     csvExporter.generateCsv(tableData);
   };
-
-  const getCommonEditTextFieldProps = useCallback(
-    (cell) => {
-      return {
-        error: !!validationErrors[cell.id],
-        helperText: validationErrors[cell.id],
-        onBlur: (event) => {
-          const isValid =
-            cell.column.id === "email"
-              ? validateEmail(event.target.value)
-              : cell.column.id === "age"
-                ? validateAge(+event.target.value)
-                : validateRequired(event.target.value);
-          if (!isValid) {
-            //set validation error for cell if invalid
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: `${cell.column.columnDef.header} is required`,
-            });
-          } else {
-            //remove validation error for cell if valid
-            delete validationErrors[cell.id];
-            setValidationErrors({
-              ...validationErrors,
-            });
-          }
-        },
-      };
-    },
-    [validationErrors]
-  );
-
   return (
     <div style={{ marginTop: 15, marginBottom: 15 }}>
       <MaterialReactTable
@@ -269,15 +252,5 @@ const Table = (props) => {
     </div>
   );
 };
-
-const validateRequired = (value) => !!value.length;
-const validateEmail = (email) =>
-  !!email.length &&
-  email
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-const validateAge = (age) => age >= 18 && age <= 50;
 
 export default Table;

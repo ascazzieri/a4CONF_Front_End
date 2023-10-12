@@ -415,6 +415,12 @@ export default function OPCServer() {
 
   const handleOPCUAServerChange = (event) => {
     event.preventDefault();
+    const iot_gateway_from = iotGatewaysFromTableData?.map(
+      (item) => item?.iot_gateway
+    );
+    const iot_gateway_to = iotGatewaysToTableData?.map(
+      (item) => item?.iot_gateway
+    );
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
@@ -430,6 +436,10 @@ export default function OPCServer() {
         custom_port_enable: customPortEnable,
         custom_port: customPort,
         host: hostBinding,
+      },
+      iotgw: {
+        from: iot_gateway_from ? iot_gateway_from : [],
+        to: iot_gateway_to ? iot_gateway_to : [],
       },
       security: {
         user_auth: serverAuth,
@@ -571,7 +581,7 @@ export default function OPCServer() {
               </Stack>
 
               <FormLabel title={opcua_rt_configuration}>
-                Remote Things configuration
+                IoT Gateway read mode exposed
               </FormLabel>
 
               <CustomTable
@@ -622,7 +632,7 @@ export default function OPCServer() {
               </Stack>
 
               <FormLabel title={opcua_rt_configuration}>
-                Remote Things configuration
+                IoT Gateway read and write mode exposed
               </FormLabel>
 
               <CustomTable

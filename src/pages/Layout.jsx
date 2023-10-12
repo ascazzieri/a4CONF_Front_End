@@ -25,6 +25,7 @@ const applied_background = {
   backgroundSize: "150vh",
   backgroundPosition: "right",
 };
+const verbose = window.location.href.includes("verbose");
 
 const Layout = () => {
 
@@ -51,12 +52,12 @@ const Layout = () => {
       if(token && pathName !== "/login" && pathName !== "/register"){
         loaderContext[1](true);
         const confA = await get_confA();
-        console.log("get conf A");
+        verbose && console.log("get conf A");
         if (confA) {
           dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
         }
         const confB = await get_confB();
-        console.log("get conf B");
+        verbose && console.log("get conf B");
         if (confB) {
           dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
         }

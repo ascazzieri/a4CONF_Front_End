@@ -74,6 +74,14 @@
             "PORT_DST": "",
 
             "SOURCE": ["any_ip"]
+          },
+          {
+            "IP_EXT": "",
+            "PORT_EXT": 8080,
+            "IP_DST": "192.0.2.2",
+            "PORT_DST": "",
+
+            "SOURCE": ["any_ip"]
           }
         ],
         "IF_MACHINE": "eth0",
