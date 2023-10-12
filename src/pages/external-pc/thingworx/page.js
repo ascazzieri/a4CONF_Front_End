@@ -401,13 +401,13 @@ export default function Thingworx() {
             <>
               <FormControl fullWidth>
                 <FormLabel title={thingworx_ipaddress_desc}>
-                  IP Address:
+                  Server:
                 </FormLabel>
 
                 <TextField
                   title={thingworx_ipaddress_desc}
                   type="text"
-                  label="Host"
+                  label="Server"
                   helperText="Sentinel server endpoint"
                   value={thingworxHost || ""}
                   required={true}
@@ -835,8 +835,8 @@ export default function Thingworx() {
                       sx={{ flexGrow: 1 }}
                     >
                       {agentDiagnosis && agentDiagnosis["Agent_version"]
-                        ? agentDiagnosis["Agent_version"]
-                        : "not defined"}
+                        ? `Agent version: ${agentDiagnosis["Agent_version"]}`
+                        : "Agent version not defined"}
                     </Typography>
                   </Box>
                 </AppBar>

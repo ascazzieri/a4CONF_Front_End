@@ -1,4 +1,6 @@
 import axios from "axios";
+const host = window?.location?.hostname;
+const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
 
 const ipformat =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -196,30 +198,35 @@ export async function fetchData(url, method, body, noToken) {
       throw new Error(`Axios error: ${error.message}`);
     }
   } else {
-    const token = getAuthToken();
-    if (!token) {
+    const token = getAuthToken() || null;
+    if (!token && !is_local) {
       console.error("User not authenticated");
-      return;
-    }
+      window.location.replace("/login");
+    } else {
+      try {
+        const path = window.location.origin;
+        const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+        const completePath = encodeURIComponent(pathWithoutPort + url);
+        const compatibleEncodedUrl = decodeURIComponent(completePath);
+        const response = await axios(compatibleEncodedUrl, {
+          ...axiosConfig,
+          headers: {
+            ...axiosConfig.headers,
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-    try {
-      const path = window.location.origin;
-      const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-      const completePath = encodeURIComponent(pathWithoutPort + url);
-      const compatibleEncodedUrl = decodeURIComponent(completePath);
-      const response = await axios(compatibleEncodedUrl, {
-        ...axiosConfig,
-        headers: {
-          ...axiosConfig.headers,
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // Axios handles non-2xx status codes as errors automatically
-      const data = response.data;
-      return data;
-    } catch (error) {
-      throw new Error(`Axios error: ${error.message}`);
+        // Axios handles non-2xx status codes as errors automatically
+        if (response?.status === 401) {
+          localStorage.removeItem("jwtToken");
+          window.location.replace("/login");
+        } else {
+          const data = response.data;
+          return data;
+        }
+      } catch (error) {
+        throw new Error(`Axios error: ${error.message}`);
+      }
     }
   }
 }

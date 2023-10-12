@@ -49,7 +49,7 @@ const Layout = () => {
     (async () => {
       const token = getAuthToken()
       const pathName = location?.pathname
-      if(token && pathName !== "/login" && pathName !== "/register"){
+      if (token && !pathName.includes("/login") && !pathName.includes("/register")) {
         loaderContext[1](true);
         const confA = await get_confA();
         verbose && console.log("get conf A");
@@ -148,8 +148,10 @@ const Layout = () => {
         </Snackbar>
         {/*  <Checklist /> */}
         {location?.pathname === "/" && <div>
-          
-          <video src="/img/a4GATE-video.mp4" width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }} />
+        
+          <video width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }}>
+            <source src="/img/a4GATE_mid.mp4" />
+          </video>
         </div>}
         <Outlet />
 

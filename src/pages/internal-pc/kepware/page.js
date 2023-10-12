@@ -994,10 +994,10 @@ export default function Kepware() {
   }, [kepware?.machines]);
 
   const [kepwareMode, setKepwareMode] = useState(kepware?.trial);
-  const [thingNames, setThingNames] = useState(thing_names);
+  const [thingNames, setThingNames] = useState(thing_names || []);
   useEffect(() => {
     setKepwareMode(kepware?.trial);
-    setThingNames(thing_names);
+    setThingNames(thing_names || []);
   }, [kepware, thing_names]);
 
   const handleKepwareModeChange = (event) => {
@@ -1155,7 +1155,7 @@ export default function Kepware() {
       });
       return;
     }
-
+    console.log(thingNames);
     // Creare una copia dell'array scanException
     const thing_names = [...thingNames];
 
@@ -1517,7 +1517,7 @@ export default function Kepware() {
                                               <DataArrayIcon />
                                             </ListItemIcon>
                                             <ListItemText
-                                              primary={`Driver type: ${insideItem?.driver_type} `}
+                                              primary={`Driver type: ${insideItem?.driver_type || "Unknow driver"} `}
                                             />
                                           </ListItemButton>
                                           <ListItemButton sx={{ pl: 10 }}>

@@ -164,7 +164,6 @@ export default function Dashboard() {
   const fastDataOpen = Boolean(fastDataAnchor);
   const versionWarningOpen = Boolean(versionWarningAnchor);
 
-
   useEffect(() => {
     let timer;
 
@@ -184,7 +183,7 @@ export default function Dashboard() {
           machines: machinesConnected,
         }));
         setCount((prevCount) => prevCount + 1);
-      }, 5000);
+      }, 10000);
     }
 
     return () => {
@@ -291,11 +290,11 @@ export default function Dashboard() {
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {dashboardStatus?.bidir !== undefined &&
                       dashboardStatus?.bidir !== null ? (
-                        dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
+                        dashboardStatus?.bidir["a4GATE_U2U_BIDIR"] ? (
                           <>
                             <div style={{ color: "green" }}>
                               {dashboardStatus?.bidir &&
-                                dashboardStatus?.bidir["a4GATE.U2U.RT"]}
+                                dashboardStatus?.bidir["a4GATE_U2U_RT"]}
                             </div>
                           </>
                         ) : (
@@ -378,8 +377,11 @@ export default function Dashboard() {
                       </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {system?.a4updater_version?.industrial ===
-                      system?.a4updater_version?.customer ? (
+                      {system?.a4updater_version?.industrial == null ||
+                      system?.a4updater_version?.customer == null ? (
+                        "..."
+                      ) : system?.a4updater_version?.industrial ===
+                        system?.a4updater_version?.customer ? (
                         system?.a4updater_version?.industrial
                       ) : (
                         <>

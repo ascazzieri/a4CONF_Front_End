@@ -533,6 +533,7 @@ export default function ExternalNetwork() {
                   aria-labelledby="demo-row-radio-buttons-group-label"
                   name="row-radio-buttons-group"
                   value={connection || ""}
+                  required={true}
                   onChange={handleConnectionChange}
                 >
                   <FormControlLabel
@@ -560,7 +561,8 @@ export default function ExternalNetwork() {
                   label="IP Address"
                   helperText="Ip device address"
                   value={ipAddress || ""}
-                  required={true}
+                  disabled={connection === "dhcp"}
+                  required={connection === "dhcp" ? false : true}
                   onChange={handleIPAddressChange}
                 />
               </FormControl>
@@ -574,7 +576,9 @@ export default function ExternalNetwork() {
                   type="text"
                   label="Default Gateway"
                   helperText="Default gateway address"
-                  defaultValue={defaultGateway}
+                  disabled={connection === "dhcp"}
+                  required={connection === "dhcp" ? false : true}
+                  value={defaultGateway || ""}
                   onChange={handleDefaultGatewayChange}
                 />
               </FormControl>
@@ -586,7 +590,9 @@ export default function ExternalNetwork() {
                   type="text"
                   label="DNS Server"
                   helperText="DNS server address"
-                  defaultValue={dnsServer}
+                  disabled={connection === "dhcp"}
+                  required={connection === "dhcp" ? false : true}
+                  value={dnsServer || ""}
                   onChange={handleDNSServerChnage}
                 />
               </FormControl>
@@ -1012,7 +1018,7 @@ export default function ExternalNetwork() {
                       type="text"
                       label="Custom NTP"
                       helperText="Custom NTP server address"
-                      defaultValue={customerNetwork?.ntp}
+                      value={customerNetwork?.ntp || ""}
                       onChange={handleCustomNTPChange}
                     />
                   </FormControl>

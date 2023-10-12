@@ -328,7 +328,8 @@ export default function InternalNetwork() {
                   label="IP Address"
                   helperText="Ip device address"
                   value={ipAddress || ""}
-                  required={true}
+                  disabled={connection === "dhcp"}
+                  required={connection === "dhcp" ? false : true}
                   onChange={handleIPAddressChange}
                   title={ipaddress_network_desc}
                 />

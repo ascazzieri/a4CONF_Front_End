@@ -20,7 +20,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { ftp_blob_table_desc, ftp_connection_ftp, ftp_connection_ftp_desc, ftp_connection_ip, ftp_connection_ip_desc, ftp_custom_port_desc, ftp_ipaddress_desc, ftp_server_type_desc, ftp_timestamp_file_desc, ftp_timestamp_millisecond_desc, ftp_users_desc } from "../../../utils/titles";
+import {
+  ftp_blob_table_desc,
+  ftp_connection_ftp,
+  ftp_connection_ftp_desc,
+  ftp_connection_ip,
+  ftp_connection_ip_desc,
+  ftp_custom_port_desc,
+  ftp_ipaddress_desc,
+  ftp_server_type_desc,
+  ftp_timestamp_file_desc,
+  ftp_timestamp_millisecond_desc,
+  ftp_users_desc,
+} from "../../../utils/titles";
 export default function FTP() {
   const ftp = useSelector((state) => state.services?.fastdata?.industrial?.ftp);
 
@@ -35,11 +47,12 @@ export default function FTP() {
     let arrayOfObjects = [];
     if (data && data.length !== 0) {
       data.forEach((item, index) => {
-        const file = Object.keys(item);
+        const file =
+          Object.keys(item)?.length !== 0 ? Object.keys(item)[0] : "";
         const folder = item[file];
         arrayOfObjects.push({
-          [`${key1}`]: file,
-          [`${key2}`]: folder,
+          [key1]: file,
+          [key2]: folder,
         });
       });
     }
@@ -141,7 +154,15 @@ export default function FTP() {
   };
 
   const handleFTPChange = (event) => {
-    event.preventDefault()
+    event.preventDefault();
+    let blobSettingsArray = [];
+    if (blobTableData?.length !== 0) {
+      blobTableData?.map((item) =>
+        blobSettingsArray.push({
+          [item?.file_name?.trim()]: item?.blob_folder?.trim(),
+        })
+      );
+    }
     const newFTP = {
       ...ftp,
       server: {
@@ -157,14 +178,7 @@ export default function FTP() {
         add_timestamp_to_filename: addTimestamp,
         add_milliseconds_to_timestamp: addTimestampMilliseconds,
       },
-      blob_settings: [
-        {
-          default: "test",
-        },
-        {
-          default_1: "default_1",
-        },
-      ],
+      blob_settings: blobSettingsArray,
     };
 
     dispatch(updateFastData({ industrial: { ftp: newFTP } }));
@@ -230,7 +244,9 @@ export default function FTP() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={ftp_ipaddress_desc}>Binding IP address of FTP server:</FormLabel>
+                <FormLabel title={ftp_ipaddress_desc}>
+                  Binding IP address of FTP server:
+                </FormLabel>
 
                 <TextField
                   title={ftp_ipaddress_desc}
@@ -403,7 +419,9 @@ export default function FTP() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={ftp_timestamp_file_desc}>Add timestamp to file name:</FormLabel>
+                <FormLabel title={ftp_timestamp_file_desc}>
+                  Add timestamp to file name:
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Add timestamp</Typography>
@@ -421,7 +439,9 @@ export default function FTP() {
               {addTimestamp && (
                 <>
                   <FormControl fullWidth>
-                    <FormLabel title={ftp_timestamp_millisecond_desc}>Add also millieconds to timestamp:</FormLabel>
+                    <FormLabel title={ftp_timestamp_millisecond_desc}>
+                      Add also millieconds to timestamp:
+                    </FormLabel>
 
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>Add milliseconds</Typography>

@@ -233,7 +233,7 @@ export default function Sitemanager() {
             <>
               <FormControl fullWidth>
                 <FormLabel title={sitemanager_activation_desc}>
-                  Sitemanager activation
+                  Sitemanager connection
                 </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">

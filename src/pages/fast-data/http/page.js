@@ -19,7 +19,13 @@ import {
   Typography,
 } from "@mui/material";
 import SaveButton from "../../../components/SaveButton/SaveButton";
-import { fast_http_blob_table_desc, fast_http_file_desc, fast_http_host_desc, fast_http_port_desc, fast_http_suffix_desc } from "../../../utils/titles";
+import {
+  fast_http_blob_table_desc,
+  fast_http_file_desc,
+  fast_http_host_desc,
+  fast_http_port_desc,
+  fast_http_suffix_desc,
+} from "../../../utils/titles";
 export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
@@ -36,11 +42,12 @@ export default function FTP() {
     let arrayOfObjects = [];
     if (data && data.length !== 0) {
       data.forEach((item, index) => {
-        const file = Object.keys(item);
+        const file =
+          Object.keys(item)?.length !== 0 ? Object.keys(item)[0] : "";
         const folder = item[file];
         arrayOfObjects.push({
-          [`${key1}`]: file,
-          [`${key2}`]: folder,
+          [key1]: file,
+          [key2]: folder,
         });
       });
     }
@@ -123,7 +130,15 @@ export default function FTP() {
   };
 
   const handleHTTPChange = (event) => {
-    event.preventDefault()
+    event.preventDefault();
+    let blobSettingsArray = [];
+    if (blobTableData?.length !== 0) {
+      blobTableData?.map((item) =>
+        blobSettingsArray.push({
+          [item?.file_name?.trim()]: item?.blob_folder?.trim(),
+        })
+      );
+    }
     const newHTTP = {
       ...http,
       http_server: {
@@ -136,14 +151,7 @@ export default function FTP() {
         enabled: addFileSuffixEnable,
         suffix: addFileSuffixFormat,
       },
-      blob_settings: [
-        {
-          default: "test",
-        },
-        {
-          default_1: "default_1",
-        },
-      ],
+      blob_settings: blobSettingsArray,
     };
 
     dispatch(updateFastData({ industrial: { http: { newHTTP } } }));
@@ -183,7 +191,9 @@ export default function FTP() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={fast_http_host_desc}>Binding IP address of FTP server:</FormLabel>
+                <FormLabel title={fast_http_host_desc}>
+                  Binding IP address of FTP server:
+                </FormLabel>
 
                 <TextField
                   title={fast_http_host_desc}
@@ -201,7 +211,7 @@ export default function FTP() {
                 <FormLabel title={fast_http_port_desc}>Custom port:</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography >
+                  <Typography>
                     Port: {customPortEnable ? serverPort : 8080}
                   </Typography>
 
@@ -236,7 +246,9 @@ export default function FTP() {
               )}
 
               <FormControl fullWidth>
-                <FormLabel title={fast_http_file_desc}>Add format to file:</FormLabel>
+                <FormLabel title={fast_http_file_desc}>
+                  Add format to file:
+                </FormLabel>
 
                 <TextField
                   title={fast_http_file_desc}
@@ -255,7 +267,9 @@ export default function FTP() {
           {currentTab === 1 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={fast_http_suffix_desc}>Add file suffix:</FormLabel>
+                <FormLabel title={fast_http_suffix_desc}>
+                  Add file suffix:
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Switch
@@ -289,7 +303,9 @@ export default function FTP() {
 
           {currentTab === 2 && (
             <>
-              <FormLabel title={fast_http_blob_table_desc}>Blob settings:</FormLabel>
+              <FormLabel title={fast_http_blob_table_desc}>
+                Blob settings:
+              </FormLabel>
 
               <Table
                 tableData={blobTableData}

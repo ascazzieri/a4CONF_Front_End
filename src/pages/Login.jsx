@@ -50,7 +50,7 @@ export default function Login(props) {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-
+  console.log(elevation)
   const handleLogin = async () => {
     if (username.trim() !== "" && password.trim() !== "") {
       (async () => {
@@ -59,30 +59,50 @@ export default function Login(props) {
             user: username,
             password: password,
           });
-          console.log(res);
           if (res) {
             updateUserList(username);
             setAuthenticated(true);
-            if (res?.role === "admin") {
+            if (elevation) {
+              if (res?.role === "admin") {
+                superUser[1](true);
+                //feeback positivo per admin
+                handleRequestFeedback({
+                  vertical: "bottom",
+                  horizontal: "right",
+                  severity: "success",
+                  message: `login successful for admin`,
+                });
+                navigate("/");
+              } else {
+                superUser[1](false);
+                //feedback negativo per admin
+                handleRequestFeedback({
+                  vertical: "bottom",
+                  horizontal: "right",
+                  severity: "error",
+                  message: `wrong credential for admin`,
+                });
+              }
+            } else if (res?.role === "admin") {
               superUser[1](true);
-              //feeback positivo per admin
               handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "success",
-                message: `login successful for admin`,
+                message: `login successful as admin`,
               });
               navigate("/");
             } else {
               superUser[1](false);
-              //feedback negativo per admin
               handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
-                severity: "error",
-                message: `wrong credential for admin`,
+                severity: "success",
+                message: `login successful`,
               });
+              navigate("/");
             }
+
           } else {
             setAuthenticated(false);
             //feedback negativo per login con credenziali errate

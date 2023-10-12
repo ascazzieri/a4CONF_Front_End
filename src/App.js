@@ -26,9 +26,15 @@ import Archive from "./pages/archive/page";
 import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
+import { getAuthToken } from "./utils/utils";
+
+const host = window?.location?.hostname;
+const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
 
 export default function App({ Component, pageProps }) {
-  const [authenticated, setAuthenticated] = useState(false);
+  const [authenticated, setAuthenticated] = useState(
+    is_local || getAuthToken() !== null
+  );
   const [firstUser, setFirstUser] = useState();
 
   useEffect(() => {
