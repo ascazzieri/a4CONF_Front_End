@@ -122,7 +122,8 @@ export default function FTP() {
     }
   };
 
-  const handleHTTPChange = () => {
+  const handleHTTPChange = (event) => {
+    event.preventDefault()
     const newHTTP = {
       ...http,
       http_server: {

@@ -396,7 +396,8 @@ export default function HTTPServer() {
     ]);
   };
 
-  const handleHTTPServerChange = () => {
+  const handleHTTPServerChange = (event) => {
+    event.preventDefault()    
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
