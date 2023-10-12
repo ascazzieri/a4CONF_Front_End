@@ -4,11 +4,15 @@ import { updateSitemanager } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import CachedIcon from "@mui/icons-material/Cached";
+import {
+  agents_vendor_list,
+  agent_vendor_device_type,
+} from "../../../utils/utils";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import BackButton from "../../../components/BackButton/BackButton";
 import Table from "../../../components/Table/Table";
 import {
+  Autocomplete,
   Button,
   Container,
   Divider,
@@ -20,7 +24,13 @@ import {
   Typography,
 } from "@mui/material";
 import SaveButton from "../../../components/SaveButton/SaveButton";
-import { sitemanager_activation_desc, sitemanager_device_name_desc, sitemanager_domain_desc , sitemanger_agents_desc, sitemanger_server_address_desc} from "../../../utils/titles";
+import {
+  sitemanager_activation_desc,
+  sitemanager_device_name_desc,
+  sitemanager_domain_desc,
+  sitemanger_agents_desc,
+  sitemanger_server_address_desc,
+} from "../../../utils/titles";
 
 export default function Sitemanager() {
   const sitemanager = useSelector((state) => state.services?.sitemanager);
@@ -58,6 +68,10 @@ export default function Sitemanager() {
     sitemanager?.nameashostname
   );
   const [smeName, setSMEName] = useState(sitemanager?.name);
+
+  const [currentAgentVendor, setCurrentAgentVendor] = useState();
+  const [currentAgentType, setCurrentAgentType] = useState();
+
   const [agentsTableData, setAgentTableData] = useState(
     getArrayFromAgentsObject(sitemanager?.agents)
   );
@@ -87,20 +101,44 @@ export default function Sitemanager() {
     setSMEName(event.target.value);
   };
 
+  const handleAddAgent = () => {
+    const oldAgents = agentsTableData ? [...agentsTableData] : [];
+    const dummy_agent = {
+      agent: `${currentAgentVendor}:${currentAgentType}`,
+      cfg: "",
+      name: "",
+      sn: "",
+    };
+    const isDuplicate = oldAgents.some(
+      (item) =>
+        item?.agent === dummy_agent?.agent &&
+        item?.cfg === "" &&
+        item?.name === "" &&
+        item?.sn === ""
+    );
+    if (isDuplicate) {
+      return;
+    }
+    oldAgents.push(dummy_agent);
+
+    setAgentTableData(oldAgents);
+  };
+
   const handleSitemanagerSubmit = (event) => {
     event.preventDefault();
 
     let smeAgents = {};
 
-    agentsTableData.map(
-      (item, index) =>
-        (smeAgents[`Agent${index + 1}`] = {
-          agent: item?.agent,
-          name: item?.name,
-          sn: item?.sn,
-          cfg: item?.cfg,
-        })
-    );
+    agentsTableData?.length !== 0 &&
+      agentsTableData?.map(
+        (item, index) =>
+          (smeAgents[`Agent${index + 1}`] = {
+            agent: item?.agent,
+            name: item?.name,
+            sn: item?.sn,
+            cfg: item?.cfg,
+          })
+      );
 
     const newSitemanager = {
       domain: smeDomain,
@@ -108,18 +146,10 @@ export default function Sitemanager() {
       onlybidir: onlybidir,
       enabled: sitemanager?.enabled,
       nameashostname: nameashostname,
+      name: !nameashostname ? smeName : "",
       agents: smeAgents,
-      /* routes: routes,
-      ntp: customNTP ? ntpAddress : [],
-      nat: NATFeatures,
-      machine_to_internet: machineToInternet,
-      ALIAS: alias,
-      PORTS_TCP_SERVER_WAN: portsAllowed,
-      INPUT_NAT: inputNATTableData,
-      firewall_enabled: customerNetwork?.firewall_enabled, */
     };
     dispatch(updateSitemanager(newSitemanager));
-    console.log(newSitemanager);
   };
 
   const agentsColumnData = [
@@ -152,7 +182,6 @@ export default function Sitemanager() {
       enableSorting: true,
     },
   ];
-
   return (
     <ErrorCacher>
       <Container>
@@ -168,10 +197,12 @@ export default function Sitemanager() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={sitemanager_domain_desc}>Gatemanager domain path:</FormLabel>
+                <FormLabel title={sitemanager_domain_desc}>
+                  Gatemanager domain path:
+                </FormLabel>
 
                 <TextField
-                title={sitemanager_domain_desc}
+                  title={sitemanager_domain_desc}
                   type="text"
                   label="Domain"
                   helperText="Gate Manager Domain"
@@ -183,7 +214,9 @@ export default function Sitemanager() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel title={sitemanger_server_address_desc}>Server address:</FormLabel>
+                <FormLabel title={sitemanger_server_address_desc}>
+                  Server address:
+                </FormLabel>
 
                 <TextField
                   type="text"
@@ -199,7 +232,9 @@ export default function Sitemanager() {
           {currentTab === 1 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={sitemanager_activation_desc}>Sitemanager activation</FormLabel>
+                <FormLabel title={sitemanager_activation_desc}>
+                  Sitemanager activation
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Always</Typography>
@@ -216,7 +251,9 @@ export default function Sitemanager() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel title={sitemanager_device_name_desc}>Gatemanager device name</FormLabel>
+                <FormLabel title={sitemanager_device_name_desc}>
+                  Gatemanager device name
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use a custom name for Gate Manager</Typography>
@@ -240,7 +277,7 @@ export default function Sitemanager() {
                       label="Name"
                       helperText="Gate Manager device name"
                       value={smeName || ""}
-                      required={true}
+                      required={!nameashostname ? true : false}
                       onChange={handleSMENameChange}
                     />
                   </FormControl>
@@ -254,6 +291,55 @@ export default function Sitemanager() {
           {currentTab === 2 && (
             <>
               <FormLabel title={sitemanger_agents_desc}>Agents</FormLabel>
+
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <Autocomplete
+                  disablePortal
+                  id="agent-vendor"
+                  options={agents_vendor_list}
+                  sx={{ width: 300 }}
+                  value={currentAgentVendor || null}
+                  onChange={(event, newValue) => {
+                    setCurrentAgentVendor(newValue);
+                    setCurrentAgentType()
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Vendor" />
+                  )}
+                />
+
+                <Autocomplete
+                  disablePortal
+                  id="agent-type"
+                  options={
+                    currentAgentVendor
+                      ? agent_vendor_device_type[currentAgentVendor]
+                      : []
+                  }
+                  value={currentAgentType || null}
+                  disabled={!currentAgentVendor}
+                  sx={{ width: 300 }}
+                  onChange={(event, newValue) => {
+                    setCurrentAgentType(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Type" />
+                  )}
+                />
+
+                <Button
+                  disabled={!currentAgentVendor || !currentAgentType}
+                  onClick={handleAddAgent}
+                  variant="contained"
+                >
+                  Add Agent
+                </Button>
+              </Stack>
 
               <Table
                 tableData={agentsTableData}

@@ -41,7 +41,18 @@ import {
 import CachedIcon from "@mui/icons-material/Cached";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
-import { opcua_host_address_desc, opcua_iot_gateway_desc, opcua_iot_gateway_write_desc, opcua_manage_readgate_desc, opcua_manage_writegate_desc, opcua_rt_configuration, opcua_security_desc, opcua_server_port_desc, opcua_shift_fromkep_desc, opcua_shift_tokep_desc } from "../../../utils/titles";
+import {
+  opcua_host_address_desc,
+  opcua_iot_gateway_desc,
+  opcua_iot_gateway_write_desc,
+  opcua_manage_readgate_desc,
+  opcua_manage_writegate_desc,
+  opcua_rt_configuration,
+  opcua_security_desc,
+  opcua_server_port_desc,
+  opcua_shift_fromkep_desc,
+  opcua_shift_tokep_desc,
+} from "../../../utils/titles";
 
 export default function OPCServer() {
   const opcua = useSelector((state) => state?.services?.opcua);
@@ -403,7 +414,7 @@ export default function OPCServer() {
   };
 
   const handleOPCUAServerChange = (event) => {
-    event.preventDefault()
+    event.preventDefault();
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
@@ -538,7 +549,7 @@ export default function OPCServer() {
                     }}
                     renderInput={(params) => (
                       <TextField
-                      title={opcua_iot_gateway_desc}
+                        title={opcua_iot_gateway_desc}
                         {...params}
                         label="IoT Gateways for OPCUA server read only list"
                       />
@@ -559,7 +570,9 @@ export default function OPCServer() {
                 </Button>
               </Stack>
 
-              <FormLabel title={opcua_rt_configuration}>Remote Things configuration</FormLabel>
+              <FormLabel title={opcua_rt_configuration}>
+                Remote Things configuration
+              </FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysFromTableData}
@@ -608,7 +621,9 @@ export default function OPCServer() {
                 </Button>
               </Stack>
 
-              <FormLabel title={opcua_rt_configuration}>Remote Things configuration</FormLabel>
+              <FormLabel title={opcua_rt_configuration}>
+                Remote Things configuration
+              </FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysToTableData}
@@ -896,7 +911,9 @@ export default function OPCServer() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={opcua_shift_fromkep_desc}>From Kepware:</FormLabel>
+                <FormLabel title={opcua_shift_fromkep_desc}>
+                  From Kepware:
+                </FormLabel>
 
                 <TextField
                   title={opcua_shift_fromkep_desc}
@@ -912,10 +929,12 @@ export default function OPCServer() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel title={opcua_shift_tokep_desc}>To Kepware:</FormLabel>
+                <FormLabel title={opcua_shift_tokep_desc}>
+                  To Kepware:
+                </FormLabel>
 
                 <TextField
-                title={opcua_shift_tokep_desc}
+                  title={opcua_shift_tokep_desc}
                   type="number"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   label="Shift to Kepware"
@@ -939,7 +958,7 @@ export default function OPCServer() {
                   }}
                   renderInput={(params) => (
                     <TextField
-                    title={opcua_host_address_desc}
+                      title={opcua_host_address_desc}
                       {...params}
                       label="Select OPCUA host address binding"
                     />
@@ -952,7 +971,9 @@ export default function OPCServer() {
           {currentTab === 4 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={opcua_server_port_desc}>OPCUA Server Port:</FormLabel>
+                <FormLabel title={opcua_server_port_desc}>
+                  OPCUA Server Port:
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>
@@ -1004,7 +1025,7 @@ export default function OPCServer() {
                   <Typography>Disable</Typography>
 
                   <Switch
-                  title={opcua_security_desc}
+                    title={opcua_security_desc}
                     checked={serverAuth}
                     onChange={handleServerAuthChange}
                   />

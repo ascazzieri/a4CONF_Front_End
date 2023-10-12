@@ -33,7 +33,27 @@ import TableRow from "@mui/material/TableRow";
 import Popover from "@mui/material/Popover";
 import { useLocation } from "react-router-dom";
 import { Typography } from "antd";
-import { a4gate_status_desc, a4monitor_desc, back_channel_desc, bidir_desc, broker_desc, configuration_desc, data_sender_network_desc, data_sender_ready_desc, data_transfer_desc, device_connected_desc, fast_data_board_desc, host_name_desc, http_server_board_desc, kepserver_desc, opcua_server_board_desc, plugins_desc, sitemanager_board_desc, thingworx_board_desc, version_desc } from "../../utils/titles";
+import {
+  a4gate_status_desc,
+  a4monitor_desc,
+  back_channel_desc,
+  bidir_desc,
+  broker_desc,
+  configuration_desc,
+  data_sender_network_desc,
+  data_sender_ready_desc,
+  data_transfer_desc,
+  device_connected_desc,
+  fast_data_board_desc,
+  host_name_desc,
+  http_server_board_desc,
+  kepserver_desc,
+  opcua_server_board_desc,
+  plugins_desc,
+  sitemanager_board_desc,
+  thingworx_board_desc,
+  version_desc,
+} from "../../utils/titles";
 
 export default function Dashboard() {
   const system = useSelector((state) => state?.system);
@@ -144,6 +164,7 @@ export default function Dashboard() {
   const fastDataOpen = Boolean(fastDataAnchor);
   const versionWarningOpen = Boolean(versionWarningAnchor);
 
+
   useEffect(() => {
     let timer;
 
@@ -203,7 +224,9 @@ export default function Dashboard() {
                   spacing={2}
                 >
                   <FormControl fullWidth>
-                    <FormLabel title={host_name_desc}>a4GATE serial number:</FormLabel>
+                    <FormLabel title={host_name_desc}>
+                      a4GATE serial number:
+                    </FormLabel>
 
                     <TextField
                       title={host_name_desc}
@@ -211,13 +234,10 @@ export default function Dashboard() {
                       label="a4GATE hostname"
                       helperText={hostNameHelperText}
                       className="a4gate-hostname-form"
-                      value={hostName ? hostName : ""}
+                      value={hostName || ""}
                       required={true}
                       onChange={(event) => {
-                        setHostName({
-                          industrial: event?.target?.value,
-                          customer: event?.target?.value,
-                        });
+                        setHostName(event?.target?.value);
                       }}
                     />
                   </FormControl>
@@ -248,7 +268,9 @@ export default function Dashboard() {
                 <Grid container style={{ overflowY: "auto" }}>
                   <Grid container md={6}>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      <div title={data_sender_ready_desc}>Data Sender ready</div>
+                      <div title={data_sender_ready_desc}>
+                        Data Sender ready
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {dashboardStatus?.is_B_ready?.ready
@@ -256,7 +278,9 @@ export default function Dashboard() {
                         : badStatus()}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      <div title={data_sender_network_desc}>Data Sender network</div>
+                      <div title={data_sender_network_desc}>
+                        Data Sender network
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {pcb_is_connected?.connected ? goodStatus() : badStatus()}
@@ -265,7 +289,8 @@ export default function Dashboard() {
                       <div title={bidir_desc}>Bidir.</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      {dashboardStatus?.bidir ? (
+                      {dashboardStatus?.bidir !== undefined &&
+                      dashboardStatus?.bidir !== null ? (
                         dashboardStatus?.bidir["a4GATE.U2U.BIDIR"] ? (
                           <>
                             <div style={{ color: "green" }}>
@@ -348,7 +373,9 @@ export default function Dashboard() {
                       </Grid>
                     </Popover>
                     <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                      <div style={{ marginBottom: 5 }} title={version_desc}>Version:</div>
+                      <div style={{ marginBottom: 5 }} title={version_desc}>
+                        Version:
+                      </div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {system?.a4updater_version?.industrial ===

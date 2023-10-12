@@ -66,25 +66,6 @@ export const agents_vendor_list = [
   "Weintek",
   "Yaskawa",
 ];
-export const getAuthToken = () => {
-  return localStorage.getItem("jwtToken");
-};
-export const getArrayOfObjects = (data, key1, key2) => {
-  let arrayOfObjects = [];
-  if (data) {
-    const keys = Object.keys(data);
-    if (keys && keys.length !== 0) {
-      keys.forEach((item, index) => {
-        arrayOfObjects.push({
-          [key1]: item,
-          [key2]: data[item]?.toString()?.replace(",", ", "),
-        });
-      });
-    }
-  }
-  return arrayOfObjects;
-};
-
 export const agent_vendor_device_type = {
   GENERIC: [
     "LogTunnel Client",
@@ -169,6 +150,25 @@ export const agent_vendor_device_type = {
   Weintek: ["Ethernet"],
   Yaskawa: ["Ethernet"],
 };
+export const getAuthToken = () => {
+  return localStorage.getItem("jwtToken");
+};
+export const getArrayOfObjects = (data, key1, key2) => {
+  let arrayOfObjects = [];
+  if (data) {
+    const keys = Object.keys(data);
+    if (keys && keys.length !== 0) {
+      keys.forEach((item, index) => {
+        arrayOfObjects.push({
+          [key1]: item,
+          [key2]: data[item]?.toString()?.replace(",", ", "),
+        });
+      });
+    }
+  }
+  return arrayOfObjects;
+};
+
 export async function fetchData(url, method, body, noToken) {
   const axiosConfig = {
     method: method,
@@ -187,7 +187,6 @@ export async function fetchData(url, method, body, noToken) {
       const completePath = encodeURIComponent(pathWithoutPort + url);
       const compatibleEncodedUrl = decodeURIComponent(completePath);
 
-      console.log(compatibleEncodedUrl);
       const response = await axios(compatibleEncodedUrl, axiosConfig);
 
       // Axios handles non-2xx status codes as errors automatically
@@ -208,8 +207,6 @@ export async function fetchData(url, method, body, noToken) {
       const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
       const completePath = encodeURIComponent(pathWithoutPort + url);
       const compatibleEncodedUrl = decodeURIComponent(completePath);
-
-      console.log(compatibleEncodedUrl);
       const response = await axios(compatibleEncodedUrl, {
         ...axiosConfig,
         headers: {
