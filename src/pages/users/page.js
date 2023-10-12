@@ -1,6 +1,13 @@
-import React, { useState, useEffect , useContext} from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
-import { Card, Container, Typography, MenuItem } from "@mui/material";
+import {
+  Card,
+  Container,
+  Typography,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import { Divider, OutlinedInput } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -20,25 +27,31 @@ export default function ManageUsers() {
 
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [oldUser, setOldUser] = useState();
 
   const userKeys = user ? Object.keys(user) : [];
   const userValues = user ? Object.values(user) : [];
 
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
+  const handleClickShowPasswordConfirm = () =>
+    setShowPasswordConfirm((show) => !show);
+
   useEffect(() => {
     (async () => {
       try {
         const response = await get_users();
-        if(response){
-          setUser(response)
+        if (response) {
+          setUser(response);
           handleRequestFeedback({
             vertical: "bottom",
             horizontal: "right",
             severity: "success",
             message: `users configuration request OK`,
           });
-        }
-        else{
+        } else {
           handleRequestFeedback({
             vertical: "bottom",
             horizontal: "right",
@@ -46,7 +59,7 @@ export default function ManageUsers() {
             message: `An error occurred on change users configuration`,
           });
         }
-        console.log(response)
+        console.log(response);
       } catch (err) {
         console.log("Error occured when fetching books");
       }
@@ -56,6 +69,7 @@ export default function ManageUsers() {
   const handleClear = () => {
     setUsername("");
     setPassword("");
+    setConfirmPassword("");
   };
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
@@ -63,54 +77,57 @@ export default function ManageUsers() {
   };
   const handleSave = () => {
     const newUser = { ...user };
-    if(oldUser === username){
-      newUser[username] = password
-    }else {
-      newUser[username] = password
-      if(oldUser)
-      delete newUser[oldUser]
+    if (oldUser === username) {
+      newUser[username] = password;
+    } else {
+      newUser[username] = password;
+      if (oldUser) delete newUser[oldUser];
     }
-    
+
     const postUser = {
       user: username,
-      password: password
+      password: password,
     };
-    if (
-      userIsValid(username) === false ||
-      checkPasswordStrength(password) !== 4
-    ) {
-      alert(
-        "username o password non conformi.Username deve avere un formato simile: user@example.com . La password devo contenere almeno 8 caratteri,una minuscola,una maiuscola e un carattere speciale"
-      );
+    if (password !== confirmPassword) {
+      alert("the passwords do not match");
     } else {
-      (async () => {
-        try {
-          setUser(newUser);
-          const response = await post_users({ postUser });
-          if(response === true){
-            handleRequestFeedback({
-              vertical: "bottom",
-              horizontal: "right",
-              severity: "success",
-              message: `users configuration request OK`,
-            });
+      if (
+        userIsValid(username) === false ||
+        checkPasswordStrength(password) !== 4
+      ) {
+        alert(
+          "username o password non conformi.Username deve avere un formato simile: user@example.com . La password devo contenere almeno 8 caratteri,una minuscola,una maiuscola e un carattere speciale"
+        );
+      } else {
+        (async () => {
+          try {
+            setUser(newUser);
+            const response = await post_users({ postUser });
+            if (response === true) {
+              handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "success",
+                message: `users configuration request OK`,
+              });
+            } else {
+              handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred on change users configuration`,
+              });
+            }
+          } catch (err) {
+            console.log("Error occured when fetching books");
           }
-          else{
-            handleRequestFeedback({
-              vertical: "bottom",
-              horizontal: "right",
-              severity: "error",
-              message: `An error occurred on change users configuration`,
-            });
-          }
-        } catch (err) {
-          console.log("Error occured when fetching books");
-        }
-      })();
-      setUsername("");
-      setPassword("");
-      setOpen(false);
-      setMod(false)
+        })();
+        setUsername("");
+        setPassword("");
+        setConfirmPassword("");
+        setOpen(false);
+        setMod(false);
+      }
     }
   };
 
@@ -119,26 +136,27 @@ export default function ManageUsers() {
     delete newArchive[item];
     setUser(newArchive);
   };
-  const [mod,setMod] = useState(false);
+  const [mod, setMod] = useState(false);
   const handleModify = (item) => {
     setUsername(item);
     setPassword(user[item]);
+    setConfirmPassword(user[item]);
     setMod(true);
-    setOldUser(item)
+    setOldUser(item);
   };
-const closeMod = () => {
-  setMod(false)
-}
+  const closeMod = () => {
+    setMod(false);
+  };
   const handleAdd = () => {
-    handleClear(user)
+    handleClear(user);
     setOpen(true);
   };
- 
+
   const [open, setOpen] = useState(false);
   const handleClose = () => {
     setOpen(false);
   };
- 
+
   function userIsValid(user) {
     var regex_email_valida =
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -176,17 +194,16 @@ const closeMod = () => {
   const handleClickShowSas = (user, action) => {
     if (action === "add") {
       setVisibleUser((prevArray) => {
-        const newArray = [...visibleUsers]
-        newArray.push(user)
-        console.log(newArray)
-        return newArray
+        const newArray = [...visibleUsers];
+        newArray.push(user);
+        console.log(newArray);
+        return newArray;
       });
     } else if (action === "delete" && visibleUsers.length !== 0) {
       setVisibleUser((prevArray) => {
-        const newArray =  prevArray.filter((element) => element !== user);
-       console.log(newArray)
-        return newArray
-        
+        const newArray = prevArray.filter((element) => element !== user);
+        console.log(newArray);
+        return newArray;
       });
     }
   };
@@ -222,7 +239,7 @@ const closeMod = () => {
                   <Typography key={Math.random()} sx={{ width: "70%" }}>
                     <Item>{item}</Item>
                     <OutlinedInput
-                      type={visibleUsers.includes(item)  ? "text" : "password"}
+                      type={visibleUsers.includes(item) ? "text" : "password"}
                       required={true}
                       value={userValues[index]}
                       readOnly={true}
@@ -292,15 +309,55 @@ const closeMod = () => {
                   multiline
                 />
                 <Divider />
-                <TextField
-                  fullWidth={true}
-                  id="outlined-texterea"
-                  label="Password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                />
+                <FormControl fullWidth={true} variant="outlined">
+                  <InputLabel htmlFor="input-password">Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password || ""}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+                <Divider />
+                <FormControl  variant="outlined" fullWidth={true}>
+                  <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPasswordConfirm ? "text" : "password"}
+                    value={confirmPassword || ""}
+                    onChange={(event) => {
+                      setConfirmPassword(event.target.value);
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPasswordConfirm}
+                          onMouseDown={handleClickShowPasswordConfirm}
+                          edge="end"
+                        >
+                          {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm Password"
+                  />
+                </FormControl>
               </div>
               <Stack
                 direction="row"
@@ -333,15 +390,55 @@ const closeMod = () => {
                   multiline
                 />
                 <Divider />
-                <TextField
-                  fullWidth={true}
-                  id="outlined-texterea"
-                  label="Password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                  }}
-                />
+                <FormControl fullWidth={true} variant="outlined">
+                  <InputLabel htmlFor="input-password">Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password || ""}
+                    onChange={(event) => {
+                      setPassword(event.target.value);
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+                <Divider />
+                <FormControl  variant="outlined" fullWidth={true}>
+                  <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    value={confirmPassword || ""}
+                    onChange={(event) => {
+                      setConfirmPassword(event.target.value);
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPasswordConfirm}
+                          onMouseDown={handleClickShowPasswordConfirm}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Confirm Password"
+                  />
+                </FormControl>
               </div>
               <Stack
                 direction="row"
