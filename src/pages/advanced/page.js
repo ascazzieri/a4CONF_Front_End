@@ -14,13 +14,46 @@ import { SnackbarContext } from "../../utils/context/SnackbarContext";
 export default function Advanced() {
 
   const loaderContext = useContext(LoadingContext);
-  const [serviceCommand, setServiceCommand] = useState("");
+  const [serviceCommandA4monitor, setServiceCommandA4monitor] = useState("");
+  const [serviceCommandBchnld , setServiceCommandBchnld] = useState("");
+  const [serviceCommandDataTranfer , setServiceCommandDataTransfer] = useState("");
+  const [serviceCommandConfiguration , setServiceCommandConfiguration] = useState("");
+  const [serviceCommandBroker , setServiceCommandBroker] = useState("");
 
-  const handleChange = (event) => {
+  const handleChangeA4monitor = (event) => {
     const command = event.target.value;
     const serviceName = event.target.name;
-    setServiceCommand(command)
+    setServiceCommandA4monitor(command)
     manageService(serviceName, command);
+    setServiceCommandA4monitor(undefined);
+  };
+  const handleChangeBchnld = (event) => {
+    const command = event.target.value;
+    const serviceName = event.target.name;
+    setServiceCommandBchnld(command)
+    manageService(serviceName, command);
+    setServiceCommandBchnld(undefined);
+  };
+  const handleChangeDataTranfer = (event) => {
+    const command = event.target.value;
+    const serviceName = event.target.name;
+    setServiceCommandDataTransfer(command)
+    manageService(serviceName, command);
+    setServiceCommandDataTransfer(undefined);
+  };
+  const handleChangeConfiguration = (event) => {
+    const command = event.target.value;
+    const serviceName = event.target.name;
+    setServiceCommandConfiguration(command)
+    manageService(serviceName, command);
+    setServiceCommandConfiguration(undefined);
+  };
+  const handleChangeBroker = (event) => {
+    const command = event.target.value;
+    const serviceName = event.target.name;
+    setServiceCommandBroker(command)
+    manageService(serviceName, command);
+    setServiceCommandBroker(undefined);
   };
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
@@ -52,7 +85,6 @@ export default function Advanced() {
       console.error('Error during service handling', error);
     }finally {
       loaderContext[1](false);
-      setServiceCommand(undefined);
     }
   })();
   
@@ -68,8 +100,8 @@ export default function Advanced() {
       <RadioGroup
         row
         name="a4monitor"
-        value={serviceCommand}
-        onChange={handleChange}
+        value={serviceCommandA4monitor}
+        onChange={handleChangeA4monitor}
       >
         <FormControlLabel
           value="start"
@@ -94,8 +126,8 @@ export default function Advanced() {
       <RadioGroup
         row
         name="tf_bchnld"
-        value={serviceCommand}
-        onChange={handleChange}
+        value={serviceCommandBchnld}
+        onChange={handleChangeBchnld}
       >
         <FormControlLabel
           value="start"
@@ -120,8 +152,8 @@ export default function Advanced() {
       <RadioGroup
         row
         name="tf_http_xfer"
-        value={serviceCommand}
-        onChange={handleChange}
+        value={serviceCommandDataTranfer}
+        onChange={handleChangeDataTranfer}
       >
         <FormControlLabel
           value="start"
@@ -146,8 +178,8 @@ export default function Advanced() {
       <RadioGroup
         row
         name="tf_cfgmng"
-        value={serviceCommand}
-        onChange={handleChange}
+        value={serviceCommandConfiguration}
+        onChange={handleChangeConfiguration}
       >
         <FormControlLabel
           value="start"
@@ -172,8 +204,8 @@ export default function Advanced() {
       <RadioGroup
         row
         name="mosquitto"
-        value={serviceCommand}
-        onChange={handleChange}
+        value={serviceCommandBroker}
+        onChange={handleChangeBroker}
       >
         <FormControlLabel
           value="start"
