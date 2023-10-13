@@ -89,15 +89,24 @@ export default function ManageUsers() {
       password: password,
     };
     if (password !== confirmPassword) {
-      alert("the passwords do not match");
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `pasword do not match`,
+      });
     } else {
       if (
         userIsValid(username) === false ||
         checkPasswordStrength(password) !== 4
       ) {
-        alert(
-          "username o password non conformi.Username deve avere un formato simile: user@example.com . La password devo contenere almeno 8 caratteri,una minuscola,una maiuscola e un carattere speciale"
-        );
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`,
+        });
+        
       } else {
         (async () => {
           try {
@@ -308,7 +317,7 @@ export default function ManageUsers() {
                   }}
                   multiline
                 />
-                <Divider />
+                
                 <FormControl fullWidth={true} variant="outlined">
                   <InputLabel htmlFor="input-password">Password</InputLabel>
                   <OutlinedInput
@@ -333,7 +342,7 @@ export default function ManageUsers() {
                     label="Password"
                   />
                 </FormControl>
-                <Divider />
+               
                 <FormControl  variant="outlined" fullWidth={true}>
                   <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
                   <OutlinedInput
@@ -389,7 +398,7 @@ export default function ManageUsers() {
                   }}
                   multiline
                 />
-                <Divider />
+              
                 <FormControl fullWidth={true} variant="outlined">
                   <InputLabel htmlFor="input-password">Password</InputLabel>
                   <OutlinedInput
@@ -414,12 +423,12 @@ export default function ManageUsers() {
                     label="Password"
                   />
                 </FormControl>
-                <Divider />
+           
                 <FormControl  variant="outlined" fullWidth={true}>
                   <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
-                    type={showPassword ? "text" : "password"}
+                    type={showPasswordConfirm ? "text" : "password"}
                     value={confirmPassword || ""}
                     onChange={(event) => {
                       setConfirmPassword(event.target.value);
@@ -432,7 +441,7 @@ export default function ManageUsers() {
                           onMouseDown={handleClickShowPasswordConfirm}
                           edge="end"
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     }
