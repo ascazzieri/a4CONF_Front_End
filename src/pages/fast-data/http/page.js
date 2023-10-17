@@ -192,7 +192,7 @@ export default function FTP() {
             <>
               <FormControl fullWidth>
                 <FormLabel title={fast_http_host_desc}>
-                  Binding IP address of FTP server:
+                  Binding IP address of HTTP server:
                 </FormLabel>
 
                 <TextField

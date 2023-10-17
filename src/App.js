@@ -206,7 +206,7 @@ export default function App({ Component, pageProps }) {
               <Route
                 path="matrix"
                 element={
-                  <PrivateRoute authenticated={authenticated}>
+                  <PrivateRoute authenticated={authenticated} superUserRequired={true}>
                     <Matrix />
                   </PrivateRoute>
                 }

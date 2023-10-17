@@ -307,15 +307,15 @@
       "enabled": true,
       "running": true,
       "customer": {
+        "blob_connection": {
+          "azure_url": "https://x0storage.blob.core.windows.net/iot-default",
+          "azure_sas": "?sv=2020-02-10&st=2023-03-24T10%3A06%3A32Z&se=2053-03-25T10%3A06%3A00Z&sr=c&sp=racwdlm&sig=gXK0kFw%2FX11xV9hXC9rCzxoB75eNJo54V7S5Go6BZ3U%3D"
+        },
         "matrix": {
           "enabled": true,
           "http_server": {
             "host": "127.0.0.1",
             "port": 11002
-          },
-          "blob_connection": {
-            "azure_url": "https://x0storage.blob.core.windows.net/iot-default",
-            "azure_sas": "?sv=2020-02-10&st=2023-03-24T10%3A06%3A32Z&se=2053-03-25T10%3A06%3A00Z&sr=c&sp=racwdlm&sig=gXK0kFw%2FX11xV9hXC9rCzxoB75eNJo54V7S5Go6BZ3U%3D"
           },
           "matrix_data_managment": [
             {

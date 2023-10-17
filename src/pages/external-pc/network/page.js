@@ -8,7 +8,6 @@ import {
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import CachedIcon from "@mui/icons-material/Cached";
 import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { test_connection } from "../../../utils/api";
@@ -430,22 +429,28 @@ export default function ExternalNetwork() {
   };
 
   const wifiColumnData = [
+    { field: "name", headerName: "Name", width: 180, editable: true },
     {
-      accessorKey: "ssid",
-      header: "SSID",
-      enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
-      enableSorting: true,
-      size: 80,
+      field: "age",
+      headerName: "Age",
+      type: "number",
+      editable: true,
+      align: "left",
+      headerAlign: "left",
     },
     {
-      accessorKey: "password",
-      header: "PASSWORD",
-      type: "password",
-      enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
-      enableSorting: true,
-      size: 80,
+      field: "dateCreated",
+      headerName: "Date Created",
+      type: "date",
+      width: 180,
+      editable: true,
+    },
+    {
+      field: "lastLogin",
+      headerName: "Last Login",
+      type: "dateTime",
+      width: 220,
+      editable: true,
     },
   ];
 
@@ -715,11 +720,11 @@ export default function ExternalNetwork() {
                   )}
 
                   <FormLabel>Wifi:</FormLabel>
+
                   <CustomTable
                     tableData={wifiTableData || []}
                     setTableData={setWifiTableData}
                     columnsData={wifiColumnData}
-                    //selectableObjectData={wifiSelectableObjectData}
                   />
                   <Divider />
                 </>

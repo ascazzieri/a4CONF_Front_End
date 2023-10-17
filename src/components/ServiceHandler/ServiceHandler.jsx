@@ -87,7 +87,6 @@ export default function ServiceHandler() {
 
     try {
       await send_conf({ body });
-      console.log(body);
     } catch (error) {
       console.error('Error during service handling', error);
       // Gestisci l'errore come preferisci

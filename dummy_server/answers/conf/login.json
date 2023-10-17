@@ -3,5 +3,5 @@
 
   "token_type": "bearer",
 
-  "role": "paperino"
+  "role": "admin"
 }

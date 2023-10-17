@@ -15,13 +15,13 @@ export default function BackButton(props) {
 
 
     return (
-        <>
-            <Stack direction="row" spacing={4}>
+        <div style={{margin: '10px 0px'}}>
+            <Stack direction="row" spacing={4} alignItems="center" justifyContent="flex-start">
                 <Button variant="outlined" color="secondary" startIcon={<ArrowBackIos />} onClick={handleClick}>
                     Back
                 </Button>
-                <h2 style={{ padding: 15, fontWeight: 600 }}>{pageTitle}</h2>
+                <h2 style={{fontWeight: 800, fontSize: 30 }}>{pageTitle}</h2>
             </Stack>
-        </>
+        </div>
     )
 }

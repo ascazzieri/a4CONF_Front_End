@@ -106,7 +106,6 @@ export default function ManageUsers() {
           severity: "error",
           message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`,
         });
-        
       } else {
         (async () => {
           try {
@@ -117,18 +116,23 @@ export default function ManageUsers() {
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "success",
-                message: `users configuration request OK`,
+                message: `User created successfully`,
               });
             } else {
               handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "error",
-                message: `An error occurred on change users configuration`,
+                message: `User ${username} has already been created`,
               });
             }
           } catch (err) {
-            console.log("Error occured when fetching books");
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "error",
+              message: `An error occurred while trying to add new user`,
+            });
           }
         })();
         setUsername("");
@@ -303,8 +307,8 @@ export default function ManageUsers() {
                 </MenuItem>
               );
             })}
-          <SimpleDialog open={mod} onClose={closeMod} sx={{ padding: 10 }}>
-            <Card sx={{ padding: 10, margin: 1 }}>
+          <SimpleDialog open={mod} onClose={closeMod}>
+            <Card sx={{ p: 5, m: 1, overflow: "auto" }}>
               <h1>Modify user</h1>
               <div>
                 <TextField
@@ -317,7 +321,7 @@ export default function ManageUsers() {
                   }}
                   multiline
                 />
-                
+
                 <FormControl fullWidth={true} variant="outlined">
                   <InputLabel htmlFor="input-password">Password</InputLabel>
                   <OutlinedInput
@@ -342,9 +346,11 @@ export default function ManageUsers() {
                     label="Password"
                   />
                 </FormControl>
-               
-                <FormControl  variant="outlined" fullWidth={true}>
-                  <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
+
+                <FormControl variant="outlined" fullWidth={true}>
+                  <InputLabel htmlFor="input-password-confirm">
+                    Confirm Password
+                  </InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
                     type={showPasswordConfirm ? "text" : "password"}
@@ -360,7 +366,11 @@ export default function ManageUsers() {
                           onMouseDown={handleClickShowPasswordConfirm}
                           edge="end"
                         >
-                          {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                          {showPasswordConfirm ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     }
@@ -384,8 +394,8 @@ export default function ManageUsers() {
               </Stack>
             </Card>
           </SimpleDialog>
-          <SimpleDialog open={open} onClose={handleClose} sx={{ padding: 10 }}>
-            <Card sx={{ padding: 10, margin: 1 }}>
+          <SimpleDialog open={open} onClose={handleClose}>
+            <Card sx={{ p: 5, m: 1, overflow: "auto" }}>
               <h1>Insert new User</h1>
               <div>
                 <TextField
@@ -398,7 +408,7 @@ export default function ManageUsers() {
                   }}
                   multiline
                 />
-              
+
                 <FormControl fullWidth={true} variant="outlined">
                   <InputLabel htmlFor="input-password">Password</InputLabel>
                   <OutlinedInput
@@ -423,9 +433,11 @@ export default function ManageUsers() {
                     label="Password"
                   />
                 </FormControl>
-           
-                <FormControl  variant="outlined" fullWidth={true}>
-                  <InputLabel htmlFor="input-password-confirm">Confirm Password</InputLabel>
+
+                <FormControl variant="outlined" fullWidth={true}>
+                  <InputLabel htmlFor="input-password-confirm">
+                    Confirm Password
+                  </InputLabel>
                   <OutlinedInput
                     id="outlined-adornment-password"
                     type={showPasswordConfirm ? "text" : "password"}
@@ -441,7 +453,11 @@ export default function ManageUsers() {
                           onMouseDown={handleClickShowPasswordConfirm}
                           edge="end"
                         >
-                          {showPasswordConfirm ? <VisibilityOff /> : <Visibility />}
+                          {showPasswordConfirm ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     }

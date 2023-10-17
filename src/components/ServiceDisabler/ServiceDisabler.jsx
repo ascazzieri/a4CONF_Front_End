@@ -142,7 +142,7 @@ export default function ServiceDisabler() {
         <Grid container>
             <Grid item md={12} sm={12}>
                 <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start">
-                    <Typography title={service_status_desc}>{serviceName && serviceName.replace("network", "firewall").charAt(0).toUpperCase() + serviceName.replace("network", "firewall").slice(1)} status:</Typography>
+                    <Typography title={service_status_desc}>{serviceName && serviceName.replace("network", "firewall").charAt(0).toUpperCase() + serviceName.replace("network", "firewall").slice(1)} service status:</Typography>
                     <FormControlLabel control={<Switch checked={
                         (serviceName === "network" && firewallEnabled) ||
                         (serviceName === "sitemanager" && sitemanagerEnabled) ||

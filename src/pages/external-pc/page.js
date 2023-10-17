@@ -387,7 +387,7 @@ export default function ExternalPC() {
           </CardContent>
         </Card>
         <Grid container spacing={2}>
-          <Grid item xs={4} sx={{ display: "flex" }}>
+          <Grid item xs={5} sx={{ display: "flex" }}>
             <Card sx={{ width: "100%", height: 100, overflow: 'auto', pl:1 }}>
               <CardContent>
                 <ServiceDisabler />
@@ -395,7 +395,7 @@ export default function ExternalPC() {
             </Card>
          
           </Grid>
-          <Grid item xs={8} sx={{ display: "flex" }}>
+          <Grid item xs={7} sx={{ display: "flex" }}>
             {!currentURLArray?.includes("network") && (
               <Card sx={{ width: "100%", height: 100, overflow: 'auto', pl:1 }}>
                 <CardContent>

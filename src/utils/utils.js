@@ -1,4 +1,6 @@
 import axios from "axios";
+import axiosRetry from "axios-retry";
+import PQueue from "p-queue";
 const host = window?.location?.hostname;
 const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
 
@@ -171,11 +173,89 @@ export const getArrayOfObjects = (data, key1, key2) => {
   return arrayOfObjects;
 };
 
+const queue = new PQueue({ concurrency: 2 });
+
+axiosRetry(axios, { retries: 3 }); // Numero di tentativi di ritentativo
+
 export async function fetchData(url, method, body, noToken) {
   const axiosConfig = {
     method: method,
     headers: {
       "Content-Type": "application/json",
+    },
+    httpsAgent: {
+      rejectUnauthorized: false,
+    },
+  };
+
+  if (method === "POST") {
+    axiosConfig.data = body;
+  }
+
+  const makeRequest = async () => {
+    try {
+      const path = window.location.origin;
+      const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+      const completePath = encodeURIComponent(pathWithoutPort + url);
+      const compatibleEncodedUrl = decodeURIComponent(completePath);
+
+      console.log(compatibleEncodedUrl);
+
+      const response = await axios(compatibleEncodedUrl, axiosConfig);
+
+      // Axios handles non-2xx status codes as errors automatically
+      const data = response.data;
+      return data;
+    } catch (error) {
+      throw new Error(`Axios error: ${error.message}`);
+    }
+  };
+
+  if (noToken) {
+    return queue.add(makeRequest);
+  } else {
+    const token = getAuthToken() || null;
+    if (!token && !is_local) {
+      console.error("User not authenticated");
+      window.location.replace("/login");
+    } else {
+      const wrappedRequest = async () => {
+        try {
+          const path = window.location.origin;
+          const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
+          const completePath = encodeURIComponent(pathWithoutPort + url);
+          const compatibleEncodedUrl = decodeURIComponent(completePath);
+          const response = await axios(compatibleEncodedUrl, {
+            ...axiosConfig,
+            headers: {
+              ...axiosConfig.headers,
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          const data = response.data;
+          return data;
+        } catch (error) {
+          if (error?.message?.includes("401")) {
+            localStorage.removeItem("jwtToken");
+            window.location.replace("/login");
+          }
+          throw new Error(`Axios error: ${error.message}`);
+        }
+      };
+
+      return queue.add(wrappedRequest);
+    }
+  }
+}
+
+/* export async function fetchData(url, method, body, noToken) {
+  const axiosConfig = {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    httpsAgent: {
+      rejectUnauthorized: false,
     },
   };
 
@@ -188,6 +268,8 @@ export async function fetchData(url, method, body, noToken) {
       const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
       const completePath = encodeURIComponent(pathWithoutPort + url);
       const compatibleEncodedUrl = decodeURIComponent(completePath);
+
+      console.log(compatibleEncodedUrl);
 
       const response = await axios(compatibleEncodedUrl, axiosConfig);
 
@@ -215,21 +297,19 @@ export async function fetchData(url, method, body, noToken) {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        // Axios handles non-2xx status codes as errors automatically
-        if (response?.status === 401) {
+        const data = response.data;
+        return data;
+      } catch (error) {
+        if (error?.message?.includes("401")) {
           localStorage.removeItem("jwtToken");
           window.location.replace("/login");
-        } else {
-          const data = response.data;
-          return data;
         }
-      } catch (error) {
-        throw new Error(`Axios error: ${error.message}`);
+        console.error(`Axios error: ${error.message}`);
       }
     }
   }
-}
+}  */
+
 export const confToHTML = (conf) => {
   //in futuro puoi inserire quì dentro eventuali check del contenuto corretto delle chiavi
   //puoi utilizzare il parametro PCSide per capire da qualche PC è in arrivo la configurazione da controllare

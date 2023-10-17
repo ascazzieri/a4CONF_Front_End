@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateBackChannel } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
@@ -29,13 +29,18 @@ export default function BackChannel() {
     }
     return tableData;
   };
-
   const [topicsTableData, setTopicsTableData] = useState(
     getTableArray(backChannel?.topics, "topics")
   );
   const [filesTableData, setFilesTableData] = useState(
     getTableArray(backChannel?.files, "files")
   );
+
+
+  useEffect(() => {
+    setTopicsTableData(getTableArray(backChannel?.topics, "topics"))
+    setFilesTableData(getTableArray(backChannel?.files, "files"))
+  },[backChannel])
 
   const handleBackChannelChange = (event) => {
     event.preventDefault();

@@ -119,9 +119,6 @@ export default function InternalPC() {
             >
               <Outlet />
             </Box>
-            {/* <VerticalTab tabsData={tabsData} root="internal-pc">
-              <Outlet />
-            </VerticalTab> */}
           </CardContent>
         </Card>
       </Container>

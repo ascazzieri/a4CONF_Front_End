@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
 import { updateFastData } from "../../utils/redux/reducers";
@@ -24,9 +24,10 @@ import {
   TextField,
 } from "@mui/material";
 import DriveFileMoveOutlinedIcon from "@mui/icons-material/DriveFileMoveOutlined";
+import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import HttpOutlinedIcon from "@mui/icons-material/HttpOutlined";
 import GridOnIcon from "@mui/icons-material/GridOn";
-
+import { SuperUserContext } from "../../utils/context/SuperUser";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import SaveButton from "../../components/SaveButton/SaveButton";
 import { fast_blob_url_desc, fast_sas_desc } from "../../utils/titles";
@@ -38,6 +39,8 @@ export default function FastData() {
   const currentURLArray = location.pathname.split("/");
 
   const navigate = useNavigate();
+
+  const superUser = useContext(SuperUserContext);
 
   const [ftpEnabled, setFTPEnabled] = useState(
     fastdata?.industrial?.ftp?.enabled
@@ -52,10 +55,10 @@ export default function FastData() {
   );
 
   const [blobConnectionUrl, setBlobConnectionUrl] = useState(
-    fastdata?.customer?.matrix?.blob_connection?.azure_url
+    fastdata?.customer?.blob_connection?.azure_url
   );
   const [blobConnectionSas, setBlobConnectionSas] = useState(
-    fastdata?.customer?.matrix?.blob_connection?.azure_sas
+    fastdata?.customer?.blob_connection?.azure_sas
   );
 
   const [showSaskey, setShowSaskey] = useState(false);
@@ -65,12 +68,8 @@ export default function FastData() {
     setFTPEnabled(fastdata?.industrial?.ftp?.enabled);
     setHTTPEnabled(fastdata?.industrial?.http?.enabled);
     setMatrixEnabled(fastdata?.customer?.matrix?.enabled);
-    setBlobConnectionUrl(
-      fastdata?.customer?.matrix?.blob_connection?.azure_url
-    );
-    setBlobConnectionSas(
-      fastdata?.customer?.matrix?.blob_connection?.azure_sas
-    );
+    setBlobConnectionUrl(fastdata?.customer?.blob_connection?.azure_url);
+    setBlobConnectionSas(fastdata?.customer?.blob_connection?.azure_sas);
   }, [fastdata]);
 
   useEffect(() => {
@@ -107,17 +106,17 @@ export default function FastData() {
     }
   };
 
-  const handleMatrixChange = (e) => {
+  const handleBlobConnectionChange = (e) => {
     e.preventDefault();
-    const newMatrix = {
-      ...fastdata?.customer?.matrix,
+    const newBlobConnection = {
+      ...fastdata?.customer,
       blob_connection: {
         azure_url: blobConnectionUrl,
         azure_sas: blobConnectionSas,
       },
     };
 
-    dispatch(updateFastData({ customer: { matrix: newMatrix } }));
+    dispatch(updateFastData({ customer: newBlobConnection }));
   };
 
   if (currentURLArray.length === 2) {
@@ -128,9 +127,11 @@ export default function FastData() {
         <Container sx={{ flexGrow: 1 }} disableGutters>
           <Card sx={{ mt: 1 }} className="fast-data-card">
             <CardContent>
-              <form onSubmit={handleMatrixChange}>
+              <form onSubmit={handleBlobConnectionChange}>
                 <FormControl fullWidth>
-                  <FormLabel title={fast_blob_url_desc}>Blob storage Url:</FormLabel>
+                  <FormLabel title={fast_blob_url_desc}>
+                    Blob storage Url:
+                  </FormLabel>
 
                   <TextField
                     title={fast_blob_url_desc}
@@ -146,7 +147,10 @@ export default function FastData() {
                 <Divider />
 
                 <FormControl fullWidth>
-                  <InputLabel htmlFor="outlined-adornment-password" title={fast_sas_desc}>
+                  <InputLabel
+                    htmlFor="outlined-adornment-password"
+                    title={fast_sas_desc}
+                  >
                     Sas *
                   </InputLabel>
                   <OutlinedInput
@@ -305,29 +309,56 @@ export default function FastData() {
                         }}
                       >
                         {matrixEnabled ? (
-                          <Card
-                            sx={{ height: 200, width: 250 }}
-                            className="menu-cards"
-                            name="thingworx"
-                            onClick={() => handleClick("matrix")}
-                          >
-                            <GridOnIcon style={cardIcon} />
-                            <CardContent
-                              sx={{ pt: 0 }}
-                              className="internal-menu-cards"
+                          superUser[0] ? (
+                            <Card
+                              sx={{ height: 200, width: 250 }}
+                              className="menu-cards"
+                              name="matrix"
+                              onClick={() => handleClick("matrix")}
                             >
-                              <Typography variant="h7" component="div">
-                                Matrix
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ p: 1 }}
+                              <GridOnIcon style={cardIcon} />
+                              <CardContent
+                                sx={{ pt: 0 }}
+                                className="internal-menu-cards"
                               >
-                                Exchange data by Matrix method
-                              </Typography>
-                            </CardContent>
-                          </Card>
+                                <Typography variant="h7" component="div">
+                                  Matrix
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{ p: 1 }}
+                                >
+                                  Exchange data by Matrix method
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          ) : (
+                            <Card
+                              sx={{ height: 200, width: 250 }}
+                              className="menu-cards-disabled"
+                              name="matrix"
+                            >
+                              <DoDisturbIcon
+                                style={{ fontSize: 80, color: "red" }}
+                              />
+                              <CardContent
+                                sx={{ pt: 0 }}
+                                className="internal-menu-cards"
+                              >
+                                <Typography variant="h7" component="div">
+                                  Matrix
+                                </Typography>
+                                <Typography
+                                  variant="body2"
+                                  color="text.secondary"
+                                  sx={{ p: 1 }}
+                                >
+                                  Matrix is available only for admin
+                                </Typography>
+                              </CardContent>
+                            </Card>
+                          )
                         ) : (
                           <Card
                             sx={{ height: 200, width: 250 }}
@@ -361,14 +392,14 @@ export default function FastData() {
             </CardContent>
           </Card>
           <Grid container spacing={2}>
-            <Grid item xs={4} sx={{ display: "flex" }}>
+            <Grid item xs={5} sx={{ display: "flex" }}>
               <Card sx={{ width: "100%", height: 100 }}>
                 <CardContent>
                   <ServiceDisabler />
                 </CardContent>
               </Card>
             </Grid>
-            <Grid item xs={8} sx={{ display: "flex" }}>
+            <Grid item xs={7} sx={{ display: "flex" }}>
               <Card sx={{ width: "100%", height: 100 }}>
                 <CardContent>
                   <ServiceHandler />

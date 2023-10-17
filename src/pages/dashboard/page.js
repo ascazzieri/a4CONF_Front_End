@@ -183,7 +183,7 @@ export default function Dashboard() {
           machines: machinesConnected,
         }));
         setCount((prevCount) => prevCount + 1);
-      }, 10000);
+      }, 15000);
     }
 
     return () => {
@@ -242,7 +242,6 @@ export default function Dashboard() {
                   <Button
                     variant="contained"
                     onClick={handleHostNameChange}
-                    style={{ marginTop: 20 }}
                   >
                     Save
                   </Button>

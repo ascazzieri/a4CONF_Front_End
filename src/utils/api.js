@@ -1,4 +1,3 @@
-import { truncate } from "lodash";
 import * as helper from "./utils";
 const verbose = window.location.href.includes("verbose");
 
@@ -69,6 +68,7 @@ export const createiotgw = async (
   tags_list
 ) => {
   try {
+    console.log(tags_list)
     const res = await helper.fetchData(
       "/createiotgw?channel=" +
         channel +
@@ -83,6 +83,8 @@ export const createiotgw = async (
         "&thing_name=" +
         thingName +
         "&machine_id=" +
+        blob_folder +
+        "&folder=" +
         blob_folder +
         "&sampling_time=" +
         sampling_time +
@@ -542,7 +544,7 @@ export const get_matrix = async () => {
 };
 export const get_users = async () => {
   try {
-    const res = await helper.fetchData("/conf/user", "GET");
+    const res = await helper.fetchData("/conf/users", "GET");
     verbose && console.log(res);
     return res;
   } catch (e) {

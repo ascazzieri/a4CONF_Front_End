@@ -47,9 +47,8 @@ const Layout = () => {
 
   useEffect(() => {
     (async () => {
-      const token = getAuthToken()
       const pathName = location?.pathname
-      if (token && !pathName.includes("/login") && !pathName.includes("/register")) {
+      if (!pathName.includes("/login") && !pathName.includes("/register")) {
         loaderContext[1](true);
         const confA = await get_confA();
         verbose && console.log("get conf A");
@@ -148,7 +147,7 @@ const Layout = () => {
         </Snackbar>
         {/*  <Checklist /> */}
         {location?.pathname === "/" && <div>
-        
+
           <video width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }}>
             <source src="/img/a4GATE_mid.mp4" />
           </video>
