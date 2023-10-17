@@ -76,10 +76,9 @@ export default function Advanced() {
   };
   const [dataColletorIP , setDataColletorIP] = useState("");
   
-  
+ 
   function handleDataCollectorIp(){ 
-    console.log(dataColletorIP)
-    if (verifyIP(dataColletorIP) === true) {
+    if (verifyIP(dataColletorIP) !== null) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",

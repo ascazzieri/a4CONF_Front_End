@@ -190,8 +190,8 @@ export default function InternalNetwork() {
     event.preventDefault();
 
     if (
-      !ipAddress.every(verifyIPCIDR) ||
-      !ipAddress.every(verifyIPnotbroadcast)
+      !ipAddress?.every(verifyIPCIDR) ||
+      !ipAddress?.every(verifyIPnotbroadcast)
     ) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -203,17 +203,17 @@ export default function InternalNetwork() {
     }
 
     let staticRoutes = {};
-    if (routeTableData.length !== 0) {
-      routeTableData.map(
+    if (routeTableData?.length !== 0) {
+      routeTableData?.map(
         (item, index) => (staticRoutes[`${item?.subnet}`] = item?.gateway)
       );
     }
-    Object.keys(staticRoutes).map((item) => item?.trim());
-    Object.values(staticRoutes).map((item) => item?.trim());
+    Object.keys(staticRoutes)?.map((item) => item?.trim());
+    Object.values(staticRoutes)?.map((item) => item?.trim());
     if (
-      !Object.keys(staticRoutes).every(verifyIPCIDR) ||
-      !Object.keys(staticRoutes).every(verifyIPnotbroadcast) ||
-      !Object.values(staticRoutes).every(verifyIP)
+      !Object.keys(staticRoutes)?.every(verifyIPCIDR) ||
+      !Object.keys(staticRoutes)?.every(verifyIPnotbroadcast) ||
+      !Object.values(staticRoutes)?.every(verifyIP)
     ) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -224,7 +224,7 @@ export default function InternalNetwork() {
       return;
     }
     customNTPAddress?.map((item) => item?.trim());
-    if (updateNTPfromB === false && !customNTPAddress.every(verifyIP)) {
+    if (updateNTPfromB === false && !customNTPAddress?.every(verifyIP)) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
