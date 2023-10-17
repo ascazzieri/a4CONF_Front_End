@@ -292,7 +292,8 @@
 
       "opcua": {
         "custom_port_enable": false,
-        "custom_port": 4841
+        "custom_port": 4841,
+        "host": "0.0.0.0"
       },
       "iotgw": {
         "from": ["from1", "from2", "from3"],

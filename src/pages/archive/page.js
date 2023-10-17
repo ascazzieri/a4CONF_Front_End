@@ -64,7 +64,7 @@ export default function Archive() {
             });
           }
         } catch (err) {
-          console.log("Error occured when fetching books");
+          console.log("Error occured when fetching archive elements");
         }
       })();
     setTitle("");

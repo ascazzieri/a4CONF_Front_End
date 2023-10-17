@@ -204,9 +204,8 @@ export default function Dashboard() {
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>
         <Card sx={{ flexGrow: 1, mt: 0, pt: 0 }}>
           <CardContent>
-            <Grid container columns={{ xs: 4, sm: 8, md: 12 }}>
+            <Grid container>
               <Grid
-                item
                 xs={12}
                 sm={12}
                 md={12}
@@ -250,11 +249,10 @@ export default function Dashboard() {
                 </Stack>
               </Grid>
             </Grid>
-            <Grid container columns={{ xs: 4, sm: 12, md: 12 }}>
+            <Grid container>
               <Grid
-                item
                 xs={2}
-                sm={6}
+                sm={12}
                 md={6}
                 style={{
                   textAlign: "center",
@@ -266,28 +264,28 @@ export default function Dashboard() {
 
                 <Grid container style={{ overflowY: "auto" }}>
                   <Grid container md={6}>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       <div title={data_sender_ready_desc}>
                         Data Sender ready
                       </div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.is_B_ready?.ready
                         ? goodStatus()
                         : badStatus()}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       <div title={data_sender_network_desc}>
                         Data Sender network
                       </div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {pcb_is_connected?.connected ? goodStatus() : badStatus()}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       <div title={bidir_desc}>Bidir.</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       {dashboardStatus?.bidir !== undefined &&
                       dashboardStatus?.bidir !== null ? (
                         dashboardStatus?.bidir["a4GATE_U2U_BIDIR"] ? (
@@ -304,7 +302,7 @@ export default function Dashboard() {
                         "..."
                       )}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       <Button
                         sx={{ mb: 1, mt: 0 }}
                         variant="contained"
@@ -314,7 +312,7 @@ export default function Dashboard() {
                         KepServer
                       </Button>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {plugins_status?.kepware?.server_runtime &&
                       plugins_status?.kepware?.server_iotgateway &&
                       plugins_status?.kepware?.config_api_service
@@ -337,20 +335,20 @@ export default function Dashboard() {
                         alignItems="center"
                         sx={{ p: 2, pb: 0 }}
                       >
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>Kepware Runtime</div>
                         </Grid>
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           {plugins_status?.kepware?.server_runtime !== undefined
                             ? plugins_status?.kepware?.server_runtime
                               ? goodStatus()
                               : badStatus()
                             : "..."}
                         </Grid>
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>IoT Gateway</div>
                         </Grid>
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           {plugins_status?.kepware?.server_iotgateway !==
                           undefined
                             ? plugins_status?.kepware?.server_iotgateway
@@ -358,10 +356,10 @@ export default function Dashboard() {
                               : badStatus()
                             : "..."}
                         </Grid>
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           <div>Config API</div>
                         </Grid>
-                        <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                        <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                           {plugins_status?.kepware?.config_api_service !==
                           undefined
                             ? plugins_status?.kepware?.config_api_service
@@ -371,12 +369,12 @@ export default function Dashboard() {
                         </Grid>
                       </Grid>
                     </Popover>
-                    <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                    <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                       <div style={{ marginBottom: 5 }} title={version_desc}>
                         Version:
                       </div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1 }}>
                       {system?.a4updater_version?.industrial == null ||
                       system?.a4updater_version?.customer == null ? (
                         "..."
@@ -414,10 +412,10 @@ export default function Dashboard() {
                     </Popover>
                   </Grid>
                   <Grid container md={6}>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       <div title={a4monitor_desc}>a4Monitor</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.a4monitor_status !== null &&
                       dashboardStatus?.a4monitor_status !== undefined
                         ? dashboardStatus?.a4monitor_status === true
@@ -425,10 +423,10 @@ export default function Dashboard() {
                           : badStatus()
                         : "..."}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       <div title={back_channel_desc}>Back Channel</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
                         null &&
                       dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
@@ -439,10 +437,10 @@ export default function Dashboard() {
                           : badStatus()
                         : "..."}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       <div title={data_transfer_desc}>Data Transfer</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.monitor_terafence_status
                         ?.tf_http_xfer !== null &&
                       dashboardStatus?.monitor_terafence_status
@@ -453,10 +451,10 @@ export default function Dashboard() {
                           : badStatus()
                         : "..."}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       <div title={configuration_desc}>Configuration</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
                         null &&
                       dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
@@ -467,10 +465,10 @@ export default function Dashboard() {
                           : badStatus()
                         : "..."}
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       <div title={broker_desc}>Broker</div>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1 }}>
+                    <Grid xs={6} sx={{ p: 1.5 }}>
                       {dashboardStatus?.monitor_terafence_status?.mosquitto !==
                         null &&
                       dashboardStatus?.monitor_terafence_status?.mosquitto !==
@@ -486,7 +484,6 @@ export default function Dashboard() {
               </Grid>
 
               <Grid
-                item
                 xs={2}
                 sm={6}
                 md={3}
@@ -497,43 +494,38 @@ export default function Dashboard() {
               >
                 <h3 title={plugins_desc}>Plugins</h3>
                 <Divider />
-                <Grid
-                  container
-                  rowSpacing={3}
-                  justifyContent="center"
-                  alignItems="center"
-                >
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                <Grid container style={{ overflowY: "auto" }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <div title={sitemanager_board_desc}>Sitemanager</div>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     {plugins_status?.sitemanager?.connected
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <div title={thingworx_board_desc}>Thingworx</div>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     {plugins_status?.thingworx?.connected
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <div title={opcua_server_board_desc}>OPCUA Server</div>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     {plugins_status?.opcua?.running
                       ? goodStatus()
                       : badStatus()}
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <div title={http_server_board_desc}>HTTP Server</div>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <div>value</div>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     <Button
                       title={fast_data_board_desc}
                       variant="contained"
@@ -543,7 +535,7 @@ export default function Dashboard() {
                       Fast Data
                     </Button>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1 }}>
+                  <Grid xs={6} sx={{ p: 1.5 }}>
                     {plugins_status?.fastdata?.running
                       ? goodStatus()
                       : badStatus()}
@@ -564,26 +556,26 @@ export default function Dashboard() {
                       alignItems="center"
                       sx={{ p: 2, pb: 0 }}
                     >
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         <div>Fast Data FTP</div>
                       </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.industrial?.ftp?.running
                           ? goodStatus()
                           : badStatus()}
                       </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         <div>Fast Data HTTP</div>
                       </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.industrial?.http?.running
                           ? goodStatus()
                           : badStatus()}
                       </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         <div>Fast Data Matrix</div>
                       </Grid>
-                      <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
+                      <Grid xs={6} sx={{ p: 1, textAlign: "center" }}>
                         {plugins_status?.fastdata?.customer?.matrix?.running
                           ? goodStatus()
                           : badStatus()}
@@ -593,7 +585,6 @@ export default function Dashboard() {
                 </Grid>
               </Grid>
               <Grid
-                item
                 xs={2}
                 sm={6}
                 md={3}

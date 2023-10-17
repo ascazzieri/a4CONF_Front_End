@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  updateExternalPC,
   updateSitemanager,
   updateThingworx,
   updateOPCServer,
   updateHTTPServer,
 } from "../../utils/redux/reducers";
-import { JSONTree } from "react-json-tree";
 import {
   Grid,
   Card,
@@ -29,8 +27,9 @@ import ServiceHandler from "../../components/ServiceHandler/ServiceHandler";
 import ServiceDisabler from "../../components/ServiceDisabler/ServiceDisabler";
 
 export default function ExternalPC() {
-  const externalPCReboot = useSelector((state) => state?.system.reboot);
   const serviceStatus = useSelector((state) => state?.services);
+
+
 
   const [sitemanagerEnabled, setSitemanagerEnabled] = useState(
     serviceStatus?.sitemanager?.enabled
@@ -82,12 +81,6 @@ export default function ExternalPC() {
     navigate(`/data-sender/${name}`);
   };
 
-  const handleExternalPCChange = () => {
-    const newExternalPC = {
-      reboot: false,
-    };
-    dispatch(updateExternalPC({ newExternalPC }));
-  };
 
   if (currentURLArray.length === 2) {
     const cardIcon = { fontSize: 80, color: "#0d6efd" };
@@ -395,15 +388,16 @@ export default function ExternalPC() {
         </Card>
         <Grid container spacing={2}>
           <Grid item xs={4} sx={{ display: "flex" }}>
-            <Card sx={{ width: "100%", height: 100 }}>
+            <Card sx={{ width: "100%", height: 100, overflow: 'auto', pl:1 }}>
               <CardContent>
                 <ServiceDisabler />
               </CardContent>
             </Card>
+         
           </Grid>
           <Grid item xs={8} sx={{ display: "flex" }}>
             {!currentURLArray?.includes("network") && (
-              <Card sx={{ width: "100%", height: 100 }}>
+              <Card sx={{ width: "100%", height: 100, overflow: 'auto', pl:1 }}>
                 <CardContent>
                   <ServiceHandler />
                 </CardContent>

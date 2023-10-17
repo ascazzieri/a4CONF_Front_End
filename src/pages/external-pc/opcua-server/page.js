@@ -130,7 +130,6 @@ export default function OPCServer() {
 
   const [serverAuth, setServerAuth] = useState(opcua?.security?.user_auth);
   const [hostBinding, setHostBinding] = useState(opcua?.opcua?.host);
-
   const [usersTableData, setUsersTableData] = useState(
     getArrayOfObjects(opcua?.security?.users, "username", "password")
   );
@@ -429,7 +428,7 @@ export default function OPCServer() {
     }
 
     const newOPCUAServer = {
-      enabled: false,
+      ...opcua,
       shift_property_from_kepware: shiftFromKepware,
       shift_property_to_kepware: shiftToKepware,
       opcua: {
@@ -963,6 +962,7 @@ export default function OPCServer() {
                 <Autocomplete
                   disablePortal
                   options={["127.0.0.1", "0.0.0.0"]}
+                  value={hostBinding || ""}
                   onChange={(event, newValue) => {
                     setHostBinding(newValue);
                   }}

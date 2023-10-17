@@ -2,15 +2,18 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
-import { get_advanced } from "../../utils/api";
+import {
+  get_advanced,
+  add_recovery_ip,
+  remove_recovery_ip,
+  reboot_PCA,
+} from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
 import {
   Card,
   Container,
   Typography,
-  Switch,
-  FormLabel,
   Divider,
   Stack,
   Button,
@@ -18,7 +21,6 @@ import {
 } from "@mui/material";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
-import { verifyIP } from "../../utils/utils";
 
 export default function Advanced() {
   const loaderContext = useContext(LoadingContext);
@@ -29,7 +31,7 @@ export default function Advanced() {
   const [serviceCommandConfiguration, setServiceCommandConfiguration] =
     useState("");
   const [serviceCommandBroker, setServiceCommandBroker] = useState("");
-  
+
   const handleChangeA4monitor = (event) => {
     const command = event.target.value;
     const serviceName = event.target.name;
@@ -65,35 +67,51 @@ export default function Advanced() {
     manageService(serviceName, command);
     setServiceCommandBroker(undefined);
   };
-  const [rebootData, setRebootData] = useState(false);
-  const handleRebootData = (event) => {
-    setRebootData(event.target.checked);
-  };
-
+  
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-  const [dataColletorIP , setDataColletorIP] = useState("");
-  
- 
-  function handleDataCollectorIp(){ 
-    if (verifyIP(dataColletorIP) !== null) {
+  const [dataColletorIP, setDataColletorIP] = useState("");
+
+  const handleAddRecoveryIP = async () => {
+    const response = await add_recovery_ip();
+    if (response) {
+      setDataColletorIP("198.51.100.1");
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
-        message: `IP addres correct`,
+        message: `Recovery IP added correctly`,
       });
-  }else{
-    handleRequestFeedback({
-      vertical: "bottom",
-      horizontal: "right",
-      severity: "error",
-      message: `IP address not valid`,
-    });
-  }
-}
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to add recovery ip`,
+      });
+    }
+  };
+  const handleRemoveRecoveryIP = async () => {
+    const response = await remove_recovery_ip();
+    if (response) {
+      setDataColletorIP();
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Recovery IP removed correctly`,
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to remove recovery ip`,
+      });
+    }
+  };
   const manageService = (service, cmd) => {
     loaderContext[1](true);
     (async () => {
@@ -122,6 +140,25 @@ export default function Advanced() {
       }
     })();
   };
+
+  const handleRebootPCA = async() => {
+    const response = await reboot_PCA()
+    if(response){
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Data Collector will reboot soon`,
+      });
+    }else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to reboot data collector`,
+      });
+    }
+  }
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
@@ -262,36 +299,47 @@ export default function Advanced() {
               </RadioGroup>
             </FormControl>
           </Card>
-
-          <Card sx={{ mt: 1, p: 1 }}>
-            <FormControl>Reboot Data Sender</FormControl>
-            <Stack direction="row" spacing={2} alignItems="center">
-              <Typography>Off</Typography>
-              <Switch checked={rebootData} onChange={handleRebootData} />
-              <Typography>On</Typography>
-            </Stack>
-          </Card>
+          <Divider />
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleRebootPCA}
+            >
+              Reboot Data Collector
+            </Button>
+      
+          <Divider />
           <Stack
             direction="row"
             justifyContent="center"
             alignItems="center"
-            spacing={2}
+            spacing={5}
           >
-            <FormControl fullWidth>
-              <TextField
-                value={dataColletorIP || ""}
-                onChange={(event) => {
-                  setDataColletorIP(event?.target?.value)
-                }}
-                type="text"
-                label="Modify recovery Data Collector IP"
-                className="Modify recovery Data Collector IP-form"
-              />
-            </FormControl>
-            <Button variant="contained" style={{ marginTop: 20 }} onClick={handleDataCollectorIp}>
-              Modify
+            <Button variant="contained" onClick={handleAddRecoveryIP}>
+              Add recovery IP
+            </Button>
+
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleRemoveRecoveryIP}
+            >
+              Remove recovery IP
             </Button>
           </Stack>
+          {dataColletorIP && (
+            <>
+              <Divider />
+              <FormControl fullWidth>
+                <TextField
+                  value={dataColletorIP || ""}
+                  disabled={true}
+                  type="text"
+                  label="Data collector recovery IP"
+                />
+              </FormControl>
+            </>
+          )}
         </Card>
       </Container>
     </ErrorCacher>

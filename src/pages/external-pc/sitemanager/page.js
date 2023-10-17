@@ -306,7 +306,7 @@ export default function Sitemanager() {
                   value={currentAgentVendor || null}
                   onChange={(event, newValue) => {
                     setCurrentAgentVendor(newValue);
-                    setCurrentAgentType()
+                    setCurrentAgentType();
                   }}
                   renderInput={(params) => (
                     <TextField {...params} label="Vendor" />

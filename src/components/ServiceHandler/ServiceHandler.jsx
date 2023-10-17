@@ -8,6 +8,14 @@ import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
 import { Typography } from "@mui/material";
 import { service_command_desc } from "../../utils/titles";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
+  Button
+} from "@mui/material";
 
 export default function ServiceHandler() {
 
@@ -19,6 +27,31 @@ export default function ServiceHandler() {
 
   const [serviceCommand, setServiceCommand] = useState("");
 
+
+
+  const [sitemanagerDialogOpen, setSitemanaerDialogOpen] = useState(false);
+
+  const handleStopSitemanager = async () => {
+    const body = {
+      services: {
+        sitemanager: {
+          command: 'stop'
+        }
+      }
+    }
+
+    loaderContext[1](true);
+    try {
+      await send_conf({ body });
+    } catch (error) {
+      console.error('Error during service handling', error);
+      // Gestisci l'errore come preferisci
+    } finally {
+      loaderContext[1](false);
+      setServiceCommand(undefined);
+    }
+  };
+
   const handleChange = (event) => {
     const command = event.target.value;
     setServiceCommand(command)
@@ -27,6 +60,11 @@ export default function ServiceHandler() {
 
 
   const manageService = async (service, cmd) => {
+    console.log(service, cmd)
+    if (service === 'sitemanager' && cmd === 'stop') {
+      setSitemanaerDialogOpen(true)
+      return
+    }
     const middleFastDataKey = (service === 'ftp' || service === 'http') ? 'industrial' : null;
 
     const body = isFastData
@@ -58,7 +96,9 @@ export default function ServiceHandler() {
       setServiceCommand(undefined);
     }
   };
-  return (
+
+
+  return (<>
     <FormControl>
       <Typography title={service_command_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
       <RadioGroup
@@ -83,6 +123,28 @@ export default function ServiceHandler() {
           label="Restart" />
       </RadioGroup>
     </FormControl>
+    <Dialog
+      open={sitemanagerDialogOpen}
+      onClose={() => setSitemanaerDialogOpen(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        Are you sure you want to stop sitemanager service?
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          If you are working on a4GATE remotely you will lose the connection for good until the service will be restart manually. If Sitemanager status is enabled it will be sufficient reboot a4GATE with the physical button.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setSitemanaerDialogOpen(false)}>Close</Button>
+        <Button variant="contained" color="error" onClick={handleStopSitemanager} >
+          Stop Sitemanager
+        </Button>
+      </DialogActions>
+    </Dialog>
+  </>
 
   );
 }

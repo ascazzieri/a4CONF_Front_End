@@ -72,8 +72,7 @@ import {
   network_static_routes_desc,
   network_typeconnection_desc,
 } from "../../../utils/titles";
-import { verifyIP , verifyIPCIDR } from "../../../utils/utils";
-
+import { verifyIP, verifyIPCIDR } from "../../../utils/utils";
 
 const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
 
@@ -369,40 +368,39 @@ export default function ExternalNetwork() {
           ])
       );
     }
-    
-   if(!ipAddress?.every(verifyIPCIDR)){
-    handleRequestFeedback({
-      vertical: "bottom",
-      horizontal: "right",
-      severity: "error",
-      message: `IP address not valid`,
-    });
-    return;
-   }
 
-   if(verifyIP(defaultGateway) === null){
-    
-    handleRequestFeedback({
-      vertical: "bottom",
-      horizontal: "right",
-      severity: "error", 
-      message: `Default gateway address not valid`,
-    });
-    return;
-   }
-    
-  if(customNTP === true){
-    console.log(customNTP)
-    if(verifyIP(ntpAddress) === null){
+    if (!ipAddress?.every(verifyIPCIDR)) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
-        severity: "error", 
-        message: `Custom ntp address not valid`,
+        severity: "error",
+        message: `IP address not valid`,
       });
       return;
     }
-  }
+
+    if (verifyIP(defaultGateway) === null) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Default gateway address not valid`,
+      });
+      return;
+    }
+
+    if (customNTP === true) {
+      console.log(customNTP);
+      if (verifyIP(ntpAddress) === null) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Custom ntp address not valid`,
+        });
+        return;
+      }
+    }
 
     const newCustomer = {
       dhcp: connection === "static" ? false : true,
@@ -557,9 +555,7 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
-  
-  
-  
+
   return (
     <ErrorCacher>
       <Container>
@@ -1068,7 +1064,7 @@ export default function ExternalNetwork() {
                       type="text"
                       label="Custom NTP"
                       helperText="Custom NTP server address"
-                      value={customerNetwork?.ntp || ""}
+                      value={ntpAddress || ""}
                       onChange={handleCustomNTPChange}
                     />
                   </FormControl>

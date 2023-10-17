@@ -21,38 +21,43 @@ const jsonSlice = createSlice({
 
       if (actionType === "fromA") {
         //system
-        state.system.a4updater_version.industrial =
+        state.system = _.merge(state.system, newConf?.system)
+        /* state.system.a4updater_version.industrial =
           newConf?.system?.a4updater_version?.industrial;
         state.system.hostname.industrial =
           newConf?.system?.hostname?.industrial;
         state.system.network.industrial = newConf?.system?.network?.industrial;
-        //services
-        state.services.kepware = newConf?.services?.kepware;
+        //services */
+        state.services = _.merge(state.services, newConf?.services)
+        /* state.services.kepware = newConf?.services?.kepware;
         state.services.backchannel = newConf?.services?.backchannel;
         state.services.fastdata.industrial.ftp =
           newConf?.services?.fastdata?.industrial?.ftp;
         state.services.fastdata.industrial.http =
           newConf?.services?.fastdata?.industrial?.http;
-        state.version = newConf?.version;
+        state.version = newConf?.version; */
       } else if (actionType === "fromB") {
         //system
-        state.system.a4updater_version.customer =
+        state.system = _.merge(state.system, newConf?.system)
+       /*  state.system.a4updater_version.customer =
           newConf?.system?.a4updater_version?.customer;
         state.system.hostname.customer = newConf?.system?.hostname?.customer;
-        state.system.network.customer = newConf?.system?.network?.customer;
+        state.system.network.customer = newConf?.system?.network?.customer; */
 
         //services
-        state.services.sitemanager = newConf?.services?.sitemanager;
+        state.services = _.merge(state.services, newConf?.services)
+        /* state.services.sitemanager = newConf?.services?.sitemanager;
         state.services.thingworx = newConf?.services?.thingworx;
         state.services.opcua = newConf?.services?.opcua;
         state.services.http = newConf?.services?.http;
         state.services.fastdata = {
           ...state.services.fastdata,
           ...newConf?.services?.fastdata,
-        };
+        }; */
       } else if (actionType === "fromBackup") {
-        const mergedObject = deepMerge({ ...state }, newConf);
-        state = mergedObject;
+        state = _.merge(state, newConf)
+        /* const mergedObject = deepMerge({ ...state }, newConf);
+        state = mergedObject; */
       }
       state.timestamp = newConf?.timestamp;
     },

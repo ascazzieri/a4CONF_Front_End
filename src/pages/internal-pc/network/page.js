@@ -40,7 +40,16 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
-import { connection_network_desc, data_sender_syncro_desc, ipaddress_network_desc, ntp_custom_syncro_desc, ntp_server_address_desc, ntp_syncro_settings_desc, routes_network_desc, scan_exception_desc } from "../../../utils/titles";
+import {
+  connection_network_desc,
+  data_sender_syncro_desc,
+  ipaddress_network_desc,
+  ntp_custom_syncro_desc,
+  ntp_server_address_desc,
+  ntp_syncro_settings_desc,
+  routes_network_desc,
+  scan_exception_desc,
+} from "../../../utils/titles";
 
 export default function InternalNetwork() {
   const industrialNetwork = useSelector(
@@ -73,31 +82,31 @@ export default function InternalNetwork() {
   const [connection, setConnection] = useState(
     industrialNetwork?.dhcp ? "dhcp" : "static"
   );
-  const [ipAddress, setIPAddress] = useState(industrialNetwork?.ip);
+  const [ipAddress, setIPAddress] = useState(industrialNetwork?.ip || []);
 
   const [routeTableData, setRouteTableData] = useState(
     getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
   );
   const [scanException, setScanException] = useState(
-    industrialNetwork?.net_scan
+    industrialNetwork?.net_scan || []
   );
   const [currentScanException, setCurrentScanException] = useState();
   const [updateNTPfromB, setUpdateNTPFromB] = useState(
     industrialNetwork?.ntp?.update_from_B
   );
   const [customNTPAddress, setCustomNTPAddress] = useState(
-    industrialNetwork?.ntp?.ip_addresses
+    industrialNetwork?.ntp?.ip_addresses || []
   );
 
   useEffect(() => {
     setConnection(industrialNetwork?.dhcp ? "dhcp" : "static");
-    setIPAddress(industrialNetwork?.ip);
+    setIPAddress(industrialNetwork?.ip || []);
     setRouteTableData(
       getArrayOfObjects(industrialNetwork?.routes, "subnet", "gateway")
     );
-    setScanException(industrialNetwork?.net_scan);
+    setScanException(industrialNetwork?.net_scan || []);
     setUpdateNTPFromB(industrialNetwork?.ntp?.update_from_B);
-    setCustomNTPAddress(industrialNetwork?.ntp?.ip_addresses);
+    setCustomNTPAddress(industrialNetwork?.ntp?.ip_addresses || []);
   }, [industrialNetwork]);
 
   const handleConnectionChange = (event) => {
@@ -298,7 +307,9 @@ export default function InternalNetwork() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth required={true}>
-                <FormLabel title={connection_network_desc}>Connection:</FormLabel>
+                <FormLabel title={connection_network_desc}>
+                  Connection:
+                </FormLabel>
                 <RadioGroup
                   row
                   aria-labelledby="demo-row-radio-buttons-group-label"
@@ -321,7 +332,9 @@ export default function InternalNetwork() {
               <Divider />
 
               <FormControl fullWidth>
-                <FormLabel title={ipaddress_network_desc}>IP Address:</FormLabel>
+                <FormLabel title={ipaddress_network_desc}>
+                  IP Address:
+                </FormLabel>
 
                 <TextField
                   type="text"
@@ -354,56 +367,21 @@ export default function InternalNetwork() {
 
           {currentTab === 2 && (
             <>
-              <Stack
-                direction="row"
-                justifyContent="center"
-                alignItems="center"
-                spacing={2}
-              >
-                <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
+              <FormControl fullWidth>
+                <FormLabel>NTP synchronization settings</FormLabel>
 
-                  <TextField
-                    type="text"
-                    label="Scan Exception"
-                    helperText="These ip will not be reported inside daily network scan"
-                    value={currentScanException || ""}
-                    required={false}
-                    onChange={(event) => {
-                      setCurrentScanException(event?.target?.value);
-                    }}
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Use custom NTP server</Typography>
+
+                  <Switch
+                    checked={updateNTPfromB}
+                    onChange={handleUpdateNTPFromBChange}
                   />
-                </FormControl>
-                <Button variant="contained" onClick={handleAddScanException}>
-                  Add
-                </Button>
-              </Stack>
 
-              <TableContainer sx={{ maxHeight: 250, overflowY: "auto" }}>
-                <Table stickyHeader aria-label="sticky table" size="small">
-                  <TableBody>
-                    {scanException &&
-                      scanException.length !== 0 &&
-                      scanException.map((row) => {
-                        return (
-                          <TableRow hover key={row}>
-                            <TableCell align="center">{row}</TableCell>
-                            <TableCell align="center">
-                              <IconButton
-                                aria-label="delete"
-                                onClick={() => {
-                                  handleDeleteScanException(row);
-                                }}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                  <Typography>Use Data Sender signal</Typography>
+                </Stack>
+              </FormControl>
+
               <Divider />
 
               {updateNTPfromB === false ? (
@@ -456,6 +434,7 @@ export default function InternalNetwork() {
               )}
             </>
           )}
+
           {currentTab === 3 && (
             <>
               <Stack
@@ -465,7 +444,9 @@ export default function InternalNetwork() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel title={scan_exception_desc}>Scan Exception list:</FormLabel>
+                  <FormLabel title={scan_exception_desc}>
+                    Scan Exception list:
+                  </FormLabel>
 
                   <TextField
                     type="text"
@@ -510,71 +491,6 @@ export default function InternalNetwork() {
                 </Table>
               </TableContainer>
               <Divider />
-            </>
-          )}
-          {currentTab === 3 && (
-            <>
-              <FormControl fullWidth>
-                <FormLabel>NTP synchronization settings</FormLabel>
-
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Use custom NTP server</Typography>
-
-                  <Switch
-                    checked={updateNTPfromB}
-                    onChange={handleUpdateNTPFromBChange}
-                  />
-
-                  <Typography>Use Data Sender signal</Typography>
-                </Stack>
-              </FormControl>
-
-              <Divider />
-
-              {updateNTPfromB === false ? (
-                <>
-                  <FormControl fullWidth>
-                    <TextField
-                      type="text"
-                      label="NTP Server address"
-                      helperText="Insert IP address of NTP server on machine network"
-                      value={customNTPAddress || ""}
-                      onChange={handleCustomNTPAddressChange}
-                    />
-                  </FormControl>
-                  <Divider />
-                  <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with custom server on machine network</Grid>
-                    <Grid item xs={2}>
-                      <Button
-                        variant="contained"
-                        onClick={handleResync}
-                        endIcon={<AccessTimeOutlinedIcon />}
-                      >
-                        Synchronize
-                      </Button>
-                    </Grid>
-                  </Grid>
-
-                  <Divider />
-                </>
-              ) : (
-                <>
-                  <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with Data Sender</Grid>
-                    <Grid item xs={2}>
-                      <Button
-                        variant="contained"
-                        onClick={handleStart}
-                        endIcon={<AccessTimeOutlinedIcon />}
-                      >
-                        Synchronize
-                      </Button>
-                    </Grid>
-                  </Grid>
-                  <Divider />
-                </>
-              )}
             </>
           )}
           {currentTab !== 4 && <SaveButton />}

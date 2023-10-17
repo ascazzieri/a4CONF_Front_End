@@ -2,6 +2,7 @@
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import FormControlLabel from '@mui/material/FormControlLabel';
+import { FormControl, Stack, Grid } from "@mui/material"
 import Switch from '@mui/material/Switch';
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +11,8 @@ import {
     updateThingworx,
     updateOPCServer,
     updateHTTPServer,
-    updateFastData
+    updateFastData,
+    updateExternalPC,
 } from "../../utils/redux/reducers";
 import { Typography } from "@mui/material";
 import { service_status_desc } from "../../utils/titles";
@@ -20,6 +22,8 @@ export default function ServiceDisabler() {
     const serviceStatus = useSelector((state) => state?.services);
 
     const firewallStatus = useSelector((state) => state?.system?.network?.customer?.firewall_enabled)
+
+    const externalPCReboot = useSelector((state) => state?.system.reboot);
 
     const navigate = useNavigate()
 
@@ -54,11 +58,21 @@ export default function ServiceDisabler() {
     const [matrixEnabled, setMatrixEnabled] = useState(
         serviceStatus?.fastdata?.customer?.matrix?.enabled
     );
+    const [rebootData, setRebootData] = useState(externalPCReboot);
 
     const dispatch = useDispatch();
 
+    const handleExternalPCChange = (event) => {
+        const checked = event?.target?.checked;
+        setRebootData(checked);
+        const newExternalPC = {
+            reboot: checked,
+        };
+        dispatch(updateExternalPC({ newExternalPC }));
+    };
+
     useEffect(() => {
-        setFirewallEnabled(firewallEnabled)
+        setFirewallEnabled(firewallStatus)
         setSitemanagerEnabled(serviceStatus?.sitemanager?.enabled);
         setThingworxEnabled(serviceStatus?.thingworx?.enabled);
         setOPCUAServerEnabled(serviceStatus?.opcua?.enabled);
@@ -67,8 +81,9 @@ export default function ServiceDisabler() {
         setFTPEnabled(serviceStatus?.fastdata?.industrial?.ftp?.enabled)
         setHTTPEnabled(serviceStatus?.fastdata?.industrial?.http?.enabled)
         setMatrixEnabled(serviceStatus?.fastdata?.customer?.matrix?.enabled)
+        setRebootData(externalPCReboot)
 
-    }, [serviceStatus, firewallEnabled]);
+    }, [serviceStatus, firewallStatus, externalPCReboot]);
 
     const location = useLocation();
 
@@ -123,19 +138,37 @@ export default function ServiceDisabler() {
         }
 
     }
-
     return (
-        <><Typography title={service_status_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service status:</Typography>
-            <div><FormControlLabel control={<Switch checked={
-                (serviceName === "network" && firewallEnabled) ||
-                (serviceName === "sitemanager" && sitemanagerEnabled) ||
-                (serviceName === "thingworx" && thingworxEnabled) ||
-                (serviceName === "opcua" && opcuaServerEnabled) ||
-                (serviceName === "http" && httpServerEnabled) ||
-                (serviceName === "ftp" && ftpEnabled) ||
-                (currentURLArray[1] === 'fast-data' && serviceName === "http" && httpEnabled) ||
-                (serviceName === "matrix" && matrixEnabled) ||
-                (serviceName === "fast-data" && fastDataEnabled) ||
-                false} />} label={serviceName === "network" ? (firewallEnabled ? "Enabled" : "Disabled") : (isFastData ? (fastDataEnabled ? "Enabled" : "Disabled") : "Enabled")} onChange={handleChange} /></div></>
+        <Grid container>
+            <Grid item md={12} sm={12}>
+                <Stack direction="row" spacing={2} alignItems="center" justifyContent="flex-start">
+                    <Typography title={service_status_desc}>{serviceName && serviceName.replace("network", "firewall").charAt(0).toUpperCase() + serviceName.replace("network", "firewall").slice(1)} status:</Typography>
+                    <FormControlLabel control={<Switch checked={
+                        (serviceName === "network" && firewallEnabled) ||
+                        (serviceName === "sitemanager" && sitemanagerEnabled) ||
+                        (serviceName === "thingworx" && thingworxEnabled) ||
+                        (serviceName === "opcua" && opcuaServerEnabled) ||
+                        (serviceName === "http" && httpServerEnabled) ||
+                        (serviceName === "ftp" && ftpEnabled) ||
+                        (currentURLArray[1] === 'fast-data' && serviceName === "http" && httpEnabled) ||
+                        (serviceName === "matrix" && matrixEnabled) ||
+                        (serviceName === "fast-data" && fastDataEnabled) ||
+                        false} />} label={serviceName === "network" ? (firewallEnabled ? "Enabled" : "Disabled") : (isFastData ? (fastDataEnabled ? "Enabled" : "Disabled") : "Enabled")} onChange={handleChange} />
+                </Stack>
+            </Grid>
+            <Grid item md={12} sm={12}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <FormControl>Reboot Data Sender</FormControl>
+                    <Switch
+                        checked={rebootData || false}
+                        onChange={handleExternalPCChange}
+                    />
+                    <Typography>Enabled</Typography>
+                </Stack>
+            </Grid>
+
+        </Grid>
+
+
     );
 }

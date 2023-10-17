@@ -404,6 +404,33 @@ export const reload_kepware = async () => {
     console.error(e);
   }
 };
+export const reboot_PCA = async () => {
+  try {
+    const res = await helper.fetchData("/pca/reboot", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const add_recovery_ip = async () => {
+  try {
+    const res = await helper.fetchData("/pca/recovery_ip_address/set", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const remove_recovery_ip = async () => {
+  try {
+    const res = await helper.fetchData("/pca/recovery_ip_address/unset", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 export const downloadJSON = (object, reportName, hostname) => {
   const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
   const hostName = hostname || "unknown";
@@ -468,7 +495,7 @@ export const send_login = async (data) => {
   }
 };
 export const send_register = async (data) => {
-  console.log(data)
+  console.log(data);
   try {
     const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
@@ -483,7 +510,12 @@ export const send_register = async (data) => {
 };
 export const check_credentials = async () => {
   try {
-    const res = await helper.fetchData("/conf/check-credentials", "GET", null, true);
+    const res = await helper.fetchData(
+      "/conf/check-credentials",
+      "GET",
+      null,
+      true
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -554,10 +586,7 @@ export const ntp_resinc = async (data) => {
   }
 };
 
-export const get_advanced = async (
-  service,
-  command
-) => {
+export const get_advanced = async (service, command) => {
   try {
     const res = await helper.fetchData(
       `/pca/services/action?service=${service}&command=${command}`,
@@ -569,4 +598,3 @@ export const get_advanced = async (
     console.error(e);
   }
 };
-
