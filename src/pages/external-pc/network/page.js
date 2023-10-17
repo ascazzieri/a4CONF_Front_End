@@ -72,6 +72,8 @@ import {
   network_static_routes_desc,
   network_typeconnection_desc,
 } from "../../../utils/titles";
+import { verifyIP , verifyIPCIDR } from "../../../utils/utils";
+
 
 const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
 
@@ -304,7 +306,13 @@ export default function ExternalNetwork() {
 
   const handleAddHostList = () => {
     const newHost = currentHost ? currentHost : undefined;
-    if (!newHost || newHost.length === 0 || newHost.trim() === "") {
+    if (verifyIP(newHost) === null) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `ip address not valid`,
+      });
       return;
     }
     const oldHostList = new Set(hostList);
@@ -361,13 +369,47 @@ export default function ExternalNetwork() {
           ])
       );
     }
+    
+   if(!ipAddress?.every(verifyIPCIDR)){
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "error",
+      message: `IP address not valid`,
+    });
+    return;
+   }
+
+   if(verifyIP(defaultGateway) === null){
+    
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "error", 
+      message: `Default gateway address not valid`,
+    });
+    return;
+   }
+    
+  if(customNTP === true){
+    console.log(customNTP)
+    if(verifyIP(ntpAddress) === null){
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error", 
+        message: `Custom ntp address not valid`,
+      });
+      return;
+    }
+  }
 
     const newCustomer = {
       dhcp: connection === "static" ? false : true,
       static: {
-        ip: ipAddress,
-        dns: dnsServer,
-        gateway: defaultGateway,
+        ip: ipAddress?.map((item) => item.trim()),
+        dns: dnsServer?.map((item) => item.trim()),
+        gateway: defaultGateway?.trim(),
       },
       if_wan_medium: connectionType,
       wireless: wifiObject,
@@ -380,6 +422,12 @@ export default function ExternalNetwork() {
       INPUT_NAT: inputNATTableData,
       firewall_enabled: customerNetwork?.firewall_enabled,
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Network configuration save correctly`,
+    });
     dispatch(updateCustomerNetwork({ newCustomer }));
   };
 
@@ -509,7 +557,9 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
-
+  
+  
+  
   return (
     <ErrorCacher>
       <Container>
