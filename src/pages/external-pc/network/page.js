@@ -8,7 +8,6 @@ import {
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import CachedIcon from "@mui/icons-material/Cached";
 import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { test_connection } from "../../../utils/api";
@@ -71,6 +70,7 @@ import {
   network_ping_number_desc,
   network_static_routes_desc,
   network_typeconnection_desc,
+  network_wifi_desc,
 } from "../../../utils/titles";
 import { verifyIP , verifyIPCIDR } from "../../../utils/utils";
 
@@ -607,6 +607,7 @@ export default function ExternalNetwork() {
                 </FormLabel>
 
                 <TextField
+                  title={network_ipaddress_desc}
                   type="text"
                   label="IP Address"
                   helperText="Ip device address"
@@ -623,6 +624,7 @@ export default function ExternalNetwork() {
                 </FormLabel>
 
                 <TextField
+                  title={network_defgateway_desc}
                   type="text"
                   label="Default Gateway"
                   helperText="Default gateway address"
@@ -637,6 +639,7 @@ export default function ExternalNetwork() {
                 <FormLabel title={network_dns_desc}>DNS server:</FormLabel>
 
                 <TextField
+                  title={network_dns_desc}
                   type="text"
                   label="DNS Server"
                   helperText="DNS server address"
@@ -718,7 +721,7 @@ export default function ExternalNetwork() {
                     </>
                   )}
 
-                  <FormLabel>Wifi:</FormLabel>
+                  <FormLabel title={network_wifi_desc}>Wifi:</FormLabel>
                   <CustomTable
                     tableData={wifiTableData || []}
                     setTableData={setWifiTableData}
@@ -746,6 +749,7 @@ export default function ExternalNetwork() {
                   </FormLabel>
 
                   <TextField
+                    title={network_ping_address_desc}
                     type="text"
                     label="Add address"
                     helperText="Create a hosts list of all the address you want to ping"
@@ -767,6 +771,7 @@ export default function ExternalNetwork() {
                 </FormLabel>
 
                 <TextField
+                  title={network_ping_number_desc}
                   type="number"
                   inputProps={{
                     inputMode: "numeric",
@@ -1052,7 +1057,7 @@ export default function ExternalNetwork() {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use NTP from Gatemanager</Typography>
 
-                  <Switch checked={customNTP} onChange={handleNTPChange} />
+                  <Switch checked={customNTP} onChange={handleNTPChange} title={network_ntp_server_desc}/>
 
                   <Typography>Use Custom NTP Server</Typography>
                 </Stack>
@@ -1088,7 +1093,7 @@ export default function ExternalNetwork() {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Disable NAT</Typography>
 
-                  <Switch checked={NATFeatures} onChange={handleNATChange} />
+                  <Switch checked={NATFeatures} onChange={handleNATChange} title={network_nat_feature_desc}/>
 
                   <Typography>Enable NAT</Typography>
                 </Stack>
@@ -1110,6 +1115,7 @@ export default function ExternalNetwork() {
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>Disable</Typography>
                       <Switch
+                        title={network_machine_internet_desc}
                         checked={machineToInternet}
                         onChange={handleMTIChange}
                       />

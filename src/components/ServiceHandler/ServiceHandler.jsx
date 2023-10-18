@@ -8,6 +8,7 @@ import { LoadingContext } from "../../utils/context/Loading";
 import { useContext, useState } from "react";
 import { Typography } from "@mui/material";
 import { service_command_desc } from "../../utils/titles";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 
 export default function ServiceHandler() {
 
@@ -24,8 +25,10 @@ export default function ServiceHandler() {
     setServiceCommand(command)
     manageService(serviceName, command);
   };
-
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   const manageService = async (service, cmd) => {
     const middleFastDataKey = (service === 'ftp' || service === 'http') ? 'industrial' : null;
 
@@ -49,11 +52,21 @@ export default function ServiceHandler() {
 
     try {
       await send_conf({ body });
-      console.log(body);
-    } catch (error) {
-      console.error('Error during service handling', error);
-      // Gestisci l'errore come preferisci
-    } finally {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Service command request OK`,
+      });
+    } catch{
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on Service command request`,
+      });
+    }
+    finally {
       loaderContext[1](false);
       setServiceCommand(undefined);
     }

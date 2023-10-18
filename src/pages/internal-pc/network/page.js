@@ -361,9 +361,10 @@ export default function InternalNetwork() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel>Scan Exception list:</FormLabel>
+                  <FormLabel title={scan_exception_desc}>Scan Exception list:</FormLabel>
 
                   <TextField
+                    title={scan_exception_desc}
                     type="text"
                     label="Scan Exception"
                     helperText="These ip will not be reported inside daily network scan"
@@ -438,7 +439,7 @@ export default function InternalNetwork() {
               ) : (
                 <>
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>
+                    <Grid item xs={10} title={data_sender_syncro_desc}>
                       Synchronize NTP with Data Sender
                     </Grid>
                     <Grid item xs={2}>
@@ -446,6 +447,7 @@ export default function InternalNetwork() {
                         variant="contained"
                         onClick={handleStart}
                         endIcon={<AccessTimeOutlinedIcon />}
+                        title={data_sender_syncro_desc}
                       >
                         Synchronize
                       </Button>
@@ -515,12 +517,13 @@ export default function InternalNetwork() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>NTP synchronization settings</FormLabel>
+                <FormLabel title={ntp_syncro_settings_desc}>NTP synchronization settings</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use custom NTP server</Typography>
 
                   <Switch
+                    title={ntp_syncro_settings_desc}
                     checked={updateNTPfromB}
                     onChange={handleUpdateNTPFromBChange}
                   />
@@ -535,6 +538,7 @@ export default function InternalNetwork() {
                 <>
                   <FormControl fullWidth>
                     <TextField
+                      title={ntp_server_address_desc}
                       type="text"
                       label="NTP Server address"
                       helperText="Insert IP address of NTP server on machine network"
@@ -544,12 +548,13 @@ export default function InternalNetwork() {
                   </FormControl>
                   <Divider />
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with custom server on machine network</Grid>
+                    <Grid item xs={10} title={ntp_custom_syncro_desc}>Synchronize NTP with custom server on machine network</Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
                         onClick={handleResync}
                         endIcon={<AccessTimeOutlinedIcon />}
+                        title={ntp_custom_syncro_desc}
                       >
                         Synchronize
                       </Button>
@@ -561,12 +566,13 @@ export default function InternalNetwork() {
               ) : (
                 <>
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>Synchronize NTP with Data Sender</Grid>
+                    <Grid item xs={10} title={data_sender_syncro_desc}>Synchronize NTP with Data Sender</Grid>
                     <Grid item xs={2}>
                       <Button
                         variant="contained"
                         onClick={handleStart}
                         endIcon={<AccessTimeOutlinedIcon />}
+                        title={data_sender_syncro_desc}
                       >
                         Synchronize
                       </Button>
