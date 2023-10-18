@@ -219,6 +219,7 @@ export default function Sitemanager() {
                 </FormLabel>
 
                 <TextField
+                  title={sitemanger_server_address_desc}
                   type="text"
                   label="Server"
                   helperText="Gate Manager IP Address"
@@ -240,6 +241,7 @@ export default function Sitemanager() {
                   <Typography>Always</Typography>
 
                   <Switch
+                    title={sitemanager_activation_desc}
                     checked={onlybidir}
                     onChange={handleOnlyBidirChange}
                   />
@@ -259,6 +261,7 @@ export default function Sitemanager() {
                   <Typography>Use a custom name for Gate Manager</Typography>
 
                   <Switch
+                    title={sitemanager_device_name_desc}
                     checked={nameashostname}
                     onChange={handleNameAsHostNameChange}
                   />

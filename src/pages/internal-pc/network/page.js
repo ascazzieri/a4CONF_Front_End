@@ -416,7 +416,7 @@ export default function InternalNetwork() {
               ) : (
                 <>
                   <Grid container spacing={2}>
-                    <Grid item xs={10}>
+                    <Grid item xs={10} title={data_sender_syncro_desc}>
                       Synchronize NTP with Data Sender
                     </Grid>
                     <Grid item xs={2}>
@@ -424,6 +424,7 @@ export default function InternalNetwork() {
                         variant="contained"
                         onClick={handleStart}
                         endIcon={<AccessTimeOutlinedIcon />}
+                        title={data_sender_syncro_desc}
                       >
                         Synchronize
                       </Button>
