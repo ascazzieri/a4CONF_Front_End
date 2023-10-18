@@ -153,7 +153,6 @@ export default function ExternalNetwork() {
     getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
   );
 
-  console.log(wifiTableData);
 
   const [routeTableData, setRouteTableData] = useState(
     getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
@@ -269,7 +268,7 @@ export default function ExternalNetwork() {
     loaderContext[1](true);
     const connection = await test_connection({
       n_ping: testPingNumber,
-      ip_addresses: [hostList],
+      ip_addresses: hostList,
     });
 
     console.log("test PCB connection");
@@ -390,7 +389,6 @@ export default function ExternalNetwork() {
     }
 
     if (customNTP === true) {
-      console.log(customNTP);
       if (verifyIP(ntpAddress) === null) {
         handleRequestFeedback({
           vertical: "bottom",

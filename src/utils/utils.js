@@ -173,9 +173,9 @@ export const getArrayOfObjects = (data, key1, key2) => {
   return arrayOfObjects;
 };
 
-const queue = new PQueue({ concurrency: 2 });
+const queue = new PQueue({ concurrency: 5 });
 
-axiosRetry(axios, { retries: 4 }); // Numero di tentativi di ritentativo
+axiosRetry(axios, { retries: 5, retryDelay: axiosRetry.exponentialDelay });
 
 export async function fetchData(url, method, body, noToken) {
   const axiosConfig = {

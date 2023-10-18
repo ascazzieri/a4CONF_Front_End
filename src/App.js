@@ -38,6 +38,7 @@ export default function App({ Component, pageProps }) {
   const [firstUser, setFirstUser] = useState();
 
   useEffect(() => {
+    console.log('Fetching credentials...');
     (async () => {
       const credentials = await check_credentials();
       if (credentials === false) {

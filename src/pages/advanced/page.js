@@ -11,11 +11,10 @@ import {
   reboot_PCA,
 } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
-import { JSONEditor } from "react-json-editor-viewer";
 import JsonEditorComponent from "../../components/JsonEditor/JsonEditor";
 import { useSelector, useDispatch } from "react-redux";
 import { JSONTree } from "react-json-tree";
-import { useContext, useEffect, useState, useCallback } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Card,
   CardContent,
