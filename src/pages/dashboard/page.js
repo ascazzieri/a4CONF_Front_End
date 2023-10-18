@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { updateHostName, updateThingNames } from "../../utils/redux/reducers";
+import { updateHostName } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { LoadingContext } from "../../utils/context/Loading";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";

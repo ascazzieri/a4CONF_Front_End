@@ -12,7 +12,7 @@ export default function LoadingProvider({ children }) {
       // Imposta un timeout di 10 secondi
       timeoutId = setTimeout(() => {
         setLoading(false); // Reimposta loading a false dopo 10 secondi
-      }, 10000);
+      }, 60000);
     }
 
     return () => {

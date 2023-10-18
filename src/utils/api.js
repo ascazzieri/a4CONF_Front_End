@@ -45,8 +45,8 @@ export const get_confB = async () => {
   }
 };
 export const send_conf = async (data) => {
-  //aggiungi un controllo su cambio della network per avvertire che l'utente potrebbe perdere la sessione
   try {
+    verbose && console.log(data);
     const res = await helper.fetchData("/post", "POST", data);
     verbose && console.log(res);
     return res;
@@ -68,7 +68,21 @@ export const createiotgw = async (
   tags_list
 ) => {
   try {
-    console.log(tags_list)
+    verbose &&
+      console.log({
+        type: type,
+        channe: channel,
+        device: device,
+        thingName: thingName,
+        machine_id: blob_folder,
+        folder: blob_folder,
+        scane_rate: scan_rate,
+        publish_rate: publish_rate,
+        sampling_time: sampling_time,
+        sampling_number_start_index: sampling_number_start_index,
+        sampling_number: sampling_number,
+        tags_list: tags_list,
+      });
     const res = await helper.fetchData(
       "/createiotgw?channel=" +
         channel +
@@ -104,6 +118,7 @@ export const createiotgw = async (
 
 export const get_device_tags = async (channel, device) => {
   try {
+    verbose && console.log({ channel: channel, device: device });
     const res = await helper.fetchData(
       `/channel/device/tags/tree?channel=${channel}&device=${device}`,
       "GET"
@@ -117,6 +132,7 @@ export const get_device_tags = async (channel, device) => {
 
 export const loadiotgws = async (direction) => {
   try {
+    verbose && console.log(direction);
     if (direction === "from") {
       const res = await helper.fetchData("/iotgwhttp", "GET");
       verbose && console.log(res);
@@ -250,6 +266,7 @@ export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
 };
 export const enable_http_client_iot_gateway = async (name) => {
   try {
+    verbose && console.log(name);
     const res = await helper.fetchData(
       `/iotgw/http/client/enable?iotgw_name=${name}`,
       "GET"
@@ -262,6 +279,7 @@ export const enable_http_client_iot_gateway = async (name) => {
 };
 export const disable_http_client_iot_gateway = async (name) => {
   try {
+    verbose && console.log(name);
     const res = await helper.fetchData(
       `/iotgw/http/client/disable&iotgw_name=${name}`,
       "GET"
@@ -307,6 +325,7 @@ export const uploadKepwareProject = async (file) => {
   //upload file from an input
   const body = document.body;
   try {
+    verbose && console.log(file);
     body.classList.add("user-block");
     const res = await helper.fetchData("/kepware/upload", "POST", file);
     verbose && console.log(res);
@@ -434,34 +453,39 @@ export const remove_recovery_ip = async () => {
   }
 };
 export const downloadJSON = (object, reportName, hostname) => {
-  const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
-  const hostName = hostname || "unknown";
-  const fileName = !reportName
-    ? `a4json_${utcDate}.json`
-    : `crash_report_${hostName}_${utcDate}.json`;
+  verbose && console.log({ object, reportName, hostname });
+  try {
+    const utcDate = new Date().toJSON().slice(0, 10); // Ottieni la data UTC nel formato "yyyy-mm-dd"
+    const hostName = hostname || "unknown";
+    const fileName = !reportName
+      ? `a4json_${utcDate}.json`
+      : `crash_report_${hostName}_${utcDate}.json`;
 
-  let json = null;
+    let json = null;
 
-  if (reportName) {
-    json = {
-      ...object,
-      crashed_page: reportName,
-    };
-  } else {
-    json = { ...object };
+    if (reportName) {
+      json = {
+        ...object,
+        crashed_page: reportName,
+      };
+    } else {
+      json = { ...object };
+    }
+
+    const data = JSON.stringify(json);
+
+    const blob = new Blob([data], { type: "application/json" });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    link.click();
+
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error(e);
   }
-
-  const data = JSON.stringify(json);
-
-  const blob = new Blob([data], { type: "application/json" });
-
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = fileName;
-  link.click();
-
-  URL.revokeObjectURL(url);
 };
 
 export const get_archive = async () => {
@@ -475,6 +499,7 @@ export const get_archive = async () => {
 };
 export const send_archive = async (data) => {
   try {
+    verbose && console.log(data)
     const res = await helper.fetchData("/conf/archive/set", "POST", data);
     verbose && console.log(res);
     return res;
@@ -484,6 +509,7 @@ export const send_archive = async (data) => {
 };
 export const send_login = async (data) => {
   try {
+    verbose && console.log(data)
     const res = await helper.fetchData("/conf/login", "POST", data, true);
     verbose && console.log(res);
 
@@ -497,8 +523,9 @@ export const send_login = async (data) => {
   }
 };
 export const send_register = async (data) => {
-  console.log(data);
+ 
   try {
+    verbose && console.log(data)
     const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
 
@@ -526,6 +553,7 @@ export const check_credentials = async () => {
 };
 export const test_connection = async (data) => {
   try {
+    verbose && console.log(data)
     const res = await helper.fetchData("/external/network/ping", "POST", data);
     verbose && console.log(res);
     return res;
@@ -552,8 +580,24 @@ export const get_users = async () => {
   }
 };
 
-export const post_users = async (data) => {
+export const delete_user = async (user) => {
   try {
+    verbose && console.log(user)
+    const user_param = `?user=${user}`;
+    const res = await helper.fetchData(
+      "/conf/users/delete" + user_param,
+      "GET"
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const add_user = async (data) => {
+  try {
+    verbose && console.log(data);
     const res = await helper.fetchData("/conf/users/create", "POST", data);
     verbose && console.log(res);
     return res;
@@ -561,8 +605,10 @@ export const post_users = async (data) => {
     console.error(e);
   }
 };
+
 export const ntp_start = async (data) => {
   try {
+    verbose && console.log(data);
     const res = await helper.fetchData(
       "/confA/ntp/timesync/start",
       "POST",
@@ -576,6 +622,7 @@ export const ntp_start = async (data) => {
 };
 export const ntp_resinc = async (data) => {
   try {
+    verbose && console.log(data);
     const res = await helper.fetchData(
       "/confA/ntp/servers/resync",
       "POST",
@@ -587,9 +634,9 @@ export const ntp_resinc = async (data) => {
     console.error(e);
   }
 };
-
 export const get_advanced = async (service, command) => {
   try {
+    verbose && console.log({service:service, command: command});
     const res = await helper.fetchData(
       `/pca/services/action?service=${service}&command=${command}`,
       "GET"

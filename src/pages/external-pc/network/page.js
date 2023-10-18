@@ -74,8 +74,6 @@ import {
 } from "../../../utils/titles";
 import { verifyIP, verifyIPCIDR } from "../../../utils/utils";
 
-const dummy_wireless = ["wireless1", "wireless2", "wireless3", "wireless4"];
-
 export default function ExternalNetwork() {
   const customerNetwork = useSelector(
     (state) => state.system?.network?.customer
@@ -154,6 +152,8 @@ export default function ExternalNetwork() {
   const [wifiTableData, setWifiTableData] = useState(
     getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
   );
+
+  console.log(wifiTableData);
 
   const [routeTableData, setRouteTableData] = useState(
     getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
@@ -430,28 +430,21 @@ export default function ExternalNetwork() {
   };
 
   const wifiColumnData = [
-    { field: "name", headerName: "Name", width: 180, editable: true },
     {
-      field: "age",
-      headerName: "Age",
-      type: "number",
-      editable: true,
-      align: "left",
-      headerAlign: "left",
+      accessorKey: "ssid",
+      header: "SSID",
+      enableColumnOrdering: true,
+      enableEditing: false, //disable editing on this column
+      enableSorting: true,
+      size: 80,
     },
     {
-      field: "dateCreated",
-      headerName: "Date Created",
-      type: "date",
-      width: 180,
-      editable: true,
-    },
-    {
-      field: "lastLogin",
-      headerName: "Last Login",
-      type: "dateTime",
-      width: 220,
-      editable: true,
+      accessorKey: "password",
+      header: "Password",
+      enableColumnOrdering: true,
+      enableEditing: true, //disable editing on this column
+      enableSorting: true,
+      size: 80,
     },
   ];
 
@@ -1058,7 +1051,11 @@ export default function ExternalNetwork() {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use NTP from Gatemanager</Typography>
 
-                  <Switch checked={customNTP} onChange={handleNTPChange} title={network_ntp_server_desc}/>
+                  <Switch
+                    checked={customNTP}
+                    onChange={handleNTPChange}
+                    title={network_ntp_server_desc}
+                  />
 
                   <Typography>Use Custom NTP Server</Typography>
                 </Stack>
@@ -1094,7 +1091,11 @@ export default function ExternalNetwork() {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Disable NAT</Typography>
 
-                  <Switch checked={NATFeatures} onChange={handleNATChange} title={network_nat_feature_desc}/>
+                  <Switch
+                    checked={NATFeatures}
+                    onChange={handleNATChange}
+                    title={network_nat_feature_desc}
+                  />
 
                   <Typography>Enable NAT</Typography>
                 </Stack>
