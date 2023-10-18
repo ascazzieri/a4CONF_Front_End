@@ -15,12 +15,14 @@ import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
 import SimpleDialog from "@mui/material/Dialog";
+import CachedIcon from "@mui/icons-material/Cached";
 import { get_users, add_user, delete_user } from "../../utils/api";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
+import { Cached } from "@mui/icons-material";
 
 export default function ManageUsers() {
   const [userList, setUserList] = useState();
@@ -269,6 +271,14 @@ export default function ManageUsers() {
             spacing={2}
           >
             <h1>Manage users</h1>
+
+            <IconButton
+              onClick={handleReload}
+              aria-label="reload"
+              className="rotate-on-hover"
+            >
+              <CachedIcon />
+            </IconButton>
             <Button variant="contained" size="small" onClick={handleAdd}>
               Add
             </Button>

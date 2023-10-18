@@ -12,6 +12,7 @@ import {
 } from "../../utils/api";
 import { LoadingContext } from "../../utils/context/Loading";
 import { JSONEditor } from "react-json-editor-viewer";
+import JsonEditorComponent from "../../components/JsonEditor/JsonEditor";
 import { useSelector, useDispatch } from "react-redux";
 import { JSONTree } from "react-json-tree";
 import { useContext, useEffect, useState, useCallback } from "react";
@@ -141,7 +142,6 @@ export default function Advanced() {
     (async () => {
       try {
         const response = await get_advanced(service, cmd);
-        console.log(response);
         if (response) {
           handleRequestFeedback({
             vertical: "bottom",
@@ -183,23 +183,24 @@ export default function Advanced() {
       });
     }
   };
-  const onJsonChange = useCallback((key, value, parent, data) => {
+  /* const onJsonChange = useCallback((key, value, parent, data) => {
     const correctData = _.cloneDeep(data?.root);
 
     const transformFieldToArray = (obj) => {
       _.forOwn(obj, (fieldValue, field) => {
         // Se il campo è una stringa con il formato [], trasformalo in un array
-        if (
-          typeof fieldValue === "string" &&
-          fieldValue.startsWith("[") &&
-          fieldValue.endsWith("]")
-        ) {
-          try {
-            obj[field] = JSON.parse(fieldValue);
-          } catch (error) {
-            console.error(
-              `Errore durante il parsing del campo ${field}: ${error}`
-            );
+        if (typeof fieldValue === "string") {
+          if (fieldValue.startsWith("[") && fieldValue.endsWith("]")) {
+            try {
+              obj[field] = JSON.parse(fieldValue);
+            } catch (error) {
+              console.error(
+                `Errore durante il parsing del campo ${field}: ${error}`
+              );
+            }
+          } else if (fieldValue.includes(",")) {
+            // Se la stringa contiene una virgola, separa i valori in un array
+            obj[field] = fieldValue.split(",").map((value) => value.trim());
           }
         }
 
@@ -223,10 +224,11 @@ export default function Advanced() {
       transformFieldToArray(correctData);
       setJsonData(correctData);
     }
-  }, []);
+  }, []); */
+
 
   const handleChangeDangerous = () => {
-    console.log(jsonData);
+    console.log(jsonData)
     if (jsonData) {
       dispatch(
         updateAll({ payload: jsonData, meta: { actionType: "upload" } })
@@ -272,10 +274,14 @@ export default function Advanced() {
                     </>
                   ) : (
                     <>
-                      <JSONEditor
+                      {/* <JSONEditor
                         data={jsonData}
                         onChange={onJsonChange}
                         collapsible
+                      /> */}
+                      <JsonEditorComponent
+                        jsonData={jsonData}
+                        setJsonData={setJsonData}
                       />
                       <Divider />
                       <Stack

@@ -1,4 +1,4 @@
-import React, { useState , useContext } from "react";
+import React, { useState, useContext } from "react";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { Card, Container, Typography } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
@@ -11,6 +11,8 @@ import Stack from "@mui/material/Stack";
 import Item from "antd/es/list/Item";
 import Button from "@mui/material/Button";
 import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
+import CachedIcon from "@mui/icons-material/Cached";
 import SimpleDialog from "@mui/material/Dialog";
 import { get_archive, send_archive } from "../../utils/api";
 import { useEffect } from "react";
@@ -28,34 +30,37 @@ export default function Archive() {
   const handleSave = () => {
     const newArchive = { ...archive };
 
-   if(oldArchive === title){
-      newArchive[title] = content
-    }else {
-      newArchive[title] = content
-      if(oldArchive)
-      delete newArchive[oldArchive]
+    if (oldArchive === title) {
+      newArchive[title] = content;
+    } else {
+      newArchive[title] = content;
+      if (oldArchive) delete newArchive[oldArchive];
     }
     const postArchive = {
       title: title,
-      content: content
+      content: content,
     };
-    
-    if(title.trim() === "" || content.trim() === ""){
-      alert("inserire i valori prima di salvare")
-    }else{
+
+    if (title.trim() === "" || content.trim() === "") {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Insert values before saving`,
+      });
+    } else {
       (async () => {
         try {
           setArchive(newArchive);
           const response = await send_archive({ postArchive });
-          if(response === true){
+          if (response === true) {
             handleRequestFeedback({
               vertical: "bottom",
               horizontal: "right",
               severity: "success",
-              message: `archive configuration request OK`,
+              message: `Archive configuration retrieved successfully`,
             });
-          }
-          else{
+          } else {
             handleRequestFeedback({
               vertical: "bottom",
               horizontal: "right",
@@ -67,10 +72,10 @@ export default function Archive() {
           console.log("Error occured when fetching archive elements");
         }
       })();
-    setTitle("");
-    setContent("");
-    setOpen(false);
-    setMod(false)
+      setTitle("");
+      setContent("");
+      setOpen(false);
+      setMod(false);
     }
   };
 
@@ -87,18 +92,18 @@ export default function Archive() {
 
     setArchive(newArchive);
   };
-  const [mod,setMod] = useState(false);
+  const [mod, setMod] = useState(false);
   const handleModify = (item) => {
     setTitle(item);
     setContent(archive[item]);
     setMod(true);
-    setOldArchive(item)
+    setOldArchive(item);
   };
   const closeMod = () => {
-    setMod(false)
-  }
+    setMod(false);
+  };
   const handleAdd = () => {
-    handleClear(archive)
+    handleClear(archive);
     setOpen(true);
   };
 
@@ -110,39 +115,55 @@ export default function Archive() {
     (async () => {
       try {
         const response = await get_archive();
-        setArchive(response);
-        (async () => {
-          try {
-            const response = await get_archive();
-            if(response){
-              setArchive(response)
-              handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `archive configuration request OK`,
-              });
-            }
-            else{
-              handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `An error occurred on change archive configuration`,
-              });
-            }
-          } catch (err) {
-            console.log("Error occured when fetching books");
-          }
-        })();
+        if (response) {
+          setArchive(response);
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `archive configuration request OK`,
+          });
+        } else {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred on change archive configuration`,
+          });
+        }
       } catch (err) {
         console.log("Error occured when fetching books");
       }
     })();
   }, []);
+
+  const handleReload = async () => {
+    (async () => {
+      try {
+        const response = await get_archive();
+        if (response) {
+          setArchive(response);
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `archive configuration request OK`,
+          });
+        } else {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred on change archive configuration`,
+          });
+        }
+      } catch (err) {
+        console.log("Error occured when fetching books");
+      }
+    })();
+  };
   return (
     <ErrorCacher>
-
       <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1, p: 2 }}>
@@ -153,6 +174,13 @@ export default function Archive() {
             spacing={2}
           >
             <h1>Archive</h1>
+            <IconButton
+              onClick={handleReload}
+              aria-label="reload"
+              className="rotate-on-hover"
+            >
+              <CachedIcon />
+            </IconButton>
             <Button variant="contained" size="small" onClick={handleAdd}>
               Add
             </Button>
@@ -247,8 +275,8 @@ export default function Archive() {
               </Stack>
             </Card>
           </SimpleDialog>
-          <SimpleDialog open={open} onClose={handleClose} sx={{padding: 5}}>
-            <Card sx={{ padding: 5 , margin: 1}}>
+          <SimpleDialog open={open} onClose={handleClose} sx={{ padding: 5 }}>
+            <Card sx={{ padding: 5, margin: 1 }}>
               <h1>Insert new Archive object</h1>
               <div>
                 <TextField
