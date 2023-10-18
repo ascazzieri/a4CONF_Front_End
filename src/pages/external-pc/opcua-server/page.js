@@ -445,6 +445,12 @@ export default function OPCServer() {
         users: usersData,
       },
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `OPCUA Server configuration save correctly`,
+    });
     dispatch(updateOPCServer(newOPCUAServer));
   };
 

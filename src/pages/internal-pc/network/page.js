@@ -368,12 +368,13 @@ export default function InternalNetwork() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel>NTP synchronization settings</FormLabel>
+                <FormLabel title = {ntp_syncro_settings_desc}>NTP synchronization settings</FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use custom NTP server</Typography>
 
                   <Switch
+                    title = {ntp_syncro_settings_desc}
                     checked={updateNTPfromB}
                     onChange={handleUpdateNTPFromBChange}
                   />
@@ -388,6 +389,7 @@ export default function InternalNetwork() {
                 <>
                   <FormControl fullWidth>
                     <TextField
+                      title={ntp_server_address_desc}
                       type="text"
                       label="NTP Server address"
                       helperText="Insert IP address of NTP server on machine network"
