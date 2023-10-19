@@ -31,6 +31,7 @@ import {
   sitemanger_agents_desc,
   sitemanger_server_address_desc,
 } from "../../../utils/titles";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 
 export default function Sitemanager() {
   const sitemanager = useSelector((state) => state.services?.sitemanager);
@@ -100,7 +101,10 @@ export default function Sitemanager() {
   const handleSMENameChange = (event) => {
     setSMEName(event.target.value);
   };
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   const handleAddAgent = () => {
     const oldAgents = agentsTableData ? [...agentsTableData] : [];
     const dummy_agent = {
@@ -149,7 +153,14 @@ export default function Sitemanager() {
       name: !nameashostname ? smeName : "",
       agents: smeAgents,
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Sitemanager configuration save correctly`,
+    });
     dispatch(updateSitemanager(newSitemanager));
+    
   };
 
   const agentsColumnData = [

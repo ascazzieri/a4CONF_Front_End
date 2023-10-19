@@ -341,6 +341,12 @@ export default function Thingworx() {
       enabled: true,
       things: thingsTWX || {},
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Thingworx configuration save correctly`,
+    });
     dispatch(updateThingworx(newThingworx));
   };
 

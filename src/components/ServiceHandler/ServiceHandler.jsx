@@ -109,8 +109,17 @@ export default function ServiceHandler() {
       setServiceCommand(undefined);
     }
   };
-
-
+  const handleServiceClose = async () => {
+    try {
+      setSitemanaerDialogOpen(false)
+    } catch (error) {
+      console.error('Error during service handling', error);
+      // Gestisci l'errore come preferisci
+    } finally {
+      loaderContext[1](false);
+      setServiceCommand(undefined);
+    }
+  };
   return (<>
     <FormControl>
       <Typography title={service_command_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
@@ -151,7 +160,7 @@ export default function ServiceHandler() {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => setSitemanaerDialogOpen(false)}>Close</Button>
+        <Button  onClick={handleServiceClose}>Close</Button>
         <Button variant="contained" color="error" onClick={handleStopSitemanager} >
           Stop Sitemanager
         </Button>

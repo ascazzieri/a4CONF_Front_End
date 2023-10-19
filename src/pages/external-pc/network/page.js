@@ -367,7 +367,8 @@ export default function ExternalNetwork() {
           ])
       );
     }
-
+   if (connection === "dhcp"){
+   }else{
     if (!ipAddress?.every(verifyIPCIDR)) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -387,7 +388,7 @@ export default function ExternalNetwork() {
       });
       return;
     }
-
+  }
     if (customNTP === true) {
       if (verifyIP(ntpAddress) === null) {
         handleRequestFeedback({
@@ -418,7 +419,7 @@ export default function ExternalNetwork() {
       INPUT_NAT: inputNATTableData,
       firewall_enabled: customerNetwork?.firewall_enabled,
     };
-    handleRequestFeedback({
+   handleRequestFeedback({
       vertical: "bottom",
       horizontal: "right",
       severity: "success",

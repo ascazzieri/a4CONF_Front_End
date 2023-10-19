@@ -418,6 +418,12 @@ export default function HTTPServer() {
         users: usersData,
       },
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `HTTP Server configuration save correctly`,
+    });
     dispatch(updateHTTPServer(newHTTPServer));
   };
 

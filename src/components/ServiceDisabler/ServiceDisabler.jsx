@@ -15,7 +15,7 @@ import {
     updateExternalPC,
 } from "../../utils/redux/reducers";
 import { Typography } from "@mui/material";
-import { service_status_desc } from "../../utils/titles";
+import { service_reboot_data, service_status_desc } from "../../utils/titles";
 
 export default function ServiceDisabler() {
 
@@ -158,7 +158,7 @@ export default function ServiceDisabler() {
             </Grid>
             <Grid item md={12} sm={12}>
                 <Stack direction="row" spacing={2} alignItems="center">
-                    <FormControl>Reboot Data Sender</FormControl>
+                    <FormControl title={service_reboot_data}>Reboot Data Sender</FormControl>
                     <Switch
                         checked={rebootData || false}
                         onChange={handleExternalPCChange}
