@@ -346,6 +346,32 @@ export const disable_http_client_iot_gateway = async (name) => {
     console.error(e);
   }
 };
+export const enable_http_server_iot_gateway = async (name) => {
+  try {
+    verbose && console.log(name);
+    const res = await helper.fetchData(
+      `/iotgw/http/server/enable?iotgw_name=${name}`,
+      "GET"
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const disable_http_server_iot_gateway = async (name) => {
+  try {
+    verbose && console.log(name);
+    const res = await helper.fetchData(
+      `/iotgw/http/server/disable?iotgw_name=${name}`,
+      "GET"
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 /**
  * Retrieves data related to OPC UA reading and writing disabled status for IoT gateways.
