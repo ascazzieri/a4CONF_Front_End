@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, Fragment } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateThingworx } from "../../../utils/redux/reducers";
 import {
+  get_twx_gtws_enabled,
   get_iot_gtws_http_client_enabled,
   get_iot_gtws_http_client_disabled,
   enable_http_client_iot_gateway,
@@ -44,7 +45,7 @@ import {
   OutlinedInput,
   FormHelperText,
   Stack,
-  MenuItem,
+  Autocomplete,
   Typography,
   Grid,
   Table,
@@ -121,8 +122,10 @@ export default function Thingworx() {
 
   const [thingworxHost, setThingworxHost] = useState(thingworx?.host);
   const [thingworxAppkey, setThingworxAppkey] = useState(thingworx?.appkey);
-  const [iotGatewaysList, setIotGatewaysList] = useState([]);
-  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState([]);
+  const [twxIotGatewaysList, setTWXIotGatewaysList] = useState({});
+  const [iotGatewaysList, setIotGatewaysList] = useState();
+  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState();
+
   const [iotGateway, setIotGateway] = useState();
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
@@ -159,17 +162,13 @@ export default function Thingworx() {
     }
   };
 
-  /*   const highlightedContent = highlightText(
-    agentDiagnosisHandler(),
-    searchText === " " ? "" : searchText
-  ); */
-
   const [showAppkey, setShowAppkey] = useState(false);
   const handleClickShowPassword = () => setShowAppkey((show) => !show);
 
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
+      const twxGatewaysEnabled = await get_twx_gtws_enabled();
       const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
       const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
       const agentConnectionInfo = await twx_connection_diagnostic();
@@ -179,6 +178,7 @@ export default function Thingworx() {
         iotGatewaysDisabled &&
         iotGatewaysEnabled?.length !== 0
       ) {
+        setTWXIotGatewaysList(twxGatewaysEnabled);
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
       } else if (
@@ -186,6 +186,7 @@ export default function Thingworx() {
         iotGatewaysDisabled &&
         iotGatewaysEnabled?.length === 0
       ) {
+        setTWXIotGatewaysList(twxGatewaysEnabled);
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
       } else {
@@ -231,14 +232,16 @@ export default function Thingworx() {
 
   const handleIotGatewaysReloadChange = async () => {
     loaderContext[1](true);
+    const twxGatewaysEnabled = await get_twx_gtws_enabled();
     const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
     const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
     console.log("get IoT gateways");
     if (
       iotGatewaysEnabled &&
       iotGatewaysDisabled &&
-      Object.keys(iotGatewaysEnabled).length !== 0
+      iotGatewaysEnabled?.length !== 0
     ) {
+      setTWXIotGatewaysList(twxGatewaysEnabled);
       setIotGatewaysList(iotGatewaysEnabled);
       setIotGatewaysListDisabled(iotGatewaysDisabled);
       handleRequestFeedback({
@@ -250,8 +253,9 @@ export default function Thingworx() {
     } else if (
       iotGatewaysEnabled &&
       iotGatewaysDisabled &&
-      Object.keys(iotGatewaysEnabled).length === 0
+      iotGatewaysEnabled?.length === 0
     ) {
+      setTWXIotGatewaysList(twxGatewaysEnabled);
       setIotGatewaysList(iotGatewaysEnabled);
       setIotGatewaysListDisabled(iotGatewaysDisabled);
       handleRequestFeedback({
@@ -340,9 +344,9 @@ export default function Thingworx() {
     );
 
     const newThingworx = {
+      ...thingworx,
       host: thingworxHost,
       appkey: thingworxAppkey,
-      enabled: true,
       things: thingsTWX || {},
     };
     handleRequestFeedback({
@@ -377,12 +381,12 @@ export default function Thingworx() {
    * @returns {string} - The extracted "thingName" value, or an empty string if "thingName=" is not present in the input string.
    */
   function extractThingName(inputString) {
-    const startIndex = inputString.indexOf("thingName=");
+    const startIndex = inputString?.indexOf("thingName=") || -1;
     if (startIndex !== -1) {
       const extractedString = inputString.substring(startIndex + 10); // The length of "thingName=" is 10
       return extractedString;
     }
-    return ""; // Returns an empty string if "thingName=" is not present in the input string
+    return "ENTER REMOTE THING MANUALLY"; // Returns an empty string if "thingName=" is not present in the input string
   }
 
   const handleAddRemoteThing = () => {
@@ -390,7 +394,7 @@ export default function Thingworx() {
       ...prevData,
       {
         iot_gateway: iotGateway,
-        thing_name: extractThingName(iotGatewaysList[`${iotGateway}`]),
+        thing_name: extractThingName(twxIotGatewaysList[`${iotGateway}`]),
       },
     ]);
   };
@@ -410,9 +414,7 @@ export default function Thingworx() {
           {currentTab === 0 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={thingworx_ipaddress_desc}>
-                  Server:
-                </FormLabel>
+                <FormLabel title={thingworx_ipaddress_desc}>Server:</FormLabel>
 
                 <TextField
                   title={thingworx_ipaddress_desc}
@@ -471,33 +473,20 @@ export default function Thingworx() {
                 alignItems="center"
               >
                 <FormControl fullWidth>
-                  <TextField
-                    title={thingworx_iotkep_desc}
-                    select
-                    label="Choose iot gateway from Kepware"
-                    defaultValue=""
-                    onChange={handleIotGatewaysChange}
-                  >
-                    {iotGatewaysList &&
-                      iotGatewaysList?.length !== 0 &&
-                     iotGatewaysList
-                        .filter(
-                          (element) =>
-                            iotGatewaysList[element].includes(
-                              "http://127.0.0.1:8001"
-                            ) ||
-                            iotGatewaysList[element].includes(
-                              "http://localhost:8001"
-                            )
-                        )
-                        .map((item) => {
-                          return (
-                            <MenuItem key={Math.random() + item} value={item}>
-                              {item}
-                            </MenuItem>
-                          );
-                        })}
-                  </TextField>
+                  <Autocomplete
+                    disablePortal
+                    options={Object.keys(twxIotGatewaysList)}
+                    onChange={(event, newValue) => {
+                      setIotGateway(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={thingworx_iotkep_desc}
+                        {...params}
+                        label="IoT Gateways for Thingworx enabled"
+                      />
+                    )}
+                  />
                 </FormControl>
                 <IconButton
                   onClick={handleIotGatewaysReloadChange}

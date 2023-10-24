@@ -146,6 +146,15 @@ export const loadiotgws = async (direction) => {
     console.error(e);
   }
 };
+export const get_twx_gtws_enabled = async() => {
+  try {
+    const res = await helper.fetchData("/iotgws/http/client/twx/endpoint", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}
 export const get_iot_gtws_http_client_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/enabled", "GET");
@@ -255,7 +264,7 @@ export const get_iot_gtws_opcua_reading_disabled = async () => {
 export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
   try {
     const res = await helper.fetchData(
-      `/iotgw/http/client/enabled/opcua_to`,
+      `/iotgw/http/server/enabled/opcua_to`,
       "GET"
     );
     verbose && console.log(res);
@@ -302,7 +311,7 @@ export const disable_http_client_iot_gateway = async (name) => {
 export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
   try {
     const res = await helper.fetchData(
-      `/iotgw/http/client/disabled/opcua_to`,
+      `/iotgw/http/server/disabled/opcua_to`,
       "GET"
     );
     verbose && console.log(res);

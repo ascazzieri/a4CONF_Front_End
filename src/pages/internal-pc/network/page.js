@@ -256,6 +256,7 @@ export default function InternalNetwork() {
       return;
     }
     const newIndustrial = {
+      ...industrialNetwork,
       dhcp: connection === "static" ? false : true,
       ip: ipAddress?.map((item) => item.trim()),
       routes: staticRoutes,
@@ -368,13 +369,15 @@ export default function InternalNetwork() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title = {ntp_syncro_settings_desc}>NTP synchronization settings</FormLabel>
+                <FormLabel title={ntp_syncro_settings_desc}>
+                  NTP synchronization settings
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use custom NTP server</Typography>
 
                   <Switch
-                    title = {ntp_syncro_settings_desc}
+                    title={ntp_syncro_settings_desc}
                     checked={updateNTPfromB}
                     onChange={handleUpdateNTPFromBChange}
                   />

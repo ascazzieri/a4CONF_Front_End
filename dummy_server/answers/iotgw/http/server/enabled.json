@@ -1,4 +1,1 @@
-{
-  "REST Server 7Q610A0": "http://127.0.0.1:39321/iotgateway/write",
-  "REST Server 7Q810A0": "http://127.0.0.1:39321/iotgateway/write"
-}
+["REST Server 7Q610A0", "REST Server 7Q810A0"]
