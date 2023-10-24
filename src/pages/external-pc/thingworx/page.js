@@ -52,6 +52,7 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Switch,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
@@ -71,6 +72,7 @@ import {
   thingworx_manage_iot_desc,
   thingworx_remote_config_desc,
 } from "../../../utils/titles";
+import { Card } from "antd";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -119,13 +121,13 @@ export default function Thingworx() {
 
   const [thingworxHost, setThingworxHost] = useState(thingworx?.host);
   const [thingworxAppkey, setThingworxAppkey] = useState(thingworx?.appkey);
-  const [iotGatewaysList, setIotGatewaysList] = useState({});
-  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState({});
+  const [iotGatewaysList, setIotGatewaysList] = useState([]);
+  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState([]);
   const [iotGateway, setIotGateway] = useState();
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
   );
-
+ console.log(iotGatewaysList)
   useEffect(() => {
     setThingworxHost(thingworx?.host);
     setThingworxAppkey(thingworx?.appkey);
@@ -175,14 +177,14 @@ export default function Thingworx() {
       if (
         iotGatewaysEnabled &&
         iotGatewaysDisabled &&
-        Object.keys(iotGatewaysEnabled).length !== 0
+        iotGatewaysEnabled?.length !== 0
       ) {
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
       } else if (
         iotGatewaysEnabled &&
         iotGatewaysDisabled &&
-        Object.keys(iotGatewaysEnabled).length === 0
+        iotGatewaysEnabled?.length === 0
       ) {
         setIotGatewaysList(iotGatewaysEnabled);
         setIotGatewaysListDisabled(iotGatewaysDisabled);
@@ -291,37 +293,39 @@ export default function Thingworx() {
     }
     loaderContext[1](false);
   };
-
+  
   const handleEnableIotGateway = async (name) => {
-    let iotGatewaDisabledList = undefined;
+    console.log(name)
     const result = await enable_http_client_iot_gateway(name);
-
+    console.log(result)
     if (!result?.enabled) {
       return;
     }
-    iotGatewaDisabledList = { ...iotGatewaysListDisabled };
-    setIotGatewaysList((prevData) => ({
-      ...prevData,
-      [`${name}`]: iotGatewaDisabledList[`${name}`],
-    }));
-    delete iotGatewaDisabledList[`${name}`];
-    setIotGatewaysListDisabled(iotGatewaDisabledList);
+    console.log(iotGatewaysList)
+    const iot_gtw_enabled_list = [...iotGatewaysList]
+    iot_gtw_enabled_list.push(name)
+    setIotGatewaysList(new Set(iot_gtw_enabled_list))
+
+    const iot_gtw_disabled_list = [...setIotGatewaysListDisabled].filter((item) => item !== name)
+    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list))
+
   };
 
   const handleDisableIotGateway = async (name) => {
-    let iotGatewaList = undefined;
+    console.log(name)
     const result = await disable_http_client_iot_gateway(name);
+    console.log(result)
     if (result?.enabled) {
       return;
     }
-    iotGatewaList = { ...iotGatewaysList };
-    setIotGatewaysListDisabled((prevData) => ({
-      ...prevData,
-      [`${name}`]: iotGatewaList[`${name}`],
-    }));
-    delete iotGatewaList[`${name}`];
-    setIotGatewaysList(iotGatewaList);
+    const iot_gtw_disabled_list = [...iotGatewaysListDisabled]
+    iot_gtw_disabled_list.push(name)
+    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list))
+
+    const iot_gtw_enabled_list = [...iotGatewaysList].filter((item) => item !== name)
+    setIotGatewaysList(new Set(iot_gtw_enabled_list))
   };
+
 
   const handleThingworxChange = (event) => {
     event.preventDefault();
@@ -475,8 +479,8 @@ export default function Thingworx() {
                     onChange={handleIotGatewaysChange}
                   >
                     {iotGatewaysList &&
-                      Object.keys(iotGatewaysList).length !== 0 &&
-                      Object.keys(iotGatewaysList)
+                      iotGatewaysList?.length !== 0 &&
+                     iotGatewaysList
                         .filter(
                           (element) =>
                             iotGatewaysList[element].includes(
@@ -526,12 +530,8 @@ export default function Thingworx() {
               <FormLabel title={thingworx_manage_iot_desc}>
                 Kepware IoT Gateways list for OPCUA Server with read only
                 permission
-              </FormLabel>
-              <Grid
-                container
-                columns={{ xs: 4, sm: 12, md: 12 }}
-                sx={{ mt: 5, mb: 5 }}
-              >
+              </FormLabel>     
+                <Divider />
                 <Grid
                   item
                   xs={2}
@@ -539,11 +539,11 @@ export default function Thingworx() {
                   md={6}
                   style={{
                     textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
+                    border: "2px inset white",
+                    padding: "5px 20px",
                   }}
                 >
-                  <h3>Enabled IoT Gateways for Thingworx</h3>
+                  <h3>Enable/Disable IoT Gateways for Thingworx</h3>
                   <Divider />
                   <Grid
                     container
@@ -552,7 +552,7 @@ export default function Thingworx() {
                     alignItems="center"
                     sx={{ p: 1 }}
                   >
-                    <TableContainer sx={{ height: 150 }}>
+                    <TableContainer sx={{ height: 200}}>
                       <Table
                         stickyHeader
                         aria-label="sticky table"
@@ -560,107 +560,49 @@ export default function Thingworx() {
                       >
                         <TableBody>
                           {iotGatewaysList &&
-                            Object.keys(iotGatewaysList).length !== 0 &&
-                            Object.keys(iotGatewaysList)
-                              .filter(
-                                (element) =>
-                                  iotGatewaysList[element].includes(
-                                    "http://127.0.0.1:8001"
-                                  ) ||
-                                  iotGatewaysList[element].includes(
-                                    "http://localhost:8001"
-                                  )
-                              )
-                              .map((iotGatewayName) => {
+                            iotGatewaysList?.length !== 0 &&
+                            iotGatewaysList
+                              ?.map((iotGatewayName) => {
                                 return (
                                   <TableRow hover key={iotGatewayName}>
                                     <TableCell align="center">
                                       {iotGatewayName}
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Button
+                                      <Switch 
+                                        checked={true}
                                         variant="contained"
                                         color="secondary"
-                                        endIcon={<BlurOffIcon />}
-                                        onClick={() => {
+                                        onChange={() => {
                                           handleDisableIotGateway(
                                             iotGatewayName
                                           );
                                         }}
-                                        size="small"
-                                      >
-                                        Disable
-                                      </Button>
+                                     />     
                                     </TableCell>
                                   </TableRow>
                                 );
                               })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <h3>Disabled IoT Gateways for Thingworx</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 150 }}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysListDisabled &&
-                            Object.keys(iotGatewaysListDisabled).length !== 0 &&
-                            Object.keys(iotGatewaysListDisabled)
-                              .filter(
-                                (element) =>
-                                  iotGatewaysListDisabled[element].includes(
-                                    "http://127.0.0.1:8001"
-                                  ) ||
-                                  iotGatewaysListDisabled[element].includes(
-                                    "http://localhost:8001"
-                                  )
-                              )
-                              .map((iotGatewayName) => {
+                              {iotGatewaysListDisabled &&
+                           iotGatewaysListDisabled?.length !== 0 &&
+                           iotGatewaysListDisabled
+                              ?.map((iotGatewayName) => {
                                 return (
                                   <TableRow hover key={iotGatewayName}>
-                                    <TableCell
-                                      align="center"
-                                      style={{ color: "grey" }}
-                                    >
+                                    <TableCell align="center">
                                       {iotGatewayName}
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Button
+                                      <Switch 
+                                        checked={false}
                                         variant="contained"
-                                        endIcon={<BlurOnIcon />}
-                                        onClick={() => {
+                                        color="secondary"
+                                        onChange={() => {
                                           handleEnableIotGateway(
                                             iotGatewayName
                                           );
                                         }}
-                                        size="small"
-                                      >
-                                        Enable
-                                      </Button>
+                                     />     
                                     </TableCell>
                                   </TableRow>
                                 );
@@ -670,7 +612,6 @@ export default function Thingworx() {
                     </TableContainer>
                   </Grid>
                 </Grid>
-              </Grid>
             </>
           )}
           {currentTab === 3 && (
