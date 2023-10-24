@@ -12,8 +12,10 @@ import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import {
-  get_iot_gtws_http_client_enabled,
-  get_iot_gtws_http_client_disabled,
+  get_iot_gtws_for_http_server_enabled_read,
+  get_iot_gtws_for_http_server_disabled_read,
+  get_iot_gtws_for_http_server_enabled_write,
+  get_iot_gtws_for_http_server_disabled_write,
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
 } from "../../../utils/api";
@@ -65,21 +67,8 @@ export default function HTTPServer() {
 
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
-    ? [
-        "Expose Iot Gateway",
-        "Manage Iot Gateways",
-        "Shift nodes",
-        "Port",
-        "Security",
-        "JSON",
-      ]
-    : [
-        "Expose Iot Gateway",
-        "Manage Iot Gateways",
-        "Shift nodes",
-        "Port",
-        "Security",
-      ];
+    ? ["Expose Iot Gateway", "Manage Iot Gateways", "Port", "Security", "JSON"]
+    : ["Expose Iot Gateway", "Manage Iot Gateways", "Port", "Security"];
 
   const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -112,13 +101,6 @@ export default function HTTPServer() {
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
     getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
   );
-
-  const [shiftFromKepware, setShiftFromKepware] = useState(
-    http?.shift_property_from_kepware
-  );
-  const [shiftToKepware, setShiftToKepware] = useState(
-    http?.shift_property_to_kepware
-  );
   const [customPortEnable, setCustomPortEnable] = useState(
     http?.http?.custom_port_enable
   );
@@ -141,8 +123,6 @@ export default function HTTPServer() {
     setIotGatewaysToTableData(
       getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
     );
-    setShiftFromKepware(http?.shift_property_from_kepware);
-    setShiftToKepware(http?.shift_property_to_kepware);
     setCustomPortEnable(http?.http?.custom_port_enable);
     setCustomPort(http?.http?.custom_port);
     setServerAuth(http?.security?.user_auth);
@@ -154,25 +134,25 @@ export default function HTTPServer() {
   useEffect(() => {
     (async () => {
       loaderContext[1](true);
-      const iotGatewaysFromEnabled = await get_iot_gtws_http_client_enabled();
-      const iotGatewaysFromDisabled = await get_iot_gtws_http_client_disabled();
-      /*  const iotGatewaysToEnabled =
-        await get_iot_gtws_http_reading_writing_enabled();
+      const iotGatewaysFromEnabled =
+        await get_iot_gtws_for_http_server_enabled_read();
+      const iotGatewaysFromDisabled =
+        await get_iot_gtws_for_http_server_disabled_read();
+      const iotGatewaysToEnabled =
+        await get_iot_gtws_for_http_server_enabled_write();
       const iotGatewaysToDisabled =
-        await get_iot_gtws_http_reading_writing_disabled(); */
+        await get_iot_gtws_for_http_server_disabled_write();
       console.log("get IoT gateways");
       if (
         iotGatewaysFromEnabled &&
-        /*    iotGatewaysToEnabled && */
-        iotGatewaysFromDisabled &&
-        /*         iotGatewaysToDisabled && */
-        Object.keys(iotGatewaysFromEnabled).length !== 0
-        /*  Object.keys(iotGatewaysToEnabled).length !== 0 */
+        iotGatewaysToEnabled &&
+        Object.keys(iotGatewaysFromEnabled).length !== 0 &&
+        Object.keys(iotGatewaysToEnabled).length !== 0
       ) {
         setIotGatewaysFromList(iotGatewaysFromEnabled);
         setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        /*  setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
+        setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -181,16 +161,14 @@ export default function HTTPServer() {
         });
       } else if (
         iotGatewaysFromEnabled &&
-        iotGatewaysFromDisabled &&
-        /*    iotGatewaysToEnabled &&
-        iotGatewaysToDisabled && */
-        Object.keys(iotGatewaysFromEnabled).length === 0
-        /*     Object.keys(iotGatewaysToEnabled).length === 0 */
+        iotGatewaysToEnabled &&
+        Object.keys(iotGatewaysFromEnabled).length === 0 &&
+        Object.keys(iotGatewaysToEnabled).length === 0
       ) {
         setIotGatewaysFromList(iotGatewaysFromEnabled);
         setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        /*       setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
+        setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -209,12 +187,6 @@ export default function HTTPServer() {
     })();
   }, []);
 
-  const handleShiftFromKepwareChange = (event) => {
-    setShiftFromKepware(event?.target?.value);
-  };
-  const handleShiftToKepwareChange = (event) => {
-    setShiftToKepware(event?.target?.value);
-  };
   const handleCustomPortEnableChange = (event) => {
     setCustomPortEnable(event?.target?.checked);
   };
@@ -228,16 +200,16 @@ export default function HTTPServer() {
     loaderContext[1](true);
     let iotGateways = undefined;
     if (direction === "from") {
-      iotGateways = await get_iot_gtws_http_client_enabled();
+      iotGateways = await get_iot_gtws_for_http_server_enabled_read();
     } else if (direction === "to") {
-      /* iotGateways = await get_iot_gtws_http_reading_writing_enabled(); */
+      iotGateways = await get_iot_gtws_for_http_server_enabled_write();
     }
     console.log("get IoT gateways");
     if (iotGateways && Object.keys(iotGateways).length !== 0) {
       if (direction === "from") {
         setIotGatewaysFromList(iotGateways);
       } else if (direction === "to") {
-        /*  setIotGatewaysToList(iotGateways); */
+        setIotGatewaysToList(iotGateways);
       }
       handleRequestFeedback({
         vertical: "bottom",
@@ -265,25 +237,25 @@ export default function HTTPServer() {
 
   const handleRefreshAllIotGateways = async () => {
     loaderContext[1](true);
-    const iotGatewaysFromEnabled = await get_iot_gtws_http_client_enabled();
-    const iotGatewaysFromDisabled = await get_iot_gtws_http_client_disabled();
-    /* const iotGatewaysToEnabled =
-      await get_iot_gtws_http_reading_writing_enabled();
+    const iotGatewaysFromEnabled =
+      await get_iot_gtws_for_http_server_enabled_read();
+    const iotGatewaysFromDisabled =
+      await get_iot_gtws_for_http_server_disabled_read();
+    const iotGatewaysToEnabled =
+      await get_iot_gtws_for_http_server_enabled_write();
     const iotGatewaysToDisabled =
-      await get_iot_gtws_http_reading_writing_disabled(); */
+      await get_iot_gtws_for_http_server_disabled_write();
     console.log("get IoT gateways");
     if (
       iotGatewaysFromEnabled &&
-      /*  iotGatewaysToEnabled && */
-      iotGatewaysFromDisabled &&
-      /*       iotGatewaysToDisabled && */
-      Object.keys(iotGatewaysFromEnabled).length !== 0
-      /*  Object.keys(iotGatewaysToEnabled).length !== 0 */
+      iotGatewaysToEnabled &&
+      Object.keys(iotGatewaysFromEnabled).length !== 0 &&
+      Object.keys(iotGatewaysToEnabled).length !== 0
     ) {
       setIotGatewaysFromList(iotGatewaysFromEnabled);
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      /*  setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -292,16 +264,14 @@ export default function HTTPServer() {
       });
     } else if (
       iotGatewaysFromEnabled &&
-      iotGatewaysFromDisabled &&
-      /*   iotGatewaysToEnabled &&
-      iotGatewaysToDisabled && */
-      Object.keys(iotGatewaysFromEnabled).length === 0
-      /*  Object.keys(iotGatewaysToEnabled).length === 0 */
+      iotGatewaysToEnabled &&
+      Object.keys(iotGatewaysFromEnabled).length === 0 &&
+      Object.keys(iotGatewaysToEnabled).length === 0
     ) {
       setIotGatewaysFromList(iotGatewaysFromEnabled);
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      /*    setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled); */
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -320,28 +290,29 @@ export default function HTTPServer() {
   };
 
   const handleEnableIotGateway = async (name, permission) => {
-    let iotGatewaDisabledList = undefined;
     const result = await enable_http_client_iot_gateway(name);
 
     if (!result?.enabled) {
       return;
     }
     if (permission === "from") {
-      iotGatewaDisabledList = { ...iotGatewaysFromListDisabled };
-      setIotGatewaysFromList((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaDisabledList[`${name}`],
-      }));
-      delete iotGatewaDisabledList[`${name}`];
-      setIotGatewaysFromListDisabled(iotGatewaDisabledList);
+      let enabledIotGatewaysFromList =
+        iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
+      enabledIotGatewaysFromList.push(name);
+      setIotGatewaysFromList(...new Set(enabledIotGatewaysFromList));
+      let disabledIotGatewaysFromList = iotGatewaysFromListDisabled?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysFromListDisabled(disabledIotGatewaysFromList);
     } else if (permission === "to") {
-      iotGatewaDisabledList = { ...iotGatewaysToListDisabled };
-      setIotGatewaysToList((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaDisabledList[`${name}`],
-      }));
-      delete iotGatewaDisabledList[`${name}`];
-      setIotGatewaysToListDisabled(iotGatewaDisabledList);
+      let enabledIotGatewaysToList =
+        iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
+      enabledIotGatewaysToList.push(name);
+      setIotGatewaysToList(...new Set(enabledIotGatewaysToList));
+      let disabledIotGatewaysToList = iotGatewaysToListDisabled?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysToListDisabled(disabledIotGatewaysToList);
     }
   };
   /**
@@ -364,7 +335,7 @@ export default function HTTPServer() {
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
       }));
-     
+
       setIotGatewaysFromList(iotGatewaList);
     } else if (permission === "to") {
       iotGatewaList = { ...iotGatewaysFromList };
@@ -372,7 +343,7 @@ export default function HTTPServer() {
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
       }));
-      
+
       setIotGatewaysToList(iotGatewaList);
     }
   };
@@ -529,7 +500,7 @@ export default function HTTPServer() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && superUser && <JSONTree data={http} />}
+        {currentTab === 4 && superUser && <JSONTree data={http} />}
 
         <form onSubmit={handleHTTPServerChange}>
           {currentTab === 0 && (
@@ -575,7 +546,7 @@ export default function HTTPServer() {
               </Stack>
 
               <FormLabel title={http_remote_things_desc}>
-                Remote Things configuration
+                IoT gateways exposed for HTTP server
               </FormLabel>
 
               <CustomTable
@@ -596,22 +567,6 @@ export default function HTTPServer() {
                 alignItems="center"
               >
                 <FormControl fullWidth>
-                  {/* <TextField
-                  select
-                  label="Choose iot gateway from Kepware"
-                  defaultValue=""
-                  onChange={handleIotGatewaysToChange}
-                >
-                  {iotGatewaysToList &&
-                    Object.keys(iotGatewaysToList).length !== 0 &&
-                    Object.keys(iotGatewaysToList).map((item) => {
-                      return (
-                        <MenuItem key={Math.random() + item} value={item}>
-                          {item}
-                        </MenuItem>
-                      );
-                    })}
-                </TextField> */}
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
@@ -657,82 +612,18 @@ export default function HTTPServer() {
           )}
           {currentTab === 1 && (
             <>
-             <FormLabel title={http_manage_desc}>
+              <FormLabel title={http_manage_desc}>
                 Kepware IoT Gateways list for HTTP Server with read only
                 permission
-              </FormLabel>    
-                <Divider />
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "2px inset white",
-                    padding: "5px 20px",
-                  }}
-                >
-                  <h3>Enable/Disable IoT Gateways for HTTP</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 200}}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                        {iotGatewaysFromList &&
-                            Object.keys(iotGatewaysFromList).length !== 0 &&
-                            Object.keys(iotGatewaysFromList).map(
-                              (iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell align="center">
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Switch
-                                        variant="contained"
-                                        color="secondary"
-                                        endIcon={<BlurOffIcon />}
-                                        onClick={() => {
-                                          handleDisableIotGateway(
-                                            iotGatewayName,
-                                            "from"
-                                          );
-                                        }}
-                                        size="medium"
-                                      />
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-
-
-              
-              {/* <FormLabel>
-              Kepware IoT Gateways list for HTTP Server with read and write
-              permission
-            </FormLabel>
-            <Grid
-              container
-              columns={{ xs: 4, sm: 12, md: 12 }}
-              sx={{ mt: 5, mb: 5 }}
-            >
+              </FormLabel>
+              <Divider />
+              <Button
+                onClick={handleRefreshAllIotGateways}
+                variant="outlined"
+                endIcon={<CachedIcon />}
+              >
+                Refresh
+              </Button>
               <Grid
                 item
                 xs={2}
@@ -740,155 +631,153 @@ export default function HTTPServer() {
                 md={6}
                 style={{
                   textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
+                  border: "2px inset white",
+                  padding: "5px 20px",
                 }}
               >
-                <h3>Enabled IoT Gateways for HTTP (read & write)</h3>
+                <h3>Enable/Disable IoT Gateways for HTTP Server (readonly)</h3>
                 <Divider />
                 <Grid
                   container
-                  rowSpacing={2}
+                  rowSpacing={3}
                   justifyContent="center"
                   alignItems="center"
                   sx={{ p: 1 }}
                 >
-                  <TableContainer sx={{ height: 150 }}>
+                  <TableContainer>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {iotGatewaysFromList &&
+                          iotGatewaysFromList?.length !== 0 &&
+                          iotGatewaysFromList?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={true}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleDisableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        {iotGatewaysFromListDisabled &&
+                          iotGatewaysFromListDisabled?.length !== 0 &&
+                          iotGatewaysFromListDisabled?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={false}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleEnableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Grid>
+              </Grid>
+
+              <Divider />
+
+              <FormLabel title={http_manage_desc}>
+                Kepware IoT Gateways list for HTTP Server with read and write
+                permission
+              </FormLabel>
+              <Divider />
+              <Grid
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "2px inset white",
+                  padding: "5px 20px",
+                }}
+              >
+                <h3>
+                  Enable/Disable IoT Gateways for HTTP Server (read & write)
+                </h3>
+                <Divider />
+                <Grid
+                  container
+                  rowSpacing={3}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
+                >
+                  <TableContainer>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
                         {iotGatewaysToList &&
-                          Object.keys(iotGatewaysToList).length !== 0 &&
-                          Object.keys(iotGatewaysToList).map(
-                            (iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell align="center">
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      color="secondary"
-                                      endIcon={<BlurOffIcon />}
-                                      onClick={() => {
-                                        handleDisableIotGateway(
-                                          iotGatewayName,
-                                          "to"
-                                        );
-                                      }}
-                                      size="small"
-                                    >
-                                      Disable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            }
-                          )}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Grid>
-              </Grid>
-              <Grid
-                item
-                xs={2}
-                sm={6}
-                md={6}
-                style={{
-                  textAlign: "center",
-                  border: "1px inset white",
-                  padding: "0px 20px",
-                }}
-              >
-                <h3>Disabled IoT Gateways for HTTP (read & write)</h3>
-                <Divider />
-                <Grid
-                  container
-                  rowSpacing={2}
-                  justifyContent="center"
-                  alignItems="center"
-                  sx={{ p: 1 }}
-                >
-                  <TableContainer sx={{ height: 150 }}>
-                    <Table stickyHeader aria-label="sticky table" size="small">
-                      <TableBody>
+                          iotGatewaysToList?.length !== 0 &&
+                          iotGatewaysToList?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={true}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleDisableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                         {iotGatewaysToListDisabled &&
-                          Object.keys(iotGatewaysToListDisabled).length !== 0 &&
-                          Object.keys(iotGatewaysToListDisabled).map(
-                            (iotGatewayName) => {
-                              return (
-                                <TableRow hover key={iotGatewayName}>
-                                  <TableCell
-                                    align="center"
-                                    style={{ color: "grey" }}
-                                  >
-                                    {iotGatewayName}
-                                  </TableCell>
-                                  <TableCell align="center">
-                                    <Button
-                                      variant="contained"
-                                      endIcon={<BlurOnIcon />}
-                                      onClick={() => {
-                                        handleEnableIotGateway(
-                                          iotGatewayName,
-                                          "to"
-                                        );
-                                      }}
-                                      size="small"
-                                    >
-                                      Enable
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            }
-                          )}
+                          iotGatewaysToListDisabled?.length !== 0 &&
+                          iotGatewaysToListDisabled?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={false}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleEnableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                       </TableBody>
                     </Table>
                   </TableContainer>
                 </Grid>
               </Grid>
-            </Grid> */}
             </>
           )}
+
           {currentTab === 2 && (
-            <>
-              <FormControl fullWidth>
-                <FormLabel title={http_shift_fromkep_desc}>
-                  From Kepware:
-                </FormLabel>
-
-                <TextField
-                  title={http_shift_fromkep_desc}
-                  type="text"
-                  inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
-                  label="Shift from Kepware"
-                  helperText="Shift HTTP nodes (in order to exclude roots) from Kepware Iot Gateway"
-                  value={shiftFromKepware}
-                  required={false}
-                  onChange={handleShiftFromKepwareChange}
-                />
-              </FormControl>
-              <Divider />
-
-              <FormControl fullWidth>
-                <FormLabel title={http_shift_tokep_desc}>To Kepware:</FormLabel>
-
-                <TextField
-                  title={http_shift_tokep_desc}
-                  type="number"
-                  label="Shift to Kepware"
-                  helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
-                  value={shiftToKepware}
-                  required={false}
-                  onChange={handleShiftToKepwareChange}
-                />
-              </FormControl>
-              <Divider />
-            </>
-          )}
-          {currentTab === 3 && (
             <>
               <FormControl fullWidth>
                 <FormLabel title={http_server_port_desc}>
@@ -930,7 +819,7 @@ export default function HTTPServer() {
             </>
           )}
 
-          {currentTab === 4 && (
+          {currentTab === 3 && (
             <>
               <FormControl fullWidth>
                 <FormLabel title={http_security_desc}>
@@ -968,7 +857,7 @@ export default function HTTPServer() {
             </>
           )}
 
-          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
+          {currentTab !== 1 && currentTab !== 4 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

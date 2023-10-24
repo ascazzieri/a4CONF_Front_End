@@ -98,19 +98,17 @@ export default function OPCServer() {
     return arrayOfObjects;
   };
 
-  const [iotGatewaysFromList, setIotGatewaysFromList] = useState({});
+  const [iotGatewaysFromList, setIotGatewaysFromList] = useState();
   const [iotGatewaysFromListDisabled, setIotGatewaysFromListDisabled] =
-    useState({});
+    useState();
   const [iotGatewayFrom, setIotGatewayFrom] = useState();
 
   const [iotGatewaysFromTableData, setIotGatewaysFromTableData] = useState(
     getArrayOfObjectsOPCUA(opcua?.iotgw?.from, "iot_gateway", "read only")
   );
 
-  const [iotGatewaysToList, setIotGatewaysToList] = useState({});
-  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
-    {}
-  );
+  const [iotGatewaysToList, setIotGatewaysToList] = useState();
+  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState();
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
@@ -133,7 +131,7 @@ export default function OPCServer() {
   const [usersTableData, setUsersTableData] = useState(
     getArrayOfObjects(opcua?.security?.users, "username", "password")
   );
-console.log()
+  console.log();
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -160,6 +158,7 @@ console.log()
     (async () => {
       loaderContext[1](true);
       const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
+      console.log(iotGatewaysFromEnabled);
       const iotGatewaysFromDisabled =
         await get_iot_gtws_opcua_reading_disabled();
       const iotGatewaysToEnabled =
@@ -168,17 +167,9 @@ console.log()
         await get_iot_gtws_opcua_reading_writing_disabled();
       console.log("get IoT gateways");
       if (
-        iotGatewaysFromEnabled &&
-        iotGatewaysToEnabled &&
-        iotGatewaysFromDisabled &&
-        iotGatewaysToDisabled &&
-        Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-        Object.keys(iotGatewaysToEnabled).length !== 0
+        iotGatewaysFromEnabled?.length !== 0 ||
+        iotGatewaysToEnabled?.length !== 0
       ) {
-        setIotGatewaysFromList(iotGatewaysFromEnabled);
-        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -186,31 +177,20 @@ console.log()
           message: `Kepware IoT gateways loaded`,
         });
       } else if (
-        iotGatewaysFromEnabled &&
-        iotGatewaysFromDisabled &&
-        iotGatewaysToEnabled &&
-        iotGatewaysToDisabled &&
-        Object.keys(iotGatewaysFromEnabled).length === 0 &&
-        Object.keys(iotGatewaysToEnabled).length === 0
+        iotGatewaysFromEnabled?.length === 0 &&
+        iotGatewaysToEnabled?.length === 0
       ) {
-        setIotGatewaysFromList(iotGatewaysFromEnabled);
-        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
           message: `Kepware enabled IoT gateways not found`,
         });
-      } else {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred during Kepware IoT Gateways loading`,
-        });
       }
+      setIotGatewaysFromList(iotGatewaysFromEnabled);
+      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       loaderContext[1](false);
     })();
   }, []);
@@ -239,7 +219,7 @@ console.log()
       iotGateways = await get_iot_gtws_opcua_reading_writing_enabled();
     }
     console.log("get IoT gateways");
-    if (iotGateways && Object.keys(iotGateways).length !== 0) {
+    if (iotGateways && iotGateways?.length !== 0) {
       if (direction === "from") {
         setIotGatewaysFromList(iotGateways);
       } else if (direction === "to") {
@@ -251,7 +231,7 @@ console.log()
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
+    } else if (iotGateways && !iotGateways?.length === 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -279,17 +259,9 @@ console.log()
       await get_iot_gtws_opcua_reading_writing_disabled();
     console.log("get IoT gateways");
     if (
-      iotGatewaysFromEnabled &&
-      iotGatewaysToEnabled &&
-      iotGatewaysFromDisabled &&
-      iotGatewaysToDisabled &&
-      Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-      Object.keys(iotGatewaysToEnabled).length !== 0
+      iotGatewaysFromEnabled?.length !== 0 ||
+      iotGatewaysToEnabled?.length !== 0
     ) {
-      setIotGatewaysFromList(iotGatewaysFromEnabled);
-      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -297,57 +269,53 @@ console.log()
         message: `Kepware IoT gateways loaded`,
       });
     } else if (
-      iotGatewaysFromEnabled &&
-      iotGatewaysFromDisabled &&
-      iotGatewaysToEnabled &&
-      iotGatewaysToDisabled &&
-      Object.keys(iotGatewaysFromEnabled).length === 0 &&
-      Object.keys(iotGatewaysToEnabled).length === 0
+      iotGatewaysFromEnabled?.length === 0 &&
+      iotGatewaysToEnabled?.length === 0
     ) {
-      setIotGatewaysFromList(iotGatewaysFromEnabled);
-      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Kepware enabled IoT gateways not found`,
       });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware IoT Gateways loading`,
-      });
     }
+    setIotGatewaysFromList(iotGatewaysFromEnabled);
+    setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+    setIotGatewaysToList(iotGatewaysToEnabled);
+    setIotGatewaysToListDisabled(iotGatewaysToDisabled);
     loaderContext[1](false);
   };
 
   const handleEnableIotGateway = async (name, permission) => {
-    let iotGatewaDisabledList = undefined;
     const result = await enable_http_client_iot_gateway(name);
 
     if (!result?.enabled) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to enable IoT Gateway`,
+      });
       return;
     }
     if (permission === "from") {
-      iotGatewaDisabledList = { ...iotGatewaysFromListDisabled };
-      setIotGatewaysFromList((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaDisabledList[`${name}`],
-      }));
-      delete iotGatewaDisabledList[`${name}`];
-      setIotGatewaysFromListDisabled(iotGatewaDisabledList);
+      let enabledIotGatewaysFromList =
+        iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
+      enabledIotGatewaysFromList.push(name);
+      setIotGatewaysFromList(...new Set(enabledIotGatewaysFromList));
+      let disabledIotGatewaysFromList = iotGatewaysFromListDisabled?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysFromListDisabled(disabledIotGatewaysFromList);
     } else if (permission === "to") {
-      iotGatewaDisabledList = { ...iotGatewaysToListDisabled };
-      setIotGatewaysToList((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaDisabledList[`${name}`],
-      }));
-      delete iotGatewaDisabledList[`${name}`];
-      setIotGatewaysToListDisabled(iotGatewaDisabledList);
+      let enabledIotGatewaysToList =
+        iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
+      enabledIotGatewaysToList.push(name);
+      setIotGatewaysToList(...new Set(enabledIotGatewaysToList));
+      let disabledIotGatewaysToList = iotGatewaysToListDisabled?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysToListDisabled(disabledIotGatewaysToList);
     }
   };
 
@@ -359,26 +327,43 @@ console.log()
    * @returns {void}
    */
   const handleDisableIotGateway = async (name, permission) => {
-    let iotGatewaList = undefined;
     const result = await disable_http_client_iot_gateway(name);
 
     if (result?.enabled) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to disable IoT Gateway`,
+      });
       return;
     }
     if (permission === "from") {
-      iotGatewaList = { ...iotGatewaysFromList };
-      setIotGatewaysFromListDisabled((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaList[`${name}`],
-      }));
-      setIotGatewaysFromList(iotGatewaList);
+      let enabledIotGatewaysFromListDisabled =
+        iotGatewaysFromListDisabled?.length !== 0
+          ? [...iotGatewaysFromListDisabled]
+          : [];
+      enabledIotGatewaysFromListDisabled.push(name);
+      setIotGatewaysFromListDisabled(
+        ...new Set(enabledIotGatewaysFromListDisabled)
+      );
+      let enabledIotGatewaysFromList = iotGatewaysFromList?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysFromList(enabledIotGatewaysFromList);
     } else if (permission === "to") {
-      iotGatewaList = { ...iotGatewaysFromList };
-      setIotGatewaysToListDisabled((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaList[`${name}`],
-      }));   
-      setIotGatewaysToList(iotGatewaList);
+      let enabledIotGatewaysToListDisabled =
+        iotGatewaysToListDisabled?.length !== 0
+          ? [...iotGatewaysToListDisabled]
+          : [];
+      enabledIotGatewaysToListDisabled.push(name);
+      setIotGatewaysToListDisabled(
+        ...new Set(enabledIotGatewaysToListDisabled)
+      );
+      let enabledIotGatewaysToList = iotGatewaysToList?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysToList(enabledIotGatewaysToList);
     }
   };
 
@@ -424,7 +409,6 @@ console.log()
         (item, index) => (usersData[`${item?.username}`] = item?.password)
       );
     }
-    console.log(usersData)
 
     const newOPCUAServer = {
       ...opcua,
@@ -557,7 +541,7 @@ console.log()
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    options={Object.keys(iotGatewaysFromList)}
+                    options={iotGatewaysFromList || []}
                     onChange={(event, newValue) => {
                       setIotGatewayFrom(newValue);
                     }}
@@ -608,7 +592,7 @@ console.log()
                 <FormControl fullWidth>
                   <Autocomplete
                     disablePortal
-                    options={Object.keys(iotGatewaysToList)}
+                    options={iotGatewaysToList || []}
                     onChange={(event, newValue) => {
                       setIotGatewayTo(newValue);
                     }}
@@ -655,132 +639,161 @@ console.log()
                 permission
               </FormLabel>
               <Divider />
+              <Button
+                onClick={handleRefreshAllIotGateways}
+                variant="outlined"
+                endIcon={<CachedIcon />}
+              >
+                Refresh
+              </Button>
+              <Grid
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "2px inset white",
+                  padding: "5px 20px",
+                }}
+              >
+                <h3>Enable/Disable IoT Gateways for OPCUA (readonly)</h3>
+                <Divider />
                 <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "2px inset white",
-                    padding: "5px 20px",
-                  }}
+                  container
+                  rowSpacing={3}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
                 >
-                  <h3>Enable/Disable IoT Gateways for OPCUA (readonly)</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 200}}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysFromList &&
-                            Object.keys(iotGatewaysFromList).length !== 0 &&
-                            Object.keys(iotGatewaysFromList).map(
-                              (iotGatewayName) =>
-                              {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell align="center">
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Switch
-                                        variant="contained"
-                                        color="secondary"
-                                        endIcon={<BlurOffIcon />}
-                                        onClick={() => {
-                                          handleDisableIotGateway(
-                                            iotGatewayName,
-                                            "from"
-                                          );
-                                        }}
-                                        size="medium"
-                                      />   
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
+                  <TableContainer>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {iotGatewaysFromList &&
+                          iotGatewaysFromList?.length !== 0 &&
+                          iotGatewaysFromList?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={true}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleDisableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        {iotGatewaysFromListDisabled &&
+                          iotGatewaysFromListDisabled?.length !== 0 &&
+                          iotGatewaysFromListDisabled?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={false}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleEnableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
-              
+              </Grid>
+
               <Divider />
-    
+
               <FormLabel title={opcua_manage_writegate_desc}>
                 Kepware IoT Gateways list for OPCUA Server with read and write
                 permission
               </FormLabel>
               <Divider />
               <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "2px inset white",
-                    padding: "5px 20px",
-                  }}
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "2px inset white",
+                  padding: "5px 20px",
+                }}
+              >
+                <h3>Enable/Disable IoT Gateways for OPCUA (read & write)</h3>
+                <Divider />
+                <Grid
+                  container
+                  rowSpacing={3}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
                 >
-              <h3>Enable/Disable IoT Gateways for OPCUA (read & write)</h3>
-              <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 200}}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysFromList &&
-                            Object.keys(iotGatewaysFromList).length !== 0 &&
-                            Object.keys(iotGatewaysFromList).map(
-                              (iotGatewayName) =>
-                              {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell align="center">
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Switch
-                                        variant="contained"
-                                        color="secondary"
-                                        endIcon={<BlurOffIcon />}
-                                        onClick={() => {
-                                          handleDisableIotGateway(
-                                            iotGatewayName,
-                                            "to"
-                                          );
-                                        }}
-                                        size="m"
-                                      />   
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
+                  <TableContainer>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {iotGatewaysToList &&
+                          iotGatewaysToList?.length !== 0 &&
+                          iotGatewaysToList?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={true}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleDisableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        {iotGatewaysToListDisabled &&
+                          iotGatewaysToListDisabled?.length !== 0 &&
+                          iotGatewaysToListDisabled?.map((iotGatewayName) => {
+                            return (
+                              <TableRow hover key={iotGatewayName}>
+                                <TableCell align="center">
+                                  {iotGatewayName}
+                                </TableCell>
+                                <TableCell align="center">
+                                  <Switch
+                                    checked={false}
+                                    variant="contained"
+                                    color="secondary"
+                                    onChange={() => {
+                                      handleEnableIotGateway(iotGatewayName);
+                                    }}
+                                  />
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
+              </Grid>
             </>
           )}
           {currentTab === 2 && (
