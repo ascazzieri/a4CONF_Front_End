@@ -364,7 +364,7 @@ export default function HTTPServer() {
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
       }));
-      delete iotGatewaList[`${name}`];
+     
       setIotGatewaysFromList(iotGatewaList);
     } else if (permission === "to") {
       iotGatewaList = { ...iotGatewaysFromList };
@@ -372,7 +372,7 @@ export default function HTTPServer() {
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
       }));
-      delete iotGatewaList[`${name}`];
+      
       setIotGatewaysToList(iotGatewaList);
     }
   };
@@ -657,15 +657,11 @@ export default function HTTPServer() {
           )}
           {currentTab === 1 && (
             <>
-              <FormLabel title={http_manage_desc}>
+             <FormLabel title={http_manage_desc}>
                 Kepware IoT Gateways list for HTTP Server with read only
                 permission
-              </FormLabel>
-              <Grid
-                container
-                columns={{ xs: 4, sm: 12, md: 12 }}
-                sx={{ mt: 5, mb: 5 }}
-              >
+              </FormLabel>    
+                <Divider />
                 <Grid
                   item
                   xs={2}
@@ -673,11 +669,11 @@ export default function HTTPServer() {
                   md={6}
                   style={{
                     textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
+                    border: "2px inset white",
+                    padding: "5px 20px",
                   }}
                 >
-                  <h3>Enabled IoT Gateways for HTTP</h3>
+                  <h3>Enable/Disable IoT Gateways for HTTP</h3>
                   <Divider />
                   <Grid
                     container
@@ -686,14 +682,14 @@ export default function HTTPServer() {
                     alignItems="center"
                     sx={{ p: 1 }}
                   >
-                    <TableContainer sx={{ height: 150 }}>
+                    <TableContainer sx={{ height: 200}}>
                       <Table
                         stickyHeader
                         aria-label="sticky table"
                         size="small"
                       >
                         <TableBody>
-                          {iotGatewaysFromList &&
+                        {iotGatewaysFromList &&
                             Object.keys(iotGatewaysFromList).length !== 0 &&
                             Object.keys(iotGatewaysFromList).map(
                               (iotGatewayName) => {
@@ -703,7 +699,7 @@ export default function HTTPServer() {
                                       {iotGatewayName}
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Button
+                                      <Switch
                                         variant="contained"
                                         color="secondary"
                                         endIcon={<BlurOffIcon />}
@@ -713,10 +709,8 @@ export default function HTTPServer() {
                                             "from"
                                           );
                                         }}
-                                        size="small"
-                                      >
-                                        Disable
-                                      </Button>
+                                        size="medium"
+                                      />
                                     </TableCell>
                                   </TableRow>
                                 );
@@ -727,71 +721,9 @@ export default function HTTPServer() {
                     </TableContainer>
                   </Grid>
                 </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <h3>Disabled IoT Gateways for HTTP (readonly)</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 150 }}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysFromListDisabled &&
-                            Object.keys(iotGatewaysFromListDisabled).length !==
-                              0 &&
-                            Object.keys(iotGatewaysFromListDisabled).map(
-                              (iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell
-                                      align="center"
-                                      style={{ color: "grey" }}
-                                    >
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Button
-                                        variant="contained"
-                                        endIcon={<BlurOnIcon />}
-                                        onClick={() => {
-                                          handleEnableIotGateway(
-                                            iotGatewayName,
-                                            "from"
-                                          );
-                                        }}
-                                        size="small"
-                                      >
-                                        Enable
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-              </Grid>
+
+
+              
               {/* <FormLabel>
               Kepware IoT Gateways list for HTTP Server with read and write
               permission

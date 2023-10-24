@@ -371,15 +371,13 @@ console.log()
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
       }));
-      delete iotGatewaList[`${name}`];
       setIotGatewaysFromList(iotGatewaList);
     } else if (permission === "to") {
       iotGatewaList = { ...iotGatewaysFromList };
       setIotGatewaysToListDisabled((prevData) => ({
         ...prevData,
         [`${name}`]: iotGatewaList[`${name}`],
-      }));
-      delete iotGatewaList[`${name}`];
+      }));   
       setIotGatewaysToList(iotGatewaList);
     }
   };
@@ -656,11 +654,7 @@ console.log()
                 Kepware IoT Gateways list for OPCUA Server with read only
                 permission
               </FormLabel>
-              <Grid
-                container
-                columns={{ xs: 4, sm: 12, md: 12 }}
-                sx={{ mt: 5, mb: 5 }}
-              >
+              <Divider />
                 <Grid
                   item
                   xs={2}
@@ -668,11 +662,11 @@ console.log()
                   md={6}
                   style={{
                     textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
+                    border: "2px inset white",
+                    padding: "5px 20px",
                   }}
                 >
-                  <h3>Enabled IoT Gateways for OPCUA (readonly)</h3>
+                  <h3>Enable/Disable IoT Gateways for OPCUA (readonly)</h3>
                   <Divider />
                   <Grid
                     container
@@ -681,7 +675,7 @@ console.log()
                     alignItems="center"
                     sx={{ p: 1 }}
                   >
-                    <TableContainer sx={{ height: 150 }}>
+                    <TableContainer sx={{ height: 200}}>
                       <Table
                         stickyHeader
                         aria-label="sticky table"
@@ -691,14 +685,15 @@ console.log()
                           {iotGatewaysFromList &&
                             Object.keys(iotGatewaysFromList).length !== 0 &&
                             Object.keys(iotGatewaysFromList).map(
-                              (iotGatewayName) => {
+                              (iotGatewayName) =>
+                              {
                                 return (
                                   <TableRow hover key={iotGatewayName}>
                                     <TableCell align="center">
                                       {iotGatewayName}
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Button
+                                      <Switch
                                         variant="contained"
                                         color="secondary"
                                         endIcon={<BlurOffIcon />}
@@ -708,33 +703,38 @@ console.log()
                                             "from"
                                           );
                                         }}
-                                        size="small"
-                                      >
-                                        Disable
-                                      </Button>
+                                        size="medium"
+                                      />   
                                     </TableCell>
                                   </TableRow>
                                 );
-                              }
-                            )}
+                              })}
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Grid>
                 </Grid>
-                <Grid
+              
+              <Divider />
+    
+              <FormLabel title={opcua_manage_writegate_desc}>
+                Kepware IoT Gateways list for OPCUA Server with read and write
+                permission
+              </FormLabel>
+              <Divider />
+              <Grid
                   item
                   xs={2}
                   sm={6}
                   md={6}
                   style={{
                     textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
+                    border: "2px inset white",
+                    padding: "5px 20px",
                   }}
                 >
-                  <h3>Disabled IoT Gateways for OPCUA (readonly)</h3>
-                  <Divider />
+              <h3>Enable/Disable IoT Gateways for OPCUA (read & write)</h3>
+              <Divider />
                   <Grid
                     container
                     rowSpacing={3}
@@ -742,98 +742,25 @@ console.log()
                     alignItems="center"
                     sx={{ p: 1 }}
                   >
-                    <TableContainer sx={{ height: 150 }}>
+                    <TableContainer sx={{ height: 200}}>
                       <Table
                         stickyHeader
                         aria-label="sticky table"
                         size="small"
                       >
                         <TableBody>
-                          {iotGatewaysFromListDisabled &&
-                            Object.keys(iotGatewaysFromListDisabled).length !==
-                              0 &&
-                            Object.keys(iotGatewaysFromListDisabled).map(
-                              (iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell
-                                      align="center"
-                                      style={{ color: "grey" }}
-                                    >
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Button
-                                        variant="contained"
-                                        endIcon={<BlurOnIcon />}
-                                        onClick={() => {
-                                          handleEnableIotGateway(
-                                            iotGatewayName,
-                                            "from"
-                                          );
-                                        }}
-                                        size="small"
-                                      >
-                                        Enable
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-              </Grid>
-              <FormLabel title={opcua_manage_writegate_desc}>
-                Kepware IoT Gateways list for OPCUA Server with read and write
-                permission
-              </FormLabel>
-              <Grid
-                container
-                columns={{ xs: 4, sm: 12, md: 12 }}
-                sx={{ mt: 5, mb: 5 }}
-              >
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <h3>Enabled IoT Gateways for OPCUA (read & write)</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={2}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 150 }}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysToList &&
-                            Object.keys(iotGatewaysToList).length !== 0 &&
-                            Object.keys(iotGatewaysToList).map(
-                              (iotGatewayName) => {
+                          {iotGatewaysFromList &&
+                            Object.keys(iotGatewaysFromList).length !== 0 &&
+                            Object.keys(iotGatewaysFromList).map(
+                              (iotGatewayName) =>
+                              {
                                 return (
                                   <TableRow hover key={iotGatewayName}>
                                     <TableCell align="center">
                                       {iotGatewayName}
                                     </TableCell>
                                     <TableCell align="center">
-                                      <Button
+                                      <Switch
                                         variant="contained"
                                         color="secondary"
                                         endIcon={<BlurOffIcon />}
@@ -843,85 +770,17 @@ console.log()
                                             "to"
                                           );
                                         }}
-                                        size="small"
-                                      >
-                                        Disable
-                                      </Button>
+                                        size="m"
+                                      />   
                                     </TableCell>
                                   </TableRow>
                                 );
-                              }
-                            )}
+                              })}
                         </TableBody>
                       </Table>
                     </TableContainer>
                   </Grid>
                 </Grid>
-                <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "1px inset white",
-                    padding: "0px 20px",
-                  }}
-                >
-                  <h3>Disabled IoT Gateways for OPCUA (read & write)</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={2}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 150 }}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysToListDisabled &&
-                            Object.keys(iotGatewaysToListDisabled).length !==
-                              0 &&
-                            Object.keys(iotGatewaysToListDisabled).map(
-                              (iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell
-                                      align="center"
-                                      style={{ color: "grey" }}
-                                    >
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Button
-                                        variant="contained"
-                                        endIcon={<BlurOnIcon />}
-                                        onClick={() => {
-                                          handleEnableIotGateway(
-                                            iotGatewayName,
-                                            "to"
-                                          );
-                                        }}
-                                        size="small"
-                                      >
-                                        Enable
-                                      </Button>
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              }
-                            )}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-                </Grid>
-              </Grid>
             </>
           )}
           {currentTab === 2 && (

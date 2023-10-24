@@ -1,4 +1,4 @@
-{
-  "HTTP_codesys_PLC_from": "http://127.0.0.1:48400",
-  "HTTP_codesys_HMI_from": "http://127.0.0.1:48400"
-}
+[
+  "HTTP_codesys_PLC_from",
+  "HTTP_codesys_HMI_from"
+]

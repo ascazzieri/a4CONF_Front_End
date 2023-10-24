@@ -106,7 +106,8 @@ export default function Dashboard() {
   }
 
   const handleHostNameChange = () => {
-    if(hostValid(hostName) === true ){
+    
+    if(hostValid(hostName) === true || hostName.trim() !== hostName){
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
