@@ -73,6 +73,7 @@ import {
   network_wifi_desc,
 } from "../../../utils/titles";
 import { verifyIP, verifyIPCIDR } from "../../../utils/utils";
+import { parseInt } from "lodash";
 
 export default function ExternalNetwork() {
   const customerNetwork = useSelector(
@@ -118,11 +119,11 @@ export default function ExternalNetwork() {
 
   const loaderContext = useContext(LoadingContext);
   const snackBarContext = useContext(SnackbarContext);
-  const [ipAddress, setIPAddress] = useState(customerNetwork?.static?.ip);
+  const [ipAddress, setIPAddress] = useState(customerNetwork?.static?.ip || []);
   const [defaultGateway, setDefaultGateway] = useState(
-    customerNetwork?.static?.gateway
+    customerNetwork?.static?.gateway || ""
   );
-  const [dnsServer, setDNSServer] = useState(customerNetwork?.static?.dns);
+  const [dnsServer, setDNSServer] = useState(customerNetwork?.static?.dns || []);
   const [wifi, setWifi] = useState("");
   const [customNTP, setCustomNTP] = useState(
     customerNetwork?.ntp?.length !== 0 ? true : false
@@ -175,9 +176,9 @@ export default function ExternalNetwork() {
   );
 
   useEffect(() => {
-    setIPAddress(customerNetwork?.static?.ip);
-    setDefaultGateway(customerNetwork?.static?.gateway);
-    setDNSServer(customerNetwork?.static?.dns);
+    setIPAddress(customerNetwork?.static?.ip || []);
+    setDefaultGateway(customerNetwork?.static?.gateway || "");
+    setDNSServer(customerNetwork?.static?.dns || []);
     setCustomNTP(customerNetwork?.ntp?.length !== 0 ? true : false);
     setNTPAddress(customerNetwork?.ntp);
     setNATFeatures(customerNetwork?.nat);
@@ -214,7 +215,8 @@ export default function ExternalNetwork() {
     setDefaultGateway(event.target.value);
   };
   const handleDNSServerChnage = (event) => {
-    setDNSServer(event.target.value);
+    const dns_server = event?.target?.value?.split(",") || event?.target?.value;
+    setDNSServer(dns_server);
   };
   const handleConnectionTypeChange = (event) => {
     setConnectionType(event.target.value);
@@ -265,9 +267,19 @@ export default function ExternalNetwork() {
   };
 
   const handleTestConnection = async () => {
+    const testPingNumberInt = parseInt(testPingNumber)
+    if(!testPingNumber || !Number.isInteger(testPingNumberInt)){
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Please insert an integer number of pings to do`,
+      });
+      return
+    }
     loaderContext[1](true);
     const connection = await test_connection({
-      n_ping: testPingNumber,
+      n_ping: testPingNumberInt,
       ip_addresses: hostList,
     });
 
@@ -317,8 +329,8 @@ export default function ExternalNetwork() {
     oldHostList.add(newHost.trim());
     setHostList(Array.from(oldHostList));
   };
-  const handleHostListDelete = () => {
-    const newHostList = hostList.filter((item) => item !== currentHost);
+  const handleHostListDelete = (address) => {
+    const newHostList = hostList?.filter((item) => item !== address);
     setHostList(newHostList);
   };
 
@@ -639,7 +651,7 @@ export default function ExternalNetwork() {
                   helperText="DNS server address"
                   disabled={connection === "dhcp"}
                   required={connection === "dhcp" ? false : true}
-                  value={dnsServer || ""}
+                  value={dnsServer || []}
                   onChange={handleDNSServerChnage}
                 />
               </FormControl>

@@ -133,7 +133,7 @@ export default function OPCServer() {
   const [usersTableData, setUsersTableData] = useState(
     getArrayOfObjects(opcua?.security?.users, "username", "password")
   );
-
+console.log()
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -422,10 +422,11 @@ export default function OPCServer() {
     );
     let usersData = {};
     if (usersTableData.length !== 0) {
-      usersTableData.map(
-        (item, index) => (usersData[`${item?.ssid}`] = item?.password)
+      usersTableData?.map(
+        (item, index) => (usersData[`${item?.username}`] = item?.password)
       );
     }
+    console.log(usersData)
 
     const newOPCUAServer = {
       ...opcua,

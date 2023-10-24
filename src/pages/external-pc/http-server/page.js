@@ -39,7 +39,16 @@ import {
 import CachedIcon from "@mui/icons-material/Cached";
 import BlurOffIcon from "@mui/icons-material/BlurOff";
 import BlurOnIcon from "@mui/icons-material/BlurOn";
-import { http_gateway_read_desc, http_gateway_write_desc, http_manage_desc, http_remote_things_desc, http_security_desc, http_server_port_desc, http_shift_fromkep_desc, http_shift_tokep_desc } from "../../../utils/titles";
+import {
+  http_gateway_read_desc,
+  http_gateway_write_desc,
+  http_manage_desc,
+  http_remote_things_desc,
+  http_security_desc,
+  http_server_port_desc,
+  http_shift_fromkep_desc,
+  http_shift_tokep_desc,
+} from "../../../utils/titles";
 
 export default function HTTPServer() {
   const http = useSelector((state) => state?.services?.http);
@@ -397,7 +406,7 @@ export default function HTTPServer() {
   };
 
   const handleHTTPServerChange = (event) => {
-    event.preventDefault()    
+    event.preventDefault();
     let usersData = {};
     if (usersTableData.length !== 0) {
       usersTableData.map(
@@ -406,17 +415,24 @@ export default function HTTPServer() {
     }
 
     const newHTTPServer = {
-      enabled: false,
-      shift_property_from_kepware: shiftFromKepware?.toString(),
-      shift_property_to_kepware: shiftToKepware?.toString(),
-      http: {
-        custom_port_enable: customPortEnable,
-        custom_port: customPort?.toString(),
+      ...http,
+      custom_port_enable: customPortEnable,
+      port: customPortEnable ? customPort : 8080,
+      enable_tls: false,
+      authentication: {
+        enabled: true,
+        username: "pippo",
+        password: "pluto",
       },
-      security: {
+      templates: {
+        only_read_tags_files: ["example.json"],
+        read_and_write_tags_files: [],
+      },
+      host: "0.0.0.0",
+      /* security: {
         user_auth: serverAuth,
         users: usersData,
-      },
+      }, */
     };
     handleRequestFeedback({
       vertical: "bottom",
@@ -537,7 +553,7 @@ export default function HTTPServer() {
                     }}
                     renderInput={(params) => (
                       <TextField
-                      title={http_gateway_read_desc}
+                        title={http_gateway_read_desc}
                         {...params}
                         label="IoT Gateways for HTTP server read only list"
                       />
@@ -558,7 +574,9 @@ export default function HTTPServer() {
                 </Button>
               </Stack>
 
-              <FormLabel title={http_remote_things_desc}>Remote Things configuration</FormLabel>
+              <FormLabel title={http_remote_things_desc}>
+                Remote Things configuration
+              </FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysFromTableData}
@@ -603,7 +621,7 @@ export default function HTTPServer() {
                     }}
                     renderInput={(params) => (
                       <TextField
-                      title={http_gateway_write_desc}
+                        title={http_gateway_write_desc}
                         {...params}
                         label="IoT Gateways for HTTP server read and write list"
                       />
@@ -624,7 +642,9 @@ export default function HTTPServer() {
                 </Button>
               </Stack>
 
-              <FormLabel title={http_remote_things_desc}>Remote Things configuration</FormLabel>
+              <FormLabel title={http_remote_things_desc}>
+                Remote Things configuration
+              </FormLabel>
 
               <CustomTable
                 tableData={iotGatewaysToTableData}
@@ -903,10 +923,12 @@ export default function HTTPServer() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={http_shift_fromkep_desc}>From Kepware:</FormLabel>
+                <FormLabel title={http_shift_fromkep_desc}>
+                  From Kepware:
+                </FormLabel>
 
                 <TextField
-                title={http_shift_fromkep_desc}
+                  title={http_shift_fromkep_desc}
                   type="text"
                   inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                   label="Shift from Kepware"
@@ -922,7 +944,7 @@ export default function HTTPServer() {
                 <FormLabel title={http_shift_tokep_desc}>To Kepware:</FormLabel>
 
                 <TextField
-                title={http_shift_tokep_desc}
+                  title={http_shift_tokep_desc}
                   type="number"
                   label="Shift to Kepware"
                   helperText="Shift HTTP nodes (in order to exclude roots) to Kepware Iot Gateway"
@@ -937,7 +959,9 @@ export default function HTTPServer() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={http_server_port_desc}>HTTP Server Port:</FormLabel>
+                <FormLabel title={http_server_port_desc}>
+                  HTTP Server Port:
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>Use Default Port - 4840</Typography>

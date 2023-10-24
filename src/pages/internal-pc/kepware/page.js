@@ -1015,6 +1015,7 @@ export default function Kepware() {
       }
     });
     const newKepware = {
+      ...kepware,
       trial: kepwareMode,
     };
     handleRequestFeedback({

@@ -145,6 +145,7 @@ export default function Sitemanager() {
       );
 
     const newSitemanager = {
+      ...sitemanager,
       domain: smeDomain,
       server: smeServer,
       onlybidir: onlybidir,
