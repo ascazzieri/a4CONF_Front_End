@@ -99,13 +99,33 @@ export default function Dashboard() {
       loaderContext[1](false); // Non è più in fase di caricamento
     }
   }, [dashboardStatus, loaderContext]);
+  
+  function hostValid(host) {
+    var specialCharacters = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\"|]/;
+    return specialCharacters.test(host);
+  }
 
   const handleHostNameChange = () => {
-    const newHostName = {
-      customer: hostName?.trim(),
-      industrial: hostName?.trim(),
-    };
+    if(hostValid(hostName) === true ){
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Error. The Host name has special character`,
+      }); 
+    }else{
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Host name added correctly`,
+      });
+      const newHostName = {
+        customer: hostName?.trim(),
+        industrial: hostName?.trim(),
+      };
     dispatch(updateHostName({ newHostName }));
+    }
   };
 
   const goodStatus = () => {

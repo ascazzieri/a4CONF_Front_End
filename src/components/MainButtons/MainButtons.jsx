@@ -215,6 +215,7 @@ const ApplyChanges = () => {
   const handleSendConf = async (event) => {
     loadingContext[1](true)
     const res = await send_conf(config)
+    console.log(res)
     if (res) {
       handleRequestFeedback({
         vertical: "bottom",
