@@ -148,7 +148,16 @@ export const loadiotgws = async (direction) => {
 };
 export const get_twx_gtws_enabled = async() => {
   try {
-    const res = await helper.fetchData("/iotgws/http/client/twx/endpoint", "GET");
+    const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/enabled", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+}
+export const get_twx_gtws_disabled = async() => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/disabled", "GET");
     verbose && console.log(res);
     return res;
   } catch (e) {
