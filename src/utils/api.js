@@ -149,6 +149,7 @@ export const loadiotgws = async (direction) => {
 export const get_twx_gtws_enabled = async() => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/enabled", "GET");
+
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -158,6 +159,7 @@ export const get_twx_gtws_enabled = async() => {
 export const get_twx_gtws_disabled = async() => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/disabled", "GET");
+
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -203,6 +205,43 @@ export const get_iot_gtws_http_server_enabled = async () => {
 export const get_iot_gtws_http_server_disabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/disabled", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_for_http_server_enabled_read = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/enabled/httpserver_from", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_for_http_server_disabled_read = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/disabled/httpserver_from", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const get_iot_gtws_for_http_server_enabled_write = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/enabled/httpserver_to", "GET");
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_for_http_server_disabled_write = async () => {
+  try {
+    const res = await helper.fetchData("/iotgw/http/client/disabled/httpserver_to", "GET");
     verbose && console.log(res);
     return res;
   } catch (e) {

@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateThingworx } from "../../../utils/redux/reducers";
 import {
   get_twx_gtws_enabled,
+  get_twx_gtws_disabled,
   get_iot_gtws_http_client_enabled,
   get_iot_gtws_http_client_disabled,
   enable_http_client_iot_gateway,
@@ -132,6 +133,7 @@ export default function Thingworx() {
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
   );
+
   useEffect(() => {
     setThingworxHost(thingworx?.host);
     setThingworxAppkey(thingworx?.appkey);
@@ -175,32 +177,26 @@ export default function Thingworx() {
       const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
       const agentConnectionInfo = await twx_connection_diagnostic();
       console.log("get IoT gateways");
-      if (
-        iotGatewaysEnabled &&
-        iotGatewaysDisabled &&
-        iotGatewaysEnabled?.length !== 0
-      ) {
-        setTWXIotGatewaysList(twxGatewaysEnabled);
-        setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-        setIotGatewaysList(iotGatewaysEnabled);
-        setIotGatewaysListDisabled(iotGatewaysDisabled);
-      } else if (
-        iotGatewaysEnabled &&
-        iotGatewaysDisabled &&
-        iotGatewaysEnabled?.length === 0
-      ) {
-        setTWXIotGatewaysList(twxGatewaysEnabled);
-        setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-        setIotGatewaysList(iotGatewaysEnabled);
-        setIotGatewaysListDisabled(iotGatewaysDisabled);
-      } else {
+
+      if (iotGatewaysEnabled?.length !== 0) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware IoT gateways loaded`,
+        });
+      } else if (iotGatewaysEnabled?.length === 0) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `An error occurred on Kepware IoT Gateway loading`,
+          message: `Kepware enabled IoT gateways not found`,
         });
       }
+      setTWXIotGatewaysList(twxGatewaysEnabled);
+      setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
+      setIotGatewaysList(iotGatewaysEnabled);
+      setIotGatewaysListDisabled(iotGatewaysDisabled);
       if (agentConnectionInfo) {
         setAgentDiagnosis(agentConnectionInfo);
       } else {
@@ -241,43 +237,26 @@ export default function Thingworx() {
     const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
     const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
     console.log("get IoT gateways");
-    if (
-      iotGatewaysEnabled &&
-      iotGatewaysDisabled &&
-      iotGatewaysEnabled?.length !== 0
-    ) {
-      setTWXIotGatewaysList(twxGatewaysEnabled);
-      setIotGatewaysList(iotGatewaysEnabled);
-      setTWXIotGatewaysList(twxGatewaysDisabled)
-      setIotGatewaysListDisabled(iotGatewaysDisabled);
+    if (iotGatewaysEnabled?.length !== 0) {
+
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (
-      iotGatewaysEnabled &&
-      iotGatewaysDisabled &&
-      iotGatewaysEnabled?.length === 0
-    ) {
-      setTWXIotGatewaysList(twxGatewaysEnabled);
-      setIotGatewaysList(iotGatewaysEnabled);
-      setIotGatewaysListDisabled(iotGatewaysDisabled);
+    } else if (iotGatewaysEnabled?.length === 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Kepware enabled IoT gateways not found`,
       });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware IoT Gateways loading`,
-      });
     }
+    setTWXIotGatewaysList(twxGatewaysEnabled);
+    setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
+    setIotGatewaysList(iotGatewaysEnabled);
+    setIotGatewaysListDisabled(iotGatewaysDisabled);
     loaderContext[1](false);
   };
 
@@ -303,34 +282,35 @@ export default function Thingworx() {
     }
     loaderContext[1](false);
   };
-  
-  /*const handleEnableIotGateway = async (name) => {
-    console.log(name)
+
+  const handleEnableIotGateway = async (name) => {
+    console.log(name);
     const result = await enable_http_client_iot_gateway(name);
-    console.log(result)
+    console.log(result);
     if (!result?.enabled) {
       return;
     }
-    console.log(iotGatewaysList)
-    const iot_gtw_enabled_list = [...iotGatewaysList]
-    iot_gtw_enabled_list.push(name)
-    setIotGatewaysList(new Set(iot_gtw_enabled_list))
+    console.log(iotGatewaysList);
+    const iot_gtw_enabled_list = [...iotGatewaysList];
+    iot_gtw_enabled_list.push(name);
+    setIotGatewaysList(new Set(iot_gtw_enabled_list));
 
-    const iot_gtw_disabled_list = [...setIotGatewaysListDisabled].filter((item) => item !== name)
-    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list))
-
+    const iot_gtw_disabled_list = [...setIotGatewaysListDisabled].filter(
+      (item) => item !== name
+    );
+    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list));
   };
 
   const handleDisableIotGateway = async (name) => {
-    console.log(name)
+    console.log(name);
     const result = await disable_http_client_iot_gateway(name);
-    console.log(result)
+    console.log(result);
     if (result?.enabled) {
       return;
     }
-    const iot_gtw_disabled_list = [...iotGatewaysListDisabled]
-    iot_gtw_disabled_list.push(name)
-    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list))
+    const iot_gtw_disabled_list = [...iotGatewaysListDisabled];
+    iot_gtw_disabled_list.push(name);
+    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list));
 
     const iot_gtw_enabled_list = [...iotGatewaysList].filter((item) => item !== name)
     setIotGatewaysList(new Set(iot_gtw_enabled_list))
@@ -568,18 +548,27 @@ export default function Thingworx() {
               <FormLabel title={thingworx_manage_iot_desc}>
                 Kepware IoT Gateways list for OPCUA Server with read only
                 permission
-              </FormLabel>     
+              </FormLabel>
+              <Divider />
+              <Grid
+                item
+                xs={2}
+                sm={6}
+                md={6}
+                style={{
+                  textAlign: "center",
+                  border: "2px inset white",
+                  padding: "5px 20px",
+                }}
+              >
+                <h3>Enable/Disable IoT Gateways for Thingworx</h3>
                 <Divider />
                 <Grid
-                  item
-                  xs={2}
-                  sm={6}
-                  md={6}
-                  style={{
-                    textAlign: "center",
-                    border: "2px inset white",
-                    padding: "5px 20px",
-                  }}
+                  container
+                  rowSpacing={3}
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{ p: 1 }}
                 >
                   <h3>Enable/Disable IoT Gateways for Thingworx</h3>
                   <Divider />
@@ -649,7 +638,9 @@ export default function Thingworx() {
                       </Table>
                     </TableContainer>
                   </Grid>
+
                 </Grid>
+              </Grid>
             </>
           )}
           {currentTab === 3 && (
