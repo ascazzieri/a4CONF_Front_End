@@ -4,12 +4,9 @@ import { updateThingworx } from "../../../utils/redux/reducers";
 import {
   get_twx_gtws_enabled,
   get_twx_gtws_disabled,
-  get_iot_gtws_http_client_enabled,
-  get_iot_gtws_http_client_disabled,
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
   twx_connection_diagnostic,
-  get_twx_gtws_disabled,
 } from "../../../utils/api";
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import BackButton from "../../../components/BackButton/BackButton";
@@ -125,10 +122,9 @@ export default function Thingworx() {
   const [thingworxHost, setThingworxHost] = useState(thingworx?.host);
   const [thingworxAppkey, setThingworxAppkey] = useState(thingworx?.appkey);
   const [twxIotGatewaysList, setTWXIotGatewaysList] = useState({});
-  const [twxIotGatewaysListDisabled, setTWXIotGatewaysListDisabled] = useState({});
-  const [iotGatewaysList, setIotGatewaysList] = useState();
-  const [iotGatewaysListDisabled, setIotGatewaysListDisabled] = useState();
-
+  const [twxIotGatewaysListDisabled, setTWXIotGatewaysListDisabled] = useState(
+    {}
+  );
   const [iotGateway, setIotGateway] = useState();
   const [thingsTableData, setThingsTableData] = useState(
     getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
@@ -173,19 +169,17 @@ export default function Thingworx() {
       loaderContext[1](true);
       const twxGatewaysEnabled = await get_twx_gtws_enabled();
       const twxGatewaysDisabled = await get_twx_gtws_disabled();
-      const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
-      const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
       const agentConnectionInfo = await twx_connection_diagnostic();
       console.log("get IoT gateways");
 
-      if (iotGatewaysEnabled?.length !== 0) {
+      if (twxGatewaysEnabled?.length !== 0) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "success",
           message: `Kepware IoT gateways loaded`,
         });
-      } else if (iotGatewaysEnabled?.length === 0) {
+      } else if (twxGatewaysEnabled?.length === 0) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -195,8 +189,6 @@ export default function Thingworx() {
       }
       setTWXIotGatewaysList(twxGatewaysEnabled);
       setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-      setIotGatewaysList(iotGatewaysEnabled);
-      setIotGatewaysListDisabled(iotGatewaysDisabled);
       if (agentConnectionInfo) {
         setAgentDiagnosis(agentConnectionInfo);
       } else {
@@ -217,9 +209,6 @@ export default function Thingworx() {
   const handleAppkeyChange = (event) => {
     setThingworxAppkey(event?.target?.value);
   };
-  const handleIotGatewaysChange = (event) => {
-    setIotGateway(event?.target?.value);
-  };
   const handleExpandableList = (event, name) => {
     const oldList = [...expandedList];
     if (oldList.includes(name)) {
@@ -234,18 +223,15 @@ export default function Thingworx() {
     loaderContext[1](true);
     const twxGatewaysEnabled = await get_twx_gtws_enabled();
     const twxGatewaysDisabled = await get_twx_gtws_disabled();
-    const iotGatewaysEnabled = await get_iot_gtws_http_client_enabled();
-    const iotGatewaysDisabled = await get_iot_gtws_http_client_disabled();
     console.log("get IoT gateways");
-    if (iotGatewaysEnabled?.length !== 0) {
-
+    if (twxGatewaysEnabled?.length !== 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (iotGatewaysEnabled?.length === 0) {
+    } else if (twxGatewaysEnabled?.length === 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -255,8 +241,6 @@ export default function Thingworx() {
     }
     setTWXIotGatewaysList(twxGatewaysEnabled);
     setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-    setIotGatewaysList(iotGatewaysEnabled);
-    setIotGatewaysListDisabled(iotGatewaysDisabled);
     loaderContext[1](false);
   };
 
@@ -285,65 +269,36 @@ export default function Thingworx() {
 
   const handleEnableIotGateway = async (name) => {
     console.log(name);
+    loaderContext[1](true)
     const result = await enable_http_client_iot_gateway(name);
+    loaderContext[1](false)
     console.log(result);
-    if (!result?.enabled) {
-      return;
-    }
-    console.log(iotGatewaysList);
-    const iot_gtw_enabled_list = [...iotGatewaysList];
-    iot_gtw_enabled_list.push(name);
-    setIotGatewaysList(new Set(iot_gtw_enabled_list));
-
-    const iot_gtw_disabled_list = [...setIotGatewaysListDisabled].filter(
-      (item) => item !== name
-    );
-    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list));
-  };
-
-  const handleDisableIotGateway = async (name) => {
-    console.log(name);
-    const result = await disable_http_client_iot_gateway(name);
-    console.log(result);
-    if (result?.enabled) {
-      return;
-    }
-    const iot_gtw_disabled_list = [...iotGatewaysListDisabled];
-    iot_gtw_disabled_list.push(name);
-    setIotGatewaysListDisabled(new Set(iot_gtw_disabled_list));
-
-    const iot_gtw_enabled_list = [...iotGatewaysList].filter((item) => item !== name)
-    setIotGatewaysList(new Set(iot_gtw_enabled_list))
-  };*/
- 
-
-  const handleEnableIotGateway = async (name) => {
-    console.log(name)
-    let iotGatewaDisabledList = undefined;
-    const result = await enable_http_client_iot_gateway(name);
-  console.log(result)
-    if (!result?.enabled) {
+    if (result?.enabled !== true) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occured. Cant't able IoT Gateway `,
+        message: `An error occured. Cant't enable IoT Gateway `,
       });
       return;
     }
-    iotGatewaDisabledList = { ...twxIotGatewaysListDisabled };
-   setTWXIotGatewaysList((prevData) => ({
+    console.log({ [`${name}`]: twxIotGatewaysListDisabled[`${name}`] });
+    setTWXIotGatewaysList((prevData) => ({
       ...prevData,
       [`${name}`]: twxIotGatewaysListDisabled[`${name}`],
     }));
-    delete iotGatewaDisabledList[`${name}`];
-    setTWXIotGatewaysList(iotGatewaDisabledList);
+    let iotGatewaDisabledListDisabled = { ...twxIotGatewaysListDisabled };
+    delete iotGatewaDisabledListDisabled[`${name}`];
+    setTWXIotGatewaysListDisabled(iotGatewaDisabledListDisabled);
+    
   };
 
   const handleDisableIotGateway = async (name) => {
     let iotGatewaList = undefined;
+    loaderContext[1](true)
     const result = await disable_http_client_iot_gateway(name);
-    if (result?.enabled) {
+    loaderContext[1](false)
+    if (result?.enabled !== false) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -352,11 +307,11 @@ export default function Thingworx() {
       });
       return;
     }
-    iotGatewaList = { ...twxIotGatewaysList };
     setTWXIotGatewaysListDisabled((prevData) => ({
       ...prevData,
       [`${name}`]: twxIotGatewaysList[`${name}`],
     }));
+    iotGatewaList = { ...twxIotGatewaysList };
     delete iotGatewaList[`${name}`];
     setTWXIotGatewaysList(iotGatewaList);
   };
@@ -562,6 +517,7 @@ export default function Thingworx() {
                 }}
               >
                 <h3>Enable/Disable IoT Gateways for Thingworx</h3>
+
                 <Divider />
                 <Grid
                   container
@@ -570,75 +526,59 @@ export default function Thingworx() {
                   alignItems="center"
                   sx={{ p: 1 }}
                 >
-                  <h3>Enable/Disable IoT Gateways for Thingworx</h3>
-                  <Divider />
-                  <Grid
-                    container
-                    rowSpacing={3}
-                    justifyContent="center"
-                    alignItems="center"
-                    sx={{ p: 1 }}
-                  >
-                    <TableContainer sx={{ height: 200}}>
-                      <Table
-                        stickyHeader
-                        aria-label="sticky table"
-                        size="small"
-                      >
-                        <TableBody>
-                          {iotGatewaysList &&
-                            Object.keys(twxIotGatewaysList)?.length !== 0 &&
-                            Object.keys(twxIotGatewaysList)
-                              ?.map((iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell align="center">
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Switch 
-                                        checked={true}
-                                        variant="contained"
-                                        color="secondary"
-                                        onChange={() => {
-                                          handleDisableIotGateway(
-                                            iotGatewayName
-                                          );
-                                        }}
-                                     />     
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                              {iotGatewaysListDisabled &&
-                           Object.keys(twxIotGatewaysListDisabled)?.length !== 0 &&
-                           Object.keys(twxIotGatewaysListDisabled)
-                              ?.map((iotGatewayName) => {
-                                return (
-                                  <TableRow hover key={iotGatewayName}>
-                                    <TableCell align="center">
-                                      {iotGatewayName}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                      <Switch 
-                                        checked={false}
-                                        variant="contained"
-                                        color="secondary"
-                                        onChange={() => {
-                                          handleEnableIotGateway(
-                                            iotGatewayName
-                                          );
-                                        }}
-                                     />     
-                                    </TableCell>
-                                  </TableRow>
-                                );
-                              })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </Grid>
-
+                  <TableContainer sx={{ height: 200 }}>
+                    <Table stickyHeader aria-label="sticky table" size="small">
+                      <TableBody>
+                        {twxIotGatewaysList &&
+                          Object.keys(twxIotGatewaysList)?.length !== 0 &&
+                          Object.keys(twxIotGatewaysList)?.map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell align="center">
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Switch
+                                      checked={true}
+                                      variant="contained"
+                                      color="secondary"
+                                      onChange={() => {
+                                        handleDisableIotGateway(iotGatewayName);
+                                      }}
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
+                        {twxIotGatewaysListDisabled &&
+                          Object.keys(twxIotGatewaysListDisabled)?.length !==
+                            0 &&
+                          Object.keys(twxIotGatewaysListDisabled)?.map(
+                            (iotGatewayName) => {
+                              return (
+                                <TableRow hover key={iotGatewayName}>
+                                  <TableCell align="center">
+                                    {iotGatewayName}
+                                  </TableCell>
+                                  <TableCell align="center">
+                                    <Switch
+                                      checked={false}
+                                      variant="contained"
+                                      color="secondary"
+                                      onChange={() => {
+                                        handleEnableIotGateway(iotGatewayName);
+                                      }}
+                                    />
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            }
+                          )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
               </Grid>
             </>

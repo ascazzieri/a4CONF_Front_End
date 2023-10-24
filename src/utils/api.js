@@ -159,7 +159,6 @@ export const get_twx_gtws_enabled = async() => {
 export const get_twx_gtws_disabled = async() => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/disabled", "GET");
-
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -338,7 +337,7 @@ export const disable_http_client_iot_gateway = async (name) => {
   try {
     verbose && console.log(name);
     const res = await helper.fetchData(
-      `/iotgw/http/client/disable&iotgw_name=${name}`,
+      `/iotgw/http/client/disable?iotgw_name=${name}`,
       "GET"
     );
     verbose && console.log(res);
