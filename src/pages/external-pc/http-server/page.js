@@ -18,6 +18,8 @@ import {
   get_iot_gtws_for_http_server_disabled_write,
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
+  enable_http_server_iot_gateway,
+  disable_http_server_iot_gateway
 } from "../../../utils/api";
 import {
   Autocomplete,
@@ -39,8 +41,6 @@ import {
   TableCell,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
-import BlurOffIcon from "@mui/icons-material/BlurOff";
-import BlurOnIcon from "@mui/icons-material/BlurOn";
 import {
   http_gateway_read_desc,
   http_gateway_write_desc,
@@ -83,19 +83,17 @@ export default function HTTPServer() {
     return arrayOfObjects;
   };
 
-  const [iotGatewaysFromList, setIotGatewaysFromList] = useState({});
+  const [iotGatewaysFromList, setIotGatewaysFromList] = useState([]);
   const [iotGatewaysFromListDisabled, setIotGatewaysFromListDisabled] =
-    useState({});
+    useState([]);
   const [iotGatewayFrom, setIotGatewayFrom] = useState();
 
   const [iotGatewaysFromTableData, setIotGatewaysFromTableData] = useState(
     getArrayOfObjectsHTTP(http?.iotgw?.from, "iot_gateway", "read only")
   );
 
-  const [iotGatewaysToList, setIotGatewaysToList] = useState({});
-  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
-    {}
-  );
+  const [iotGatewaysToList, setIotGatewaysToList] = useState([]);
+  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState([]);
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
@@ -290,25 +288,48 @@ export default function HTTPServer() {
   };
 
   const handleEnableIotGateway = async (name, permission) => {
-    const result = await enable_http_client_iot_gateway(name);
-
-    if (!result?.enabled) {
-      return;
-    }
     if (permission === "from") {
+      loaderContext[1](true);
+
+      const result = await enable_http_client_iot_gateway(name);
+      loaderContext[1](false);
+
+      if (result?.enabled !== true) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to enable IoT Gateway`,
+        });
+        return;
+      }
       let enabledIotGatewaysFromList =
         iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
       enabledIotGatewaysFromList.push(name);
-      setIotGatewaysFromList(...new Set(enabledIotGatewaysFromList));
+      setIotGatewaysFromList(Array.from(new Set(enabledIotGatewaysFromList)));
       let disabledIotGatewaysFromList = iotGatewaysFromListDisabled?.filter(
         (item) => item !== name
       );
       setIotGatewaysFromListDisabled(disabledIotGatewaysFromList);
     } else if (permission === "to") {
+      loaderContext[1](true);
+
+      const result = await enable_http_server_iot_gateway(name);
+      loaderContext[1](false);
+
+      if (result?.enabled !== true) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to enable IoT Gateway`,
+        });
+        return;
+      }
       let enabledIotGatewaysToList =
         iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
       enabledIotGatewaysToList.push(name);
-      setIotGatewaysToList(...new Set(enabledIotGatewaysToList));
+      setIotGatewaysToList(Array.from(new Set(enabledIotGatewaysToList)));
       let disabledIotGatewaysToList = iotGatewaysToListDisabled?.filter(
         (item) => item !== name
       );
@@ -322,32 +343,62 @@ export default function HTTPServer() {
    * @param {string} permission - The permission type ("from" or "to").
    * @returns {void}
    */
+  
   const handleDisableIotGateway = async (name, permission) => {
-    let iotGatewaList = undefined;
-    const result = await disable_http_client_iot_gateway(name);
-
-    if (result?.enabled) {
-      return;
-    }
     if (permission === "from") {
-      iotGatewaList = { ...iotGatewaysFromList };
-      setIotGatewaysFromListDisabled((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaList[`${name}`],
-      }));
+      loaderContext[1](true);
+      const result = await disable_http_client_iot_gateway(name);
+      loaderContext[1](false);
 
-      setIotGatewaysFromList(iotGatewaList);
+      if (result?.enabled !== false) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to disable IoT Gateway`,
+        });
+        return;
+      }
+      let disabledIotGatewaysFromList =
+        iotGatewaysFromListDisabled?.length !== 0
+          ? [...iotGatewaysFromListDisabled]
+          : [];
+      disabledIotGatewaysFromList.push(name);
+      setIotGatewaysFromListDisabled(
+        Array.from(new Set(disabledIotGatewaysFromList))
+      );
+      let enabledIotGatewaysFromList = iotGatewaysFromList?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysFromList(enabledIotGatewaysFromList);
     } else if (permission === "to") {
-      iotGatewaList = { ...iotGatewaysFromList };
-      setIotGatewaysToListDisabled((prevData) => ({
-        ...prevData,
-        [`${name}`]: iotGatewaList[`${name}`],
-      }));
+      loaderContext[1](true);
+      const result = await disable_http_server_iot_gateway(name);
+      loaderContext[1](false);
 
-      setIotGatewaysToList(iotGatewaList);
+      if (result?.enabled !== false) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to disable IoT Gateway`,
+        });
+        return;
+      }
+      let disabledIotGatewaysFromList =
+        iotGatewaysToListDisabled?.length !== 0
+          ? [...iotGatewaysToListDisabled]
+          : [];
+      disabledIotGatewaysFromList.push(name);
+      setIotGatewaysToListDisabled(
+        Array.from(new Set(disabledIotGatewaysFromList))
+      );
+      let enabledIotGatewaysToList = iotGatewaysToList?.filter(
+        (item) => item !== name
+      );
+      setIotGatewaysToList(enabledIotGatewaysToList);
     }
   };
-
   /**
    * This code snippet is a part of a larger function/component named `OPCServer`.
    * It is responsible for adding a new IoT gateway to the table data.
@@ -378,10 +429,16 @@ export default function HTTPServer() {
 
   const handleHTTPServerChange = (event) => {
     event.preventDefault();
+    const iot_gateway_from = iotGatewaysFromTableData?.map(
+      (item) => item?.iot_gateway
+    );
+    const iot_gateway_to = iotGatewaysToTableData?.map(
+      (item) => item?.iot_gateway
+    );
     let usersData = {};
     if (usersTableData.length !== 0) {
-      usersTableData.map(
-        (item, index) => (usersData[`${item?.ssid}`] = item?.password)
+      usersTableData?.map(
+        (item, index) => (usersData[`${item?.username}`] = item?.password)
       );
     }
 
@@ -394,6 +451,10 @@ export default function HTTPServer() {
         enabled: true,
         username: "pippo",
         password: "pluto",
+      },
+      iotgw: {
+        from: iot_gateway_from ? iot_gateway_from : [],
+        to: iot_gateway_to ? iot_gateway_to : [],
       },
       templates: {
         only_read_tags_files: ["example.json"],
@@ -661,7 +722,7 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleDisableIotGateway(iotGatewayName);
+                                      handleDisableIotGateway(iotGatewayName,"from");
                                     }}
                                   />
                                 </TableCell>
@@ -682,7 +743,7 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleEnableIotGateway(iotGatewayName);
+                                      handleEnableIotGateway(iotGatewayName,"from");
                                     }}
                                   />
                                 </TableCell>
@@ -741,7 +802,7 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleDisableIotGateway(iotGatewayName);
+                                      handleDisableIotGateway(iotGatewayName,"to");
                                     }}
                                   />
                                 </TableCell>
@@ -762,7 +823,7 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleEnableIotGateway(iotGatewayName);
+                                      handleEnableIotGateway(iotGatewayName,"to");
                                     }}
                                   />
                                 </TableCell>

@@ -1,4 +1,4 @@
-{
-  "HTTP_codesys_PLC_from_disabled": "http://127.0.0.1:48400",
-  "HTTP_codesys_HMI_from_disabled": "http://127.0.0.1:48400"
-}
+[
+  "HTTP_codesys_PLC_from_disabled",
+  "HTTP_codesys_HMI_from_disabled"
+]
