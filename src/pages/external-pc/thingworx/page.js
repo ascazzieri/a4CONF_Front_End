@@ -218,20 +218,42 @@ export default function Thingworx() {
       setExpandedList(oldList);
     }
   };
-
-  const handleIotGatewaysReloadChange = async () => {
+  const handleReloadEnabledIotGateway = async () => {
     loaderContext[1](true);
     const twxGatewaysEnabled = await get_twx_gtws_enabled();
-    const twxGatewaysDisabled = await get_twx_gtws_disabled();
     console.log("get IoT gateways");
-    if (twxGatewaysEnabled?.length !== 0) {
+    if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
         message: `Kepware IoT gateways loaded`,
       });
-    } else if (twxGatewaysEnabled?.length === 0) {
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Kepware enabled IoT gateways not found`,
+      });
+    }
+    setTWXIotGatewaysList(twxGatewaysEnabled);
+    loaderContext[1](false);
+  };
+
+  const handleIotGatewaysReloadChange = async () => {
+    loaderContext[1](true);
+    const twxGatewaysEnabled = await get_twx_gtws_enabled();
+    const twxGatewaysDisabled = await get_twx_gtws_disabled();
+    console.log("get IoT gateways");
+    if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Kepware IoT gateways loaded`,
+      });
+    } else {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -269,9 +291,9 @@ export default function Thingworx() {
 
   const handleEnableIotGateway = async (name) => {
     console.log(name);
-    loaderContext[1](true)
+    loaderContext[1](true);
     const result = await enable_http_client_iot_gateway(name);
-    loaderContext[1](false)
+    loaderContext[1](false);
     console.log(result);
     if (result?.enabled !== true) {
       handleRequestFeedback({
@@ -290,14 +312,13 @@ export default function Thingworx() {
     let iotGatewaDisabledListDisabled = { ...twxIotGatewaysListDisabled };
     delete iotGatewaDisabledListDisabled[`${name}`];
     setTWXIotGatewaysListDisabled(iotGatewaDisabledListDisabled);
-    
   };
 
   const handleDisableIotGateway = async (name) => {
     let iotGatewaList = undefined;
-    loaderContext[1](true)
+    loaderContext[1](true);
     const result = await disable_http_client_iot_gateway(name);
-    loaderContext[1](false)
+    loaderContext[1](false);
     if (result?.enabled !== false) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -473,7 +494,7 @@ export default function Thingworx() {
                   />
                 </FormControl>
                 <IconButton
-                  onClick={handleIotGatewaysReloadChange}
+                  onClick={handleReloadEnabledIotGateway}
                   aria-label="reload"
                   className="rotate-on-hover"
                 >
@@ -505,6 +526,13 @@ export default function Thingworx() {
                 permission
               </FormLabel>
               <Divider />
+              <Button
+                onClick={handleIotGatewaysReloadChange}
+                variant="outlined"
+                endIcon={<CachedIcon />}
+              >
+                Refresh
+              </Button>
               <Grid
                 item
                 xs={2}
@@ -526,7 +554,7 @@ export default function Thingworx() {
                   alignItems="center"
                   sx={{ p: 1 }}
                 >
-                  <TableContainer sx={{ height: 200 }}>
+                  <TableContainer>
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
                         {twxIotGatewaysList &&

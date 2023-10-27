@@ -113,8 +113,8 @@ export default function OPCServer() {
   const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
     []
   );
-  console.log(iotGatewaysToList)
-  console.log(iotGatewaysToListDisabled)
+  console.log(iotGatewaysToList);
+  console.log(iotGatewaysToListDisabled);
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
@@ -223,33 +223,29 @@ export default function OPCServer() {
       iotGateways = await get_iot_gtws_opcua_reading_writing_enabled();
     }
     console.log("get IoT gateways");
-    if (iotGateways && iotGateways?.length !== 0) {
+    if (iotGateways) {
       if (direction === "from") {
         setIotGatewaysFromList(iotGateways);
       } else if (direction === "to") {
         setIotGatewaysToList(iotGateways);
       }
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware IoT gateways loaded`,
-      });
-    } else if (iotGateways && !iotGateways?.length === 0) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Kepware IoT gateways not found`,
-      });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware IoT Gateways loading`,
-      });
+      if (iotGateways?.length !== 0) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware IoT gateways loaded`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Kepware IoT gateways not found`,
+        });
+      }
     }
+
     loaderContext[1](false);
   };
 

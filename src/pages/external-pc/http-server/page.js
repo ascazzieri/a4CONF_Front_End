@@ -19,7 +19,7 @@ import {
   enable_http_client_iot_gateway,
   disable_http_client_iot_gateway,
   enable_http_server_iot_gateway,
-  disable_http_server_iot_gateway
+  disable_http_server_iot_gateway,
 } from "../../../utils/api";
 import {
   Autocomplete,
@@ -48,8 +48,6 @@ import {
   http_remote_things_desc,
   http_security_desc,
   http_server_port_desc,
-  http_shift_fromkep_desc,
-  http_shift_tokep_desc,
 } from "../../../utils/titles";
 
 export default function HTTPServer() {
@@ -93,7 +91,9 @@ export default function HTTPServer() {
   );
 
   const [iotGatewaysToList, setIotGatewaysToList] = useState([]);
-  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState([]);
+  const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
+    []
+  );
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(
@@ -142,15 +142,9 @@ export default function HTTPServer() {
         await get_iot_gtws_for_http_server_disabled_write();
       console.log("get IoT gateways");
       if (
-        iotGatewaysFromEnabled &&
-        iotGatewaysToEnabled &&
-        Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-        Object.keys(iotGatewaysToEnabled).length !== 0
+        iotGatewaysFromEnabled?.length !== 0 ||
+        iotGatewaysToEnabled?.length !== 0
       ) {
-        setIotGatewaysFromList(iotGatewaysFromEnabled);
-        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -158,15 +152,9 @@ export default function HTTPServer() {
           message: `Kepware IoT gateways loaded`,
         });
       } else if (
-        iotGatewaysFromEnabled &&
-        iotGatewaysToEnabled &&
-        Object.keys(iotGatewaysFromEnabled).length === 0 &&
-        Object.keys(iotGatewaysToEnabled).length === 0
+        iotGatewaysFromEnabled?.length === 0 &&
+        iotGatewaysToEnabled?.length === 0
       ) {
-        setIotGatewaysFromList(iotGatewaysFromEnabled);
-        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -174,12 +162,10 @@ export default function HTTPServer() {
           message: `Kepware enabled IoT gateways not found`,
         });
       } else {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred during Kepware IoT Gateways loading`,
-        });
+        setIotGatewaysFromList(iotGatewaysFromEnabled);
+        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+        setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       }
       loaderContext[1](false);
     })();
@@ -203,33 +189,29 @@ export default function HTTPServer() {
       iotGateways = await get_iot_gtws_for_http_server_enabled_write();
     }
     console.log("get IoT gateways");
-    if (iotGateways && Object.keys(iotGateways).length !== 0) {
+    if (iotGateways) {
       if (direction === "from") {
         setIotGatewaysFromList(iotGateways);
       } else if (direction === "to") {
         setIotGatewaysToList(iotGateways);
       }
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware IoT gateways loaded`,
-      });
-    } else if (iotGateways && !Object.keys(iotGateways).length === 0) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Kepware IoT gateways not found`,
-      });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware IoT Gateways loading`,
-      });
+      if (iotGateways?.length !== 0) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware IoT gateways loaded`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Kepware IoT gateways not found`,
+        });
+      }
     }
+
     loaderContext[1](false);
   };
 
@@ -245,15 +227,9 @@ export default function HTTPServer() {
       await get_iot_gtws_for_http_server_disabled_write();
     console.log("get IoT gateways");
     if (
-      iotGatewaysFromEnabled &&
-      iotGatewaysToEnabled &&
-      Object.keys(iotGatewaysFromEnabled).length !== 0 &&
-      Object.keys(iotGatewaysToEnabled).length !== 0
+      iotGatewaysFromEnabled?.length !== 0 ||
+      iotGatewaysToEnabled?.length !== 0
     ) {
-      setIotGatewaysFromList(iotGatewaysFromEnabled);
-      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -261,10 +237,8 @@ export default function HTTPServer() {
         message: `Kepware IoT gateways loaded`,
       });
     } else if (
-      iotGatewaysFromEnabled &&
-      iotGatewaysToEnabled &&
-      Object.keys(iotGatewaysFromEnabled).length === 0 &&
-      Object.keys(iotGatewaysToEnabled).length === 0
+      iotGatewaysFromEnabled?.length === 0 &&
+      iotGatewaysToEnabled?.length === 0
     ) {
       setIotGatewaysFromList(iotGatewaysFromEnabled);
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
@@ -276,14 +250,11 @@ export default function HTTPServer() {
         severity: "error",
         message: `Kepware enabled IoT gateways not found`,
       });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware IoT Gateways loading`,
-      });
     }
+    setIotGatewaysFromList(iotGatewaysFromEnabled);
+    setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+    setIotGatewaysToList(iotGatewaysToEnabled);
+    setIotGatewaysToListDisabled(iotGatewaysToDisabled);
     loaderContext[1](false);
   };
 
@@ -343,7 +314,7 @@ export default function HTTPServer() {
    * @param {string} permission - The permission type ("from" or "to").
    * @returns {void}
    */
-  
+
   const handleDisableIotGateway = async (name, permission) => {
     if (permission === "from") {
       loaderContext[1](true);
@@ -578,8 +549,7 @@ export default function HTTPServer() {
                 <FormControl fullWidth>
                   <Autocomplete
                     disablePortal
-                    id="combo-box-demo"
-                    options={Object.keys(iotGatewaysFromList)}
+                    options={iotGatewaysFromList}
                     onChange={(event, newValue) => {
                       setIotGatewayFrom(newValue);
                     }}
@@ -631,7 +601,7 @@ export default function HTTPServer() {
                   <Autocomplete
                     disablePortal
                     id="combo-box-demo"
-                    options={Object.keys(iotGatewaysToList)}
+                    options={iotGatewaysToList}
                     onChange={(event, newValue) => {
                       setIotGatewayTo(newValue);
                     }}
@@ -722,7 +692,10 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleDisableIotGateway(iotGatewayName,"from");
+                                      handleDisableIotGateway(
+                                        iotGatewayName,
+                                        "from"
+                                      );
                                     }}
                                   />
                                 </TableCell>
@@ -743,7 +716,10 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleEnableIotGateway(iotGatewayName,"from");
+                                      handleEnableIotGateway(
+                                        iotGatewayName,
+                                        "from"
+                                      );
                                     }}
                                   />
                                 </TableCell>
@@ -802,7 +778,10 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleDisableIotGateway(iotGatewayName,"to");
+                                      handleDisableIotGateway(
+                                        iotGatewayName,
+                                        "to"
+                                      );
                                     }}
                                   />
                                 </TableCell>
@@ -823,7 +802,10 @@ export default function HTTPServer() {
                                     variant="contained"
                                     color="secondary"
                                     onChange={() => {
-                                      handleEnableIotGateway(iotGatewayName,"to");
+                                      handleEnableIotGateway(
+                                        iotGatewayName,
+                                        "to"
+                                      );
                                     }}
                                   />
                                 </TableCell>
