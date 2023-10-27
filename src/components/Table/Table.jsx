@@ -15,6 +15,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Delete, Edit, Add, FileDownload } from "@mui/icons-material";
+import { mapKeys } from "lodash";
 
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({
@@ -132,23 +133,23 @@ export const CreateNewAccountModal = ({
 
 const Table = (props) => {
   const { tableData, setTableData, columnsData, selectableObjectData } = props;
-
+  
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
   const handleCreateNewRow = (values) => {
     tableData.push(values);
     setTableData([...tableData]);
+    console.log(tableData)
   };
-
+ 
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
     if (!Object.keys(validationErrors).length) {
       // Crea una copia dell'array
       const updatedTableData = [...tableData];
-
+        
       // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;
-
       // Aggiorna lo stato con la nuova copia dell'array
       setTableData(updatedTableData);
 
@@ -174,7 +175,6 @@ const Table = (props) => {
     },
     [tableData]
   );
-
   const csvOptions = {
     fieldSeparator: ",",
     quoteStrings: '"',

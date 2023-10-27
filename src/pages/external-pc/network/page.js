@@ -615,7 +615,7 @@ export default function ExternalNetwork() {
                 <TextField
                   title={network_ipaddress_desc}
                   type="text"
-                  label="IP Address"
+                  label="IP Address / Subnet Mask"
                   helperText="Ip device address"
                   value={ipAddress || ""}
                   disabled={connection === "dhcp"}
