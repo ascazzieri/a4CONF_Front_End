@@ -14,7 +14,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import CachedIcon from "@mui/icons-material/Cached";
 import SimpleDialog from "@mui/material/Dialog";
-import { get_archive, send_archive , delete_archive_note} from "../../utils/api";
+import {
+  get_archive,
+  send_archive,
+  delete_archive_note,
+} from "../../utils/api";
 import { useEffect } from "react";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 
@@ -46,7 +50,7 @@ export default function Archive() {
     } else {
       (async () => {
         try {
-          console.log(newArchive)
+          console.log(newArchive);
           const response = await send_archive(newArchive);
           if (response === true) {
             handleRequestFeedback({
@@ -82,11 +86,11 @@ export default function Archive() {
 
   const archiveKeys = archive ? Object.keys(archive) : [];
   const archiveValues = archive ? Object.values(archive) : [];
-  const handleDelete = async(item) => {
-    console.log(item)
+  const handleDelete = async (item) => {
+    console.log(item);
     const newArchive = { ...archive };
-    const response = await delete_archive_note(item)
-    if(response){
+    const response = await delete_archive_note(item);
+    if (response) {
       delete newArchive[item];
       setArchive(newArchive);
       handleRequestFeedback({
@@ -95,7 +99,7 @@ export default function Archive() {
         severity: "success",
         message: `Archive item correctly deleted`,
       });
-    }else{
+    } else {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -103,8 +107,7 @@ export default function Archive() {
         message: `An error occurred on delete item`,
       });
     }
-    console.log(response)
-    
+    console.log(response);
   };
   const [mod, setMod] = useState(false);
   const handleModify = (item) => {
@@ -135,7 +138,7 @@ export default function Archive() {
             vertical: "bottom",
             horizontal: "right",
             severity: "success",
-            message: `archive configuration request OK`,
+            message: `Archive notes loaded correctly`,
           });
         } else {
           handleRequestFeedback({
@@ -146,7 +149,13 @@ export default function Archive() {
           });
         }
       } catch (err) {
-        console.log("Error occured when fetching books");
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on change archive configuration`,
+        });
+        console.error(err);
       }
     })();
   }, []);
@@ -248,8 +257,8 @@ export default function Archive() {
                 </Accordion>
               );
             })}
-          <SimpleDialog open={mod} onClose={closeMod} sx={{ padding: 10 }}>
-            <Card sx={{ padding: 10, margin: 1 }}>
+          <SimpleDialog open={mod} onClose={closeMod} sx={{ padding: 5 }}>
+            <Card sx={{ padding: 5, paddingTop: 2, margin: 1 }}>
               <h1>Modify Archive object</h1>
               <div>
                 <TextField
@@ -266,7 +275,7 @@ export default function Archive() {
                   fullWidth={true}
                   label="Content"
                   multiline
-                  rows={5}
+                  rows={7}
                   value={content}
                   onChange={(event) => {
                     setContent(event.target.value);
@@ -280,18 +289,18 @@ export default function Archive() {
                 alignItems="center"
                 style={{ width: "100%" }}
               >
-                <Button variant="contained" size="small" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="contained" size="small" onClick={handleClear}>
+                <Button variant="contained" onClick={handleClear}>
                   Clear
+                </Button>
+                <Button variant="contained" onClick={handleSave}>
+                  Save
                 </Button>
               </Stack>
             </Card>
           </SimpleDialog>
           <SimpleDialog open={open} onClose={handleClose} sx={{ padding: 5 }}>
-            <Card sx={{ padding: 5, margin: 1 }}>
-              <h1>Insert new Archive object</h1>
+            <Card sx={{ padding: 5, paddingTop: 2, margin: 1 }}>
+              <h1>Add new Archive object</h1>
               <div>
                 <TextField
                   fullWidth={true}
@@ -307,7 +316,7 @@ export default function Archive() {
                   fullWidth={true}
                   label="Content"
                   multiline
-                  rows={5}
+                  rows={7}
                   value={content}
                   onChange={(event) => {
                     setContent(event.target.value);

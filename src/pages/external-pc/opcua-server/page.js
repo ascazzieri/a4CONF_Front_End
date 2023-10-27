@@ -41,8 +41,6 @@ import {
   TableCell,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
-import BlurOffIcon from "@mui/icons-material/BlurOff";
-import BlurOnIcon from "@mui/icons-material/BlurOn";
 import {
   opcua_host_address_desc,
   opcua_iot_gateway_desc,

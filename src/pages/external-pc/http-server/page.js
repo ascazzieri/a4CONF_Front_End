@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateHTTPServer } from "../../../utils/redux/reducers";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import SaveButton from "../../../components/SaveButton/SaveButton";
-import { getArrayOfObjects } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import CustomTable from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { LoadingContext } from "../../../utils/context/Loading";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
+import { VisibilityOff, Visibility } from "@mui/icons-material";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import {
   get_iot_gtws_for_http_server_enabled_read,
@@ -39,6 +39,10 @@ import {
   Table,
   TableRow,
   TableCell,
+  InputAdornment,
+  OutlinedInput,
+  InputLabel,
+  FormHelperText,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import {
@@ -65,8 +69,15 @@ export default function HTTPServer() {
 
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
-    ? ["Expose Iot Gateway", "Manage Iot Gateways", "Port", "Security", "JSON"]
-    : ["Expose Iot Gateway", "Manage Iot Gateways", "Port", "Security"];
+    ? [
+        "Expose Iot Gateway",
+        "Manage Iot Gateways",
+        "Host",
+        "Port",
+        "Security",
+        "JSON",
+      ]
+    : ["Expose Iot Gateway", "Manage Iot Gateways", "Host", "Port", "Security"];
 
   const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -100,14 +111,21 @@ export default function HTTPServer() {
     getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
   );
   const [customPortEnable, setCustomPortEnable] = useState(
-    http?.http?.custom_port_enable
+    http?.custom_port_enable
   );
-  const [customPort, setCustomPort] = useState(http?.http?.custom_port);
+  const [customPort, setCustomPort] = useState(http?.port || 8080);
 
-  const [serverAuth, setServerAuth] = useState(http?.security?.user_auth);
-
-  const [usersTableData, setUsersTableData] = useState(
-    getArrayOfObjects(http?.security?.users, "username", "password")
+  const [hostBinding, setHostBinding] = useState(http?.host || "127.0.0.1");
+  const [showServerPassword, setShowServerPassword] = useState();
+  const [enableTLS, setEnableTLS] = useState(http?.enable_tls);
+  const [serverAuth, setServerAuth] = useState(
+    http?.authentication?.enabled || false
+  );
+  const [serverUsername, setServerUsername] = useState(
+    http?.authentication?.username
+  );
+  const [serverPassword, setServerPassword] = useState(
+    http?.authentication?.password
   );
 
   const handleRequestFeedback = (newState) => {
@@ -121,12 +139,13 @@ export default function HTTPServer() {
     setIotGatewaysToTableData(
       getArrayOfObjectsHTTP(http?.iotgw?.to, "iot_gateway", "read & write")
     );
-    setCustomPortEnable(http?.http?.custom_port_enable);
-    setCustomPort(http?.http?.custom_port);
-    setServerAuth(http?.security?.user_auth);
-    setUsersTableData(
-      getArrayOfObjects(http?.security?.users, "username", "password")
-    );
+    setCustomPortEnable(http?.custom_port_enable);
+    setCustomPort(http?.port || 8080);
+    setHostBinding(http?.host || "127.0.0.1");
+    setEnableTLS(http?.enable_tls);
+    setServerAuth(http?.authentication?.enabled || false);
+    setServerUsername(http?.authentication?.username);
+    setServerPassword(http?.authentication?.password);
   }, [http]);
 
   useEffect(() => {
@@ -179,6 +198,9 @@ export default function HTTPServer() {
   };
   const handleServerAuthChange = (event) => {
     setServerAuth(event?.target?.checked);
+  };
+  const handleEnableTLSChange = (event) => {
+    setEnableTLS(event?.target?.checked);
   };
   const handleIotGatewaysReloadChange = async (direction) => {
     loaderContext[1](true);
@@ -240,10 +262,6 @@ export default function HTTPServer() {
       iotGatewaysFromEnabled?.length === 0 &&
       iotGatewaysToEnabled?.length === 0
     ) {
-      setIotGatewaysFromList(iotGatewaysFromEnabled);
-      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-      setIotGatewaysToList(iotGatewaysToEnabled);
-      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -406,36 +424,22 @@ export default function HTTPServer() {
     const iot_gateway_to = iotGatewaysToTableData?.map(
       (item) => item?.iot_gateway
     );
-    let usersData = {};
-    if (usersTableData.length !== 0) {
-      usersTableData?.map(
-        (item, index) => (usersData[`${item?.username}`] = item?.password)
-      );
-    }
 
     const newHTTPServer = {
       ...http,
       custom_port_enable: customPortEnable,
       port: customPortEnable ? customPort : 8080,
-      enable_tls: false,
+      enable_tls: enableTLS,
       authentication: {
-        enabled: true,
-        username: "pippo",
-        password: "pluto",
+        enabled: serverAuth,
+        username: serverUsername,
+        password: serverPassword,
       },
       iotgw: {
         from: iot_gateway_from ? iot_gateway_from : [],
         to: iot_gateway_to ? iot_gateway_to : [],
       },
-      templates: {
-        only_read_tags_files: ["example.json"],
-        read_and_write_tags_files: [],
-      },
-      host: "0.0.0.0",
-      /* security: {
-        user_auth: serverAuth,
-        users: usersData,
-      }, */
+      host: hostBinding,
     };
     handleRequestFeedback({
       vertical: "bottom",
@@ -532,7 +536,7 @@ export default function HTTPServer() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && superUser && <JSONTree data={http} />}
+        {currentTab === 5 && superUser && <JSONTree data={http} />}
 
         <form onSubmit={handleHTTPServerChange}>
           {currentTab === 0 && (
@@ -819,8 +823,29 @@ export default function HTTPServer() {
               </Grid>
             </>
           )}
-
           {currentTab === 2 && (
+            <>
+              <FormControl fullWidth>
+                <Autocomplete
+                  disablePortal
+                  options={["127.0.0.1", "0.0.0.0"]}
+                  value={hostBinding || ""}
+                  onChange={(event, newValue) => {
+                    setHostBinding(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select HTTP host address binding"
+                    />
+                  )}
+                />
+              </FormControl>
+              <Divider />
+            </>
+          )}
+
+          {currentTab === 3 && (
             <>
               <FormControl fullWidth>
                 <FormLabel title={http_server_port_desc}>
@@ -840,7 +865,6 @@ export default function HTTPServer() {
                   <Typography>
                     Use Custom Port {customPortEnable ? customPort : ""}
                   </Typography>
-
                 </Stack>
               </FormControl>
 
@@ -866,8 +890,23 @@ export default function HTTPServer() {
             </>
           )}
 
-          {currentTab === 3 && (
+          {currentTab === 4 && (
             <>
+              <FormControl fullWidth>
+                <FormLabel>Enable/Disable Transport Layer Security:</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Disable TLS</Typography>
+
+                  <Switch
+                    checked={enableTLS}
+                    onChange={handleEnableTLSChange}
+                  />
+
+                  <Typography>Enable TLS</Typography>
+                </Stack>
+              </FormControl>
+              <Divider />
               <FormControl fullWidth>
                 <FormLabel title={http_security_desc}>
                   Enable/Disable HTTP Server authentication:
@@ -890,21 +929,68 @@ export default function HTTPServer() {
 
               {serverAuth && (
                 <>
-                  <FormLabel>Users:</FormLabel>
+                  <FormLabel>Authentication:</FormLabel>
+                  <FormControl fullWidth>
+                    <FormLabel>HTTP Server username</FormLabel>
 
-                  <Table
-                    tableData={usersTableData}
-                    setTableData={setUsersTableData}
-                    columnsData={usersColumnData}
-                  />
+                    <TextField
+                      type="text"
+                      label="Blob Url"
+                      helperText="Blob storage Url"
+                      value={serverUsername || ""}
+                      required={true}
+                      onChange={(event) => {
+                        setServerUsername(event?.target?.value);
+                      }}
+                    />
+                  </FormControl>
 
+                  <Divider />
+
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="outlined-adornment-password">
+                      HTTP Server Password*
+                    </InputLabel>
+                    <OutlinedInput
+                      type={showServerPassword ? "text" : "password"}
+                      required={true}
+                      value={serverPassword || ""}
+                      onChange={(event) => {
+                        setServerPassword(event?.target?.value);
+                      }}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onMouseDown={() =>
+                              setShowServerPassword((prevValue) => !prevValue)
+                            }
+                            onMouseUp={() =>
+                              setShowServerPassword((prevValue) => !prevValue)
+                            }
+                            edge="end"
+                          >
+                            {showServerPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Password"
+                    />
+                    <FormHelperText id="outlined-weight-helper-text">
+                      Unique athentication string for Microsoft Blob Storage
+                    </FormHelperText>
+                  </FormControl>
                   <Divider />
                 </>
               )}
             </>
           )}
 
-          {currentTab !== 1 && currentTab !== 4 && <SaveButton />}
+          {currentTab !== 1 && currentTab !== 5 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>

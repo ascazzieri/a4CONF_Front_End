@@ -384,7 +384,7 @@ export const disable_http_server_iot_gateway = async (name) => {
 export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
   try {
     const res = await helper.fetchData(
-      `/iotgw/http/client/disabled/opcua_to`,
+      `/iotgw/http/server/disabled/opcua_to`,
       "GET"
     );
     verbose && console.log(res);

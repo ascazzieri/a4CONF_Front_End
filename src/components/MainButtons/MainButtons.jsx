@@ -11,7 +11,7 @@ import Backdrop from "@mui/material/Backdrop";
 import SpeedDial from "@mui/material/SpeedDial";
 import SpeedDialAction from "@mui/material/SpeedDialAction";
 import CachedIcon from '@mui/icons-material/Cached';
-import { downloadJSON, send_conf } from "../../utils/api"
+import { downloadJSON } from "../../utils/api"
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { useContext } from "react";
@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { SuperUserContext } from "../../utils/context/SuperUser";
 
-const StyledButton = styled("div")`
+export const StyledButton = styled("div")`
   && {
     font-family: inherit;
     font-size: 20px;
@@ -204,52 +204,6 @@ const ReloadExternal = () => {
   );
 };
 
-const ApplyChanges = () => {
-  const config = useSelector((state) => state)
-  const snackBarContext = React.useContext(SnackbarContext);
-  const loadingContext = React.useContext(LoadingContext)
-
-  const handleRequestFeedback = (newState) => {
-    snackBarContext[1]({ ...newState, open: true });
-  };
-
-  const handleSendConf = async (event) => {
-    loadingContext[1](true)
-    const res = await send_conf(config)
-    console.log(res)
-    if (res) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: "Configuration sent to a4GATE",
-      });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: "Error on sending configuration to a4GATE",
-      });
-    }
-    loadingContext[1](false)
-  };
-  return (
-    <StyledButton onClick={handleSendConf}>
-      <div className="img-wrapper-1">
-        <div className="img-wrapper">
-          <img
-            src={applied_logo_cropped}
-            height="24"
-            width="24"
-            alt="applied main button icon"
-          />
-        </div>
-      </div>
-      <span>Apply</span>
-    </StyledButton>
-  );
-};
 const DownloadConfig = () => {
   const config = useSelector((state) => state)
   return (
@@ -377,13 +331,11 @@ export default function SpeedDialTooltipOpen() {
   const upperActions = superUser[0] ? [
     { icon: <ReloadInternal />, name: "reload PCA" },
     { icon: <ReloadExternal />, name: "reload PCB" },
-    { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
   ] : [
     { icon: <ReloadInternal />, name: "reload PCA" },
     { icon: <ReloadExternal />, name: "reload PCB" },
-    { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
     { icon: <AdminEl />, name: "admin elevation" },

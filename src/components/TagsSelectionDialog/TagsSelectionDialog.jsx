@@ -97,17 +97,26 @@ export default function MaxWidthDialog(props) {
             provider === "matrix" ? samplingNumber : null, //scan rate for matrix 
             finalTagList
         );
-        if (response?.iotgw && response?.time && response?.thing_name)
+        let result = ""
+        if (event?.target?.name === "twa") {
+            result = "Thingworx";
+        } else if (event?.target?.name === "opcua_from") {
+            result = "OPCUA (Reading)";
+        } else if (event?.target?.name === "opcua_to") {
+            result = "OPCUA (Read and Write)";
+        } else if (event?.target?.name === "http_from") {
+            result = "HTTP (Read)";
+        } else if (event?.target?.name === "http_to") {
+            result = "HTTP (Read and Write)";
+        } else if (event?.target?.name === "matrix") {
+            result = "Matrix";
+        }
+        if (response?.iotgw && response?.time)
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "success",
-                message: `IoT gateway ${response.iotgw} of device: ${device} for ${provider === "twa"
-                    ? "Thingworx"
-                    : provider === "opcua_from"
-                        ? "OPCUA (reading)"
-                        : "OPCUA (writing)"
-                    } has been created in ${response.time} s`,
+                message: `IoT gateway ${response.iotgw} of device: ${device} for ${result} has been created in ${response.time} s`,
             });
         else {
             handleRequestFeedback({

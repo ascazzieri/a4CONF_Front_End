@@ -70,7 +70,17 @@ import { styled } from "@mui/material/styles";
 
 import { JSONTree } from "react-json-tree";
 import { useEffect } from "react";
-import { kepware_channels_desc, kepware_device_desc, kepware_devicenumber_desc, kepware_gate_desc, kepware_gateway_row_desc, kepware_licence_desc, kepware_machine_serial_desc, kepware_project_desc, kepware_runtime_desc } from "../../../utils/titles";
+import {
+  kepware_channels_desc,
+  kepware_device_desc,
+  kepware_devicenumber_desc,
+  kepware_gate_desc,
+  kepware_gateway_row_desc,
+  kepware_licence_desc,
+  kepware_machine_serial_desc,
+  kepware_project_desc,
+  kepware_runtime_desc,
+} from "../../../utils/titles";
 
 const buildRows = (data) => {
   let channelsData = [];
@@ -167,7 +177,6 @@ const Row = (props) => {
 
     updatedDevice.endpoint = value;
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
-    console.log(updatedRowData);
     setRowData(updatedRowData);
   };
   const handleFolderChange = (event) => {
@@ -273,6 +282,7 @@ const Row = (props) => {
     setRowData(updatedRowData);
   };
   const handleCreate = async (event, device) => {
+    console.log(event?.target?.name);
     console.log(device);
     if (
       event?.target?.name === "twa" &&
@@ -297,7 +307,7 @@ const Row = (props) => {
     }
     let endpoint = "";
     if (event?.target?.name !== "matrix") {
-      if (!device?.endpoint.includes("rt_")) {
+      if (!device?.endpoint?.includes("rt_")) {
         endpoint = `rt_${device?.endpoint}`;
       } else {
         endpoint = device?.endpoint;
@@ -361,20 +371,26 @@ const Row = (props) => {
           : null, //sampling number for matrix
         []
       );
-      if (response?.iotgw && response?.time && response?.thing_name)
+      let result = "";
+      if (event?.target?.name === "twa") {
+        result = "Thingworx";
+      } else if (event?.target?.name === "opcua_from") {
+        result = "OPCUA (Reading)";
+      } else if (event?.target?.name === "opcua_to") {
+        result = "OPCUA (Read and Write)";
+      } else if (event?.target?.name === "http_from") {
+        result = "HTTP (Read)";
+      } else if (event?.target?.name === "http_to") {
+        result = "HTTP (Read and Write)";
+      } else if (event?.target?.name === "matrix") {
+        result = "Matrix";
+      }
+      if (response?.iotgw && response?.time)
         handleButtonClickFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "success",
-          message: `IoT gateway ${response.iotgw} of device: ${
-            device?.name
-          } for ${
-            event?.target?.name === "twa"
-              ? "Thingworx"
-              : event?.target?.name === "opcua_from"
-              ? "OPCUA (reading)"
-              : "OPCUA (writing)"
-          } has been created in ${response.time} s`,
+          message: `IoT gateway ${response.iotgw} of device: ${device?.name} for ${result} has been created in ${response.time} s`,
         });
       else {
         handleButtonClickFeedback({
@@ -674,7 +690,7 @@ const Row = (props) => {
                               <Button
                                 onClick={(event) => handleCreate(event, device)}
                                 variant="contained"
-                                name="opcua_from"
+                                name="http_from"
                               >
                                 Create
                               </Button>
@@ -683,7 +699,7 @@ const Row = (props) => {
                               <Button
                                 onClick={(event) => handleCreate(event, device)}
                                 variant="contained"
-                                name="opcua_to"
+                                name="http_to"
                               >
                                 Create
                               </Button>
@@ -1076,7 +1092,6 @@ export default function Kepware() {
       const jsonObject = JSON.parse(fileContent);
       if (jsonObject?.crashed_page) {
         delete jsonObject.crashed_page;
-        console.log("crashed");
       }
       const res = await uploadKepwareProject(jsonObject);
       if (res) {
@@ -1157,14 +1172,13 @@ export default function Kepware() {
       });
       return;
     }
-    console.log(thingNames);
     // Creare una copia dell'array scanException
     const thing_names = [...thingNames];
 
     // Verificare se l'elemento è già presente nell'array
     if (
-      !thing_names.includes(machineSerial.trim()) &&
-      !thing_names.includes(`rt_${machineSerial.trim()}`)
+      !thing_names?.includes(machineSerial.trim()) &&
+      !thing_names?.includes(`rt_${machineSerial.trim()}`)
     ) {
       // Se non è presente, aggiungerlo
       if (machineSerial.includes("rt_")) {
@@ -1182,9 +1196,9 @@ export default function Kepware() {
   };
   const handleExpandableListChannels = (event, name) => {
     const oldList = [...expandedListChannels];
-    if (oldList.includes(name)) {
+    if (oldList?.includes(name)) {
       setExpandedListChannels((prevItems) =>
-        prevItems.filter((item) => item !== name)
+        prevItems?.filter((item) => item !== name)
       );
     } else {
       oldList.push(name);
@@ -1193,7 +1207,7 @@ export default function Kepware() {
   };
   const handleExpandableListDevices = (event, channel, device) => {
     const oldList = [...expandedListDevices];
-    if (oldList.includes(`${channel}.${device}`)) {
+    if (oldList?.includes(`${channel}.${device}`)) {
       setExpandedListDevices((prevItems) =>
         prevItems.filter((item) => item !== `${channel}.${device}`)
       );
@@ -1274,7 +1288,9 @@ export default function Kepware() {
                 spacing={2}
               >
                 <FormControl fullWidth>
-                  <FormLabel title={kepware_machine_serial_desc}>Machine serial number:</FormLabel>
+                  <FormLabel title={kepware_machine_serial_desc}>
+                    Machine serial number:
+                  </FormLabel>
 
                   <TextField
                     title={kepware_machine_serial_desc}
@@ -1336,8 +1352,12 @@ export default function Kepware() {
                           Refresh
                         </Button>
                       </TableCell>
-                      <TableCell title={kepware_channels_desc}>KEPWARE CHANNELS</TableCell>
-                      <TableCell title={kepware_devicenumber_desc}>DEVICE NUMBER</TableCell>
+                      <TableCell title={kepware_channels_desc}>
+                        KEPWARE CHANNELS
+                      </TableCell>
+                      <TableCell title={kepware_devicenumber_desc}>
+                        DEVICE NUMBER
+                      </TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody title={kepware_gateway_row_desc}>
@@ -1363,7 +1383,9 @@ export default function Kepware() {
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
-                <Typography title={kepware_project_desc}>Kepware project:</Typography>
+                <Typography title={kepware_project_desc}>
+                  Kepware project:
+                </Typography>
 
                 <Stack
                   direction="row"
@@ -1390,7 +1412,9 @@ export default function Kepware() {
 
               <Divider />
 
-              <Typography title={kepware_runtime_desc}>Kepware runtime:</Typography>
+              <Typography title={kepware_runtime_desc}>
+                Kepware runtime:
+              </Typography>
 
               <Button variant="contained" onClick={handleReloadKepwareRuntime}>
                 Reload
@@ -1403,12 +1427,14 @@ export default function Kepware() {
           {currentTab === 3 && (
             <>
               <FormControl fullWidth>
-                <FormLabel title={kepware_licence_desc}>Kepware mode:</FormLabel>
+                <FormLabel title={kepware_licence_desc}>
+                  Kepware mode:
+                </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Typography>License mode</Typography>
 
-                  <Switch 
+                  <Switch
                     title={kepware_licence_desc}
                     checked={kepwareMode}
                     onChange={handleKepwareModeChange}
@@ -1423,7 +1449,9 @@ export default function Kepware() {
           {currentTab === 4 && (
             <>
               <Box sx={{ flexGrow: 1 }}>
-                <FormLabel title={kepware_device_desc}>Kepware channels info:</FormLabel>
+                <FormLabel title={kepware_device_desc}>
+                  Kepware channels info:
+                </FormLabel>
 
                 <Box component="main" sx={{ p: 3 }}>
                   <Typography
@@ -1461,14 +1489,14 @@ export default function Kepware() {
                                 primary={channel}
                                 key={Math.random()}
                               />
-                              {expandedListChannels.includes(channel) ? (
+                              {expandedListChannels?.includes(channel) ? (
                                 <ExpandLess />
                               ) : (
                                 <ExpandMore />
                               )}
                             </ListItemButton>
                             <Collapse
-                              in={expandedListChannels.includes(channel)}
+                              in={expandedListChannels?.includes(channel)}
                               timeout="auto"
                               unmountOnExit
                               key={Math.random()}
@@ -1493,7 +1521,7 @@ export default function Kepware() {
                                           <DvrIcon />
                                         </ListItemIcon>
                                         <ListItemText primary={deviceName} />
-                                        {expandedListDevices.includes(
+                                        {expandedListDevices?.includes(
                                           `${channel}.${deviceName}`
                                         ) ? (
                                           <ExpandLess />
@@ -1502,7 +1530,7 @@ export default function Kepware() {
                                         )}
                                       </ListItemButton>
                                       <Collapse
-                                        in={expandedListDevices.includes(
+                                        in={expandedListDevices?.includes(
                                           `${channel}.${deviceName}`
                                         )}
                                         timeout="auto"
@@ -1522,7 +1550,10 @@ export default function Kepware() {
                                               <DataArrayIcon />
                                             </ListItemIcon>
                                             <ListItemText
-                                              primary={`Driver type: ${insideItem?.driver_type || "Unknow driver"} `}
+                                              primary={`Driver type: ${
+                                                insideItem?.driver_type ||
+                                                "Unknow driver"
+                                              } `}
                                             />
                                           </ListItemButton>
                                           <ListItemButton sx={{ pl: 10 }}>

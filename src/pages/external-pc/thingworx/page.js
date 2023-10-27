@@ -62,8 +62,6 @@ import {
   VisibilityOff,
   CloudUploadOutlined,
 } from "@mui/icons-material";
-import BlurOffIcon from "@mui/icons-material/BlurOff";
-import BlurOnIcon from "@mui/icons-material/BlurOn";
 import {
   thingworx_agent_desc,
   thingworx_appkey_desc,
@@ -72,7 +70,6 @@ import {
   thingworx_manage_iot_desc,
   thingworx_remote_config_desc,
 } from "../../../utils/titles";
-import { Card } from "antd";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -108,12 +105,14 @@ export default function Thingworx() {
     let arrayFromThingsObject = [];
 
     if (thingObject && Object.keys(thingObject).length !== 0) {
-      Object.keys(thingObject).map((item, index) =>
-        arrayFromThingsObject.push({
-          iot_gateway: Object.keys(thingObject[`${item}`])[0],
-          thing_name: item,
-        })
-      );
+      Object.keys(thingObject).forEach((item) => {
+        Object.keys(thingObject[item]).forEach((subitem) => {
+          arrayFromThingsObject.push({
+            iot_gateway: subitem,
+            thing_name: item,
+          });
+        });
+      });
     }
 
     return arrayFromThingsObject;
@@ -290,7 +289,6 @@ export default function Thingworx() {
   };
 
   const handleEnableIotGateway = async (name) => {
-    console.log(name);
     loaderContext[1](true);
     const result = await enable_http_client_iot_gateway(name);
     loaderContext[1](false);
@@ -341,12 +339,17 @@ export default function Thingworx() {
 
     let thingsTWX = {};
 
-    thingsTableData.map(
-      (item, index) =>
-        (thingsTWX[`${item?.thing_name}`] = {
+    thingsTableData.forEach((item, index) => {
+      if (Object.keys(thingsTWX).includes(item?.thing_name)) {
+        thingsTWX[item?.thing_name][
+          item?.iot_gateway
+        ] = `fromkepware/${item?.thing_name}`;
+      } else {
+        thingsTWX[`${item?.thing_name}`] = {
           [`${item?.iot_gateway}`]: `fromkepware/${item?.thing_name}`,
-        })
-    );
+        };
+      }
+    });
 
     const newThingworx = {
       ...thingworx,
@@ -395,14 +398,32 @@ export default function Thingworx() {
   }
 
   const handleAddRemoteThing = () => {
-    setThingsTableData((prevData) => [
-      ...prevData,
-      {
-        iot_gateway: iotGateway,
-        thing_name: extractThingName(twxIotGatewaysList[`${iotGateway}`]),
-      },
-    ]);
+    const thingsData =
+      thingsTableData?.length !== 0 ? [...thingsTableData] : [];
+    const duplicateIndex = thingsData?.findIndex(
+      (item) =>
+        item?.iot_gateway === iotGateway &&
+        item?.thing_name ===
+          extractThingName(twxIotGatewaysList[`${iotGateway}`])
+    );
+    if (duplicateIndex === -1) {
+      setThingsTableData((prevData) => [
+        ...prevData,
+        {
+          iot_gateway: iotGateway,
+          thing_name: extractThingName(twxIotGatewaysList[`${iotGateway}`]),
+        },
+      ]);
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `There is already a duplicate item inside table below`,
+      });
+    }
   };
+  console.log(thingsTableData);
 
   return (
     <ErrorCacher>
@@ -480,7 +501,7 @@ export default function Thingworx() {
                 <FormControl fullWidth>
                   <Autocomplete
                     disablePortal
-                    options={Object.keys(twxIotGatewaysList)}
+                    options={Object.keys(twxIotGatewaysList) || {}}
                     onChange={(event, newValue) => {
                       setIotGateway(newValue);
                     }}

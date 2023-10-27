@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import classes from "./Menu.module.css"
+import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -27,7 +28,12 @@ import CallSplitIcon from '@mui/icons-material/CallSplit';
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
 import MainButtons from "../MainButtons/MainButtons"
+import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { SuperUserContext } from "../../utils/context/SuperUser"
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
+import { LoadingContext } from "../../utils/context/Loading";
+import { send_conf } from "../../utils/api";
+import styled_normal from 'styled-components';
 
 const drawerWidth = 240;
 
@@ -107,6 +113,108 @@ const floatingLogo = {
   animationIterationCount: 'infinite',
   animationDirection: 'alternate',
 }
+const ApplyButton = styled_normal.button`
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+  padding-block: 0.5rem;
+  padding-inline: 1.25rem;
+  background-color: rgb(0, 107, 179);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffff;
+  gap: 10px;
+  font-weight: bold;
+  border: 3px solid #ffffff4d;
+  outline: none;
+  overflow: hidden;
+  font-size: 15px;
+  
+  &:hover {
+    transform: scale(1.05);
+    border-color: #fff9;
+  }
+  
+  .icon {
+    width: 24px;
+    height: 24px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  &:hover .icon {
+    transform: translate(4px);
+  }
+  
+  &::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100%;
+    background-image: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.8),
+      rgba(255, 255, 255, 0) 70%
+    );
+    top: 0;
+    left: -100px;
+    opacity: 0.6;
+  }
+  
+  &:hover::before {
+    animation: shine 1.5s ease-out infinite;
+  }
+`;
+const ApplyChanges = () => {
+  const config = useSelector((state) => state)
+  const snackBarContext = React.useContext(SnackbarContext);
+  const loadingContext = React.useContext(LoadingContext)
+
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
+
+  const handleSendConf = async (event) => {
+    loadingContext[1](true)
+    const res = await send_conf(config)
+    console.log(res)
+    if (res) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: "Configuration sent to a4GATE",
+      });
+    } else {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: "Error on sending configuration to a4GATE",
+      });
+    }
+    loadingContext[1](false)
+  };
+  return (
+    <ApplyButton onClick={handleSendConf}>
+      <div className="img-wrapper-1">
+        <div className="img-wrapper">
+          <img
+            src={applied_logo_cropped}
+            height="24"
+            width="24"
+            alt="applied main button icon"
+            className="icon"
+          />
+        </div>
+      </div>
+      <span>Apply</span>
+    </ApplyButton>
+  );
+};
+
 
 
 
@@ -170,7 +278,7 @@ export default function MiniDrawer(props) {
                 fontFamily="monserrat"
                 fontStyle="italic"
               >
-                Innovation Makers
+                {mainSectionTitle}
               </Title>
             </Grid>
             <Grid item xs={6} sx={{ justifyContent: "center" }}>
@@ -189,7 +297,8 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={2} sx={{ textAlign: "center" }}>
-              {mainSectionTitle}
+              <ApplyChanges />
+
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
 
@@ -199,7 +308,7 @@ export default function MiniDrawer(props) {
           </Grid>
         </Toolbar>
       </AppBar>
-      {!currentURLArray.includes('login')  &&  !currentURLArray.includes('register') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
+      {!currentURLArray.includes('login') && !currentURLArray.includes('register') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
         <DrawerHeader style={{ justifyContent: 'center' }}>
           <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
         </DrawerHeader>
