@@ -589,6 +589,16 @@ export const send_archive = async (data) => {
     console.error(e);
   }
 };
+export const delete_archive_note = async(title) => {
+  try{
+    const title_param = `?title=${title}`;
+    const res = await helper.fetchData("/conf/archive/del"+title_param , "GET");
+    verbose && console.log(res);
+    return res;
+  }catch(e){
+    console.error(e);
+  }
+} 
 export const send_login = async (data) => {
   try {
     verbose && console.log(data)

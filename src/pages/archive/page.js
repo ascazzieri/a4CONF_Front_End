@@ -14,7 +14,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import CachedIcon from "@mui/icons-material/Cached";
 import SimpleDialog from "@mui/material/Dialog";
-import { get_archive, send_archive } from "../../utils/api";
+import { get_archive, send_archive , delete_archive_note} from "../../utils/api";
 import { useEffect } from "react";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 
@@ -82,11 +82,29 @@ export default function Archive() {
 
   const archiveKeys = archive ? Object.keys(archive) : [];
   const archiveValues = archive ? Object.values(archive) : [];
-  const handleDelete = (item) => {
+  const handleDelete = async(item) => {
+    console.log(item)
     const newArchive = { ...archive };
-    delete newArchive[item];
-
-    setArchive(newArchive);
+    const response = await delete_archive_note(item)
+    if(response){
+      delete newArchive[item];
+      setArchive(newArchive);
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Archive item correctly deleted`,
+      });
+    }else{
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on delete item`,
+      });
+    }
+    console.log(response)
+    
   };
   const [mod, setMod] = useState(false);
   const handleModify = (item) => {
@@ -236,7 +254,6 @@ export default function Archive() {
               <div>
                 <TextField
                   fullWidth={true}
-                  id="outlined-textarea"
                   label="Title"
                   value={title}
                   onChange={(event) => {
@@ -247,8 +264,9 @@ export default function Archive() {
                 <Divider />
                 <TextField
                   fullWidth={true}
-                  id="outlined-texterea"
                   label="Content"
+                  multiline
+                  rows={5}
                   value={content}
                   onChange={(event) => {
                     setContent(event.target.value);
@@ -277,7 +295,6 @@ export default function Archive() {
               <div>
                 <TextField
                   fullWidth={true}
-                  id="outlined-textarea"
                   label="Title"
                   value={title}
                   onChange={(event) => {
@@ -288,7 +305,6 @@ export default function Archive() {
                 <Divider />
                 <TextField
                   fullWidth={true}
-                  id="outlined-texterea"
                   label="Content"
                   multiline
                   rows={5}
