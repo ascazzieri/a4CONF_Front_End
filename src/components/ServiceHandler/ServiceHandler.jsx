@@ -85,7 +85,7 @@ export default function ServiceHandler() {
           }
         }
       };
-
+ console.log(body)
     loaderContext[1](true);
 
     try {

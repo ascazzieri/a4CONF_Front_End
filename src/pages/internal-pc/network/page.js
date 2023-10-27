@@ -280,7 +280,7 @@ export default function InternalNetwork() {
       accessorKey: "subnet",
       header: "Subnet",
       enableColumnOrdering: true,
-      enableEditing: false, //disable editing on this column
+      enableEditing: true, //disable editing on this column
       enableSorting: true,
     },
     {
@@ -339,7 +339,7 @@ export default function InternalNetwork() {
 
                 <TextField
                   type="text"
-                  label="IP Address"
+                  label="IP Address / Subnet Mask"
                   helperText="Ip device address"
                   value={ipAddress || ""}
                   disabled={connection === "dhcp"}

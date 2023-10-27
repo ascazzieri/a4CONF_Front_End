@@ -36,11 +36,6 @@ export default function Archive() {
       newArchive[title] = content;
       if (oldArchive) delete newArchive[oldArchive];
     }
-    const postArchive = {
-      title: title,
-      content: content,
-    };
-
     if (title.trim() === "" || content.trim() === "") {
       handleRequestFeedback({
         vertical: "bottom",
@@ -52,7 +47,7 @@ export default function Archive() {
       (async () => {
         try {
           setArchive(newArchive);
-          const response = await send_archive({ postArchive });
+          const response = await send_archive({ newArchive });
           if (response === true) {
             handleRequestFeedback({
               vertical: "bottom",
