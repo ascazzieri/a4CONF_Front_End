@@ -161,12 +161,12 @@ export default function HTTPServer() {
           severity: "error",
           message: `Kepware enabled IoT gateways not found`,
         });
-      } else {
-        setIotGatewaysFromList(iotGatewaysFromEnabled);
-        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-        setIotGatewaysToList(iotGatewaysToEnabled);
-        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
       }
+      setIotGatewaysFromList(iotGatewaysFromEnabled);
+      setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+      setIotGatewaysToList(iotGatewaysToEnabled);
+      setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+
       loaderContext[1](false);
     })();
   }, []);
@@ -828,15 +828,19 @@ export default function HTTPServer() {
                 </FormLabel>
 
                 <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Use Default Port - 4840</Typography>
+                  <Typography>
+                    Use Default Port {customPortEnable ? "" : 8080}
+                  </Typography>
 
                   <Switch
                     title={http_server_port_desc}
                     checked={customPortEnable}
                     onChange={handleCustomPortEnableChange}
                   />
+                  <Typography>
+                    Use Custom Port {customPortEnable ? customPort : ""}
+                  </Typography>
 
-                  <Typography>Use Custom Port</Typography>
                 </Stack>
               </FormControl>
 

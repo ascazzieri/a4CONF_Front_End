@@ -45,8 +45,8 @@ export default function FTP() {
 
   const getArrayOfObjects = (data, key1, key2) => {
     let arrayOfObjects = [];
-    if (data && data.length !== 0) {
-      data.forEach((item, index) => {
+    if (data && data?.length !== 0) {
+      data?.forEach((item, index) => {
         const file =
           Object.keys(item)?.length !== 0 ? Object.keys(item)[0] : "";
         const folder = item[file];
@@ -61,20 +61,23 @@ export default function FTP() {
   };
 
   //Server
-  const [serverIP, setServerIP] = useState(ftp?.server?.ip_address);
-  const [serverType, setServerType] = useState(ftp?.server?.type);
+  const [serverIP, setServerIP] = useState(ftp?.server?.ip_address || "");
+  const [serverType, setServerType] = useState(ftp?.server?.type || "standard");
   const [customPortEnable, setCustomPortEnable] = useState(
     ftp?.server?.custom_port
   );
   const [serverPort, setServerPort] = useState(ftp?.server?.port);
-  const [maxConnection, setMaxConnection] = useState(ftp?.server?.max_cons);
+  const [maxConnection, setMaxConnection] = useState(
+    ftp?.server?.max_cons || 25
+  );
   const [maxConnectionPerIP, setMaxConnectionPerIP] = useState(
-    ftp?.server?.max_cons_per_ip
+    ftp?.server?.max_cons_per_ip || 5
   );
 
   //Users
-  const [usersTableData, setUsersTableData] = useState(ftp?.server?.users);
-
+  const [usersTableData, setUsersTableData] = useState(
+    ftp?.server?.users || []
+  );
   //File timestamp
   const [addTimestamp, setAddTimestamp] = useState(
     ftp?.file_timestamp?.add_timestamp_to_filename
@@ -85,19 +88,19 @@ export default function FTP() {
 
   //Blob settings
   const [blobTableData, setBlobTableData] = useState(
-    getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder")
+    getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder") || []
   );
 
   //Update React states
   useEffect(() => {
-    setServerIP(ftp?.server?.ip_address);
-    setServerType(ftp?.server?.type);
+    setServerIP(ftp?.server?.ip_address || "");
+    setServerType(ftp?.server?.type || "standard");
     setCustomPortEnable(ftp?.server?.custom_port);
     setServerPort(ftp?.server?.port);
     setMaxConnection(ftp?.server?.max_cons);
     setMaxConnectionPerIP(ftp?.server?.max_cons_per_ip);
     setBlobTableData(
-      getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder")
+      getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder") || []
     );
   }, [ftp]);
 

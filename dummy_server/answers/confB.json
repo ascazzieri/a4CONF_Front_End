@@ -460,34 +460,19 @@
     "http": {
       "enabled": false,
       "running": true,
-      "file_from_kepware": "from_kepware.csv.simulate",
-      "file_to_kepware": "to_kepware.csv",
-      "shift_property_from_kepware": "0",
-      "shift_property_to_kepware": "0",
-
-      "security": {
-        "tls": false,
-        "cert_file": "server.crt.pem",
-        "key_file": "server.key.pem",
-        "user_auth": false,
-
-        "users": {
-          "pippo": "pippo",
-          "pluto": "pluto"
-        }
+      "port":8080,
+      "authentication": {
+        "enabled": true,
+        "username": "pippo",
+        "password": "pluto"
       },
+      "enable_tls": false,
+      "host": "0.0.0.0",
 
-      "http": {
-        "custom_port_enable": false,
-        "custom_port": 4841,
-        "http_port": 48400
-      },
       "iotgw": {
         "from": ["from1", "from2", "from3"],
         "to": ["to1", "to2", "to3"]
-      },
-      "server_name": "OPC-UA-SERVER",
-      "namespace": "A4Gate"
+      }
     }
   }
 }

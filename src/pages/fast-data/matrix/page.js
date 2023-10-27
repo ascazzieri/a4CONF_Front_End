@@ -2,21 +2,23 @@ import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateFastData } from "../../../utils/redux/reducers";
+import Button from "@mui/material/Button";
 import JsonEditorComponent from "../../../components/JsonEditor/JsonEditor";
+import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  FormLabel,
+  Autocomplete,
+  FormControl,
+  TextField,
+  Stack,
+  Divider,
+} from "@mui/material";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
-import Stack from "@mui/material/Stack";
-import Item from "antd/es/list/Item";
-import Button from "@mui/material/Button";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import BackButton from "../../../components/BackButton/BackButton";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import SaveButton from "../../../components/SaveButton/SaveButton";
-import { Container, Typography } from "@mui/material";
+import { Container } from "@mui/material";
 import { Fragment } from "react";
 
 const dummy_matrix = [
@@ -172,6 +174,7 @@ export default function Matrix() {
   const [matrixDataManagement, setMatrixDataManagement] = useState(
     matrix?.matrix_data_managment || []
   );
+  const [currentMatrixId, setCurrentMatrixId] = useState();
 
   console.log(matrixDataManagement);
 
@@ -181,23 +184,23 @@ export default function Matrix() {
   }, [matrix]);
 
   const handleItemChange = (jsonItem) => {
-    if (matrixDataManagement?.length === 0) {
-      setMatrixDataManagement([jsonItem]);
+    const oldMatrixManagement =
+      matrixDataManagement?.length !== 0 ? [...matrixDataManagement] : [];
+    const newItemIndex = oldMatrixManagement?.findIndex(
+      (item) => item?.id === jsonItem?.id
+    );
+    if (newItemIndex !== -1) {
+      oldMatrixManagement[newItemIndex] = jsonItem;
     } else {
-      const existingObjectIndex = matrixDataManagement.findIndex(
-        (obj) => obj?.id === jsonItem?.id
-      );
-      if (existingObjectIndex !== -1) {
-        const updatedMatrixData = [...matrixDataManagement];
-        updatedMatrixData[existingObjectIndex] = jsonItem;
-        setMatrixDataManagement(updatedMatrixData);
-      } else {
-        setMatrixDataManagement((prevMatrixData) => [
-          ...prevMatrixData,
-          jsonItem,
-        ]);
-      }
+      oldMatrixManagement.push(jsonItem);
     }
+    setMatrixDataManagement(oldMatrixManagement);
+  };
+  const handleDeleteItem = () => {
+    const newMatrixDataManagement = matrixDataManagement?.filter(
+      (item) => item?.id !== currentMatrixId
+    );
+    setMatrixDataManagement(newMatrixDataManagement);
   };
 
   const handleMatrixChange = (e) => {
@@ -360,6 +363,35 @@ export default function Matrix() {
         <form onSubmit={handleMatrixChange}>
           {currentTab === 0 && (
             <>
+              <FormLabel>Remove matrix item</FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    options={matrixDataManagement?.map((item) => item?.id)}
+                    onChange={(event, newValue) => {
+                      setCurrentMatrixId(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField {...params} label="Matrix ID elements" />
+                    )}
+                  />
+                </FormControl>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={handleDeleteItem}
+                >
+                  Delete
+                </Button>
+              </Stack>
+              <Divider />
               {matrixDataManagement &&
                 matrixDataManagement.length !== 0 &&
                 matrixDataManagement.map((item, index) => {

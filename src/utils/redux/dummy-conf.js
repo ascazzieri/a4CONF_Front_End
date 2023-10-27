@@ -89,36 +89,10 @@ let dummy_config = {
       },
     },
     http: {
-      enabled: null,
-      running: null,
-      file_from_kepware: null,
-      file_to_kepware: null,
-      shift_property_from_kepware: null,
-      shift_property_to_kepware: null,
-
-      security: {
-        tls: null,
-        cert_file: null,
-        key_file: null,
-        user_auth: null,
-
-        users: {
-          pippo: null,
-          pluto: null,
-        },
-      },
-
-      http: {
-        custom_port_enable: null,
-        custom_port: null,
-        http_port: null,
-      },
-      iotgw: {
-        from: null,
-        to: null,
-      },
-      server_name: null,
-      namespace: null,
+      port: null,
+      authentication: null,
+      enable_tls: null,
+      host: null,
     },
     fastdata: {
       enabled: null,

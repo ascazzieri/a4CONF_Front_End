@@ -17,6 +17,7 @@ import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { SuperUserContext } from "../../utils/context/SuperUser";
 
 const StyledButton = styled("div")`
   && {
@@ -147,9 +148,9 @@ const ReloadInternal = () => {
   }
   return (
     <StyledButton>
-      <div className="img-wrapper-1">
+      <div className="img-wrapper-1" onClick={handleInternalReload}>
         <div className="img-wrapper">
-          <CachedIcon onClick={handleInternalReload} className="reload-icon" color="primary" />
+          <CachedIcon className="reload-icon" color="primary" />
         </div>
       </div>
       <span>ReloadA</span>
@@ -193,9 +194,9 @@ const ReloadExternal = () => {
   }
   return (
     <StyledButton>
-      <div className="img-wrapper-1">
+      <div className="img-wrapper-1" onClick={handleExternalReload}>
         <div className="img-wrapper">
-          <CachedIcon onClick={handleExternalReload} className="reload-icon" color="primary" />
+          <CachedIcon className="reload-icon" color="primary" />
         </div>
       </div>
       <span>ReloadB</span>
@@ -356,7 +357,7 @@ const AdminEl = () => {
     <StyledButton onClick={() => handleClick()}>
       <div className="img-wrapper-1">
         <div className="img-wrapper">
-          <AdminPanelSettingsIcon  sx={{fontSize:25}} className="admin-icon" color="primary" />
+          <AdminPanelSettingsIcon sx={{ fontSize: 25 }} className="admin-icon" color="primary" />
         </div>
       </div>
       <span>Admin</span>
@@ -369,17 +370,23 @@ export default function SpeedDialTooltipOpen() {
   /*   const [openBottom, setOpenBottom] = React.useState(false); */
   const handleOpenUpper = () => setOpenUpper(true);
   const handleCloseUpper = () => setOpenUpper(false);
+  const superUser = useContext(SuperUserContext)
   /*   const handleOpenBottom = () => setOpenBottom(true);
     const handleCloseBottom = () => setOpenBottom(false); */
 
-  const upperActions = [
+  const upperActions = superUser[0] ? [
+    { icon: <ReloadInternal />, name: "reload PCA" },
+    { icon: <ReloadExternal />, name: "reload PCB" },
+    { icon: <ApplyChanges />, name: "send to a4GATE" },
+    { icon: <DownloadConfig />, name: "download JSON" },
+    { icon: <UploadConfig />, name: "upload JSON" },
+  ] : [
     { icon: <ReloadInternal />, name: "reload PCA" },
     { icon: <ReloadExternal />, name: "reload PCB" },
     { icon: <ApplyChanges />, name: "send to a4GATE" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
     { icon: <AdminEl />, name: "admin elevation" },
-    /*  { icon: <Checklist />, name: "modified data list" }, */
   ];
 
   return (

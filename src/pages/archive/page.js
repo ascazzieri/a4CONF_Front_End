@@ -46,8 +46,8 @@ export default function Archive() {
     } else {
       (async () => {
         try {
-          setArchive(newArchive);
-          const response = await send_archive({ newArchive });
+          console.log(newArchive)
+          const response = await send_archive(newArchive);
           if (response === true) {
             handleRequestFeedback({
               vertical: "bottom",
@@ -67,6 +67,7 @@ export default function Archive() {
           console.log("Error occured when fetching archive elements");
         }
       })();
+      setArchive(newArchive);
       setTitle("");
       setContent("");
       setOpen(false);
