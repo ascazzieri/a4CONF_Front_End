@@ -111,11 +111,8 @@ const jsonSlice = createSlice({
       };
     },
     updateFirewallEnable(state, action) {
-      const newFirewallEnabled = { firewall_enabled: action.payload };
-      state.system.network.customer = deepMerge(
-        ...state.system.network.customer,
-        newFirewallEnabled
-      );
+      const newFirewallEnabled = action.payload;
+      state.system.network.customer = _.merge(state.system.network.customer , newFirewallEnabled);
     },
     updateSitemanager(state, action) {
       const newSitemanager = action.payload;

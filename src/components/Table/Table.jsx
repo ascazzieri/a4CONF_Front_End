@@ -1,5 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useContext } from "react";
 import { MaterialReactTable } from "material-react-table";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { ExportToCsv } from "export-to-csv";
 import {
   Box,
@@ -16,7 +17,7 @@ import {
 } from "@mui/material";
 import { Delete, Edit, Add, FileDownload } from "@mui/icons-material";
 import { mapKeys } from "lodash";
-
+import { verifyIP, verifyIPCIDR } from "../../utils/utils";
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({
   open,
@@ -26,17 +27,34 @@ export const CreateNewAccountModal = ({
   selectableObjectData,
 }) => {
   const [values, setValues] = useState(() =>
-    columns.reduce((acc, column) => {
+    columns?.reduce((acc, column) => {
       acc[column.accessorKey ?? ""] = "";
       return acc;
     }, {})
   );
+  
+
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
 
   const handleSubmit = () => {
-    // put your validation logic here
-    console.log(values);
-    onSubmit(values);
-    onClose();
+    console.log(values.subnet);
+    if (
+      verifyIPCIDR(values.subnet) === false ||
+      verifyIP(values.gateway) === null
+    ){
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `ip address not valid`,
+      });
+    }else{
+      onSubmit(values);
+      onClose();
+    }
   };
 
   let MenuItemIterator = [];
@@ -52,9 +70,7 @@ export const CreateNewAccountModal = ({
     selectableObjectData &&
     selectableObjectData?.internal_key === undefined
   ) {
-    selectableObjectData.data.map((item, index) =>
-      MenuItemIterator.push(item)
-    );
+    selectableObjectData.data.map((item, index) => MenuItemIterator.push(item));
   }
 
   return (
@@ -136,28 +152,44 @@ const Table = (props) => {
   
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
-
+  
   const handleCreateNewRow = (values) => {
     tableData.push(values);
     setTableData([...tableData]);
-    console.log(tableData)
+    console.log(tableData);
   };
- 
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
+
     if (!Object.keys(validationErrors).length) {
       // Crea una copia dell'array
       const updatedTableData = [...tableData];
-        
-      // Assegna il nuovo valore all'elemento specifico
+      if (
+        verifyIPCIDR(values.subnet) === false ||
+        verifyIP(values.gateway) === null
+      ){
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `ip address not valid`,
+        });
+      }else{
+        // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;
       // Aggiorna lo stato con la nuova copia dell'array
       setTableData(updatedTableData);
 
       // Invia/receive le chiamate API qui, quindi refetch o aggiorna i dati della tabella locale per il re-render
       exitEditingMode(); // Richiesto per uscire dalla modalità di modifica e chiudere la modale di modifica
+      }
+      
     }
   };
-
+  
   const handleCancelRowEdits = () => {
     setValidationErrors({});
   };
@@ -170,7 +202,7 @@ const Table = (props) => {
         return;
       } */
       //send api delete request here, then refetch or update local table data for re-render
-      tableData.splice(row.index, 1);
+      tableData?.splice(row.index, 1);
       setTableData([...tableData]);
     },
     [tableData]
@@ -188,7 +220,7 @@ const Table = (props) => {
   const csvExporter = new ExportToCsv(csvOptions);
 
   const handleExportData = () => {
-    csvExporter.generateCsv(tableData);
+    csvExporter?.generateCsv(tableData);
   };
   return (
     <div style={{ marginTop: 15, marginBottom: 15 }}>
@@ -215,20 +247,24 @@ const Table = (props) => {
             <Button onClick={() => setCreateModalOpen(true)}>
               <Add />
             </Button>
-            {tableData && Object.keys(tableData).length !== 0 && <Button
-              color="primary"
-              //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
-              onClick={handleExportData}
-              startIcon={<FileDownload />}
-              variant="contained"
-            >
-              Export Table Data
-            </Button>}
-
+            {tableData && Object.keys(tableData).length !== 0 && (
+              <Button
+                color="primary"
+                //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
+                onClick={handleExportData}
+                startIcon={<FileDownload />}
+                variant="contained"
+              >
+                Export Table Data
+              </Button>
+            )}
           </Box>
         )}
         renderRowActions={({ row, table }) => (
-          <Box sx={{ display: "flex", gap: "1rem" }} style={{ justifyContent: 'center' }}>
+          <Box
+            sx={{ display: "flex", gap: "1rem" }}
+            style={{ justifyContent: "center" }}
+          >
             <Tooltip arrow placement="left" title="Edit">
               <IconButton onClick={() => table.setEditingRow(row)}>
                 <Edit />

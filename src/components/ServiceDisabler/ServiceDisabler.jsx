@@ -13,6 +13,7 @@ import {
     updateHTTPServer,
     updateFastData,
     updateExternalPC,
+    updateFirewallEnable
 } from "../../utils/redux/reducers";
 import { Typography } from "@mui/material";
 import { service_reboot_data, service_status_desc } from "../../utils/titles";
@@ -96,7 +97,7 @@ export default function ServiceDisabler() {
         const checked = event?.target?.checked
         if (serviceName === "network") {
             setFirewallEnabled(checked)
-            dispatch(updateSitemanager({ enabled: checked }));
+            dispatch(updateFirewallEnable({ firewall_enabled: checked }));
         }
         else if (serviceName === "sitemanager") {
             setSitemanagerEnabled(checked)
