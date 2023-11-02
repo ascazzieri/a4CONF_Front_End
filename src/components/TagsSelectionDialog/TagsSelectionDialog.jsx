@@ -11,7 +11,7 @@ import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { createiotgw } from '../../utils/api';
 
 export default function MaxWidthDialog(props) {
-    const { open, setOpen, deviceName, provider, endPoint, folder, publishRate, scanRate, samplingTime, samplingNumberStartIndex, samplingNumber, tags } = props
+    const { open, setOpen, deviceName, provider, endPoint, machine_ID, folder, publishRate, scanRate, samplingTime, samplingNumberStartIndex, samplingNumber, tags } = props
     const channel = Object.keys(deviceName)?.toString()
     const device = deviceName[channel]
     const [iotGatewayCart, setIotGatewayCart] = useState([])
@@ -88,13 +88,14 @@ export default function MaxWidthDialog(props) {
             channel,
             device,
             endPoint,
+            provider === "matrix" ? machine_ID : null, //folder for matrix
             provider === "matrix" ? folder : null, //folder for matrix
             provider === "matrix" ? publishRate : null, //publish rate for matrix
             provider === "matrix" ? scanRate : null, //scan rate for matrix 
 
-            provider === "matrix" ? samplingTime : null, //folder for matrix
-            provider === "matrix" ? samplingNumberStartIndex : null, //publish rate for matrix
-            provider === "matrix" ? samplingNumber : null, //scan rate for matrix 
+            provider === "matrix" ? samplingTime : null, //sampling time for matrix
+            provider === "matrix" ? samplingNumberStartIndex : null, //sampling time start index for matrix
+            provider === "matrix" ? samplingNumber : null, //sampling number for matrix 
             finalTagList
         );
         let result = ""
@@ -137,7 +138,7 @@ export default function MaxWidthDialog(props) {
                 open={open}
                 onClose={handleClose}
             >
-                <DialogTitle>Tags browse for channel: {channel}, device: {device} {endPoint ? `with endpoint: ${endPoint}` : ""}</DialogTitle>
+                <DialogTitle>Tags browse for channel: {channel}, device: {device}{provider === 'twa' && `with endpoint: ${endPoint}`}{provider === "matrix" && `, machine id: ${machine_ID}, blob folder: ${folder}`} </DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Choose which data you want to import from channel's device to IoT Gateway

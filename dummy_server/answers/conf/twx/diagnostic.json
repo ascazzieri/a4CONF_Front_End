@@ -1,83 +1,52 @@
 {
-  "TW_is_connected": true,
-  "appkey_NOT_set": false,
-  "server_NOT_set": false,
-  "server_name_dns_resolve": true,
-  "server_ip_reachable": true,
-  "connection_error": "Problem",
-  "Thingworx_Configuration": {
-    "Tunneling: ": false,
-    "Pipe Count: ": 1,
-    "Block Size: ": 81920,
-    "Max Message Size: ": "1000000 byte",
-    "Duty Cycle Period: ": "120 s",
-    "Queue Size: ": 1000,
-    "Min Threads: ": 4,
-    "Duty Cycle Connected Percentage: ": 100,
-    "Connection Timeout: ": "10000 ms",
-    "Uri: ": "wss://dataroom-qa.cloud.thingworx.com:443/Thingworx/WS",
-    "Ignore SSL: ": true,
-    "Proxy": {
-      "Proxy Port: ": 0
-    },
-    "Reconnect Interval: ": "60 s",
-    "Idle Ping Rate: ": "45 s",
-    "Ping timeout: ": "10000 ms",
-    "Max Threads: ": 10,
-    "Thread Timeout: ": "10000 ms",
-    "Max File Size: ": 800000000
-  },
-  "Bound_Thing_Properties": [
-    {
-      "rt_N_8178_V2": {
-        "TW_Bound_Properties": 2494,
-        "Ingestion_Properties": 2494,
-        "Pending_Updates": 0
+  "thingworx": {
+      "diagnostic": {
+          "TW_is_connected": true,
+          "Error_Message": "",
+          "Thingworx_Configuration": {
+              "Tunneling_": false,
+              "Pipe_Count_": 1,
+              "Block_Size_": 81920,
+              "Max_Message_Size_": "1000000 byte",
+              "Duty_Cycle_Period_": "120 s",
+              "Queue_Size_": 1000,
+              "Min_Threads_": 4,
+              "Duty_Cycle_Connected_Percentage_": 100,
+              "Connection_Timeout_": "10000 ms",
+              "Uri_": "wss://development.iotdataroom.com:443/Thingworx/WS",
+              "Ignore_SSL_": true,
+              "Proxy": {
+                  "Proxy_Port_": 0
+              },
+              "Reconnect_Interval_": "60 s",
+              "Idle_Ping_Rate_": "45 s",
+              "Ping_timeout_": "10000 ms",
+              "Max_Threads_": 10,
+              "Thread_Timeout_": "10000 ms",
+              "Max_File_Size_": 800000000
+          },
+          "Bound_Thing_Properties": [
+              {
+                  "A4Gate_pippo": {
+                      "TW_Bound_Properties": 0,
+                      "Ingestion_Properties": 32,
+                      "Pending_Updates": 0
+                  }
+              },
+              {
+                  "rt_testFede": {
+                      "TW_Bound_Properties": 99,
+                      "Ingestion_Properties": 60,
+                      "Pending_Updates": 6
+                  }
+              }
+          ],
+          "Agent_version": "2.9",
+          "MQTT_is_connected": true,
+          "server_name_dns_resolve": true,
+          "server_ip_reachable": true,
+          "connection_error": "not_found",
+          "reason": "not_found"
       }
-    },
-    {
-      "A4Gate_A207020000_0014": {
-        "TW_Bound_Properties": 25,
-        "Ingestion_Properties": 0,
-        "Pending_Updates": 0
-      }
-    },
-    {
-      "rt_G0011012": {
-        "TW_Bound_Properties": 294,
-        "Ingestion_Properties": 288,
-        "Pending_Updates": 0
-      }
-    },
-    {
-      "rt_test_N_8186": {
-        "TW_Bound_Properties": 173,
-        "Ingestion_Properties": 167,
-        "Pending_Updates": 0
-      }
-    },
-    {
-      "rt_51725V0": {
-        "TW_Bound_Properties": 65,
-        "Ingestion_Properties": 59,
-        "Pending_Updates": 0
-      }
-    },
-    {
-      "rt_54271O0": {
-        "TW_Bound_Properties": 41,
-        "Ingestion_Properties": 35,
-        "Pending_Updates": 0
-      }
-    },
-    {
-      "rt_G068": {
-        "TW_Bound_Properties": 39,
-        "Ingestion_Properties": 33,
-        "Pending_Updates": 0
-      }
-    }
-  ],
-  "Agent_version": "2.9",
-  "MQTT_is_connected": true
+  }
 }

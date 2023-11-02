@@ -59,6 +59,7 @@ export const createiotgw = async (
   channel,
   device,
   thingName,
+  machine_id,
   blob_folder,
   scan_rate,
   publish_rate,
@@ -74,7 +75,7 @@ export const createiotgw = async (
         channe: channel,
         device: device,
         thingName: thingName,
-        machine_id: blob_folder,
+        machine_id: machine_id,
         folder: blob_folder,
         scane_rate: scan_rate,
         publish_rate: publish_rate,
@@ -97,7 +98,7 @@ export const createiotgw = async (
         "&thing_name=" +
         thingName +
         "&machine_id=" +
-        blob_folder +
+        machine_id +
         "&folder=" +
         blob_folder +
         "&sampling_time=" +
@@ -146,25 +147,31 @@ export const loadiotgws = async (direction) => {
     console.error(e);
   }
 };
-export const get_twx_gtws_enabled = async() => {
+export const get_twx_gtws_enabled = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/enabled", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/twx/endpoint/enabled",
+      "GET"
+    );
 
     verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
   }
-}
-export const get_twx_gtws_disabled = async() => {
+};
+export const get_twx_gtws_disabled = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/twx/endpoint/disabled", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/twx/endpoint/disabled",
+      "GET"
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
   }
-}
+};
 export const get_iot_gtws_http_client_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/enabled", "GET");
@@ -212,7 +219,10 @@ export const get_iot_gtws_http_server_disabled = async () => {
 };
 export const get_iot_gtws_for_http_server_enabled_read = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/enabled/httpserver_from", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/enabled/httpserver_from",
+      "GET"
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -221,7 +231,10 @@ export const get_iot_gtws_for_http_server_enabled_read = async () => {
 };
 export const get_iot_gtws_for_http_server_disabled_read = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/disabled/httpserver_from", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/disabled/httpserver_from",
+      "GET"
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -231,7 +244,10 @@ export const get_iot_gtws_for_http_server_disabled_read = async () => {
 
 export const get_iot_gtws_for_http_server_enabled_write = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/enabled/httpserver_to", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/enabled/httpserver_to",
+      "GET"
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -240,7 +256,10 @@ export const get_iot_gtws_for_http_server_enabled_write = async () => {
 };
 export const get_iot_gtws_for_http_server_disabled_write = async () => {
   try {
-    const res = await helper.fetchData("/iotgw/http/client/disabled/httpserver_to", "GET");
+    const res = await helper.fetchData(
+      "/iotgw/http/client/disabled/httpserver_to",
+      "GET"
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {
@@ -581,7 +600,7 @@ export const get_archive = async () => {
 };
 export const send_archive = async (data) => {
   try {
-    verbose && console.log(data)
+    verbose && console.log(data);
     const res = await helper.fetchData("/conf/archive/set", "POST", data);
     verbose && console.log(res);
     return res;
@@ -589,19 +608,22 @@ export const send_archive = async (data) => {
     console.error(e);
   }
 };
-export const delete_archive_note = async(title) => {
-  try{
+export const delete_archive_note = async (title) => {
+  try {
     const title_param = `?title=${title}`;
-    const res = await helper.fetchData("/conf/archive/del"+title_param , "GET");
+    const res = await helper.fetchData(
+      "/conf/archive/del" + title_param,
+      "GET"
+    );
     verbose && console.log(res);
     return res;
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
-} 
+};
 export const send_login = async (data) => {
   try {
-    verbose && console.log(data)
+    verbose && console.log(data);
     const res = await helper.fetchData("/conf/login", "POST", data, true);
     verbose && console.log(res);
 
@@ -615,9 +637,8 @@ export const send_login = async (data) => {
   }
 };
 export const send_register = async (data) => {
- 
   try {
-    verbose && console.log(data)
+    verbose && console.log(data);
     const res = await helper.fetchData("/conf/register", "POST", data, true);
     verbose && console.log(res);
 
@@ -645,7 +666,7 @@ export const check_credentials = async () => {
 };
 export const test_connection = async (data) => {
   try {
-    verbose && console.log(data)
+    verbose && console.log(data);
     const res = await helper.fetchData("/external/network/ping", "POST", data);
     verbose && console.log(res);
     return res;
@@ -674,7 +695,7 @@ export const get_users = async () => {
 
 export const delete_user = async (user) => {
   try {
-    verbose && console.log(user)
+    verbose && console.log(user);
     const user_param = `?user=${user}`;
     const res = await helper.fetchData(
       "/conf/users/delete" + user_param,
@@ -728,7 +749,7 @@ export const ntp_resinc = async (data) => {
 };
 export const get_advanced = async (service, command) => {
   try {
-    verbose && console.log({service:service, command: command});
+    verbose && console.log({ service: service, command: command });
     const res = await helper.fetchData(
       `/pca/services/action?service=${service}&command=${command}`,
       "GET"

@@ -52,7 +52,8 @@
           "ip_addresses": ["198.51.100.1", "10.10.0.1"]
         }
       }
-    }
+    },
+    "machines_id":[]
   },
 
   "services": {

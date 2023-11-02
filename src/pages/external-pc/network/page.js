@@ -47,7 +47,7 @@ import {
   TextField,
   Toolbar,
   Typography,
-  OutlinedInput
+  OutlinedInput,
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -86,10 +86,6 @@ export default function ExternalNetwork() {
   );
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-  
-  
-    const [ssid, setSsid] = useState();
-    const [password, setPassword] = useState();
 
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(0);
@@ -134,8 +130,18 @@ export default function ExternalNetwork() {
   const [defaultGateway, setDefaultGateway] = useState(
     customerNetwork?.static?.gateway || ""
   );
-  const [dnsServer, setDNSServer] = useState(customerNetwork?.static?.dns || []);
+  const [dnsServer, setDNSServer] = useState(
+    customerNetwork?.static?.dns || []
+  );
   const [wifi, setWifi] = useState("");
+  const [ssid, setSsid] = useState(
+    customerNetwork?.wireless &&
+      Object.keys(customerNetwork?.wireless)?.toString()
+  );
+  const [password, setPassword] = useState(
+    customerNetwork?.wireless &&
+      Object.values(customerNetwork?.wireless)?.toString()
+  );
   const [customNTP, setCustomNTP] = useState(
     customerNetwork?.ntp?.length !== 0 ? true : false
   );
@@ -148,7 +154,7 @@ export default function ExternalNetwork() {
     customerNetwork?.dhcp ? "dhcp" : "static"
   );
   const [connectionType, setConnectionType] = useState(
-    customerNetwork?.if_wan_medium
+    customerNetwork?.if_wan_medium || "ethernet"
   );
 
   const [hostList, setHostList] = useState([]);
@@ -160,11 +166,6 @@ export default function ExternalNetwork() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-
-  const [wifiData, setWifiData] = useState(
-    getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
-  );
-
 
   const [routeTableData, setRouteTableData] = useState(
     getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
@@ -193,12 +194,17 @@ export default function ExternalNetwork() {
     setCustomNTP(customerNetwork?.ntp?.length !== 0 ? true : false);
     setNTPAddress(customerNetwork?.ntp);
     setNATFeatures(customerNetwork?.nat);
-    setWifiData(
-      getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
-    );
     setMachineToInternet(customerNetwork?.machine_to_internet);
     setConnection(customerNetwork?.dhcp ? "dhcp" : "static");
-    setConnectionType(customerNetwork?.if_wan_medium);
+    setConnectionType(customerNetwork?.if_wan_medium || "ethernet");
+    setSsid(
+      customerNetwork?.wireless &&
+        Object.keys(customerNetwork?.wireless)?.toString()
+    );
+    setPassword(
+      customerNetwork?.wireless &&
+        Object.values(customerNetwork?.wireless)?.toString()
+    );
     setRouteTableData(
       getArrayOfObjects(customerNetwork?.routes, "subnet", "gateway")
     );
@@ -236,7 +242,6 @@ export default function ExternalNetwork() {
     setWifi(event?.target?.value);
     setSsid(event?.target?.value);
   };
-  
 
   const handleNTPChange = (event) => {
     setCustomNTP(event?.target?.checked);
@@ -277,15 +282,15 @@ export default function ExternalNetwork() {
   };
 
   const handleTestConnection = async () => {
-    const testPingNumberInt = parseInt(testPingNumber)
-    if(!testPingNumber || !Number?.isInteger(testPingNumberInt)){
+    const testPingNumberInt = parseInt(testPingNumber);
+    if (!testPingNumber || !Number?.isInteger(testPingNumberInt)) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Please insert an integer number of pings to do`,
       });
-      return
+      return;
     }
     loaderContext[1](true);
     const connection = await test_connection({
@@ -349,7 +354,7 @@ export default function ExternalNetwork() {
 
     let wifiObject = {};
     if (ssid !== undefined && password !== undefined) {
-      wifiObject[ssid] = password
+      wifiObject[ssid] = password;
     }
 
     let routes = {};
@@ -387,28 +392,28 @@ export default function ExternalNetwork() {
           ])
       );
     }
-   if (connection === "dhcp"){
-   }else{
-    if (!ipAddress?.every(verifyIPCIDR)) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `IP address not valid`,
-      });
-      return;
-    }
+    if (connection === "dhcp") {
+    } else {
+      if (!ipAddress?.every(verifyIPCIDR)) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `IP address not valid`,
+        });
+        return;
+      }
 
-    if (verifyIP(defaultGateway) === null) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Default gateway address not valid`,
-      });
-      return;
+      if (verifyIP(defaultGateway) === null) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Default gateway address not valid`,
+        });
+        return;
+      }
     }
-  }
     if (customNTP === true) {
       if (verifyIP(ntpAddress) === null) {
         handleRequestFeedback({
@@ -439,7 +444,7 @@ export default function ExternalNetwork() {
       INPUT_NAT: inputNATTableData,
       firewall_enabled: customerNetwork?.firewall_enabled,
     };
-   handleRequestFeedback({
+    handleRequestFeedback({
       vertical: "bottom",
       horizontal: "right",
       severity: "success",
@@ -450,9 +455,9 @@ export default function ExternalNetwork() {
 
   const wifiSettings = [
     {
-      SSID : ssid,
-      Password : password
-    }
+      SSID: ssid,
+      Password: password,
+    },
   ];
 
   const routesColumnData = [
@@ -683,28 +688,21 @@ export default function ExternalNetwork() {
                   customerNetwork?.essid?.length !== 0 ? (
                     <>
                       <FormControl fullWidth>
-                          <TextField
-                            select
-                            label="Add network"
-                            helperText="Choose from the wireless network list ad add SSID and password to the table below"
-                            defaultValue={""}
-                            onChange={handleWifiChange}
-                          >
-                            {customerNetwork?.essid?.map((item) => {
-                              return (
-                                <MenuItem
-                                  key={Math.random() + item}
-                                  value={item}
-                                >
-                                  {item}
-                                </MenuItem>
-                              );
-                              
-                            } 
-                            )}
-                          </TextField>
-
-                        
+                        <TextField
+                          select
+                          label="Add network"
+                          helperText="Choose from the wireless network list ad add SSID and password to the table below"
+                          value={wifi || ""}
+                          onChange={handleWifiChange}
+                        >
+                          {customerNetwork?.essid?.map((item) => {
+                            return (
+                              <MenuItem key={Math.random() + item} value={item}>
+                                {item}
+                              </MenuItem>
+                            );
+                          })}
+                        </TextField>
                       </FormControl>
                     </>
                   ) : (
@@ -715,49 +713,50 @@ export default function ExternalNetwork() {
                       </Typography>
                     </>
                   )}
+                  <Typography title={network_wifi_desc} sx={{ mb: 2 }}>
+                    Wifi:
+                  </Typography>
 
-                  <FormLabel title={network_wifi_desc}>Wifi:</FormLabel>
-                  <Divider />
-                
-                  <Stack direction="row" spacing={10} >
-                  <FormLabel fullWidth={true} variant="outlined">
-                  <InputLabel htmlFor="SSID">SSID</InputLabel>
-                  <OutlinedInput
-                    id="SSID"
-                    type={"text"}
-                    value={ssid || ""}
-                    onChange={(event) => {
-                      setSsid(event?.target?.value);
-                    }}
-                    
-                    label="SSID"
-                  />
-                  </FormLabel>
-                  <FormLabel fullWidth={true} variant="outlined">
-                  <InputLabel htmlFor="Password">Password</InputLabel>
-                  <OutlinedInput
-                    type={showPassword ? "text" : "password"}
-                    label="Password"  
-                    value={password || ""}
-                    onChange={(event) => {
-                      setPassword(event?.target?.value);
-                      
-                    }}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onMouseUp={handleClickShowPassword}
-                          onMouseDown={handleClickShowPassword}
-                          edge="end"
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                   
-                  />
-                  </FormLabel>
+                  <Stack direction="row" spacing={10}>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel htmlFor="SSID">SSID</InputLabel>
+                      <OutlinedInput
+                        id="SSID"
+                        type={"text"}
+                        value={ssid || ""}
+                        onChange={(event) => {
+                          setSsid(event?.target?.value);
+                        }}
+                        label="SSID"
+                      />
+                    </FormControl>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel htmlFor="Password">Password</InputLabel>
+                      <OutlinedInput
+                        type={showPassword ? "text" : "password"}
+                        label="Password"
+                        value={password || ""}
+                        onChange={(event) => {
+                          setPassword(event?.target?.value);
+                        }}
+                        endAdornment={
+                          <InputAdornment position="end">
+                            <IconButton
+                              aria-label="toggle password visibility"
+                              onMouseUp={handleClickShowPassword}
+                              onMouseDown={handleClickShowPassword}
+                              edge="end"
+                            >
+                              {showPassword ? (
+                                <VisibilityOff />
+                              ) : (
+                                <Visibility />
+                              )}
+                            </IconButton>
+                          </InputAdornment>
+                        }
+                      />
+                    </FormControl>
                   </Stack>
                   <Divider />
                 </>
@@ -929,7 +928,9 @@ export default function ExternalNetwork() {
                                     key={Math?.random()}
                                   >
                                     <ListItemIcon key={Math?.random()}>
-                                      <LabelImportantIcon key={Math?.random()} />
+                                      <LabelImportantIcon
+                                        key={Math?.random()}
+                                      />
                                     </ListItemIcon>
                                     <ListItemText
                                       primary={ip}

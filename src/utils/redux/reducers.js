@@ -21,14 +21,14 @@ const jsonSlice = createSlice({
 
       if (actionType === "fromA") {
         //system
-        state.system = _.merge(state.system, newConf?.system)
+        state.system = _.merge(state.system, newConf?.system);
         /* state.system.a4updater_version.industrial =
           newConf?.system?.a4updater_version?.industrial;
         state.system.hostname.industrial =
           newConf?.system?.hostname?.industrial;
         state.system.network.industrial = newConf?.system?.network?.industrial;
         //services */
-        state.services = _.merge(state.services, newConf?.services)
+        state.services = _.merge(state.services, newConf?.services);
         /* state.services.kepware = newConf?.services?.kepware;
         state.services.backchannel = newConf?.services?.backchannel;
         state.services.fastdata.industrial.ftp =
@@ -38,14 +38,14 @@ const jsonSlice = createSlice({
         state.version = newConf?.version; */
       } else if (actionType === "fromB") {
         //system
-        state.system = _.merge(state.system, newConf?.system)
-       /*  state.system.a4updater_version.customer =
+        state.system = _.merge(state.system, newConf?.system);
+        /*  state.system.a4updater_version.customer =
           newConf?.system?.a4updater_version?.customer;
         state.system.hostname.customer = newConf?.system?.hostname?.customer;
         state.system.network.customer = newConf?.system?.network?.customer; */
 
         //services
-        state.services = _.merge(state.services, newConf?.services)
+        state.services = _.merge(state.services, newConf?.services);
         /* state.services.sitemanager = newConf?.services?.sitemanager;
         state.services.thingworx = newConf?.services?.thingworx;
         state.services.opcua = newConf?.services?.opcua;
@@ -55,7 +55,7 @@ const jsonSlice = createSlice({
           ...newConf?.services?.fastdata,
         }; */
       } else if (actionType === "fromBackup") {
-        state = _.merge(state, newConf)
+        state = _.merge(state, newConf);
         /* const mergedObject = deepMerge({ ...state }, newConf);
         state = mergedObject; */
       }
@@ -112,7 +112,10 @@ const jsonSlice = createSlice({
     },
     updateFirewallEnable(state, action) {
       const newFirewallEnabled = action.payload;
-      state.system.network.customer = _.merge(state.system.network.customer , newFirewallEnabled);
+      state.system.network.customer = _.merge(
+        state.system.network.customer,
+        newFirewallEnabled
+      );
     },
     updateSitemanager(state, action) {
       const newSitemanager = action.payload;
@@ -128,11 +131,11 @@ const jsonSlice = createSlice({
         ...newThingworx,
       };
     },
-    updateThingNames(state, action) {
-      const newThingNames = action.payload;
-      state.services.thingworx = {
-        ...state.services.thingworx,
-        thing_names: newThingNames,
+    updateMachinesID(state, action) {
+      const newMachinesID = action.payload;
+      state.system = {
+        ...state.system,
+        machines_id: newMachinesID,
       };
     },
     updateOPCServer(state, action) {
@@ -194,7 +197,7 @@ export const {
   updateCustomerNetwork,
   updatePingResult,
   updateThingworx,
-  updateThingNames,
+  updateMachinesID,
   updateSitemanager,
   updateOPCServer,
   updateHTTPServer,

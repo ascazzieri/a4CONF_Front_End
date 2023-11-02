@@ -859,7 +859,7 @@ export default function HTTPServer() {
 
                   <Switch
                     title={http_server_port_desc}
-                    checked={customPortEnable}
+                    checked={customPortEnable || false}
                     onChange={handleCustomPortEnableChange}
                   />
                   <Typography>
@@ -879,8 +879,7 @@ export default function HTTPServer() {
                       type="text"
                       label="Custom Port"
                       helperText="Use this port for HTTP Server tag exposure"
-                      value={customPort}
-                      required={false}
+                      value={customPort || 8080}
                       onChange={handleCustomPortChange}
                     />
                   </FormControl>
@@ -931,12 +930,9 @@ export default function HTTPServer() {
                 <>
                   <FormLabel>Authentication:</FormLabel>
                   <FormControl fullWidth>
-                    <FormLabel>HTTP Server username</FormLabel>
-
                     <TextField
                       type="text"
-                      label="Blob Url"
-                      helperText="Blob storage Url"
+                      label="HTTP Server Username"
                       value={serverUsername || ""}
                       required={true}
                       onChange={(event) => {
@@ -948,10 +944,11 @@ export default function HTTPServer() {
                   <Divider />
 
                   <FormControl fullWidth>
-                    <InputLabel htmlFor="outlined-adornment-password">
+                    <InputLabel htmlFor="outlined-adornment-password-http-server">
                       HTTP Server Password*
                     </InputLabel>
                     <OutlinedInput
+                      id="outlined-adornment-password-http-server"
                       type={showServerPassword ? "text" : "password"}
                       required={true}
                       value={serverPassword || ""}
@@ -980,9 +977,6 @@ export default function HTTPServer() {
                       }
                       label="Password"
                     />
-                    <FormHelperText id="outlined-weight-helper-text">
-                      Unique athentication string for Microsoft Blob Storage
-                    </FormHelperText>
                   </FormControl>
                   <Divider />
                 </>

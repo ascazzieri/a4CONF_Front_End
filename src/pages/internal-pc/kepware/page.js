@@ -2,7 +2,7 @@ import { useState, Fragment, useContext } from "react";
 import ReactDownloadLink from "react-download-link";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateKepware, updateThingNames } from "../../../utils/redux/reducers";
+import { updateKepware, updateMachinesID } from "../../../utils/redux/reducers";
 import * as helper from "../../../utils/utils";
 import BackButton from "../../../components/BackButton/BackButton";
 import SaveButton from "../../../components/SaveButton/SaveButton";
@@ -35,6 +35,7 @@ import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import {
+  Autocomplete,
   IconButton,
   Container,
   TextField,
@@ -122,6 +123,7 @@ const Row = (props) => {
   const [provider, setProvider] = useState();
   const [endPoint, setEndPoint] = useState();
   const [deviceTags, setDeviceTags] = useState({});
+  const [machineID, setMachineID] = useState();
   const [folder, setFolder] = useState();
   const [publishRate, setPublishRate] = useState(1000);
   const [scanRate, setScanRate] = useState(1000);
@@ -179,10 +181,21 @@ const Row = (props) => {
     updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
     setRowData(updatedRowData);
   };
-  const handleFolderChange = (event) => {
-    const value = event?.target?.value;
-    const name = event?.target?.name;
+  const handleMachineIDChange = (name, value) => {
+    const updatedRowData = { ...rowData };
 
+    const selectedDeviceIndex = updatedRowData.devices.findIndex(
+      (item) => item.name === name
+    );
+    const updatedDevice = {
+      ...updatedRowData.devices[selectedDeviceIndex],
+    };
+
+    updatedDevice.machine_id = value;
+    updatedRowData.devices[selectedDeviceIndex] = updatedDevice;
+    setRowData(updatedRowData);
+  };
+  const handleFolderChange = (name, value) => {
     const updatedRowData = { ...rowData };
 
     const selectedDeviceIndex = updatedRowData.devices.findIndex(
@@ -296,12 +309,15 @@ const Row = (props) => {
       });
       return;
     }
-    if (event?.target?.name === "matrix" && !device?.folder) {
+    if (
+      event?.target?.name === "matrix" &&
+      (!device?.folder || !device?.machine_id)
+    ) {
       handleButtonClickFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Device: ${device?.name} requires a folder`,
+        message: `Device: ${device?.name} requires a folder and a machine identification`,
       });
       return;
     }
@@ -318,6 +334,7 @@ const Row = (props) => {
 
     setEndPoint(endpoint);
     setProvider(event?.target?.name);
+    setMachineID(device?.machine_id ? device?.machine_id : "machine_test");
     setFolder(device?.folder ? device?.folder : "blob_test");
     setScanRate(device?.scan_rate ? device?.scan_rate : 1000);
     setPublishRate(device?.publish_rate ? device?.publish_rate : 1000);
@@ -339,6 +356,11 @@ const Row = (props) => {
         row?.name, //channel name
         device?.name, //device name
         event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
+        event?.target?.name === "matrix"
+          ? device?.machine_id
+            ? device?.machine_id
+            : "machine_test"
+          : null, //machine id for matrix
         event?.target?.name === "matrix"
           ? device?.folder
             ? device?.folder
@@ -411,6 +433,7 @@ const Row = (props) => {
           deviceName={channelDevice}
           provider={provider}
           endPoint={endPoint}
+          machine_ID={machineID}
           folder={folder}
           publishRate={publishRate}
           scanRate={scanRate}
@@ -526,9 +549,9 @@ const Row = (props) => {
                                     size="small"
                                     defaultValue={
                                       device?.endpoint
-                                        ? device?.endpoint.substring(
+                                        ? device?.endpoint?.substring(
                                             3,
-                                            device?.endpoint.length
+                                            device?.endpoint?.length
                                           )
                                         : ""
                                     }
@@ -548,7 +571,7 @@ const Row = (props) => {
                                   >
                                     {thingNames &&
                                       thingNames?.length !== 0 &&
-                                      thingNames.map((item, index) => (
+                                      thingNames?.map((item, index) => (
                                         <MenuItem key={item} value={item}>
                                           {item.substring(3, item.length)}
                                         </MenuItem>
@@ -720,6 +743,7 @@ const Row = (props) => {
                     <TableHead>
                       <TableRow>
                         <TableCell align="center">Name</TableCell>
+                        <TableCell align="center">Machine ID</TableCell>
                         <TableCell align="center">Blob folder</TableCell>
                         <TableCell align="center">Scan rate</TableCell>
                         <TableCell align="center">Publish rate</TableCell>
@@ -748,22 +772,44 @@ const Row = (props) => {
                               component="th"
                               scope="row"
                             >
-                              <TextField
-                                select
-                                label="Machine ID"
+                              <Autocomplete
+                                id="machine-id"
+                                freeSolo
                                 name={device?.name}
                                 defaultValue=""
-                                onChange={handleFolderChange}
+                                onChange={(event, newValue) => {
+                                  handleMachineIDChange(device?.name, newValue);
+                                }}
                                 style={{ minWidth: 150 }}
-                              >
-                                {thingNames &&
-                                  thingNames?.length !== 0 &&
-                                  thingNames.map((item, index) => (
-                                    <MenuItem key={item} value={item}>
-                                      {item.substring(3, item.length)}
-                                    </MenuItem>
-                                  ))}
-                              </TextField>
+                                options={thingNames?.map((option) =>
+                                  option?.replace("rt_", "")
+                                )}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Machine ID" />
+                                )}
+                              />
+                            </TableCell>
+                            <TableCell
+                              align="center"
+                              component="th"
+                              scope="row"
+                            >
+                              <Autocomplete
+                                id="blob-folder"
+                                freeSolo
+                                name={device?.name}
+                                defaultValue=""
+                                onChange={(event, newValue) =>
+                                  handleFolderChange(device?.name, newValue)
+                                }
+                                style={{ minWidth: 150 }}
+                                options={thingNames?.map((option) =>
+                                  option?.replace("rt_", "")
+                                )}
+                                renderInput={(params) => (
+                                  <TextField {...params} label="Blob Folder" />
+                                )}
+                              />
                             </TableCell>
                             <TableCell
                               align="center"
@@ -898,13 +944,8 @@ const Row = (props) => {
 };
 
 export default function Kepware() {
-  const kepware = useSelector((state) => state.services?.kepware);
-  const thing_names = useSelector(
-    (state) => state.services?.thingworx?.thing_names
-  );
-  /* const industrialIP = useSelector(
-    (state) => state.json.config.system.network.industrial.ip
-  ); */
+  const kepware = useSelector((state) => state?.services?.kepware);
+  const thing_names = useSelector((state) => state?.system?.machines_id);
   const dispatch = useDispatch();
 
   const superUser = useContext(SuperUserContext)[0];
@@ -985,7 +1026,7 @@ export default function Kepware() {
   useEffect(() => {
     let timer;
 
-    if (isInKepware) {
+    if (isInKepware && currentTab === 4) {
       timer = setInterval(async () => {
         const machinesConnected = await machines_connected();
         setConnectedMachines(machinesConnected);
@@ -996,7 +1037,7 @@ export default function Kepware() {
     return () => {
       clearInterval(timer);
     };
-  }, [isInKepware]);
+  }, [isInKepware, currentTab]);
 
   useEffect(() => {
     if (location.pathname === "/data-collector/kepware") {
@@ -1041,7 +1082,7 @@ export default function Kepware() {
       message: `Kepware configuration of data collector temporarly saved. Click Apply button to send changes to a4GATE`,
     });
 
-    dispatch(updateThingNames(updatedThingNames));
+    dispatch(updateMachinesID(updatedThingNames));
     dispatch(updateKepware({ newKepware }));
   };
 
@@ -1192,7 +1233,7 @@ export default function Kepware() {
   };
   const handleThingNameDelete = (value) => {
     const thingNameList = thingNames.filter((item) => item !== value);
-    dispatch(updateThingNames(thingNameList));
+    dispatch(updateMachinesID(thingNameList));
   };
   const handleExpandableListChannels = (event, name) => {
     const oldList = [...expandedListChannels];

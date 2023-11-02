@@ -41,6 +41,7 @@ let dummy_config = {
       industrial: null,
       customer: null,
     },
+    machines_id: null,
   },
   services: {
     kepware: {
@@ -64,7 +65,6 @@ let dummy_config = {
       connected: null,
       version: null,
       diagnostic: null,
-      thing_names: null,
       things: null,
     },
     backchannel: {

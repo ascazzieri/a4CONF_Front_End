@@ -136,7 +136,6 @@ const ReloadInternal = () => {
         message: `Configuration loaded from PCA`,
       });
     } else {
-      console.log(confA)
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -147,8 +146,8 @@ const ReloadInternal = () => {
     loadingContext[1](false)
   }
   return (
-    <StyledButton>
-      <div className="img-wrapper-1" onClick={handleInternalReload}>
+    <StyledButton onClick={handleInternalReload}>
+      <div className="img-wrapper-1">
         <div className="img-wrapper">
           <CachedIcon className="reload-icon" color="primary" />
         </div>
@@ -193,8 +192,8 @@ const ReloadExternal = () => {
 
   }
   return (
-    <StyledButton>
-      <div className="img-wrapper-1" onClick={handleExternalReload}>
+    <StyledButton onClick={handleExternalReload}>
+      <div className="img-wrapper-1">
         <div className="img-wrapper">
           <CachedIcon className="reload-icon" color="primary" />
         </div>

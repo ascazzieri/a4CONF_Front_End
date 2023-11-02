@@ -78,6 +78,7 @@ export default function FTP() {
   const [usersTableData, setUsersTableData] = useState(
     ftp?.server?.users || []
   );
+  console.log(usersTableData);
   //File timestamp
   const [addTimestamp, setAddTimestamp] = useState(
     ftp?.file_timestamp?.add_timestamp_to_filename
@@ -99,6 +100,7 @@ export default function FTP() {
     setServerPort(ftp?.server?.port);
     setMaxConnection(ftp?.server?.max_cons);
     setMaxConnectionPerIP(ftp?.server?.max_cons_per_ip);
+    setUsersTableData(ftp?.server?.users || []);
     setBlobTableData(
       getArrayOfObjects(ftp?.blob_settings, "file_name", "blob_folder") || []
     );
@@ -256,7 +258,7 @@ export default function FTP() {
                   type="text"
                   label="IP Address"
                   helperText="FTP server address"
-                  value={serverIP}
+                  value={serverIP || ""}
                   required={true}
                   onChange={handleServerIPChange}
                 />
@@ -269,7 +271,7 @@ export default function FTP() {
                   options={["standard", "multi-thread", "multi-process"]}
                   sx={{ width: 300 }}
                   label="server type"
-                  value={serverType}
+                  value={serverType || "standard"}
                   onChange={(event, newValue) => handleTypeChange(newValue)}
                   renderInput={(params) => (
                     <TextField {...params} label="Type" />
@@ -288,7 +290,7 @@ export default function FTP() {
 
                   <Switch
                     title={ftp_custom_port_desc}
-                    checked={customPortEnable}
+                    checked={customPortEnable || false}
                     onChange={handleCustomPortEnableChange}
                   />
                 </Stack>
@@ -310,7 +312,7 @@ export default function FTP() {
                       label="Port number"
                       /*  variant="outlined"
                                 size="small" */
-                      value={serverPort}
+                      value={serverPort || 21}
                       onChange={handleServerPortChange}
                     />
                   </FormControl>
@@ -333,7 +335,7 @@ export default function FTP() {
                   label="Max connection"
                   /*  variant="outlined"
                                 size="small" */
-                  value={maxConnection}
+                  value={maxConnection || 5}
                   onChange={handleMaxConsChange}
                 />
               </FormControl>
@@ -355,7 +357,7 @@ export default function FTP() {
                   label="Max connection with the same ip"
                   /*  variant="outlined"
                                 size="small" */
-                  value={maxConnectionPerIP}
+                  value={maxConnectionPerIP || 5}
                   onChange={handleMaxConsPerIPChange}
                 />
               </FormControl>
@@ -368,7 +370,7 @@ export default function FTP() {
               <FormLabel title={ftp_users_desc}>Users:</FormLabel>
 
               <Table
-                tableData={usersTableData}
+                tableData={usersTableData || []}
                 setTableData={setUsersTableData}
                 columnsData={usersColumnData}
               />
@@ -382,40 +384,12 @@ export default function FTP() {
               <FormLabel title={ftp_blob_table_desc}>Blob settings:</FormLabel>
 
               <Table
-                tableData={blobTableData}
+                tableData={blobTableData || []}
                 setTableData={setBlobTableData}
                 columnsData={blobColumnsData}
               />
 
               <Divider />
-              {/*  <FormControl fullWidth>
-                <FormLabel>NTP Server:</FormLabel>
-
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <Typography>Use NTP from Gatemanager</Typography>
-
-                  <Switch checked={customNTP} onChange={handleNTPChange} />
-
-                  <Typography>Use Custom NTP Server</Typography>
-                </Stack>
-              </FormControl>
-
-              <Divider />
-
-              {customNTP === true && (
-                <>
-                  <FormControl fullWidth>
-                    <TextField
-                      type="text"
-                      label="Custom NTP"
-                      helperText="Custom NTP server address"
-                      defaultValue={customerNetwork?.ntp}
-                      onChange={handleCustomNTPChange}
-                    />
-                  </FormControl>
-                  <Divider />
-                </>
-              )} */}
             </>
           )}
 
@@ -431,7 +405,7 @@ export default function FTP() {
 
                   <Switch
                     title={ftp_timestamp_file_desc}
-                    checked={addTimestamp}
+                    checked={addTimestamp || false}
                     onChange={handleAddTimestampChange}
                   />
                 </Stack>
@@ -451,7 +425,7 @@ export default function FTP() {
 
                       <Switch
                         title={ftp_timestamp_millisecond_desc}
-                        checked={addTimestampMilliseconds}
+                        checked={addTimestampMilliseconds || false}
                         onChange={handleAddTimestampMilliseconds}
                       />
                     </Stack>

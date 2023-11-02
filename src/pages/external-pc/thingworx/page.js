@@ -142,24 +142,23 @@ export default function Thingworx() {
     if (!agentDiagnosis) {
       return;
     }
-    if (agentDiagnosis.appkey_NOT_set) {
+    if (agentDiagnosis?.appkey_NOT_set) {
       return "Appkey not set!";
-    } else if (agentDiagnosis.server_NOT_set) {
+    } else if (agentDiagnosis?.server_NOT_set) {
       return "Server not set!";
-    } else if (agentDiagnosis.server_name_dns_resolve === false) {
+    } else if (agentDiagnosis?.server_name_dns_resolve === false) {
       return "Cannot resolve DNS!";
-    } else if (agentDiagnosis.server_ip_reachable === false) {
+    } else if (agentDiagnosis?.server_ip_reachable === false) {
       return "Server is not reachable!";
     } else if (
-      agentDiagnosis.connection_error &&
-      agentDiagnosis.connection_error.trim().length !== 0
+      agentDiagnosis?.connection_error &&
+      agentDiagnosis?.connection_error?.trim()?.length !== 0
     ) {
-      return agentDiagnosis.connection_error;
+      return agentDiagnosis?.reason;
     } else {
       return true;
     }
   };
-
   const [showAppkey, setShowAppkey] = useState(false);
   const handleClickShowPassword = () => setShowAppkey((show) => !show);
 
@@ -188,8 +187,8 @@ export default function Thingworx() {
       }
       setTWXIotGatewaysList(twxGatewaysEnabled);
       setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-      if (agentConnectionInfo) {
-        setAgentDiagnosis(agentConnectionInfo);
+      if (agentConnectionInfo?.thingworx?.diagnostic) {
+        setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
       } else {
         handleRequestFeedback({
           vertical: "bottom",
@@ -208,6 +207,13 @@ export default function Thingworx() {
   const handleAppkeyChange = (event) => {
     setThingworxAppkey(event?.target?.value);
   };
+  /**
+   * Toggles the expansion state of an item in a list.
+   *
+   * @param {Event} event - The event object triggered by the user action.
+   * @param {string} name - The name of the item in the list.
+   * @returns {void}
+   */
   const handleExpandableList = (event, name) => {
     const oldList = [...expandedList];
     if (oldList.includes(name)) {
@@ -217,6 +223,14 @@ export default function Thingworx() {
       setExpandedList(oldList);
     }
   };
+  /**
+   * Reloads the enabled IoT gateways.
+   *
+   * This function makes an API call to fetch the enabled IoT gateways and updates the state with the response.
+   * It also displays a success or error message based on the result of the API call.
+   *
+   * @returns {Promise<void>} - A promise that resolves once the enabled IoT gateways are reloaded.
+   */
   const handleReloadEnabledIotGateway = async () => {
     loaderContext[1](true);
     const twxGatewaysEnabled = await get_twx_gtws_enabled();
@@ -269,8 +283,8 @@ export default function Thingworx() {
     loaderContext[1](true);
     const agentConnectionInfo = await twx_connection_diagnostic();
     console.log("get agents info");
-    if (agentConnectionInfo) {
-      setAgentDiagnosis(agentConnectionInfo);
+    if (agentConnectionInfo?.thingworx?.diagnostic) {
+      setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -292,7 +306,6 @@ export default function Thingworx() {
     loaderContext[1](true);
     const result = await enable_http_client_iot_gateway(name);
     loaderContext[1](false);
-    console.log(result);
     if (result?.enabled !== true) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -302,7 +315,6 @@ export default function Thingworx() {
       });
       return;
     }
-    console.log({ [`${name}`]: twxIotGatewaysListDisabled[`${name}`] });
     setTWXIotGatewaysList((prevData) => ({
       ...prevData,
       [`${name}`]: twxIotGatewaysListDisabled[`${name}`],
@@ -423,7 +435,6 @@ export default function Thingworx() {
       });
     }
   };
-  console.log(thingsTableData);
 
   return (
     <ErrorCacher>
@@ -679,7 +690,7 @@ export default function Thingworx() {
                           component="div"
                           sx={{ flexGrow: 1, color: "red" }}
                         >
-                          Error messages
+                          {agentDiagnosis?.connection_error}
                         </Typography>
                         <Typography
                           sx={{
