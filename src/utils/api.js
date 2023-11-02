@@ -423,24 +423,21 @@ export const check_bidir = async () => {
 };
 
 export const uploadKepwareProject = async (file) => {
-  //upload file from an input
-  const body = document.body;
   try {
     verbose && console.log(file);
-    body.classList.add("user-block");
+    helper.togglePageSleep("block");
     const res = await helper.fetchData("/kepware/upload", "POST", file);
     verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
   } finally {
-    body.classList.remove("user-block");
+    helper.togglePageSleep("release");
   }
 };
 export const downloadKepwareProject = async () => {
-  const body = document.body;
   try {
-    body.classList.add("user-block");
+    helper.togglePageSleep("block");
     const json = await helper.fetchData(`/kepware/backup`, "GET");
     verbose && console.log(json);
 
@@ -463,7 +460,7 @@ export const downloadKepwareProject = async () => {
     console.error(e);
     return false;
   } finally {
-    body.classList.remove("user-block");
+    helper.togglePageSleep("release");
   }
 };
 export const get_a4monitor_logs = async () => {

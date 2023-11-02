@@ -151,8 +151,7 @@ export default function Thingworx() {
     } else if (agentDiagnosis?.server_ip_reachable === false) {
       return "Server is not reachable!";
     } else if (
-      agentDiagnosis?.connection_error &&
-      agentDiagnosis?.connection_error?.trim()?.length !== 0
+      agentDiagnosis?.connection_error?.trim() !== "not_found"
     ) {
       return agentDiagnosis?.reason;
     } else {

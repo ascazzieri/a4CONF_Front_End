@@ -207,7 +207,7 @@ export async function fetchData(url, method, body, noToken) {
       const data = response.data;
       return data;
     } catch (error) {
-      throw new Error(`Axios error: ${error.message}`);
+      throw new Error(`Axios errorrrrrr: ${error.message}`);
     }
   };
 
@@ -546,4 +546,12 @@ export const deepMerge = (obj1, obj2) => {
     }
   }
   return result;
+};
+export const togglePageSleep = (action) => {
+  const blocker = document.getElementById("page-blocker");
+  if (action === "block") {
+    blocker.style.display = "block";
+  } else if (action === "release") {
+    blocker.style.display = "none";
+  }
 };

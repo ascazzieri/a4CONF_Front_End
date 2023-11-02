@@ -99,22 +99,21 @@ export default function Dashboard() {
       loaderContext[1](false); // Non è più in fase di caricamento
     }
   }, [dashboardStatus, loaderContext]);
-  
+
   function hostValid(host) {
     var specialCharacters = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\"|]/;
     return specialCharacters.test(host);
   }
 
   const handleHostNameChange = () => {
-    
-    if(hostValid(hostName) === true || hostName.trim() !== hostName){
+    if (hostValid(hostName) === true || hostName.trim() !== hostName) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Error. The Host name has special character`,
-      }); 
-    }else{
+      });
+    } else {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -125,7 +124,7 @@ export default function Dashboard() {
         customer: hostName?.trim(),
         industrial: hostName?.trim(),
       };
-    dispatch(updateHostName({ newHostName }));
+      dispatch(updateHostName({ newHostName }));
     }
   };
 
@@ -227,6 +226,7 @@ export default function Dashboard() {
           <CardContent>
             <Grid container>
               <Grid
+                item
                 xs={12}
                 sm={12}
                 md={12}
@@ -263,6 +263,7 @@ export default function Dashboard() {
                   <Button
                     variant="contained"
                     onClick={handleHostNameChange}
+                    style={{marginTop:23}}
                   >
                     Save
                   </Button>

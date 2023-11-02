@@ -29,6 +29,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
 import MainButtons from "../MainButtons/MainButtons"
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
+import {togglePageSleep} from "../../utils/utils"
 import { SuperUserContext } from "../../utils/context/SuperUser"
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
@@ -178,8 +179,9 @@ const ApplyChanges = () => {
 
   const handleSendConf = async (event) => {
     loadingContext[1](true)
+    togglePageSleep('block')
     const res = await send_conf(config)
-    console.log(res)
+    togglePageSleep('release')
     if (res) {
       handleRequestFeedback({
         vertical: "bottom",

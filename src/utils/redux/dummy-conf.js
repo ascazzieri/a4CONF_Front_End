@@ -6,6 +6,7 @@ let dummy_config = {
         ip: null,
         routes: null,
         net_scan: null,
+        recovery_ip_needed: null,
       },
       customer: {
         dhcp: null,

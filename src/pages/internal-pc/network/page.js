@@ -291,6 +291,10 @@ export default function InternalNetwork() {
       enableSorting: true,
     },
   ];
+  const validationRouteTableData = {
+    subnet: verifyIPCIDR,
+    gateway: verifyIP,
+  };
 
   return (
     <ErrorCacher>
@@ -360,6 +364,7 @@ export default function InternalNetwork() {
                 tableData={routeTableData}
                 setTableData={setRouteTableData}
                 columnsData={routesColumnData}
+                validationObject={validationRouteTableData}
               />
 
               <Divider />

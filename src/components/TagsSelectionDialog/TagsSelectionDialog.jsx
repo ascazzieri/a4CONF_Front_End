@@ -88,8 +88,8 @@ export default function MaxWidthDialog(props) {
             channel,
             device,
             endPoint,
-            provider === "matrix" ? machine_ID : null, //folder for matrix
-            provider === "matrix" ? folder : null, //folder for matrix
+            provider === "matrix" ? machine_ID?.replace('rt_', '') : null, //folder for matrix
+            provider === "matrix" ? folder?.replace('rt_', '') : null, //folder for matrix
             provider === "matrix" ? publishRate : null, //publish rate for matrix
             provider === "matrix" ? scanRate : null, //scan rate for matrix 
 

@@ -85,7 +85,6 @@ export default function Sitemanager() {
     setSMEName(sitemanager?.name);
     setAgentTableData(getArrayFromAgentsObject(sitemanager?.agents));
   }, [sitemanager]);
-
   const handleDomainChange = (event) => {
     setSMEDomain(event.target.value);
   };
@@ -161,7 +160,6 @@ export default function Sitemanager() {
       message: `Sitemanager configuration save correctly`,
     });
     dispatch(updateSitemanager(newSitemanager));
-    
   };
 
   const agentsColumnData = [
@@ -169,7 +167,7 @@ export default function Sitemanager() {
       accessorKey: "agent",
       header: "Agent",
       enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
+      enableEditing: false, //disable editing on this column
       enableSorting: true,
     },
     {

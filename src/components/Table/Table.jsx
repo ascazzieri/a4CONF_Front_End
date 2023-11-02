@@ -16,7 +16,6 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Delete, Edit, Add, FileDownload } from "@mui/icons-material";
-import { mapKeys } from "lodash";
 import { verifyIP, verifyIPCIDR } from "../../utils/utils";
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({
@@ -25,6 +24,8 @@ export const CreateNewAccountModal = ({
   onClose,
   onSubmit,
   selectableObjectData,
+  validationFields,
+  validationAgents
 }) => {
   const [values, setValues] = useState(() =>
     columns?.reduce((acc, column) => {
@@ -32,7 +33,7 @@ export const CreateNewAccountModal = ({
       return acc;
     }, {})
   );
-  
+
 
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
@@ -40,21 +41,42 @@ export const CreateNewAccountModal = ({
   };
 
   const handleSubmit = () => {
-    console.log(values.subnet);
-    if (
-      verifyIPCIDR(values.subnet) === false ||
-      verifyIP(values.gateway) === null
-    ){
+    let validationResult = true
+    if (!values) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `ip address not valid`,
+        message: `Unable to perform actions on null data`,
       });
-    }else{
+      return
+    }
+    let validationIterator = []
+    validationFields?.forEach((item) => {
+      if (Object.keys(values).some((accessorKey) => accessorKey === item)) {
+        validationIterator.push(values[item])
+      }
+    })
+    validationIterator?.forEach((item, index) => {
+      if (!validationAgents[index](item)) {
+        console.log(item)
+        console.log(verifyIPCIDR(item))
+        console.log(validationAgents[index](item))
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Error on ${item}, it doeas not satisfy the requested parameters`,
+        });
+        validationResult = false
+      }
+    })
+    if (validationResult) {
       onSubmit(values);
       onClose();
     }
+
+
   };
 
   let MenuItemIterator = [];
@@ -148,11 +170,12 @@ export const CreateNewAccountModal = ({
 };
 
 const Table = (props) => {
-  const { tableData, setTableData, columnsData, selectableObjectData } = props;
-  
+  const { tableData, setTableData, columnsData, selectableObjectData, validationObject } = props;
+
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [validationErrors, setValidationErrors] = useState({});
-  
+  const validationFields = validationObject && Object.keys(validationObject)
+  const validationAgents = validationObject && Object.values(validationObject)
+
   const handleCreateNewRow = (values) => {
     tableData.push(values);
     setTableData([...tableData]);
@@ -164,44 +187,53 @@ const Table = (props) => {
   };
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
 
-    if (!Object.keys(validationErrors).length) {
-      // Crea una copia dell'array
-      const updatedTableData = [...tableData];
-      if (
-        verifyIPCIDR(values.subnet) === false ||
-        verifyIP(values.gateway) === null
-      ){
+    let validationResult = true
+    if (!values) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Unable to perform actions on null data`,
+      });
+      return
+    }
+    let validationIterator = []
+    validationFields?.forEach((item) => {
+      if (Object.keys(values).some((accessorKey) => accessorKey === item)) {
+        validationIterator.push(values[item])
+      }
+    })
+    validationIterator?.forEach((item, index) => {
+      if (!validationAgents[index](item)) {
+        console.log(item)
+        console.log(verifyIPCIDR(item))
+        console.log(validationAgents[index](item))
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `ip address not valid`,
+          message: `Error on ${item}, it doeas not satisfy the requested parameters`,
         });
-      }else{
-        // Assegna il nuovo valore all'elemento specifico
+        validationResult = false
+      }
+    })
+    if (validationResult) {
+      // Crea una copia dell'array
+      const updatedTableData = [...tableData];
+
+      // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;
       // Aggiorna lo stato con la nuova copia dell'array
       setTableData(updatedTableData);
 
       // Invia/receive le chiamate API qui, quindi refetch o aggiorna i dati della tabella locale per il re-render
-      exitEditingMode(); // Richiesto per uscire dalla modalità di modifica e chiudere la modale di modifica
-      }
-      
+      exitEditingMode(); // Richiesto per uscire dalla modalità di modifica e chiudere la modale di modifica */
     }
-  };
-  
-  const handleCancelRowEdits = () => {
-    setValidationErrors({});
+
   };
 
   const handleDeleteRow = useCallback(
     (row) => {
-      /* if (
-        !confirm(`Are you sure you want to delete ${row.getValue("firstName")}`)
-      ) {
-        return;
-      } */
-      //send api delete request here, then refetch or update local table data for re-render
       tableData?.splice(row.index, 1);
       setTableData([...tableData]);
     },
@@ -239,7 +271,6 @@ const Table = (props) => {
         enableColumnOrdering
         enableEditing
         onEditingRowSave={handleSaveRowEdits}
-        onEditingRowCancel={handleCancelRowEdits}
         renderTopToolbarCustomActions={({ table }) => (
           <Box
             sx={{ display: "flex", gap: "1rem", p: "0.5rem", flexWrap: "wrap" }}
@@ -284,6 +315,8 @@ const Table = (props) => {
         onClose={() => setCreateModalOpen(false)}
         onSubmit={handleCreateNewRow}
         selectableObjectData={selectableObjectData}
+        validationFields={validationFields}
+        validationAgents={validationAgents}
       />
     </div>
   );

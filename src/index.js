@@ -12,15 +12,16 @@ import SuperUserProvider from "./utils/context/SuperUser";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-    <ThemeProvider theme={MUITheme}>
-      <Provider store={store}>
-        <SuperUserProvider>
-          <LoadingProvider>
-            <SnackbarProvider>
-              <App />
-            </SnackbarProvider>
-          </LoadingProvider>
-        </SuperUserProvider>
-      </Provider>
-    </ThemeProvider>
+  <ThemeProvider theme={MUITheme}>
+    <Provider store={store}>
+      <SuperUserProvider>
+        <LoadingProvider>
+          <SnackbarProvider>
+            <div className="page-blocker" id="page-blocker" />
+            <App />
+          </SnackbarProvider>
+        </LoadingProvider>
+      </SuperUserProvider>
+    </Provider>
+  </ThemeProvider>
 );

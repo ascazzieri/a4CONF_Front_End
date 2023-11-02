@@ -12,7 +12,7 @@ import { LoadingContext } from "../utils/context/Loading";
 import applied_logo from "../media/img/applied_logo.png";
 import { useLocation } from "react-router-dom";
 import React from "react";
-import { getAuthToken } from "../utils/utils";
+import { togglePageSleep } from "../utils/utils";
 
 const applied_background = {
   position: "fixed",
@@ -47,15 +47,19 @@ const Layout = () => {
 
   useEffect(() => {
     (async () => {
+
       const pathName = location?.pathname
       if (!pathName.includes("/login") && !pathName.includes("/register")) {
         loaderContext[1](true);
+        togglePageSleep('block')
         const confA = await get_confA();
         verbose && console.log("get conf A");
         if (confA) {
           dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
         }
         const confB = await get_confB();
+        togglePageSleep('release')
+        loaderContext[1](false);
         verbose && console.log("get conf B");
         if (confB) {
           dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
@@ -89,7 +93,7 @@ const Layout = () => {
             message: `Error on loading configuration from both PCs`,
           });
         }
-        loaderContext[1](false);
+       
       }
       //setBReady(true)
     })();

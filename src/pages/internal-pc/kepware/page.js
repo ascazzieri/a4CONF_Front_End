@@ -358,13 +358,13 @@ const Row = (props) => {
         event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
         event?.target?.name === "matrix"
           ? device?.machine_id
-            ? device?.machine_id
-            : "machine_test"
+            ? device?.machine_id?.replace('rt_','')
+            : null
           : null, //machine id for matrix
         event?.target?.name === "matrix"
           ? device?.folder
-            ? device?.folder
-            : "blob_test"
+            ? device?.folder?.replace("rt_",'')
+            : null
           : null, //folder for matrix
         event?.target?.name === "matrix"
           ? device?.scan_rate
