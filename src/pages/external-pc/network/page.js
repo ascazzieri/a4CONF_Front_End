@@ -5,6 +5,9 @@ import {
   updateCustomerNetwork,
   updatePingResult,
 } from "../../../utils/redux/reducers";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
@@ -18,6 +21,7 @@ import { SuperUserContext } from "../../../utils/context/SuperUser";
 import {
   AppBar,
   Box,
+  InputLabel,
   Button,
   Container,
   Divider,
@@ -43,6 +47,7 @@ import {
   TextField,
   Toolbar,
   Typography,
+  OutlinedInput
 } from "@mui/material";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -79,6 +84,12 @@ export default function ExternalNetwork() {
   const customerNetwork = useSelector(
     (state) => state.system?.network?.customer
   );
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  
+  
+    const [ssid, setSsid] = useState();
+    const [password, setPassword] = useState();
 
   const dispatch = useDispatch();
   const [currentTab, setCurrentTab] = useState(0);
@@ -150,7 +161,7 @@ export default function ExternalNetwork() {
     snackBarContext[1]({ ...newState, open: true });
   };
 
-  const [wifiTableData, setWifiTableData] = useState(
+  const [wifiData, setWifiData] = useState(
     getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
   );
 
@@ -182,7 +193,7 @@ export default function ExternalNetwork() {
     setCustomNTP(customerNetwork?.ntp?.length !== 0 ? true : false);
     setNTPAddress(customerNetwork?.ntp);
     setNATFeatures(customerNetwork?.nat);
-    setWifiTableData(
+    setWifiData(
       getArrayOfObjects(customerNetwork?.wireless, "ssid", "password")
     );
     setMachineToInternet(customerNetwork?.machine_to_internet);
@@ -205,70 +216,69 @@ export default function ExternalNetwork() {
   }, [customerNetwork]);
 
   const handleConnectionChange = (event) => {
-    setConnection(event.target.value);
+    setConnection(event?.target?.value);
   };
   const handleIPAddressChange = (event) => {
     const ip_addr = event?.target?.value?.split(",") || event?.target?.value;
     setIPAddress(ip_addr);
   };
   const handleDefaultGatewayChange = (event) => {
-    setDefaultGateway(event.target.value);
+    setDefaultGateway(event?.target?.value);
   };
   const handleDNSServerChnage = (event) => {
     const dns_server = event?.target?.value?.split(",") || event?.target?.value;
     setDNSServer(dns_server);
   };
   const handleConnectionTypeChange = (event) => {
-    setConnectionType(event.target.value);
+    setConnectionType(event?.target?.value);
   };
   const handleWifiChange = (event) => {
-    setWifi(event.target.value);
+    setWifi(event?.target?.value);
+    setSsid(event?.target?.value);
   };
-  const handleAddSSID = () => {
-    setWifiTableData((prevData) => [...prevData, { ssid: wifi, password: "" }]);
-  };
+  
 
   const handleNTPChange = (event) => {
-    setCustomNTP(event.target.checked);
+    setCustomNTP(event?.target?.checked);
   };
   const handleCustomNTPChange = (event) => {
-    setNTPAddress(event.target.value);
+    setNTPAddress(event?.target?.value);
   };
 
   const handleNATChange = (event) => {
-    setNATFeatures(event.target.checked);
+    setNATFeatures(event?.target?.checked);
   };
 
   const handleMTIChange = (event) => {
-    setMachineToInternet(event.target.checked);
+    setMachineToInternet(event?.target?.checked);
   };
 
   const handleExpandableListHosts = (event, ip) => {
     const oldList = [...expandedListHosts];
-    if (oldList.includes(ip)) {
+    if (oldList?.includes(ip)) {
       setExpandedListHosts((prevItems) =>
-        prevItems.filter((item) => item !== ip)
+        prevItems?.filter((item) => item !== ip)
       );
     } else {
-      oldList.push(ip);
+      oldList?.push(ip);
       setExpandedListHosts(oldList);
     }
   };
   const handleExpandableListPingNumber = (event, ip, number) => {
     const oldList = [...expandedListPingNumber];
-    if (oldList.includes(`${ip}.${number}`)) {
+    if (oldList?.includes(`${ip}?.${number}`)) {
       setExpandedListPingNumber((prevItems) =>
-        prevItems.filter((item) => item !== `${ip}.${number}`)
+        prevItems?.filter((item) => item !== `${ip}?.${number}`)
       );
     } else {
-      oldList.push(`${ip}.${number}`);
+      oldList?.push(`${ip}?.${number}`);
       setExpandedListPingNumber(oldList);
     }
   };
 
   const handleTestConnection = async () => {
     const testPingNumberInt = parseInt(testPingNumber)
-    if(!testPingNumber || !Number.isInteger(testPingNumberInt)){
+    if(!testPingNumber || !Number?.isInteger(testPingNumberInt)){
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -326,8 +336,8 @@ export default function ExternalNetwork() {
       return;
     }
     const oldHostList = new Set(hostList);
-    oldHostList.add(newHost.trim());
-    setHostList(Array.from(oldHostList));
+    oldHostList?.add(newHost?.trim());
+    setHostList(Array?.from(oldHostList));
   };
   const handleHostListDelete = (address) => {
     const newHostList = hostList?.filter((item) => item !== address);
@@ -335,25 +345,23 @@ export default function ExternalNetwork() {
   };
 
   const handleCustomerChange = (event) => {
-    event.preventDefault();
+    event?.preventDefault();
 
     let wifiObject = {};
-    if (wifiTableData.length !== 0) {
-      wifiTableData.map(
-        (item, index) => (wifiObject[`${item?.ssid}`] = item?.password)
-      );
+    if (ssid !== undefined && password !== undefined) {
+      wifiObject[ssid] = password
     }
 
     let routes = {};
-    if (routeTableData.length !== 0) {
-      routeTableData.map(
+    if (routeTableData?.length !== 0) {
+      routeTableData?.map(
         (item, index) => (routes[`${item?.subnet}`] = item?.gateway)
       );
     }
 
     let alias = {};
-    if (aliasTableData.length !== 0) {
-      aliasTableData.map(
+    if (aliasTableData?.length !== 0) {
+      aliasTableData?.map(
         (item, index) =>
           (alias[`${item?.alias}`] =
             !isNaN(parseInt(item?.value)) &&
@@ -366,8 +374,8 @@ export default function ExternalNetwork() {
     }
 
     let portsAllowed = {};
-    if (portsAllowedTableData.length !== 0) {
-      portsAllowedTableData.map(
+    if (portsAllowedTableData?.length !== 0) {
+      portsAllowedTableData?.map(
         (item, index) =>
           (portsAllowed[`${item?.external_tcp_ports}`] = [
             !isNaN(parseInt(item?.source)) &&
@@ -416,8 +424,8 @@ export default function ExternalNetwork() {
     const newCustomer = {
       dhcp: connection === "static" ? false : true,
       static: {
-        ip: ipAddress?.map((item) => item.trim()),
-        dns: dnsServer?.map((item) => item.trim()),
+        ip: ipAddress?.map((item) => item?.trim()),
+        dns: dnsServer?.map((item) => item?.trim()),
         gateway: defaultGateway?.trim(),
       },
       if_wan_medium: connectionType,
@@ -440,23 +448,11 @@ export default function ExternalNetwork() {
     dispatch(updateCustomerNetwork({ newCustomer }));
   };
 
-  const wifiColumnData = [
+  const wifiSettings = [
     {
-      accessorKey: "ssid",
-      header: "SSID",
-      enableColumnOrdering: true,
-      enableEditing: false, //disable editing on this column
-      enableSorting: true,
-      size: 80,
-    },
-    {
-      accessorKey: "password",
-      header: "Password",
-      enableColumnOrdering: true,
-      enableEditing: true, //disable editing on this column
-      enableSorting: true,
-      size: 80,
-    },
+      SSID : ssid,
+      Password : password
+    }
   ];
 
   const routesColumnData = [
@@ -464,7 +460,7 @@ export default function ExternalNetwork() {
       accessorKey: "subnet",
       header: "Subnet",
       enableColumnOrdering: true,
-      enableEditing: false, //disable editing on this column
+      enableEditing: true, //disable editing on this column
       enableSorting: true,
       size: 80,
     },
@@ -683,16 +679,10 @@ export default function ExternalNetwork() {
 
               {connectionType === "wireless" && (
                 <>
-                  {customerNetwork.essid &&
-                  customerNetwork?.essid.length !== 0 ? (
+                  {customerNetwork?.essid &&
+                  customerNetwork?.essid?.length !== 0 ? (
                     <>
                       <FormControl fullWidth>
-                        <Stack
-                          direction="row"
-                          spacing={3}
-                          justifyContent="flex-start"
-                          alignItems="center"
-                        >
                           <TextField
                             select
                             label="Add network"
@@ -700,7 +690,7 @@ export default function ExternalNetwork() {
                             defaultValue={""}
                             onChange={handleWifiChange}
                           >
-                            {customerNetwork?.essid.map((item) => {
+                            {customerNetwork?.essid?.map((item) => {
                               return (
                                 <MenuItem
                                   key={Math.random() + item}
@@ -709,13 +699,12 @@ export default function ExternalNetwork() {
                                   {item}
                                 </MenuItem>
                               );
-                            })}
+                              
+                            } 
+                            )}
                           </TextField>
 
-                          <Button onClick={handleAddSSID} variant="contained">
-                            Add SSID
-                          </Button>
-                        </Stack>
+                        
                       </FormControl>
                     </>
                   ) : (
@@ -728,16 +717,51 @@ export default function ExternalNetwork() {
                   )}
 
                   <FormLabel title={network_wifi_desc}>Wifi:</FormLabel>
-                  <CustomTable
-                    tableData={wifiTableData || []}
-                    setTableData={setWifiTableData}
-                    columnsData={wifiColumnData}
+                  <Divider />
+                
+                  <Stack direction="row" spacing={10} >
+                  <FormLabel fullWidth={true} variant="outlined">
+                  <InputLabel htmlFor="SSID">SSID</InputLabel>
+                  <OutlinedInput
+                    id="SSID"
+                    type={"text"}
+                    value={ssid || ""}
+                    onChange={(event) => {
+                      setSsid(event?.target?.value);
+                    }}
+                    
+                    label="SSID"
                   />
+                  </FormLabel>
+                  <FormLabel fullWidth={true} variant="outlined">
+                  <InputLabel htmlFor="Password">Password</InputLabel>
+                  <OutlinedInput
+                    type={showPassword ? "text" : "password"}
+                    label="Password"  
+                    value={password || ""}
+                    onChange={(event) => {
+                      setPassword(event?.target?.value);
+                      
+                    }}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onMouseUp={handleClickShowPassword}
+                          onMouseDown={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                   
+                  />
+                  </FormLabel>
+                  </Stack>
                   <Divider />
                 </>
               )}
-
-              <Divider />
             </>
           )}
           {currentTab === 1 && (
@@ -791,7 +815,7 @@ export default function ExternalNetwork() {
               </FormControl>
               <Divider />
 
-              {hostList && hostList.length !== 0 && (
+              {hostList && hostList?.length !== 0 && (
                 <>
                   <FormLabel title={network_ping_list_desc}>
                     Ping list:
@@ -800,26 +824,26 @@ export default function ExternalNetwork() {
                     <Table stickyHeader aria-label="sticky table" size="small">
                       <TableBody>
                         {hostList &&
-                          hostList.length !== 0 &&
-                          hostList.map((address) => {
+                          hostList?.length !== 0 &&
+                          hostList?.map((address) => {
                             return (
-                              <TableRow hover key={address + Math.random()}>
+                              <TableRow hover key={address + Math?.random()}>
                                 <TableCell
                                   align="center"
-                                  key={address + Math.random()}
+                                  key={address + Math?.random()}
                                 >
                                   {address}
                                 </TableCell>
                                 <TableCell
                                   align="center"
-                                  key={address + Math.random()}
+                                  key={address + Math?.random()}
                                 >
                                   <IconButton
                                     aria-label="delete"
                                     onClick={() => {
                                       handleHostListDelete(address);
                                     }}
-                                    key={address + Math.random()}
+                                    key={address + Math?.random()}
                                   >
                                     <DeleteIcon />
                                   </IconButton>
@@ -833,7 +857,7 @@ export default function ExternalNetwork() {
                   <Divider />
                 </>
               )}
-              {hostList && hostList.length !== 0 && (
+              {hostList && hostList?.length !== 0 && (
                 <>
                   <Box sx={{ flexGrow: 1 }}>
                     <FormLabel title={network_ping_list_debugger}>
@@ -884,9 +908,9 @@ export default function ExternalNetwork() {
                           aria-labelledby="nested-list-subheader"
                         >
                           {connectionTest &&
-                            connectionTest.length !== 0 &&
-                            connectionTest.map((item, index) => {
-                              const ip = Object.keys(item)[0] || undefined;
+                            connectionTest?.length !== 0 &&
+                            connectionTest?.map((item, index) => {
+                              const ip = Object?.keys(item)[0] || undefined;
                               if (!ip) {
                                 return <>Error on loading ping test results</>;
                               }
@@ -897,37 +921,37 @@ export default function ExternalNetwork() {
                                 }
                               }
                               return (
-                                <Fragment key={Math.random()}>
+                                <Fragment key={Math?.random()}>
                                   <ListItemButton
                                     onClick={(event) =>
                                       handleExpandableListHosts(event, ip)
                                     }
-                                    key={Math.random()}
+                                    key={Math?.random()}
                                   >
-                                    <ListItemIcon key={Math.random()}>
-                                      <LabelImportantIcon key={Math.random()} />
+                                    <ListItemIcon key={Math?.random()}>
+                                      <LabelImportantIcon key={Math?.random()} />
                                     </ListItemIcon>
                                     <ListItemText
                                       primary={ip}
-                                      key={Math.random()}
+                                      key={Math?.random()}
                                       style={{ color: colorLabel }}
                                     />
-                                    {expandedListHosts.includes(ip) ? (
-                                      <ExpandLess key={Math.random()} />
+                                    {expandedListHosts?.includes(ip) ? (
+                                      <ExpandLess key={Math?.random()} />
                                     ) : (
-                                      <ExpandMore key={Math.random()} />
+                                      <ExpandMore key={Math?.random()} />
                                     )}
                                   </ListItemButton>
                                   <Collapse
-                                    in={expandedListHosts.includes(ip)}
+                                    in={expandedListHosts?.includes(ip)}
                                     timeout="auto"
                                     unmountOnExit
-                                    key={Math.random()}
+                                    key={Math?.random()}
                                   >
                                     {ip &&
                                       item[ip] &&
-                                      Object.keys(item[ip]).length !== 0 &&
-                                      Object.keys(item[ip]).map(
+                                      Object?.keys(item[ip])?.length !== 0 &&
+                                      Object?.keys(item[ip])?.map(
                                         (pingNumber) => {
                                           const result =
                                             item[ip][pingNumber]?.result;
@@ -935,7 +959,7 @@ export default function ExternalNetwork() {
                                             ? item[ip][pingNumber]?.rtt
                                             : undefined;
                                           return (
-                                            <Fragment key={Math.random()}>
+                                            <Fragment key={Math?.random()}>
                                               <ListItemButton
                                                 onClick={(event) =>
                                                   handleExpandableListPingNumber(
@@ -945,50 +969,50 @@ export default function ExternalNetwork() {
                                                   )
                                                 }
                                                 sx={{ pl: 5 }}
-                                                key={Math.random()}
+                                                key={Math?.random()}
                                               >
                                                 <ListItemIcon
-                                                  key={Math.random()}
+                                                  key={Math?.random()}
                                                 >
                                                   <DvrIcon
-                                                    key={Math.random()}
+                                                    key={Math?.random()}
                                                   />
                                                 </ListItemIcon>
                                                 <ListItemText
                                                   primary={pingNumber}
-                                                  key={Math.random()}
+                                                  key={Math?.random()}
                                                 />
-                                                {expandedListPingNumber.includes(
+                                                {expandedListPingNumber?.includes(
                                                   `${ip}.${pingNumber}`
                                                 ) ? (
                                                   <ExpandLess
-                                                    key={Math.random()}
+                                                    key={Math?.random()}
                                                   />
                                                 ) : (
                                                   <ExpandMore
-                                                    key={Math.random()}
+                                                    key={Math?.random()}
                                                   />
                                                 )}
                                               </ListItemButton>
                                               <Collapse
-                                                in={expandedListPingNumber.includes(
+                                                in={expandedListPingNumber?.includes(
                                                   `${ip}.${pingNumber}`
                                                 )}
                                                 timeout="auto"
                                                 unmountOnExit
-                                                key={Math.random()}
+                                                key={Math?.random()}
                                               >
                                                 <List
                                                   component="div"
                                                   disablePadding
-                                                  key={Math.random()}
+                                                  key={Math?.random()}
                                                 >
                                                   <ListItemButton
                                                     sx={{ pl: 10 }}
-                                                    key={Math.random()}
+                                                    key={Math?.random()}
                                                   >
                                                     <ListItemIcon
-                                                      key={Math.random()}
+                                                      key={Math?.random()}
                                                     >
                                                       Result:
                                                     </ListItemIcon>
@@ -998,15 +1022,15 @@ export default function ExternalNetwork() {
                                                           ? goodStatus()
                                                           : badStatus()
                                                       }
-                                                      key={Math.random()}
+                                                      key={Math?.random()}
                                                     />
                                                   </ListItemButton>
                                                   <ListItemButton
                                                     sx={{ pl: 10 }}
-                                                    key={Math.random()}
+                                                    key={Math?.random()}
                                                   >
                                                     <ListItemIcon
-                                                      key={Math.random()}
+                                                      key={Math?.random()}
                                                     >
                                                       RTT
                                                     </ListItemIcon>
@@ -1014,7 +1038,7 @@ export default function ExternalNetwork() {
                                                       primary={
                                                         result ? rtt : "None"
                                                       }
-                                                      key={Math.random()}
+                                                      key={Math?.random()}
                                                     />
                                                   </ListItemButton>
                                                 </List>
