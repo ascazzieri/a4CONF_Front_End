@@ -544,7 +544,9 @@ export default function Dashboard() {
                     <div title={http_server_board_desc}>HTTP Server</div>
                   </Grid>
                   <Grid xs={6} sx={{ p: 1.5 }}>
-                    <div>value</div>
+                  {plugins_status?.http?.running
+                      ? goodStatus()
+                      : badStatus()}
                   </Grid>
                   <Grid xs={6} sx={{ p: 1.5 }}>
                     <Button

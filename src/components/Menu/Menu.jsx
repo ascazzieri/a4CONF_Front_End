@@ -17,6 +17,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import LowPriorityIcon from '@mui/icons-material/LowPriority';
 import MessageIcon from '@mui/icons-material/Message';
@@ -29,7 +30,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
 import MainButtons from "../MainButtons/MainButtons"
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
-import {togglePageSleep} from "../../utils/utils"
+import { togglePageSleep } from "../../utils/utils"
 import { SuperUserContext } from "../../utils/context/SuperUser"
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
@@ -224,7 +225,7 @@ export default function MiniDrawer(props) {
   const { children } = props;
   const superUser = useContext(SuperUserContext)[0]
 
-  const secondaryMenuList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Info"]
+  const secondaryMenuList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Info", "Change-Password"]
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
@@ -372,7 +373,7 @@ export default function MiniDrawer(props) {
                 }}>
                 <ListItemIcon className={classes.hoverIcons}>
                   {index === 0 && <InfoOutlinedIcon />}
-                  {index === 1 && <LowPriorityIcon />}
+                  {index === 1 && (superUser ? <LowPriorityIcon /> : <ManageAccountsIcon />)}
                   {index === 2 && <MessageIcon />}
                   {index === 3 && <PersonAddIcon />}
                   {index === 4 && <TuneIcon />}

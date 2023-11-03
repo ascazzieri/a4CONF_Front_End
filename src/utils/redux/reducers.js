@@ -18,7 +18,6 @@ const jsonSlice = createSlice({
       const newConf = payload?.payload;
       const { meta } = payload || null;
       const { actionType } = meta || {};
-
       if (actionType === "fromA") {
         //system
         state.system = _.merge(state.system, newConf?.system);

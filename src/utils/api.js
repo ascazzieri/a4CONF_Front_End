@@ -1,5 +1,5 @@
 import * as helper from "./utils";
-const verbose = window.location.href.includes("verbose");
+const verbose = window.location.href.includes("#verbose");
 
 export const get_version = async () => {
   try {
@@ -709,6 +709,20 @@ export const add_user = async (data) => {
   try {
     verbose && console.log(data);
     const res = await helper.fetchData("/conf/users/create", "POST", data);
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const change_password = async (data) => {
+  try {
+    verbose && console.log(data);
+    const res = await helper.fetchData(
+      "/conf/login/password/update",
+      "POST",
+      data
+    );
     verbose && console.log(res);
     return res;
   } catch (e) {

@@ -235,7 +235,6 @@ const UploadConfig = () => {
   const handleFileUpload = async (event) => {
     loadingContext[1](true)
     const file = event.target.files[0];
-    console.log(file)
     togglePageSleep('block')
     const fileContent = await new Promise((resolve) => {
       const reader = new FileReader();
@@ -251,9 +250,7 @@ const UploadConfig = () => {
       if (jsonObject?.crashed_page) {
         delete jsonObject.crashed_page
       }
-      console.log(jsonObject)
       if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === true) {
-        console.log("serve ip di recupero")
         const response = await add_recovery_ip();
         if (response) {
           alert("Recovery IP key has been find inside loaded back up and it has been restored successfully")
@@ -266,7 +263,6 @@ const UploadConfig = () => {
           });
         }
       } else if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === false) {
-        console.log("togli ip di recupero")
         const response = await remove_recovery_ip();
         if (response) {
           handleRequestFeedback({
@@ -284,7 +280,7 @@ const UploadConfig = () => {
           });
         }
       }
-      dispatch(updateAll({ payload: jsonObject, meta: { actionType: "upload" } }));
+      dispatch(updateAll({ payload: jsonObject, meta: { actionType: "fromBackup" } }));
 
       handleRequestFeedback({
         vertical: "bottom",

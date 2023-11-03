@@ -1,6 +1,7 @@
 import axios from "axios";
 import axiosRetry from "axios-retry";
 import PQueue from "p-queue";
+const verbose = window.location.href.includes("#verbose");
 const host = window?.location?.hostname;
 const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
 
@@ -193,6 +194,7 @@ export async function fetchData(url, method, body, noToken) {
   }
 
   const makeRequest = async () => {
+    let response;
     try {
       const path = window.location.origin;
       const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
@@ -201,13 +203,13 @@ export async function fetchData(url, method, body, noToken) {
 
       console.log(compatibleEncodedUrl);
 
-      const response = await axios(compatibleEncodedUrl, axiosConfig);
+      response = await axios(compatibleEncodedUrl, axiosConfig);
 
       // Axios handles non-2xx status codes as errors automatically
       const data = response.data;
       return data;
     } catch (error) {
-      throw new Error(`Axios errorrrrrr: ${error.message}`);
+      throw new Error(response?.detail || error.message);
     }
   };
 
@@ -548,10 +550,12 @@ export const deepMerge = (obj1, obj2) => {
   return result;
 };
 export const togglePageSleep = (action) => {
-  const blocker = document.getElementById("page-blocker");
-  if (action === "block") {
-    blocker.style.display = "block";
-  } else if (action === "release") {
-    blocker.style.display = "none";
+  if (!verbose) {
+    const blocker = document.getElementById("page-blocker");
+    if (action === "block") {
+      blocker.style.display = "block";
+    } else if (action === "release") {
+      blocker.style.display = "none";
+    }
   }
 };
