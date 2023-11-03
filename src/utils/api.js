@@ -116,6 +116,31 @@ export const createiotgw = async (
     console.error(e);
   }
 };
+export const multi_tags_to_array = async (channel, device, tags_list) => {
+  try {
+    const data = {
+      tags: tags_list,
+    };
+    verbose &&
+      console.log({
+        channe: channel,
+        device: device,
+        tags: tags_list,
+      });
+    const res = await helper.fetchData(
+      "/a4gate/kepware/multi_tags_to_array?channel=" +
+        channel +
+        "&device=" +
+        device,
+      "POST",
+      data
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 
 export const get_device_tags = async (channel, device) => {
   try {
@@ -153,6 +178,48 @@ export const get_twx_gtws_enabled = async () => {
       "/iotgw/http/client/twx/endpoint/enabled",
       "GET"
     );
+
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_memory_based_tags = async () => {
+  try {
+    const res = await helper.fetchData(
+      "/channel/device/tags/tree/memorybased",
+      "GET"
+    );
+
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const add_complex_arrays_to_iot_gateway = async (
+  iotgw_name,
+  devicename,
+  tags_list
+) => {
+  const data = { tags: tags_list };
+  try {
+    verbose && console.log(data);
+    const res = await helper.fetchData(
+      `/iotgw/http/client/add/tags/memorybased?iotgw_name=${iotgw_name}&devicename=${devicename}`,
+      "POST",
+      data
+    );
+    verbose && console.log(res);
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_all_iot_gateways_client = async () => {
+  try {
+    const res = await helper.fetchData("/iotgwhttp", "GET");
 
     verbose && console.log(res);
     return res;

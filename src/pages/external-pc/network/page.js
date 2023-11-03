@@ -4,6 +4,7 @@ import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import {
   updateCustomerNetwork,
   updatePingResult,
+  updateSitemanager,
 } from "../../../utils/redux/reducers";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -84,6 +85,7 @@ export default function ExternalNetwork() {
   const customerNetwork = useSelector(
     (state) => state.system?.network?.customer
   );
+  const sitemanager = useSelector((state) => state?.services?.sitemanager);
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -145,7 +147,7 @@ export default function ExternalNetwork() {
   const [customNTP, setCustomNTP] = useState(
     customerNetwork?.ntp?.length !== 0 ? true : false
   );
-  const [ntpAddress, setNTPAddress] = useState(customerNetwork?.ntp);
+  const [ntpAddress, setNTPAddress] = useState(customerNetwork?.ntp || []);
   const [NATFeatures, setNATFeatures] = useState(customerNetwork?.nat);
   const [machineToInternet, setMachineToInternet] = useState(
     customerNetwork?.machine_to_internet
@@ -192,7 +194,7 @@ export default function ExternalNetwork() {
     setDefaultGateway(customerNetwork?.static?.gateway || "");
     setDNSServer(customerNetwork?.static?.dns || []);
     setCustomNTP(customerNetwork?.ntp?.length !== 0 ? true : false);
-    setNTPAddress(customerNetwork?.ntp);
+    setNTPAddress(customerNetwork?.ntp || []);
     setNATFeatures(customerNetwork?.nat);
     setMachineToInternet(customerNetwork?.machine_to_internet);
     setConnection(customerNetwork?.dhcp ? "dhcp" : "static");
@@ -247,7 +249,8 @@ export default function ExternalNetwork() {
     setCustomNTP(event?.target?.checked);
   };
   const handleCustomNTPChange = (event) => {
-    setNTPAddress(event?.target?.value);
+    const ntp_addr = event?.target?.value?.split(",") || event?.target?.value;
+    setNTPAddress(ntp_addr);
   };
 
   const handleNATChange = (event) => {
@@ -444,6 +447,11 @@ export default function ExternalNetwork() {
       INPUT_NAT: inputNATTableData,
       firewall_enabled: customerNetwork?.firewall_enabled,
     };
+    const newSitemanager = {
+      ...sitemanager,
+      usentp: !customNTP,
+    };
+
     handleRequestFeedback({
       vertical: "bottom",
       horizontal: "right",
@@ -451,14 +459,8 @@ export default function ExternalNetwork() {
       message: `Network configuration save correctly`,
     });
     dispatch(updateCustomerNetwork({ newCustomer }));
+    dispatch(updateSitemanager(newSitemanager));
   };
-
-  const wifiSettings = [
-    {
-      SSID: ssid,
-      Password: password,
-    },
-  ];
 
   const routesColumnData = [
     {

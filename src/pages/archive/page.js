@@ -24,22 +24,32 @@ import { SnackbarContext } from "../../utils/context/SnackbarContext";
 
 export default function Archive() {
   const [archive, setArchive] = useState();
-  const [oldArchive, setOldArchive] = useState();
   const [title, setTitle] = useState();
+  const [oldTitle, setOldTitle] = useState();
   const [content, setContent] = useState();
+
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-  const handleSave = () => {
+
+  const handleSave = (isAdding) => {
     const newArchive = { ...archive };
 
-    if (oldArchive === title) {
-      newArchive[title] = content;
+    const date = new Date(); // Ottieni la data corrente
+    const formattedDate = `${date.getDate()}/${
+      date.getMonth() + 1
+    }/${date.getFullYear()}`; // Formatta la data come "gg/mm/aaaa"
+    const timestamp = `${date.getUTCHours()}:${date.getUTCMinutes()}:${date.getUTCSeconds()}`; // Ottieni il timestamp
+    const newTitle = `${title} - ${formattedDate} - ${timestamp}`; // Aggiungi la data e il timestamp a `title` // Aggiungi la data a `title`
+
+    if (oldTitle) {
+      newArchive[oldTitle] = content;
     } else {
-      newArchive[title] = content;
-      if (oldArchive) delete newArchive[oldArchive];
+      newArchive[newTitle] = content;
     }
+    setOldTitle(null)
+
     if (title.trim() === "" || content.trim() === "") {
       handleRequestFeedback({
         vertical: "bottom",
@@ -57,7 +67,7 @@ export default function Archive() {
               vertical: "bottom",
               horizontal: "right",
               severity: "success",
-              message: `Archive configuration retrieved successfully`,
+              message: `Archive configuration saved successfully`,
             });
           } else {
             handleRequestFeedback({
@@ -107,14 +117,13 @@ export default function Archive() {
         message: `An error occurred on delete item`,
       });
     }
-    console.log(response);
   };
   const [mod, setMod] = useState(false);
   const handleModify = (item) => {
     setTitle(item);
     setContent(archive[item]);
     setMod(true);
-    setOldArchive(item);
+    setOldTitle(item);
   };
   const closeMod = () => {
     setMod(false);
@@ -170,7 +179,7 @@ export default function Archive() {
             vertical: "bottom",
             horizontal: "right",
             severity: "success",
-            message: `archive configuration request OK`,
+            message: `Archive notes loaded correctly`,
           });
         } else {
           handleRequestFeedback({
@@ -181,13 +190,17 @@ export default function Archive() {
           });
         }
       } catch (err) {
-        console.log("Error occured when fetching books");
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on change archive configuration`,
+        });
       }
     })();
   };
   return (
     <ErrorCacher>
-      <Container sx={{ flexGrow: 1 }} disableGutters></Container>
       <Container sx={{ flexGrow: 1 }} disableGutters>
         <Card sx={{ mt: 1, p: 2 }}>
           <Stack
@@ -265,10 +278,7 @@ export default function Archive() {
                   fullWidth={true}
                   label="Title"
                   value={title}
-                  onChange={(event) => {
-                    setTitle(event.target.value);
-                  }}
-                  multiline
+                  disabled
                 />
                 <Divider />
                 <TextField
@@ -278,7 +288,7 @@ export default function Archive() {
                   rows={7}
                   value={content}
                   onChange={(event) => {
-                    setContent(event.target.value);
+                    setContent(event?.target?.value);
                   }}
                 />
               </div>
@@ -330,11 +340,11 @@ export default function Archive() {
                 alignItems="center"
                 style={{ width: "100%" }}
               >
-                <Button variant="contained" size="small" onClick={handleSave}>
-                  Save
-                </Button>
-                <Button variant="contained" size="small" onClick={handleClear}>
+                <Button variant="contained" onClick={handleClear}>
                   Clear
+                </Button>
+                <Button variant="contained" onClick={() => handleSave(true)}>
+                  Save
                 </Button>
               </Stack>
             </Card>

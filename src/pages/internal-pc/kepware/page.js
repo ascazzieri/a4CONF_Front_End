@@ -1,11 +1,11 @@
 import { useState, Fragment, useContext } from "react";
-import ReactDownloadLink from "react-download-link";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import { updateKepware, updateMachinesID } from "../../../utils/redux/reducers";
-import * as helper from "../../../utils/utils";
 import BackButton from "../../../components/BackButton/BackButton";
 import SaveButton from "../../../components/SaveButton/SaveButton";
+import CreateComplexArray from "../../../components/MultipleTagsToArrayComponent/CreateComplexArray";
+import AddCAToIoTGateway from "../../../components/MultipleTagsToArrayComponent/AddCAToIoTGateway";
 import {
   loadChannels,
   createiotgw,
@@ -75,7 +75,6 @@ import {
   kepware_channels_desc,
   kepware_device_desc,
   kepware_devicenumber_desc,
-  kepware_gate_desc,
   kepware_gateway_row_desc,
   kepware_licence_desc,
   kepware_machine_serial_desc,
@@ -358,12 +357,12 @@ const Row = (props) => {
         event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
         event?.target?.name === "matrix"
           ? device?.machine_id
-            ? device?.machine_id?.replace('rt_','')
+            ? device?.machine_id?.replace("rt_", "")
             : null
           : null, //machine id for matrix
         event?.target?.name === "matrix"
           ? device?.folder
-            ? device?.folder?.replace("rt_",'')
+            ? device?.folder?.replace("rt_", "")
             : null
           : null, //folder for matrix
         event?.target?.name === "matrix"
@@ -971,6 +970,7 @@ export default function Kepware() {
         "Kepware configuration",
         "License",
         "Machines Configured",
+        "Advanced Operations",
         "JSON",
       ]
     : [
@@ -979,6 +979,7 @@ export default function Kepware() {
         "Kepware configuration",
         "License",
         "Machines Configured",
+        "Advanced Operations",
       ];
 
   const [machineSerial, setMachineSerial] = useState();
@@ -1304,7 +1305,7 @@ export default function Kepware() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 5 && superUser && <JSONTree data={kepware} />}
+        {currentTab === 6 && superUser && <JSONTree data={kepware} />}
 
         <Snackbar
           open={open}
@@ -1635,6 +1636,14 @@ export default function Kepware() {
                   </List>
                 </Box>
               </Box>
+            </>
+          )}
+          {currentTab === 5 && (
+            <>
+              <Divider />
+              <CreateComplexArray />
+              <Divider />
+              <AddCAToIoTGateway />
             </>
           )}
 

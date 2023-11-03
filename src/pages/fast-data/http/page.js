@@ -8,6 +8,7 @@ import { SuperUserContext } from "../../../utils/context/SuperUser";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import {
+  Autocomplete,
   Button,
   Container,
   Divider,
@@ -30,7 +31,6 @@ export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
   );
-
   const dispatch = useDispatch();
   const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
@@ -88,13 +88,6 @@ export default function FTP() {
       getArrayOfObjects(http?.blob_settings, "file_name", "blob_folder")
     );
   }, [http]);
-
-  const handleServerBindChange = (event) => {
-    const ip = event?.target?.value;
-    if (ip) {
-      setServerBind(ip);
-    }
-  };
   const handleCustomPortEnableChange = (event) => {
     const customPort = event?.target?.checked;
     if (customPort !== undefined) {
@@ -154,7 +147,7 @@ export default function FTP() {
       blob_settings: blobSettingsArray,
     };
 
-    dispatch(updateFastData({ industrial: { http: { newHTTP } } }));
+    dispatch(updateFastData({ industrial: { http: newHTTP } }));
   };
 
   const blobColumnsData = [
@@ -185,7 +178,7 @@ export default function FTP() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && superUser && <JSONTree data={http} />}
+        {currentTab === 3 && superUser && <JSONTree data={http} />}
 
         <form onSubmit={handleHTTPChange}>
           {currentTab === 0 && (
@@ -195,14 +188,18 @@ export default function FTP() {
                   Binding IP address of HTTP server:
                 </FormLabel>
 
-                <TextField
+                <Autocomplete
+                  disablePortal
                   title={fast_http_host_desc}
-                  type="text"
-                  label="Host bindind"
-                  helperText="HTTP server bind addresses"
-                  value={serverBind}
-                  required={true}
-                  onChange={handleServerBindChange}
+                  options={["127.0.0.1", "0.0.0.0"]}
+                  label="Host binding"
+                  value={serverBind || "0.0.0.0"}
+                  onChange={(event, newValue) => {
+                    setServerBind(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="HTTP server bind addresses" />
+                  )}
                 />
               </FormControl>
               <Divider />
@@ -217,7 +214,7 @@ export default function FTP() {
 
                   <Switch
                     title={fast_http_port_desc}
-                    checked={customPortEnable}
+                    checked={customPortEnable|| false}
                     onChange={handleCustomPortEnableChange}
                   />
                 </Stack>
@@ -237,7 +234,7 @@ export default function FTP() {
                         pattern: "[0-9]*",
                       }}
                       label="Port number"
-                      value={serverPort}
+                      value={serverPort || 8080}
                       onChange={handleServerPortChange}
                     />
                   </FormControl>
@@ -253,9 +250,9 @@ export default function FTP() {
                 <TextField
                   title={fast_http_file_desc}
                   type="text"
-                  label="File format"
-                  helperText="Add format to file"
-                  value={serverPath}
+                  label="HTTP path"
+                  helperText="Write http path in order to receive files from the sender agent"
+                  value={serverPath || "csv"}
                   required={true}
                   onChange={handleServerPathChange}
                 />
@@ -274,7 +271,7 @@ export default function FTP() {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Switch
                     title={fast_http_suffix_desc}
-                    checked={addFileSuffixEnable}
+                    checked={addFileSuffixEnable || false}
                     onChange={handleAddSuffixEnableChange}
                   />
                 </Stack>
@@ -291,7 +288,7 @@ export default function FTP() {
                       type="text"
                       label="File suffix"
                       helperText="Add file suffix"
-                      value={addFileSuffixFormat}
+                      value={addFileSuffixFormat || "/csv"}
                       onChange={handleAddSuffixFormatChange}
                     />
                   </FormControl>
