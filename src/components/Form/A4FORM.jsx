@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Checkbox,
   FormLabel,
+  Radio
 } from "@mui/material";
 
 const A4Field = (props) => {
@@ -100,8 +101,6 @@ const A4ButtonGroup = (props) => {
             endIcon,
             component,
           } = item;
-
-          console.log(item);
           return (
             <Button
               key={Math.random() * buttonData.length}
@@ -205,9 +204,7 @@ export default function A4FORM(props) {
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event);
-    console.log(formData);
   };
-
   return (
     <FormCard sectionTitle={sectionTitle}>
       <form onSubmit={handleSubmit}>
@@ -215,7 +212,6 @@ export default function A4FORM(props) {
           {inputsData &&
             inputsData.length !== 0 &&
             inputsData.map((item, index) => {
-              console.log(item);
               const type = item?.inputType;
               const properties = item?.properties;
               if (type === "field") {

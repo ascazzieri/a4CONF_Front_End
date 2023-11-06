@@ -23,6 +23,7 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import DriveFileMoveOutlinedIcon from "@mui/icons-material/DriveFileMoveOutlined";
 import DoDisturbIcon from "@mui/icons-material/DoDisturb";
 import HttpOutlinedIcon from "@mui/icons-material/HttpOutlined";
@@ -63,7 +64,10 @@ export default function FastData() {
 
   const [showSaskey, setShowSaskey] = useState(false);
   const handleClickShowSas = () => setShowSaskey((show) => !show);
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   useEffect(() => {
     setFTPEnabled(fastdata?.industrial?.ftp?.enabled);
     setHTTPEnabled(fastdata?.industrial?.http?.enabled);
@@ -115,7 +119,12 @@ export default function FastData() {
         azure_sas: blobConnectionSas,
       },
     };
-
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Fast data configuration save correctly`,
+    });
     dispatch(updateFastData({ customer: newBlobConnection }));
   };
 

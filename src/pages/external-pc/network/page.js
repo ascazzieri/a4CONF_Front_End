@@ -406,7 +406,6 @@ export default function ExternalNetwork() {
         });
         return;
       }
-
       if (verifyIP(defaultGateway) === null) {
         handleRequestFeedback({
           vertical: "bottom",
@@ -417,6 +416,16 @@ export default function ExternalNetwork() {
         return;
       }
     }
+    if (!dnsServer?.every(verifyIP)) {   
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `DNS server address not valid`,
+      });
+      return;
+    }
+
     if (customNTP === true) {
       if (verifyIP(ntpAddress) === null) {
         handleRequestFeedback({

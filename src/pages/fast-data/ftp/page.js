@@ -9,6 +9,7 @@ import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import SaveButton from "../../../components/SaveButton/SaveButton";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
   Container,
   Divider,
@@ -59,7 +60,10 @@ export default function FTP() {
 
     return arrayOfObjects;
   };
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   //Server
   const [serverIP, setServerIP] = useState(ftp?.server?.ip_address || "");
   const [serverType, setServerType] = useState(ftp?.server?.type || "standard");
@@ -78,7 +82,6 @@ export default function FTP() {
   const [usersTableData, setUsersTableData] = useState(
     ftp?.server?.users || []
   );
-  console.log(usersTableData);
   //File timestamp
   const [addTimestamp, setAddTimestamp] = useState(
     ftp?.file_timestamp?.add_timestamp_to_filename
@@ -185,7 +188,12 @@ export default function FTP() {
       },
       blob_settings: blobSettingsArray,
     };
-
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `FTP configuration save correctly`,
+    });
     dispatch(updateFastData({ industrial: { ftp: newFTP } }));
   };
 

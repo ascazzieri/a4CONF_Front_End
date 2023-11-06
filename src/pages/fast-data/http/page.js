@@ -7,6 +7,7 @@ import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import Table from "../../../components/Table/Table";
 import BackButton from "../../../components/BackButton/BackButton";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
   Autocomplete,
   Button,
@@ -75,7 +76,10 @@ export default function FTP() {
   const [blobTableData, setBlobTableData] = useState(
     getArrayOfObjects(http?.blob_settings, "file_name", "blob_folder")
   );
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   //Update React states
   useEffect(() => {
     setServerBind(http?.http_server?.host);
@@ -146,7 +150,12 @@ export default function FTP() {
       },
       blob_settings: blobSettingsArray,
     };
-
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `HTTP configuration save correctly`,
+    });
     dispatch(updateFastData({ industrial: { http: newHTTP } }));
   };
 

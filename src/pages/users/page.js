@@ -145,7 +145,6 @@ export default function ManageUsers() {
               password: password,
             };
             const response = await add_user(newUserData);
-            console.log(response)
             if (response) {
               handleRequestFeedback({
                 vertical: "bottom",

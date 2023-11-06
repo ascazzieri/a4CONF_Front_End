@@ -111,8 +111,6 @@ export default function OPCServer() {
   const [iotGatewaysToListDisabled, setIotGatewaysToListDisabled] = useState(
     []
   );
-  console.log(iotGatewaysToList);
-  console.log(iotGatewaysToListDisabled);
   const [iotGatewayTo, setIotGatewayTo] = useState();
 
   const [iotGatewaysToTableData, setIotGatewaysToTableData] = useState(

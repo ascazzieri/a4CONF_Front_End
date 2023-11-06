@@ -22,7 +22,6 @@ import {
 
 /* window.addEventListener('resize', function (event) {
   const viewportWidth = window.innerWidth
-  console.log(viewportWidth)
 }, true); */
 
 function TabPanel(props) {
@@ -99,22 +98,18 @@ export default function VerticalTabs(props) {
   };
 
   const handleFirewallChange = (event) => {
-    console.log(event.target.checked);
     dispatch(updateFirewallEnable(event.target.checked));
   };
 
   const handleSitemanagerChange = (event) => {
-    console.log(event.target.checked);
     dispatch(updateSitemanagerEnable(event.target.checked));
   };
 
   const handleThingworxChange = (event) => {
-    console.log(event.target.checked);
     dispatch(updateThingworxEnable(event.target.checked));
   };
 
   const handleOPCServerChange = (event) => {
-    console.log(event.target.checked);
     dispatch(updateOPCServerEnable(event.target.checked));
   };
 

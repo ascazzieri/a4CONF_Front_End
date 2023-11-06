@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateBackChannel } from "../../utils/redux/reducers";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { JSONTree } from "react-json-tree";
 import Table from "../../components/Table/Table";
+import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
 import {
   Container,
@@ -18,6 +19,11 @@ export default function BackChannel() {
   const backChannel = useSelector((state) => state?.services?.backchannel);
 
   const dispatch = useDispatch();
+ 
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
 
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = ["Topics", "File names", "JSON"];
@@ -57,6 +63,12 @@ export default function BackChannel() {
       topics: topicsArray,
       files: filesArray,
     };
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Back Channel configuration save correctly`,
+    });
     dispatch(updateBackChannel({ newBackChannel }));
   };
 

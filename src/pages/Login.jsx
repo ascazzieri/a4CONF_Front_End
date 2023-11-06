@@ -50,7 +50,6 @@ export default function Login(props) {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-  console.log(elevation)
   const handleLogin = async () => {
     if (username.trim() !== "" && password.trim() !== "") {
       (async () => {

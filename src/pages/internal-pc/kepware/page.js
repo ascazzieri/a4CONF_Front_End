@@ -294,8 +294,6 @@ const Row = (props) => {
     setRowData(updatedRowData);
   };
   const handleCreate = async (event, device) => {
-    console.log(event?.target?.name);
-    console.log(device);
     if (
       event?.target?.name === "twa" &&
       (!device?.endpoint || device?.endpoint?.trim() === "")
