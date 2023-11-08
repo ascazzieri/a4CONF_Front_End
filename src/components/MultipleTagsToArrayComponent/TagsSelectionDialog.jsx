@@ -7,14 +7,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import TransferComponent from "./TransferComponent/TransferComponent"
+import { LoadingContext } from '../../utils/context/Loading';
 import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { multi_tags_to_array } from '../../utils/api';
 
 export default function MaxWidthDialog(props) {
-    const { open, setOpen, channel, device, tags } = props
+    const { open, setOpen, channel, device, tags, setMemoryBasedList } = props
     const [iotGatewayCart, setIotGatewayCart] = useState([])
 
     const snackBarContext = useContext(SnackbarContext);
+    const loading = useContext(LoadingContext)
 
     //const { vertical, horizontal, severity, open, message } = snackBarContext[0];
     const handleRequestFeedback = (newState) => {
@@ -81,14 +83,17 @@ export default function MaxWidthDialog(props) {
     const handleCreate = async (event) => {
         const totalTagList = transformIotGatewayCart(tags, channel, device)
         const finalTagList = findMatches(iotGatewayCart, totalTagList)
+        loading[1](true)
         const response = await multi_tags_to_array(channel, device, finalTagList)
-        if (response)
+        if (response) {
+            setMemoryBasedList(response)
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "success",
                 message: `Complex array for channel: ${channel} of ${device} has been created correctly`,
             });
+        }
         else {
             handleRequestFeedback({
                 vertical: "bottom",
@@ -97,6 +102,7 @@ export default function MaxWidthDialog(props) {
                 message: `An error occurred during creation of complex array, please check Kepware configuration`,
             });
         }
+        loading[1](false)
 
     };
 

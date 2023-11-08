@@ -82,14 +82,14 @@ export default function Dashboard() {
   const [hostName, setHostName] = useState(
     system?.hostname?.industrial === system?.hostname?.customer
       ? system?.hostname?.industrial
-      : ""
+      : null
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
         ? system?.hostname?.industrial
-        : ""
+        : null
     );
   }, [system]);
   useEffect(() => {
@@ -138,14 +138,6 @@ export default function Dashboard() {
   };
 
   const [count, setCount] = useState(0);
-  let hostNameHelperText = "";
-
-  if (!hostName) {
-    hostNameHelperText = "Write a4GATE serial number S/N";
-  } else if (hostName === "") {
-    hostNameHelperText =
-      "a4GATE hostname of Data Collector and Data Sender do not match. Please insert S/N as hostname and restart a4GATE";
-  }
   const [isInDashboard, setIsInDashboard] = useState(false);
   const [kepwareAnchor, setKepwareAnchor] = useState(null);
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
@@ -248,10 +240,15 @@ export default function Dashboard() {
                     </FormLabel>
 
                     <TextField
+                      error={hostName ? false : true}
                       title={host_name_desc}
                       type="text"
                       label="a4GATE hostname"
-                      helperText={hostNameHelperText}
+                      helperText={
+                        hostName
+                          ? "A4GATE S/N"
+                          : `A4GATE hostname is defferent between data collector: ${system?.hostname?.industrial} and data sender: ${system?.hostname?.customer}`
+                      }
                       className="a4gate-hostname-form"
                       value={hostName || ""}
                       required={true}
@@ -260,11 +257,7 @@ export default function Dashboard() {
                       }}
                     />
                   </FormControl>
-                  <Button
-                    variant="contained"
-                    onClick={handleHostNameChange}
-                    style={{marginTop:23}}
-                  >
+                  <Button variant="contained" onClick={handleHostNameChange}>
                     Save
                   </Button>
                 </Stack>
@@ -544,9 +537,7 @@ export default function Dashboard() {
                     <div title={http_server_board_desc}>HTTP Server</div>
                   </Grid>
                   <Grid xs={6} sx={{ p: 1.5 }}>
-                  {plugins_status?.http?.running
-                      ? goodStatus()
-                      : badStatus()}
+                    {plugins_status?.http?.running ? goodStatus() : badStatus()}
                   </Grid>
                   <Grid xs={6} sx={{ p: 1.5 }}>
                     <Button

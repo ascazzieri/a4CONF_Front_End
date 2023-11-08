@@ -7,6 +7,7 @@ import { Autocomplete, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { get_memory_based_tags, add_complex_arrays_to_iot_gateway, get_iot_gtws_http_client_enabled } from "../../utils/api";
+import CachedIcon from "@mui/icons-material/Cached";
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
@@ -22,7 +23,8 @@ import Divider from '@mui/material/Divider';
 
 const steps = ['Choose the device', 'Select complex array tags', 'Select IoT Gateway', "Add Tags to the IoT Gateway selected"];
 
-export default function AddCAToIoTGateway() {
+export default function AddCAToIoTGateway(props) {
+    const { memoryBasedList, setMemoryBasedList } = props
 
     const snackBarContext = useContext(SnackbarContext);
     const loadingContext = useContext(LoadingContext);
@@ -35,7 +37,6 @@ export default function AddCAToIoTGateway() {
 
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
-    const [memoryBasedList, setMemoryBasedList] = useState([])
     const [iotGatewaysList, setIoTGatewaysList] = useState([])
     const [selectedDevice, setSelectedDevice] = useState()
     const [selectedIotGateway, setSelectedIoGateway] = useState("")
@@ -93,6 +94,72 @@ export default function AddCAToIoTGateway() {
 
     }, [memoryBasedList, selectedDevice, complexArraysSelected])
 
+    const handleReloadMemoryBasedDevice = async () => {
+        loadingContext[1](true);
+        const deviceMemoryBased = await get_memory_based_tags();
+        console.log("get kepware device for complex array");
+
+        if (deviceMemoryBased && Object.keys(deviceMemoryBased).length !== 0) {
+            setMemoryBasedList(deviceMemoryBased)
+
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "success",
+                message: `Kepware complex array devices loaded correctly`,
+            });
+        } else if (deviceMemoryBased && Object.keys(deviceMemoryBased).length === 0) {
+            setMemoryBasedList(deviceMemoryBased)
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `Kepware devices not found with complex arrays`,
+            });
+        } else {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred during Kepware complex array devices loading`,
+            });
+        }
+        loadingContext[1](false);
+    }
+
+    const handleReloadIoTGateways = async () => {
+        loadingContext[1](true);
+        const iotGateways = await get_iot_gtws_http_client_enabled()
+        console.log("get kepware iot gateways");
+
+        if (iotGateways && iotGateways?.length !== 0) {
+            setIoTGatewaysList(iotGateways)
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "success",
+                message: `Kepware client IoT Gateway loaded correctly`,
+            });
+        } else if (iotGateways && iotGateways?.length === 0) {
+            setIoTGatewaysList(iotGateways)
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `No Kepware client IoT Gateway enabled found`
+            })
+        } else {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred on loading IoT Gateways from Kepware`
+            })
+        }
+
+        loadingContext[1](false);
+
+    }
 
 
     useEffect(() => {
@@ -280,6 +347,13 @@ export default function AddCAToIoTGateway() {
                     })}
                 </Stepper>
                 {activeStep === 0 && <Fragment>
+                    <Button
+                        onClick={handleReloadMemoryBasedDevice}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                    >
+                        Refresh Complex Array devices
+                    </Button>
                     <Typography sx={{ mt: 2, mb: 1 }}>Choose the device from the memory based Kepware droplist below:</Typography>
 
                     <Autocomplete
@@ -359,6 +433,13 @@ export default function AddCAToIoTGateway() {
                     </Box>
                 </Fragment>)}
                 {activeStep === 2 && (<Fragment>
+                    <Button
+                        onClick={handleReloadIoTGateways}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                    >
+                        Refresh Kepware IoT Gateways
+                    </Button>
                     <Typography sx={{ mt: 2, mb: 1 }}>Choose an IoT Gateway from the droplist below in which to add: {complexArraysSelected?.toString()}</Typography>
                     <Autocomplete
                         id="kepware-channel"
@@ -406,6 +487,17 @@ export default function AddCAToIoTGateway() {
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
                             <Button onClick={handleReset}>Reset</Button>
+                        </Box>
+                    </Fragment>
+                )}
+                {activeStep === steps?.length && (
+                    <Fragment>
+                        <Typography sx={{ mt: 2, mb: 1 }}>
+                            All steps completed! You can now check on KepServerEX inside IoT Gateway {selectedIotGateway} if {selectedDevice} has been add
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
+                            <Box sx={{ flex: '1 1 auto' }} />
+                            <Button onClick={handleReset}>Return</Button>
                         </Box>
                     </Fragment>
                 )}

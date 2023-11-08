@@ -8,13 +8,16 @@ import Button from '@mui/material/Button';
 import TagsSelectionDialog from "./TagsSelectionDialog"
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
+import CachedIcon from "@mui/icons-material/Cached";
 import { loadChannels, get_device_tags } from "../../utils/api";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
 
 const steps = ['Select a Kepware Channel', 'Choose a Device from the Channel Selected', 'Import only the tag you need'];
 
-export default function MultipleTagsToArrayComponent() {
+export default function MultipleTagsToArrayComponent(props) {
+
+    const { channelList, setChannelList, setMemoryBasedList } = props
 
     const snackBarContext = useContext(SnackbarContext);
     const loadingContext = useContext(LoadingContext);
@@ -28,47 +31,80 @@ export default function MultipleTagsToArrayComponent() {
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());
 
-    const [channelList, setChannelList] = useState([])
+    /* const [channelList, setChannelList] = useState([]) */
 
     const [selectedChannel, setSelectedChannel] = useState()
     const [selectedDevice, setSelectedDevice] = useState()
     const [deviceTags, setDeviceTags] = useState()
     const [tagsSelectionDialog, setTagsSelectionDialog] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            loadingContext[1](true);
-            const kepwareChannels = await loadChannels();
-            console.log("get kepware channels");
+    const handleRefreshKepwareChannels = async () => {
+        loadingContext[1](true);
+        const kepwareChannels = await loadChannels();
+        console.log("get kepware channels");
 
-            if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
-                setChannelList(kepwareChannels)
-                //setChannelRows(buildRows(kepwareChannels));
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "success",
-                    message: `Kepware channels loaded`,
-                });
-            } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
-                setChannelList(kepwareChannels)
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "error",
-                    message: `No Kepware Channel found`,
-                });
-            } else {
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "error",
-                    message: `An error occurred during Kepware Channels loading`,
-                });
-            }
-            loadingContext[1](false);
-        })();
-    }, []);
+        if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
+            setChannelList(kepwareChannels)
+            //setChannelRows(buildRows(kepwareChannels));
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "success",
+                message: `Kepware channels loaded`,
+            });
+        } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
+            setChannelList(kepwareChannels)
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `No Kepware Channel found`,
+            });
+        } else {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred during Kepware Channels loading`,
+            });
+        }
+        loadingContext[1](false);
+    }
+
+    /*     useEffect(() => {
+            (async () => {
+                loadingContext[1](true);
+                const kepwareChannels = await loadChannels();
+                console.log("get kepware channels");
+    
+                if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
+                    setChannelList(kepwareChannels)
+                    //setChannelRows(buildRows(kepwareChannels));
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "success",
+                        message: `Kepware channels loaded`,
+                    });
+                } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
+                    setChannelList(kepwareChannels)
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `No Kepware Channel found`,
+                    });
+                } else {
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `An error occurred during Kepware Channels loading`,
+                    });
+                }
+                loadingContext[1](false);
+            })();
+        }, []); */
 
 
     const handleStartBrowsing = async () => {
@@ -105,6 +141,7 @@ export default function MultipleTagsToArrayComponent() {
                     channel={selectedChannel}
                     device={selectedDevice}
                     tags={deviceTags}
+                    setMemoryBasedList={setMemoryBasedList}
                 />
             )}
             <Box sx={{ width: '100%' }}>
@@ -120,7 +157,15 @@ export default function MultipleTagsToArrayComponent() {
                         );
                     })}
                 </Stepper>
+
                 {activeStep === 0 && <Fragment>
+                    <Button
+                        onClick={handleRefreshKepwareChannels}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                    >
+                        Refresh Kepware channels
+                    </Button>
                     <Typography sx={{ mt: 2, mb: 1 }}>Choose a Kepware channel from the droplist below</Typography>
 
                     <Autocomplete
@@ -153,6 +198,13 @@ export default function MultipleTagsToArrayComponent() {
                     </Box>
                 </Fragment>}
                 {activeStep === 1 && (<Fragment>
+                    <Button
+                          onClick={handleRefreshKepwareChannels}
+                          variant="outlined"
+                          endIcon={<CachedIcon />}
+                        >
+                          Refresh Kepware devices
+                        </Button>
                     <Typography sx={{ mt: 2, mb: 1 }}>Choose a device belonging of channel: {selectedChannel} from the droplist below</Typography>
                     <Autocomplete
                         id="kepware-deviced"
@@ -211,11 +263,11 @@ export default function MultipleTagsToArrayComponent() {
                 {activeStep === steps?.length && (
                     <Fragment>
                         <Typography sx={{ mt: 2, mb: 1 }}>
-                            All steps completed - you&apos;re finished
+                            All steps completed! If you want to send complex array remeber to add it inside an IoT Gateway. You can easily use the section below for this purpose or you can click 'Reset' in order to create another one
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleReset}>Reset</Button>
+                            <Button onClick={handleReset}>Return</Button>
                         </Box>
                     </Fragment>
                 )}

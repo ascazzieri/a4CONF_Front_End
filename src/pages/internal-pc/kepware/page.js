@@ -959,6 +959,8 @@ export default function Kepware() {
 
   const [currentTab, setCurrentTab] = useState(0);
   const [channelRows, setChannelRows] = useState();
+  const [channelRowsNotBuilt, setChannelRowsNotBuilt] = useState([]);
+  const [memoryBasedList, setMemoryBasedList] = useState({});
   const [expandedListChannels, setExpandedListChannels] = useState([]);
   const [expandedListDevices, setExpandedListDevices] = useState([]);
   const navbarItems = superUser
@@ -996,6 +998,7 @@ export default function Kepware() {
 
       if (kepwareChannels && Object.keys(kepwareChannels).length !== 0) {
         setChannelRows(buildRows(kepwareChannels));
+        setChannelRowsNotBuilt(kepwareChannels);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -1004,6 +1007,7 @@ export default function Kepware() {
         });
       } else if (kepwareChannels && Object.keys(kepwareChannels).length === 0) {
         setChannelRows(buildRows(kepwareChannels));
+        setChannelRowsNotBuilt(kepwareChannels);
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -1639,9 +1643,16 @@ export default function Kepware() {
           {currentTab === 5 && (
             <>
               <Divider />
-              <CreateComplexArray />
+              <CreateComplexArray
+                channelList={channelRowsNotBuilt}
+                setChannelList={setChannelRowsNotBuilt}
+                setMemoryBasedList={setMemoryBasedList}
+              />
               <Divider />
-              <AddCAToIoTGateway />
+              <AddCAToIoTGateway
+                memoryBasedList={memoryBasedList}
+                setMemoryBasedList={setMemoryBasedList}
+              />
             </>
           )}
 

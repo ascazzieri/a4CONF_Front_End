@@ -123,7 +123,7 @@ export default function FastData() {
       vertical: "bottom",
       horizontal: "right",
       severity: "success",
-      message: `Fast data configuration save correctly`,
+      message: `Fast data configuration saved correctly`,
     });
     dispatch(updateFastData({ customer: newBlobConnection }));
   };
@@ -395,7 +395,6 @@ export default function FastData() {
                     <Divider />
                   </>
                 )}
-
                 <SaveButton />
               </form>
             </CardContent>

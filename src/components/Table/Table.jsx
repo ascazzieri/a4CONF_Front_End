@@ -16,7 +16,6 @@ import {
   MenuItem,
 } from "@mui/material";
 import { Delete, Edit, Add, FileDownload } from "@mui/icons-material";
-import { verifyIP, verifyIPCIDR } from "../../utils/utils";
 //example of creating a mui dialog modal for creating new rows
 export const CreateNewAccountModal = ({
   open,
@@ -53,8 +52,8 @@ export const CreateNewAccountModal = ({
     }
     let validationIterator = []
     validationFields?.forEach((item) => {
-      if (Object.keys(values).some((accessorKey) => accessorKey === item)) {
-        validationIterator.push(values[item])
+      if (Object.keys(values)?.some((accessorKey) => accessorKey === item)) {
+        validationIterator?.push(values[item])
       }
     })
     validationIterator?.forEach((item, index) => {
@@ -75,7 +74,6 @@ export const CreateNewAccountModal = ({
 
 
   };
-
   let MenuItemIterator = [];
 
   if (
@@ -83,13 +81,13 @@ export const CreateNewAccountModal = ({
     selectableObjectData?.internal_key !== undefined
   ) {
     selectableObjectData.data.map((item, index) =>
-      MenuItemIterator.push(item[`${selectableObjectData?.internal_key}`])
+      MenuItemIterator?.push(item[`${selectableObjectData?.internal_key}`])
     );
   } else if (
     selectableObjectData &&
     selectableObjectData?.internal_key === undefined
   ) {
-    selectableObjectData.data.map((item, index) => MenuItemIterator.push(item));
+    selectableObjectData.data.map((item, index) => MenuItemIterator?.push(item));
   }
 
   return (
@@ -174,8 +172,9 @@ const Table = (props) => {
   const validationAgents = validationObject && Object.values(validationObject)
 
   const handleCreateNewRow = (values) => {
-    tableData.push(values);
-    setTableData([...tableData]);
+    const newTableData = tableData?.length !== 0 ? [...tableData] : []
+    newTableData.push(values);
+    setTableData(newTableData);
   };
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
@@ -196,7 +195,7 @@ const Table = (props) => {
     let validationIterator = []
     validationFields?.forEach((item) => {
       if (Object.keys(values).some((accessorKey) => accessorKey === item)) {
-        validationIterator.push(values[item])
+        validationIterator?.push(values[item])
       }
     })
     validationIterator?.forEach((item, index) => {
@@ -212,7 +211,7 @@ const Table = (props) => {
     })
     if (validationResult) {
       // Crea una copia dell'array
-      const updatedTableData = [...tableData];
+      const updatedTableData = tableData?.length !== 0 ? [...tableData] : [];
 
       // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;

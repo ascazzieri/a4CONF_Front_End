@@ -322,7 +322,6 @@ export default function ExternalNetwork() {
     }
     loaderContext[1](false);
   };
-
   if (customerNetwork?.dhcp && customerNetwork?.static?.ip?.length === 0) {
     handleRequestFeedback({
       vertical: "bottom",
@@ -416,7 +415,7 @@ export default function ExternalNetwork() {
         return;
       }
     }
-    if (!dnsServer?.every(verifyIP)) {   
+    if (!dnsServer?.every(verifyIP)) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -1222,7 +1221,7 @@ export default function ExternalNetwork() {
 
                   <CustomTable
                     tableData={inputNATTableData || []}
-                    setTableData={setInputNATTableData}
+                    setTableData={(newData) => setInputNATTableData(newData)}
                     columnsData={inputNatTableColumns}
                   />
                 </>
