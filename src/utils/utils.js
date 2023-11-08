@@ -201,8 +201,6 @@ export async function fetchData(url, method, body, noToken) {
       const completePath = encodeURIComponent(pathWithoutPort + url);
       const compatibleEncodedUrl = decodeURIComponent(completePath);
 
-      console.log(compatibleEncodedUrl);
-
       response = await axios(compatibleEncodedUrl, axiosConfig);
 
       // Axios handles non-2xx status codes as errors automatically

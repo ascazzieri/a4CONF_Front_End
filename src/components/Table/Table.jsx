@@ -59,9 +59,6 @@ export const CreateNewAccountModal = ({
     })
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item)) {
-        console.log(item)
-        console.log(verifyIPCIDR(item))
-        console.log(validationAgents[index](item))
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -179,7 +176,6 @@ const Table = (props) => {
   const handleCreateNewRow = (values) => {
     tableData.push(values);
     setTableData([...tableData]);
-    console.log(tableData);
   };
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
@@ -205,9 +201,6 @@ const Table = (props) => {
     })
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item)) {
-        console.log(item)
-        console.log(verifyIPCIDR(item))
-        console.log(validationAgents[index](item))
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",

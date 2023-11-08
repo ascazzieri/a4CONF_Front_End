@@ -406,7 +406,6 @@ export default function ExternalNetwork() {
         });
         return;
       }
-
       if (verifyIP(defaultGateway) === null) {
         handleRequestFeedback({
           vertical: "bottom",
@@ -417,6 +416,16 @@ export default function ExternalNetwork() {
         return;
       }
     }
+    if (!dnsServer?.every(verifyIP)) {   
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `DNS server address not valid`,
+      });
+      return;
+    }
+
     if (customNTP === true) {
       if (verifyIP(ntpAddress) === null) {
         handleRequestFeedback({
@@ -619,7 +628,7 @@ export default function ExternalNetwork() {
                   title={network_ipaddress_desc}
                   type="text"
                   label="IP Address / Subnet Mask"
-                  helperText="Ip device address"
+                  helperText="To enter more than one IP , separate one from the other with  ' , '"
                   value={ipAddress || ""}
                   disabled={connection === "dhcp"}
                   required={connection === "dhcp" ? false : true}
@@ -1108,7 +1117,7 @@ export default function ExternalNetwork() {
                       title={network_ntp_custom_desc}
                       type="text"
                       label="Custom NTP"
-                      helperText="Custom NTP server address"
+                      helperText="To enter more than one IP , separate one from the other with  ' , '"
                       value={ntpAddress || ""}
                       onChange={handleCustomNTPChange}
                     />

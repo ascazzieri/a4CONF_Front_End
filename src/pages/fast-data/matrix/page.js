@@ -13,6 +13,7 @@ import {
   Stack,
   Divider,
 } from "@mui/material";
+import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { JSONTree } from "react-json-tree";
 import BackButton from "../../../components/BackButton/BackButton";
@@ -200,14 +201,22 @@ export default function Matrix() {
     );
     setMatrixDataManagement(newMatrixDataManagement);
   };
-
+  const snackBarContext = useContext(SnackbarContext);
+  const handleRequestFeedback = (newState) => {
+    snackBarContext[1]({ ...newState, open: true });
+  };
   const handleMatrixChange = (e) => {
     e.preventDefault();
     const newMatrix = {
       ...matrix,
       matrix_data_managment: matrixDataManagement || [],
     };
-
+    handleRequestFeedback({
+      vertical: "bottom",
+      horizontal: "right",
+      severity: "success",
+      message: `Matrix configuration save correctly`,
+    });
     dispatch(updateFastData({ customer: { matrix: newMatrix } }));
   };
 

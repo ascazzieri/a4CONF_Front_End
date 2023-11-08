@@ -60,7 +60,6 @@ export default function ChangePassword() {
               new_password: newPassword,
             };
             const response = await change_password(changePasswordData);
-            console.log(response);
             if (response) {
               handleRequestFeedback({
                 vertical: "bottom",

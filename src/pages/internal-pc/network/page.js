@@ -344,7 +344,7 @@ export default function InternalNetwork() {
                 <TextField
                   type="text"
                   label="IP Address / Subnet Mask"
-                  helperText="Ip device address"
+                  helperText="To enter more than one IP , separate one from the other with  ' , '"
                   value={ipAddress || ""}
                   disabled={connection === "dhcp"}
                   required={connection === "dhcp" ? false : true}
@@ -400,7 +400,7 @@ export default function InternalNetwork() {
                       title={ntp_server_address_desc}
                       type="text"
                       label="NTP Server address"
-                      helperText="Insert IP address of NTP server on machine network"
+                      helperText="To enter more than one IP , separate one from the other with  ' , '"
                       value={customNTPAddress || ""}
                       onChange={handleCustomNTPAddressChange}
                     />

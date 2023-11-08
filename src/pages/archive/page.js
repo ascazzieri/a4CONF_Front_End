@@ -60,7 +60,6 @@ export default function Archive() {
     } else {
       (async () => {
         try {
-          console.log(newArchive);
           const response = await send_archive(newArchive);
           if (response === true) {
             handleRequestFeedback({
@@ -97,7 +96,6 @@ export default function Archive() {
   const archiveKeys = archive ? Object.keys(archive) : [];
   const archiveValues = archive ? Object.values(archive) : [];
   const handleDelete = async (item) => {
-    console.log(item);
     const newArchive = { ...archive };
     const response = await delete_archive_note(item);
     if (response) {

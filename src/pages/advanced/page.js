@@ -227,7 +227,6 @@ export default function Advanced() {
 
 
   const handleChangeDangerous = () => {
-    console.log(jsonData)
     if (jsonData) {
       dispatch(
         updateAll({ payload: jsonData, meta: { actionType: "upload" } })

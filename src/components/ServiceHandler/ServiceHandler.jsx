@@ -63,7 +63,6 @@ export default function ServiceHandler() {
     snackBarContext[1]({ ...newState, open: true });
   };
   const manageService = async (service, cmd) => {
-    console.log(service, cmd)
     if (service === 'sitemanager' && cmd === 'stop') {
       setSitemanaerDialogOpen(true)
       return
@@ -85,7 +84,6 @@ export default function ServiceHandler() {
           }
         }
       };
- console.log(body)
     loaderContext[1](true);
 
     try {
