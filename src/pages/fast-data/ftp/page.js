@@ -1,7 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastData } from "../../../utils/redux/reducers";
+import {
+  updateFastData,
+  updateFastDataFTP,
+} from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -194,7 +197,7 @@ export default function FTP() {
       severity: "success",
       message: `FTP configuration save correctly`,
     });
-    dispatch(updateFastData({ industrial: { ftp: newFTP } }));
+    dispatch(updateFastDataFTP(newFTP));
   };
 
   const usersColumnData = [

@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastData } from "../../../utils/redux/reducers";
+import { updateFastData, updateFastDataHTTP } from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -10,7 +10,6 @@ import BackButton from "../../../components/BackButton/BackButton";
 import { SnackbarContext } from "../../../utils/context/SnackbarContext";
 import {
   Autocomplete,
-  Button,
   Container,
   Divider,
   FormControl,
@@ -128,14 +127,23 @@ export default function FTP() {
 
   const handleHTTPChange = (event) => {
     event.preventDefault();
-    let blobSettingsArray = [];
+
+    let blobSettingsObject = {};
     if (blobTableData?.length !== 0) {
-      blobTableData?.map((item) =>
-        blobSettingsArray.push({
-          [item?.file_name?.trim()]: item?.blob_folder?.trim(),
-        })
-      );
+      blobTableData?.forEach((item) => {
+        const fileName = item?.file_name?.trim();
+        const blobFolder = item?.blob_folder?.trim();
+
+        blobSettingsObject[fileName] = blobFolder;
+      });
     }
+
+    // Trasforma l'oggetto temporaneo in un array
+    const blobSettingsArray = Object.keys(blobSettingsObject).map(
+      (fileName) => ({
+        [fileName]: blobSettingsObject[fileName],
+      })
+    );
     const newHTTP = {
       ...http,
       http_server: {
@@ -150,14 +158,16 @@ export default function FTP() {
       },
       blob_settings: blobSettingsArray,
     };
+    console.log(newHTTP);
     handleRequestFeedback({
       vertical: "bottom",
       horizontal: "right",
       severity: "success",
       message: `HTTP configuration save correctly`,
     });
-    dispatch(updateFastData({ industrial: { http: newHTTP } }));
+    dispatch(updateFastDataHTTP(newHTTP));
   };
+  console.log(blobTableData);
 
   const blobColumnsData = [
     {
@@ -223,7 +233,7 @@ export default function FTP() {
 
                   <Switch
                     title={fast_http_port_desc}
-                    checked={customPortEnable|| false}
+                    checked={customPortEnable || false}
                     onChange={handleCustomPortEnableChange}
                   />
                 </Stack>
@@ -252,16 +262,14 @@ export default function FTP() {
               )}
 
               <FormControl fullWidth>
-                <FormLabel title={fast_http_file_desc}>
-                  Add format to file:
-                </FormLabel>
+                <FormLabel title={fast_http_file_desc}>HTTP path:</FormLabel>
 
                 <TextField
                   title={fast_http_file_desc}
                   type="text"
                   label="HTTP path"
                   helperText="Write http path in order to receive files from the sender agent"
-                  value={serverPath || "csv"}
+                  value={serverPath || "/csv"}
                   required={true}
                   onChange={handleServerPathChange}
                 />

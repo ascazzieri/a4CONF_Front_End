@@ -163,6 +163,18 @@ const jsonSlice = createSlice({
       const oldFastData = { ...state.services.fastdata };
       state.services.fastdata = _.merge(oldFastData, newFastData);
     },
+    updateFastDataFTP(state, action) {
+      const newFastDataFTP = action.payload;
+      state.services.fastdata.industrial.ftp = newFastDataFTP;
+    },
+    updateFastDataHTTP(state, action) {
+      const newFastDataHTTP = action.payload;
+      state.services.fastdata.industrial.http = newFastDataHTTP;
+    },
+    updateFastDataMatrix(state, action) {
+      const newFastDataMatrix = action.payload;
+      state.services.fastdata.customer.matrix = newFastDataMatrix;
+    },
     updateUserList(state, action) {
       const newCurrentUser = action.payload;
       const oldUsers = state.users;
@@ -203,6 +215,9 @@ export const {
   updateFirewallEnable,
   updateBackChannel,
   updateFastData,
+  updateFastDataFTP,
+  updateFastDataHTTP,
+  updateFastDataMatrix,
   updateUserList,
 } = jsonSlice.actions;
 export const config = jsonSlice.reducer;

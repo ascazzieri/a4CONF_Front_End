@@ -247,7 +247,7 @@ export default function Dashboard() {
                       helperText={
                         hostName
                           ? "A4GATE S/N"
-                          : `A4GATE hostname is defferent between data collector: ${system?.hostname?.industrial} and data sender: ${system?.hostname?.customer}`
+                          : `A4GATE hostname is defferent between data collector: ${system?.hostname?.industrial} and data sender: ${system?.hostname?.customer}. Insert hostname, click 'Save' button, then 'Apply' button and after obtaining the response reboot a4GATE`
                       }
                       className="a4gate-hostname-form"
                       value={hostName || ""}

@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastData } from "../../../utils/redux/reducers";
+import { updateFastDataMatrix } from "../../../utils/redux/reducers";
 import Button from "@mui/material/Button";
 import JsonEditorComponent from "../../../components/JsonEditor/JsonEditor";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -22,144 +22,6 @@ import SaveButton from "../../../components/SaveButton/SaveButton";
 import { Container } from "@mui/material";
 import { Fragment } from "react";
 
-const dummy_matrix = [
-  {
-    id: "7Q910A0",
-    grouping_files: 10,
-    matrix_delimiter: {
-      start: "[",
-      mid: ",",
-      end: "]",
-    },
-    source_object_ID_column_name: "Engine_ID",
-    source_objects_properties: [
-      "RefPosition",
-      "TrackingDeviation",
-      "RefVelocity",
-      "ActualVelocity",
-      "RefAcceleration",
-      "ActualCurrent",
-    ],
-    each_source_object_properties: {
-      engine_1: [1, 2, 3, 4, 5, 6],
-      engine_2: [7, 8, 9, 10, 11, 12],
-      engine_3: [13, 14, 15, 16, 17, 18],
-      engine_4: [19, 20, 21, 22, 23, 24],
-      engine_5: [25, 26, 27, 28, 29, 30],
-    },
-    timestamp: {
-      db_timestamp_column_name: "Timestamp",
-      get_timestamp_from_matrix: {
-        enabled: false,
-        matrix_index_number: 0,
-      },
-    },
-    machine_id_column: {
-      enabled: true,
-      machine_id_column_name: "machine_id",
-    },
-    custom_columns: {
-      dynamic_columns: {
-        enabled: false,
-        columns: {
-          MasterRefPosition: 26,
-          Counter: 0,
-        },
-      },
-    },
-  },
-  {
-    id: "7Q810A0",
-    grouping_files: 10,
-    matrix_delimiter: {
-      start: "[",
-      mid: ",",
-      end: "]",
-    },
-    source_object_ID_column_name: "Engine_ID",
-    source_objects_properties: [
-      "RefPosition",
-      "TrackingDeviation",
-      "RefVelocity",
-      "ActualVelocity",
-      "RefAcceleration",
-      "ActualCurrent",
-    ],
-    each_source_object_properties: {
-      engine_1: [1, 2, 3, 4, 5, 6],
-      engine_2: [7, 8, 9, 10, 11, 12],
-      engine_3: [13, 14, 15, 16, 17, 18],
-      engine_4: [19, 20, 21, 22, 23, 24],
-      engine_5: [25, 26, 27, 28, 29, 30],
-    },
-    timestamp: {
-      db_timestamp_column_name: "Timestamp",
-      get_timestamp_from_matrix: {
-        enabled: false,
-        matrix_index_number: 0,
-      },
-    },
-    machine_id_column: {
-      enabled: true,
-      machine_id_column_name: "machine_id",
-    },
-    custom_columns: {
-      dynamic_columns: {
-        enabled: false,
-        columns: {
-          MasterRefPosition: 26,
-          Counter: 0,
-        },
-      },
-    },
-  },
-  {
-    id: "7Q610A0",
-    grouping_files: 10,
-    matrix_delimiter: {
-      start: "[",
-      mid: ",",
-      end: "]",
-    },
-    source_object_ID_column_name: "Engine_ID",
-    source_objects_properties: [
-      "RefPosition",
-      "TrackingDeviation",
-      "RefVelocity",
-      "ActualVelocity",
-      "RefAcceleration",
-      "ActualCurrent",
-    ],
-    each_source_object_properties: {
-      engine_1: [1, 2, 3, 4, 5, 6],
-      engine_2: [7, 8, 9, 10, 11, 12],
-      engine_3: [13, 14, 15, 16, 17, 18],
-      engine_4: [19, 20, 21, 22, 23, 24],
-      engine_5: [25, 26, 27, 28, 29, 30],
-    },
-    timestamp: {
-      db_timestamp_column_name: "Timestamp",
-      get_timestamp_from_matrix: {
-        enabled: false,
-        matrix_index_number: 0,
-      },
-    },
-    machine_id_column: {
-      enabled: true,
-      machine_id_column_name: "machine_id",
-    },
-    custom_columns: {
-      dynamic_columns: {
-        enabled: false,
-        columns: {
-          MasterRefPosition: 26,
-          Counter: 0,
-        },
-      },
-    },
-  },
-];
-
 export default function Matrix() {
   const matrix = useSelector(
     (state) => state.services?.fastdata?.customer?.matrix
@@ -179,7 +41,7 @@ export default function Matrix() {
 
   //Update React states
   useEffect(() => {
-    setMatrixDataManagement(matrix?.matrix_data_managment || dummy_matrix);
+    setMatrixDataManagement(matrix?.matrix_data_managment || []);
   }, [matrix]);
 
   const handleItemChange = (jsonItem) => {
@@ -217,7 +79,7 @@ export default function Matrix() {
       severity: "success",
       message: `Matrix configuration save correctly`,
     });
-    dispatch(updateFastData({ customer: { matrix: newMatrix } }));
+    dispatch(updateFastDataMatrix(newMatrix));
   };
 
   return (

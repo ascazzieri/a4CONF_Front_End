@@ -38,7 +38,6 @@ const Layout = () => {
   const [mobileViewport, setMobileViewport] = useState(false);
 
   const location = useLocation()
-
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
@@ -93,7 +92,7 @@ const Layout = () => {
             message: `Error on loading configuration from both PCs`,
           });
         }
-       
+
       }
       //setBReady(true)
     })();
@@ -151,10 +150,11 @@ const Layout = () => {
         </Snackbar>
         {/*  <Checklist /> */}
         {location?.pathname === "/" && <div>
-
-          <video width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }}>
+          {(window?.location?.hostname?.includes('localhost') || window?.location?.hostname?.includes('127.0.0.1')) ? <img src="/img/home-image.jpg" width="100%" height="100%" style={{ position: 'absolute', right: 0, top: 80 }} alt=" Home background" /> : (<video width="98%" loop autoPlay muted style={{ position: 'absolute', right: 0, top: 80 }}>
             <source src="/img/a4GATE_mid.mp4" />
-          </video>
+          </video>)}
+
+
         </div>}
         <Outlet />
 
