@@ -12,7 +12,7 @@ import ExternalPC from "./pages/external-pc/page";
 import FastData from "./pages/fast-data/page";
 import BackChannel from "./pages/back-channel/page";
 import ManageUsers from "./pages/users/page";
-import ChangePassword from "./pages/change-password/page";
+import UserSettings from "./pages/user-settings/page";
 import InternalNetwork from "./pages/internal-pc/network/page";
 import Kepware from "./pages/internal-pc/kepware/page";
 import ExternalNetwork from "./pages/external-pc/network/page";
@@ -252,10 +252,10 @@ export default function App({ Component, pageProps }) {
               }
             />
             <Route
-              path="/change-password"
+              path="/user-settings"
               element={
                 <PrivateRoute authenticated={authenticated}>
-                  <ChangePassword />
+                  <UserSettings />
                 </PrivateRoute>
               }
             />

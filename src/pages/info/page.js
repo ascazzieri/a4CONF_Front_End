@@ -6,7 +6,6 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
-import { SignalCellular3BarRounded } from "@mui/icons-material";
 
 export default function Info() {
   const a4gateHelp = [
@@ -60,6 +59,16 @@ export default function Info() {
                   {currentTab === 1 && (
                     <iframe
                       src="/img/info/connect-to-machine-network.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to connect to machine network"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 2 && (
+                    <iframe
+                      src="/img/info/connect-to-plant-network.html"
                       height="500px"
                       width="900px"
                       allowFullScreen

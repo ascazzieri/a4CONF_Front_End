@@ -132,3 +132,6 @@ div.jsoneditor-value.jsoneditor-null {
 div.jsoneditor-value.jsoneditor-invalid {
   color: white !important;
 }
+.css-jcerbh-MuiStack-root {
+  gap: 0px !important;
+}

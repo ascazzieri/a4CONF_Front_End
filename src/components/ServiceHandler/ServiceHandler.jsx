@@ -87,14 +87,14 @@ export default function ServiceHandler() {
     loaderContext[1](true);
 
     try {
-      await send_conf({ body });
+      await send_conf(body);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "success",
-        message: `Service command request OK`,
+        message: `Service command action successfull`,
       });
-    } catch{
+    } catch {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -158,7 +158,7 @@ export default function ServiceHandler() {
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button  onClick={handleServiceClose}>Close</Button>
+        <Button onClick={handleServiceClose}>Close</Button>
         <Button variant="contained" color="error" onClick={handleStopSitemanager} >
           Stop Sitemanager
         </Button>

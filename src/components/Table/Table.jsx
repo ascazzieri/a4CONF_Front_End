@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useContext } from "react";
+import React, { useCallback, useState, useContext, Fragment } from "react";
 import { MaterialReactTable } from "material-react-table";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { ExportToCsv } from "export-to-csv";
@@ -9,11 +9,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Stack,
   TextField,
   Tooltip,
-  MenuItem,
+  Autocomplete,
 } from "@mui/material";
 import { Delete, Edit, Add, FileDownload } from "@mui/icons-material";
 //example of creating a mui dialog modal for creating new rows
@@ -75,19 +76,18 @@ export const CreateNewAccountModal = ({
 
   };
   let MenuItemIterator = [];
-
   if (
     selectableObjectData &&
     selectableObjectData?.internal_key !== undefined
   ) {
-    selectableObjectData.data.map((item, index) =>
+    selectableObjectData?.data.map((item, index) =>
       MenuItemIterator?.push(item[`${selectableObjectData?.internal_key}`])
     );
   } else if (
     selectableObjectData &&
     selectableObjectData?.internal_key === undefined
   ) {
-    selectableObjectData.data.map((item, index) => MenuItemIterator?.push(item));
+    selectableObjectData?.data?.map((item, index) => MenuItemIterator?.push(item));
   }
 
   return (
@@ -101,46 +101,47 @@ export const CreateNewAccountModal = ({
               gap: "1.5rem",
             }}
           >
-            {columns.map((column, index) => {
+            {columns?.map((column, index) => {
               const isPasswordColumn = column.type === "password";
 
               if (
                 selectableObjectData?.enabled &&
-                selectableObjectData?.accessorKey === column?.accessorKey
+                selectableObjectData?.accessorKey?.some((item) => item === column?.accessorKey)
               ) {
                 return (
-                  <TextField
-                    select
-                    key={index}
-                    label={column.header}
-                    name={column.accessorKey}
-                    type={isPasswordColumn ? "password" : "text"}
-                    defaultValue={
-                      selectableObjectData?.internal_key !== undefined
-                        ? MenuItemIterator[0]
-                        : selectableObjectData.data[0]
-                    }
-                    onBlur={(e) => {
-                      setValues({
-                        ...values,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                  >
-                    {MenuItemIterator.map((item) => (
-                      <MenuItem key={Math.random() + item} value={item}>
-                        {item}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <Fragment key={Math.random()}>
+                    <Autocomplete
+                      freeSolo
+                      name={column.accessorKey}
+                      key={index}
+                      sx={{ minWidth: 400}}
+                      defaultValue={
+                        selectableObjectData?.internal_key !== undefined
+                          ? MenuItemIterator[0]
+                          : selectableObjectData?.data[0]
+                      } onChange={(e) => {
+                        setValues({
+                          ...values,
+                          [column.accessorKey]: e?.target?.innerText,
+                        });
+                      }}
+                      options={MenuItemIterator}
+                      renderInput={(params) => (
+                        <TextField {...params} label={column?.header}/>
+                      )} />
+                    <Divider />
+                  </Fragment>
+
+
                 );
               } else {
-                return (
+                return (<Fragment key={Math.random()}>
                   <TextField
                     key={index}
                     label={column.header}
                     name={column.accessorKey}
                     type={isPasswordColumn ? "password" : "text"}
+                    sx={{ minWidth: 400}}
                     onBlur={(e) => {
                       setValues({
                         ...values,
@@ -148,6 +149,8 @@ export const CreateNewAccountModal = ({
                       });
                     }}
                   />
+                  <Divider/>
+                </Fragment>
                 );
               }
             })}
@@ -223,14 +226,16 @@ const Table = (props) => {
     }
 
   };
-
-  const handleDeleteRow = useCallback(
+  const handleDeleteRow =
     (row) => {
-      tableData?.splice(row.index, 1);
-      setTableData([...tableData]);
-    },
-    [tableData]
-  );
+      if(tableData?.length === 0){
+        setTableData([])
+        return
+      }
+      const newData = [...tableData]
+      newData?.splice(row.index, 1);
+      setTableData(newData);
+    }
   const csvOptions = {
     fieldSeparator: ",",
     quoteStrings: '"',

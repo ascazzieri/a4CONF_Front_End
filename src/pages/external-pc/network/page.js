@@ -283,7 +283,6 @@ export default function ExternalNetwork() {
       setExpandedListPingNumber(oldList);
     }
   };
-
   const handleTestConnection = async () => {
     const testPingNumberInt = parseInt(testPingNumber);
     if (!testPingNumber || !Number?.isInteger(testPingNumberInt)) {
@@ -438,6 +437,7 @@ export default function ExternalNetwork() {
     }
 
     const newCustomer = {
+      ...customerNetwork,
       dhcp: connection === "static" ? false : true,
       static: {
         ip: ipAddress?.map((item) => item?.trim()),
@@ -529,7 +529,13 @@ export default function ExternalNetwork() {
 
   const portsAllowedSelectableObjectData = {
     enabled: true,
-    accessorKey: "external_tcp_ports",
+    accessorKey: ["external_tcp_ports", "source"],
+    data: aliasTableData,
+    internal_key: "alias",
+  };
+  const portsForwardingSelectableObjectData = {
+    enabled: true,
+    accessorKey: ["SOURCE"],
     data: aliasTableData,
     internal_key: "alias",
   };
@@ -1221,13 +1227,14 @@ export default function ExternalNetwork() {
 
                   <CustomTable
                     tableData={inputNATTableData || []}
-                    setTableData={(newData) => setInputNATTableData(newData)}
+                    setTableData={setInputNATTableData}
                     columnsData={inputNatTableColumns}
+                    selectableObjectData={portsForwardingSelectableObjectData}
                   />
                 </>
               ) : (
                 <>
-                  <div>Nat features must be enabled</div>
+                  <div>NAT feature must be enabled</div>
                 </>
               )}
             </>

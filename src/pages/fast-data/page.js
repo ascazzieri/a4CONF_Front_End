@@ -137,55 +137,64 @@ export default function FastData() {
           <Card sx={{ mt: 1 }} className="fast-data-card">
             <CardContent>
               <form onSubmit={handleBlobConnectionChange}>
-                <FormControl fullWidth>
-                  <FormLabel title={fast_blob_url_desc}>
-                    Blob storage Url:
-                  </FormLabel>
+                <Box
+                  sx={{
+                    flexGrow: 1,
+                    bgcolor: "background.paper",
+                    p: 2,
+                    mb: 2,
+                  }}
+                >
+                  <FormControl fullWidth>
+                    <FormLabel title={fast_blob_url_desc}>
+                      Blob storage Url:
+                    </FormLabel>
 
-                  <TextField
-                    title={fast_blob_url_desc}
-                    type="text"
-                    label="Blob Url"
-                    helperText="Blob storage Url"
-                    value={blobConnectionUrl || ""}
-                    required={true}
-                    onChange={handleBlobConnectionUrlChange}
-                  />
-                </FormControl>
+                    <TextField
+                      title={fast_blob_url_desc}
+                      type="text"
+                      label="Blob Url"
+                      helperText="Blob storage Url"
+                      value={blobConnectionUrl || ""}
+                      required={true}
+                      onChange={handleBlobConnectionUrlChange}
+                    />
+                  </FormControl>
 
-                <Divider />
+                  <Divider />
 
-                <FormControl fullWidth>
-                  <InputLabel
-                    htmlFor="outlined-adornment-password"
-                    title={fast_sas_desc}
-                  >
-                    Sas *
-                  </InputLabel>
-                  <OutlinedInput
-                    title={fast_sas_desc}
-                    type={showSaskey ? "text" : "password"}
-                    required={true}
-                    value={blobConnectionSas || ""}
-                    onChange={handleBlobConnectionSasChange}
-                    endAdornment={
-                      <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onMouseDown={handleClickShowSas}
-                          onMouseUp={handleClickShowSas}
-                          edge="end"
-                        >
-                          {showSaskey ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    }
-                    label="Password"
-                  />
-                  <FormHelperText id="outlined-weight-helper-text">
-                    Unique athentication string for Microsoft Blob Storage
-                  </FormHelperText>
-                </FormControl>
+                  <FormControl fullWidth>
+                    <InputLabel
+                      htmlFor="outlined-adornment-password"
+                      title={fast_sas_desc}
+                    >
+                      Sas *
+                    </InputLabel>
+                    <OutlinedInput
+                      title={fast_sas_desc}
+                      type={showSaskey ? "text" : "password"}
+                      required={true}
+                      value={blobConnectionSas || ""}
+                      onChange={handleBlobConnectionSasChange}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onMouseDown={handleClickShowSas}
+                            onMouseUp={handleClickShowSas}
+                            edge="end"
+                          >
+                            {showSaskey ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Password"
+                    />
+                    <FormHelperText id="outlined-weight-helper-text">
+                      Unique athentication string for Microsoft Blob Storage
+                    </FormHelperText>
+                  </FormControl>
+                </Box>
 
                 <Divider />
                 {fastdata?.enabled && (
@@ -317,8 +326,8 @@ export default function FastData() {
                           padding: "0px 20px",
                         }}
                       >
-                        {matrixEnabled ? (
-                          superUser[0] ? (
+                        {superUser[0] ? (
+                          matrixEnabled ? (
                             <Card
                               sx={{ height: 200, width: 250 }}
                               className="menu-cards"
@@ -346,24 +355,20 @@ export default function FastData() {
                             <Card
                               sx={{ height: 200, width: 250 }}
                               className="menu-cards-disabled"
-                              name="matrix"
+                              name="http-server"
                             >
-                              <DoDisturbIcon
-                                style={{ fontSize: 80, color: "red" }}
-                              />
                               <CardContent
-                                sx={{ pt: 0 }}
+                                sx={{ mt: 6.5 }}
                                 className="internal-menu-cards"
                               >
-                                <Typography variant="h7" component="div">
-                                  Matrix
-                                </Typography>
-                                <Typography
-                                  variant="body2"
-                                  color="text.secondary"
-                                  sx={{ p: 1 }}
-                                >
-                                  Matrix is available only for admin
+                                <Switch
+                                  checked={matrixEnabled}
+                                  onChange={(event) => {
+                                    setMatrixEnabled(event?.target?.checked);
+                                  }}
+                                />
+                                <Typography>
+                                  Fast Data Matrix service disabled
                                 </Typography>
                               </CardContent>
                             </Card>
@@ -372,20 +377,24 @@ export default function FastData() {
                           <Card
                             sx={{ height: 200, width: 250 }}
                             className="menu-cards-disabled"
-                            name="http-server"
+                            name="matrix"
                           >
+                            <DoDisturbIcon
+                              style={{ fontSize: 80, color: "red" }}
+                            />
                             <CardContent
-                              sx={{ mt: 6.5 }}
+                              sx={{ pt: 0 }}
                               className="internal-menu-cards"
                             >
-                              <Switch
-                                checked={matrixEnabled}
-                                onChange={(event) => {
-                                  setMatrixEnabled(event?.target?.checked);
-                                }}
-                              />
-                              <Typography>
-                                Fast Data Matrix service disabled
+                              <Typography variant="h7" component="div">
+                                Matrix
+                              </Typography>
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ p: 1 }}
+                              >
+                                Matrix setting for admin only
                               </Typography>
                             </CardContent>
                           </Card>
