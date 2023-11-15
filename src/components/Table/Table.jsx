@@ -56,7 +56,6 @@ export const CreateNewAccountModal = ({
         validationIterator?.push(values[item])
       }
     })
-    console.log(validationIterator)
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item)) {
         handleRequestFeedback({
@@ -202,7 +201,7 @@ const Table = (props) => {
 
   const handleCreateNewRow = (values) => {
     const newTableData = tableData?.length !== 0 ? [...tableData] : []
-    if (newTableData?.some((item, index) => checkObject(item, values))) {
+    if (newTableData?.some((item) => checkObject(item, values))) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
