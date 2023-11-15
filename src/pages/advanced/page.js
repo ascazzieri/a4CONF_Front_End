@@ -99,7 +99,9 @@ export default function Advanced() {
   const [dataColletorIP, setDataColletorIP] = useState("");
 
   const handleAddRecoveryIP = async () => {
+    loaderContext[1](true)
     const response = await add_recovery_ip();
+    loaderContext[1](false)
     if (response) {
       setDataColletorIP("198.51.100.1");
       handleRequestFeedback({
@@ -118,7 +120,9 @@ export default function Advanced() {
     }
   };
   const handleRemoveRecoveryIP = async () => {
+    loaderContext[1](true)
     const response = await remove_recovery_ip();
+    loaderContext[1](false)
     if (response) {
       setDataColletorIP();
       handleRequestFeedback({

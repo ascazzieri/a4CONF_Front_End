@@ -121,6 +121,18 @@ export default function InternalNetwork() {
     if (!currentScanException || currentScanException.trim() === "") {
       return;
     }
+    if (
+      (superUser && !verifyIPCIDR(currentScanException)) ||
+      !verifyIPnotbroadcast(currentScanException)
+    ) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong IP address format for scan exception, please add mask class `,
+      });
+      return;
+    }
 
     // Creare una copia dell'array scanException
     const scanExceptionCopy = [...scanException];
@@ -251,7 +263,7 @@ export default function InternalNetwork() {
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Wrong IP address format for scan exception`,
+        message: `Wrong IP address format for scan exception, please add mask class`,
       });
       return;
     }
@@ -278,7 +290,7 @@ export default function InternalNetwork() {
   const routesColumnData = [
     {
       accessorKey: "subnet",
-      header: "Subnet",
+      header: "Subnet/Subnet Mask",
       enableColumnOrdering: true,
       enableEditing: true, //disable editing on this column
       enableSorting: true,
@@ -461,7 +473,7 @@ export default function InternalNetwork() {
 
                   <TextField
                     type="text"
-                    label="Scan Exception"
+                    label="Scan Exception/Subnet Mask"
                     helperText="These ip will not be reported inside daily network scan"
                     value={currentScanException || ""}
                     required={false}

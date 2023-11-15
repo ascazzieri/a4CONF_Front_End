@@ -78,7 +78,11 @@ import {
   network_typeconnection_desc,
   network_wifi_desc,
 } from "../../../utils/titles";
-import { verifyIP, verifyIPCIDR } from "../../../utils/utils";
+import {
+  verifyIP,
+  verifyIPCIDR,
+  nonNullItemsCheck,
+} from "../../../utils/utils";
 import { parseInt } from "lodash";
 
 export default function ExternalNetwork() {
@@ -274,12 +278,12 @@ export default function ExternalNetwork() {
   };
   const handleExpandableListPingNumber = (event, ip, number) => {
     const oldList = [...expandedListPingNumber];
-    if (oldList?.includes(`${ip}?.${number}`)) {
+    if (oldList?.includes(`${ip}.${number}`)) {
       setExpandedListPingNumber((prevItems) =>
-        prevItems?.filter((item) => item !== `${ip}?.${number}`)
+        prevItems?.filter((item) => item !== `${ip}.${number}`)
       );
     } else {
-      oldList?.push(`${ip}?.${number}`);
+      oldList?.push(`${ip}.${number}`);
       setExpandedListPingNumber(oldList);
     }
   };
@@ -344,6 +348,7 @@ export default function ExternalNetwork() {
     const oldHostList = new Set(hostList);
     oldHostList?.add(newHost?.trim());
     setHostList(Array?.from(oldHostList));
+    setCurrentHost("");
   };
   const handleHostListDelete = (address) => {
     const newHostList = hostList?.filter((item) => item !== address);
@@ -473,7 +478,7 @@ export default function ExternalNetwork() {
   const routesColumnData = [
     {
       accessorKey: "subnet",
-      header: "Subnet",
+      header: "Subnet/Mask",
       enableColumnOrdering: true,
       enableEditing: true, //disable editing on this column
       enableSorting: true,
@@ -582,6 +587,16 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
+  const validationRouteTableData = {
+    subnet: verifyIPCIDR,
+    gateway: verifyIP,
+  };
+
+  const validationPortForwarding = {
+    PORT_EXT: nonNullItemsCheck,
+    IP_DST: nonNullItemsCheck,
+    SOURCE: nonNullItemsCheck,
+  };
 
   return (
     <ErrorCacher>
@@ -665,7 +680,7 @@ export default function ExternalNetwork() {
                   title={network_dns_desc}
                   type="text"
                   label="DNS Server"
-                  helperText="DNS server address"
+                  helperText="DNS server address. To enter more than one DNS , separate one from the other with commas ' , '"
                   disabled={connection === "dhcp"}
                   required={connection === "dhcp" ? false : true}
                   value={dnsServer || []}
@@ -1087,6 +1102,7 @@ export default function ExternalNetwork() {
                 tableData={routeTableData || []}
                 setTableData={setRouteTableData}
                 columnsData={routesColumnData}
+                validationObject={validationRouteTableData}
               />
 
               <Divider />
@@ -1230,6 +1246,7 @@ export default function ExternalNetwork() {
                     setTableData={setInputNATTableData}
                     columnsData={inputNatTableColumns}
                     selectableObjectData={portsForwardingSelectableObjectData}
+                    validationObject={validationPortForwarding}
                   />
                 </>
               ) : (

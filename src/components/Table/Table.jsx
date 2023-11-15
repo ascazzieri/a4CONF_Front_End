@@ -33,8 +33,6 @@ export const CreateNewAccountModal = ({
       return acc;
     }, {})
   );
-
-
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
@@ -42,6 +40,7 @@ export const CreateNewAccountModal = ({
 
   const handleSubmit = () => {
     let validationResult = true
+
     if (!values) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -57,6 +56,7 @@ export const CreateNewAccountModal = ({
         validationIterator?.push(values[item])
       }
     })
+    console.log(validationIterator)
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item)) {
         handleRequestFeedback({
@@ -69,7 +69,9 @@ export const CreateNewAccountModal = ({
       }
     })
     if (validationResult) {
+
       onSubmit(values);
+      setValues()
       onClose();
     }
 
@@ -114,20 +116,34 @@ export const CreateNewAccountModal = ({
                       freeSolo
                       name={column.accessorKey}
                       key={index}
-                      sx={{ minWidth: 400}}
+                      sx={{ minWidth: 400 }}
                       defaultValue={
-                        selectableObjectData?.internal_key !== undefined
-                          ? MenuItemIterator[0]
-                          : selectableObjectData?.data[0]
-                      } onChange={(e) => {
+                        (values && values[column.accessorKey])
+                          ? values[column.accessorKey]
+                          : ""
+                      } onChange={(e, newValue) => {
+                        console.log(newValue)
+                        console.log({
+                          ...values,
+                          [column.accessorKey]: newValue,
+                        })
                         setValues({
                           ...values,
-                          [column.accessorKey]: e?.target?.innerText,
+                          [column.accessorKey]: newValue,
                         });
                       }}
+                      onBlur={(event) => {
+                        console.log(event?.target?.value)
+                        setValues({
+                          ...values,
+                          [column.accessorKey]: event?.target?.value,
+                        });
+
+                      }
+                      }
                       options={MenuItemIterator}
                       renderInput={(params) => (
-                        <TextField {...params} label={column?.header}/>
+                        <TextField {...params} label={column?.header} />
                       )} />
                     <Divider />
                   </Fragment>
@@ -138,10 +154,11 @@ export const CreateNewAccountModal = ({
                 return (<Fragment key={Math.random()}>
                   <TextField
                     key={index}
-                    label={column.header}
-                    name={column.accessorKey}
+                    label={column?.header}
+                    name={column?.accessorKey}
                     type={isPasswordColumn ? "password" : "text"}
-                    sx={{ minWidth: 400}}
+                    sx={{ minWidth: 400 }}
+                    defaultValue={values ? values[column?.accessorKey] : ""}
                     onBlur={(e) => {
                       setValues({
                         ...values,
@@ -149,7 +166,7 @@ export const CreateNewAccountModal = ({
                       });
                     }}
                   />
-                  <Divider/>
+                  <Divider />
                 </Fragment>
                 );
               }
@@ -174,8 +191,26 @@ const Table = (props) => {
   const validationFields = validationObject && Object.keys(validationObject)
   const validationAgents = validationObject && Object.values(validationObject)
 
+  const checkObject = (item, values) => {
+    const itemKeys = Object?.keys(values)
+    let result = false
+    if (itemKeys.every((element) => item[element] === values[element])) {
+      result = true
+    }
+    return result
+  }
+
   const handleCreateNewRow = (values) => {
     const newTableData = tableData?.length !== 0 ? [...tableData] : []
+    if (newTableData?.some((item, index) => checkObject(item, values))) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `The row has not been added due to the existance of an exact copy inside previous data`,
+      });
+      return
+    }
     newTableData.push(values);
     setTableData(newTableData);
   };
@@ -184,7 +219,6 @@ const Table = (props) => {
     snackBarContext[1]({ ...newState, open: true });
   };
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-
     let validationResult = true
     if (!values) {
       handleRequestFeedback({
@@ -216,6 +250,15 @@ const Table = (props) => {
       // Crea una copia dell'array
       const updatedTableData = tableData?.length !== 0 ? [...tableData] : [];
 
+      if (updatedTableData?.some((item, index) => checkObject(item, values))) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `The row cannot be created due to the existance of an exact copy inside previous data`,
+        });
+        return
+      }
       // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;
       // Aggiorna lo stato con la nuova copia dell'array
@@ -228,7 +271,7 @@ const Table = (props) => {
   };
   const handleDeleteRow =
     (row) => {
-      if(tableData?.length === 0){
+      if (tableData?.length === 0) {
         setTableData([])
         return
       }

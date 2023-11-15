@@ -525,6 +525,13 @@ export const removeDuplicates = (a) => {
     return !pos || item !== ary[pos - 1];
   });
 };
+export const nonNullItemsCheck = (item) => {
+  if (item !== null && item !== undefined && item?.length !== 0) {
+    return true;
+  } else {
+    return false;
+  }
+};
 
 export const deepMerge = (obj1, obj2) => {
   const result = { ...obj1 };
