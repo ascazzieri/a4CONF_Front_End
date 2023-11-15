@@ -99,11 +99,12 @@ let dummy_config = {
       enabled: null,
       running: null,
       industrial: {
-        ftp: { enabled: null },
-        http: { enabled: null },
+        ftp: { enabled: null, running: null },
+        http: { enabled: null, running: null },
+        matrix: { enabled: null, running: null },
       },
       customer: {
-        matrix: { enabled: null },
+        matrix_data_managment: [],
       },
     },
   },

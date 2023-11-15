@@ -103,7 +103,7 @@ export default function MaxWidthDialog(props) {
             });
         }
         loading[1](false)
-
+        setOpen(false)
     };
 
     return (

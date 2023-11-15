@@ -23,9 +23,7 @@ import { Container } from "@mui/material";
 import { Fragment } from "react";
 
 export default function Matrix() {
-  const matrix = useSelector(
-    (state) => state.services?.fastdata?.customer?.matrix
-  );
+  const customer = useSelector((state) => state.services?.fastdata?.customer);
 
   const dispatch = useDispatch();
   const superUser = useContext(SuperUserContext)[0];
@@ -35,14 +33,13 @@ export default function Matrix() {
     : ["Matrix management"];
 
   const [matrixDataManagement, setMatrixDataManagement] = useState(
-    matrix?.matrix_data_managment || []
+    customer?.matrix_data_managment || []
   );
   const [currentMatrixId, setCurrentMatrixId] = useState();
-
   //Update React states
   useEffect(() => {
-    setMatrixDataManagement(matrix?.matrix_data_managment || []);
-  }, [matrix]);
+    setMatrixDataManagement(customer?.matrix_data_managment || []);
+  }, [customer]);
 
   const handleItemChange = (jsonItem) => {
     const oldMatrixManagement =
@@ -70,7 +67,7 @@ export default function Matrix() {
   const handleMatrixChange = (e) => {
     e.preventDefault();
     const newMatrix = {
-      ...matrix,
+      ...customer,
       matrix_data_managment: matrixDataManagement || [],
     };
     handleRequestFeedback({
@@ -81,7 +78,6 @@ export default function Matrix() {
     });
     dispatch(updateFastDataMatrix(newMatrix));
   };
-
   return (
     <ErrorCacher>
       <Container>
@@ -91,7 +87,7 @@ export default function Matrix() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 1 && superUser && <JSONTree data={matrix} />}
+        {currentTab === 1 && superUser && <JSONTree data={customer} />}
 
         <form onSubmit={handleMatrixChange}>
           {currentTab === 0 && (

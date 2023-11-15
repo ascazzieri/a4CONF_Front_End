@@ -130,7 +130,7 @@ const Row = (props) => {
   const [samplingNumberStartIndex, setSamplingNumberStartIndex] = useState(0);
   const [samplingNumber, setSamplingNumber] = useState(100);
 
-  const loaderContext = useContext(LoadingContext)
+  const loaderContext = useContext(LoadingContext);
   const handleCustomEndpointChange = (event) => {
     const checked = event?.target?.checked;
     const name = event?.target?.name;
@@ -345,14 +345,14 @@ const Row = (props) => {
     );
     setSamplingNumber(device?.sampling_number ? device?.sampling_number : 100);
     if (device?.choose_tags) {
-      loaderContext[1](true)
+      loaderContext[1](true);
       const tags = await get_device_tags(row?.name, device?.name);
-      loaderContext[1](false)
+      loaderContext[1](false);
       setDeviceTags(tags);
       setChannelDevice({ [channel]: deviceName });
       setTagsSelectionDialog(true);
     } else {
-      loaderContext[1](true)
+      loaderContext[1](true);
       const response = await createiotgw(
         event?.target?.name, //type
         row?.name, //channel name
@@ -395,7 +395,7 @@ const Row = (props) => {
           : null, //sampling number for matrix
         []
       );
-      loaderContext[1](false)
+      loaderContext[1](false);
       let result = "";
       if (event?.target?.name === "twa") {
         result = "Thingworx";
@@ -783,6 +783,12 @@ const Row = (props) => {
                                 onChange={(event, newValue) => {
                                   handleMachineIDChange(device?.name, newValue);
                                 }}
+                                onBlur={(event) => {
+                                  handleMachineIDChange(
+                                    device?.name,
+                                    event?.target?.value
+                                  );
+                                }}
                                 style={{ minWidth: 150 }}
                                 options={thingNames?.map((option) =>
                                   option?.replace("rt_", "")
@@ -804,6 +810,12 @@ const Row = (props) => {
                                 defaultValue=""
                                 onChange={(event, newValue) =>
                                   handleFolderChange(device?.name, newValue)
+                                }
+                                onBlur={(event) =>
+                                  handleFolderChange(
+                                    device?.name,
+                                    event?.target?.value
+                                  )
                                 }
                                 style={{ minWidth: 150 }}
                                 options={thingNames?.map((option) =>
@@ -1029,7 +1041,6 @@ export default function Kepware() {
           message: `An error occurred during Kepware Channels loading`,
         });
       }
-      
     })();
   }, []);
 
@@ -1038,9 +1049,7 @@ export default function Kepware() {
 
     if (isInKepware && currentTab === 4) {
       timer = setInterval(async () => {
-        loaderContext[1](true);
         const machinesConnected = await machines_connected();
-        loaderContext[1](false);
         setConnectedMachines(machinesConnected);
         setCount((prevCount) => prevCount + 1);
       }, 10000);
@@ -1170,6 +1179,8 @@ export default function Kepware() {
         message: "Error parsing JSON file",
       });
     }
+    const inputAnchor = document.getElementById("upload-backup-kepware");
+    inputAnchor.value = "";
     loadingContext[1](false);
   };
 
@@ -1445,12 +1456,14 @@ export default function Kepware() {
                   spacing={2}
                   justifyContent="flex-start"
                   alignItems="center"
+                  sx={{ mt: 2, mb: 2 }}
                 >
                   <Button component="label" variant="contained">
                     Upload
                     <VisuallyHiddenInput
                       type="file"
                       accept=".json"
+                      id="upload-backup-kepware"
                       onChange={handleUploadKepwareProject}
                     />
                   </Button>

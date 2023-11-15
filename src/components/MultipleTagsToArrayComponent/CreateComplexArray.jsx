@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment, useContext } from "react"
+import { useState, Fragment, useContext } from "react"
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -45,7 +45,6 @@ export default function MultipleTagsToArrayComponent(props) {
 
         if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
             setChannelList(kepwareChannels)
-            //setChannelRows(buildRows(kepwareChannels));
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
@@ -70,43 +69,6 @@ export default function MultipleTagsToArrayComponent(props) {
         }
         loadingContext[1](false);
     }
-
-    /*     useEffect(() => {
-            (async () => {
-                loadingContext[1](true);
-                const kepwareChannels = await loadChannels();
-                console.log("get kepware channels");
-    
-                if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
-                    setChannelList(kepwareChannels)
-                    //setChannelRows(buildRows(kepwareChannels));
-                    handleRequestFeedback({
-                        vertical: "bottom",
-                        horizontal: "right",
-                        severity: "success",
-                        message: `Kepware channels loaded`,
-                    });
-                } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
-                    setChannelList(kepwareChannels)
-                    handleRequestFeedback({
-                        vertical: "bottom",
-                        horizontal: "right",
-                        severity: "error",
-                        message: `No Kepware Channel found`,
-                    });
-                } else {
-                    handleRequestFeedback({
-                        vertical: "bottom",
-                        horizontal: "right",
-                        severity: "error",
-                        message: `An error occurred during Kepware Channels loading`,
-                    });
-                }
-                loadingContext[1](false);
-            })();
-        }, []); */
-
-
     const handleStartBrowsing = async () => {
         loadingContext[1](true)
         const tags = await get_device_tags(selectedChannel, selectedDevice);
@@ -192,19 +154,19 @@ export default function MultipleTagsToArrayComponent(props) {
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
 
-                        {selectedChannel && <Button onClick={handleNext}>
+                        <Button onClick={handleNext} disabled={!selectedChannel}>
                             {activeStep === steps?.length - 1 ? 'Finish' : 'Next'}
-                        </Button>}
+                        </Button>
                     </Box>
                 </Fragment>}
                 {activeStep === 1 && (<Fragment>
                     <Button
-                          onClick={handleRefreshKepwareChannels}
-                          variant="outlined"
-                          endIcon={<CachedIcon />}
-                        >
-                          Refresh Kepware devices
-                        </Button>
+                        onClick={handleRefreshKepwareChannels}
+                        variant="outlined"
+                        endIcon={<CachedIcon />}
+                    >
+                        Refresh Kepware devices
+                    </Button>
                     <Typography sx={{ mt: 2, mb: 1 }}>Choose a device belonging of channel: {selectedChannel} from the droplist below</Typography>
                     <Autocomplete
                         id="kepware-deviced"
@@ -228,9 +190,9 @@ export default function MultipleTagsToArrayComponent(props) {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        {selectedDevice && <Button onClick={handleNext}>
+                        <Button onClick={handleNext} disabled={!selectedDevice}>
                             {activeStep === steps?.length - 1 ? 'Finish' : 'Next'}
-                        </Button>}
+                        </Button>
 
                     </Box>
                 </Fragment>)}
@@ -254,9 +216,10 @@ export default function MultipleTagsToArrayComponent(props) {
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
 
-                        <Button onClick={handleNext}>
+                        <Button onClick={handleNext} disabled={!deviceTags}>
                             {activeStep === steps?.length - 1 ? 'Finish' : 'Next'}
                         </Button>
+
                     </Box>
                 </Fragment>)}
 

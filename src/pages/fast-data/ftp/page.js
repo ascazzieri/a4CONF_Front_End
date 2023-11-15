@@ -37,6 +37,7 @@ import {
   ftp_timestamp_millisecond_desc,
   ftp_users_desc,
 } from "../../../utils/titles";
+import { nonNullItemsCheck } from "../../../utils/utils";
 export default function FTP() {
   const ftp = useSelector((state) => state.services?.fastdata?.industrial?.ftp);
 
@@ -226,6 +227,11 @@ export default function FTP() {
       size: 80,
     },
   ];
+  const usersValidation= {
+    username: nonNullItemsCheck,
+    password: nonNullItemsCheck,
+    shared_folder: nonNullItemsCheck
+  }
   const blobColumnsData = [
     {
       accessorKey: "file_name",
@@ -244,6 +250,10 @@ export default function FTP() {
       size: 80,
     },
   ];
+  const blobValidation = {
+    file_name: nonNullItemsCheck,
+    blob_folder: nonNullItemsCheck
+  }
 
   return (
     <ErrorCacher>
@@ -384,6 +394,7 @@ export default function FTP() {
                 tableData={usersTableData || []}
                 setTableData={setUsersTableData}
                 columnsData={usersColumnData}
+                validationObject={usersValidation}
               />
 
               <Divider />
@@ -398,6 +409,7 @@ export default function FTP() {
                 tableData={blobTableData || []}
                 setTableData={setBlobTableData}
                 columnsData={blobColumnsData}
+                validationObject={blobValidation}
               />
 
               <Divider />

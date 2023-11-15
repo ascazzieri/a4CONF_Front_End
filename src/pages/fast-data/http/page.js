@@ -27,6 +27,7 @@ import {
   fast_http_port_desc,
   fast_http_suffix_desc,
 } from "../../../utils/titles";
+import { nonNullItemsCheck } from "../../../utils/utils";
 export default function FTP() {
   const http = useSelector(
     (state) => state.services?.fastdata?.industrial?.http
@@ -167,7 +168,6 @@ export default function FTP() {
     });
     dispatch(updateFastDataHTTP(newHTTP));
   };
-  console.log(blobTableData);
 
   const blobColumnsData = [
     {
@@ -187,6 +187,10 @@ export default function FTP() {
       size: 80,
     },
   ];
+  const blobValidation = {
+    file_name: nonNullItemsCheck,
+    blob_folder: nonNullItemsCheck
+  }
 
   return (
     <ErrorCacher>
@@ -325,6 +329,7 @@ export default function FTP() {
                 tableData={blobTableData}
                 setTableData={setBlobTableData}
                 columnsData={blobColumnsData}
+                validationObject={blobValidation}
               />
 
               <Divider />

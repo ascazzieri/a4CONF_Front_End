@@ -52,7 +52,7 @@ export default function FastData() {
   );
 
   const [matrixEnabled, setMatrixEnabled] = useState(
-    fastdata?.customer?.matrix?.enabled
+    fastdata?.industrial?.matrix?.enabled
   );
 
   const [blobConnectionUrl, setBlobConnectionUrl] = useState(
@@ -71,7 +71,7 @@ export default function FastData() {
   useEffect(() => {
     setFTPEnabled(fastdata?.industrial?.ftp?.enabled);
     setHTTPEnabled(fastdata?.industrial?.http?.enabled);
-    setMatrixEnabled(fastdata?.customer?.matrix?.enabled);
+    setMatrixEnabled(fastdata?.industrial?.matrix?.enabled);
     setBlobConnectionUrl(fastdata?.customer?.blob_connection?.azure_url);
     setBlobConnectionSas(fastdata?.customer?.blob_connection?.azure_sas);
   }, [fastdata]);
@@ -88,7 +88,7 @@ export default function FastData() {
 
   useEffect(() => {
     dispatch(
-      updateFastData({ customer: { matrix: { enabled: matrixEnabled } } })
+      updateFastData({ industrial: { matrix: { enabled: matrixEnabled } } })
     );
   }, [matrixEnabled, dispatch]);
 

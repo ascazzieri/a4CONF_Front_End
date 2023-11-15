@@ -15,11 +15,13 @@ import {
   Button,
   Divider,
 } from "@mui/material";
+import SaveButton from "../../components/SaveButton/SaveButton";
+import { nonNullItemsCheck } from "../../utils/utils";
 export default function BackChannel() {
   const backChannel = useSelector((state) => state?.services?.backchannel);
 
   const dispatch = useDispatch();
- 
+
   const snackBarContext = useContext(SnackbarContext);
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
@@ -42,11 +44,10 @@ export default function BackChannel() {
     getTableArray(backChannel?.files, "files")
   );
 
-
   useEffect(() => {
-    setTopicsTableData(getTableArray(backChannel?.topics, "topics"))
-    setFilesTableData(getTableArray(backChannel?.files, "files"))
-  },[backChannel])
+    setTopicsTableData(getTableArray(backChannel?.topics, "topics"));
+    setFilesTableData(getTableArray(backChannel?.files, "files"));
+  }, [backChannel]);
 
   const handleBackChannelChange = (event) => {
     event.preventDefault();
@@ -81,6 +82,9 @@ export default function BackChannel() {
       enableSorting: true,
     },
   ];
+  const topicValidation = {
+    topics: nonNullItemsCheck,
+  };
 
   const filesColumnData = [
     {
@@ -91,6 +95,9 @@ export default function BackChannel() {
       enableSorting: true,
     },
   ];
+  const fileValidation = {
+    files: nonNullItemsCheck,
+  };
 
   return (
     <ErrorCacher>
@@ -115,6 +122,7 @@ export default function BackChannel() {
                       tableData={topicsTableData}
                       setTableData={setTopicsTableData}
                       columnsData={topicsColumnData}
+                      validationObject={topicValidation}
                     />
 
                     <Divider />
@@ -129,17 +137,14 @@ export default function BackChannel() {
                       tableData={filesTableData}
                       setTableData={setFilesTableData}
                       columnsData={filesColumnData}
+                      validationObject={fileValidation}
                     />
 
                     <Divider />
                   </>
                 )}
 
-                <FormControl fullWidth>
-                  <Button type="submit" variant="contained">
-                    Invia
-                  </Button>
-                </FormControl>
+                <SaveButton />
               </form>
             </Container>
           </CardContent>

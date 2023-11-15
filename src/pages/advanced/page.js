@@ -30,6 +30,7 @@ import {
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
+import SaveButton from "../../components/SaveButton/SaveButton";
 
 export default function Advanced() {
   const loaderContext = useContext(LoadingContext);
@@ -186,58 +187,20 @@ export default function Advanced() {
       });
     }
   };
-  /* const onJsonChange = useCallback((key, value, parent, data) => {
-    const correctData = _.cloneDeep(data?.root);
-
-    const transformFieldToArray = (obj) => {
-      _.forOwn(obj, (fieldValue, field) => {
-        // Se il campo è una stringa con il formato [], trasformalo in un array
-        if (typeof fieldValue === "string") {
-          if (fieldValue.startsWith("[") && fieldValue.endsWith("]")) {
-            try {
-              obj[field] = JSON.parse(fieldValue);
-            } catch (error) {
-              console.error(
-                `Errore durante il parsing del campo ${field}: ${error}`
-              );
-            }
-          } else if (fieldValue.includes(",")) {
-            // Se la stringa contiene una virgola, separa i valori in un array
-            obj[field] = fieldValue.split(",").map((value) => value.trim());
-          }
-        }
-
-        // Se il campo è una stringa 'true' o 'false', trasformalo in un booleano
-        if (
-          typeof fieldValue === "string" &&
-          (fieldValue.toLowerCase() === "true" ||
-            fieldValue.toLowerCase() === "false")
-        ) {
-          obj[field] = fieldValue.toLowerCase() === "true";
-        }
-
-        // Ricorsione per oggetti nidificati
-        if (typeof fieldValue === "object" && fieldValue !== null) {
-          transformFieldToArray(fieldValue);
-        }
-      });
-    };
-
-    if (correctData) {
-      transformFieldToArray(correctData);
-      setJsonData(correctData);
-    }
-  }, []); */
-
-
   const handleChangeDangerous = () => {
     if (jsonData) {
+      console.log(jsonData)
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `Local configuration has been changed correctly`,
+      });
       dispatch(
         updateAll({ payload: jsonData, meta: { actionType: "upload" } })
       );
     }
   };
-
   return (
     <ErrorCacher>
       <Card sx={{ mt: 1 }}>
@@ -276,11 +239,6 @@ export default function Advanced() {
                     </>
                   ) : (
                     <>
-                      {/* <JSONEditor
-                        data={jsonData}
-                        onChange={onJsonChange}
-                        collapsible
-                      /> */}
                       <JsonEditorComponent
                         jsonData={jsonData}
                         setJsonData={setJsonData}
@@ -299,9 +257,10 @@ export default function Advanced() {
                         >
                           Active Safe Mode
                         </Button>
-                        <Button
+                       <Button
                           onClick={handleChangeDangerous}
                           variant="contained"
+                          size="large"
                         >
                           Save
                         </Button>

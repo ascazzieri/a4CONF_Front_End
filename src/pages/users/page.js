@@ -295,41 +295,9 @@ export default function ManageUsers() {
                     justifyContent="space-between"
                   >
                     <MenuItem key={Math.random()} sx={{ minWidth: 500 }}>
-                      <div key={Math.random()} style={{ width: "90%" }}>
-                        <Typography key={Math.random()}>
-                          • {getUserNamefromEmail(item) || `User ${index}`}
-                        </Typography>
-                        <OutlinedInput
-                          type={
-                            visibleUsers.includes(item) ? "text" : "password"
-                          }
-                          value={item}
-                          readOnly={true}
-                          key={Math.random()}
-                          fullWidth
-                          endAdornment={
-                            <InputAdornment position="end" key={Math.random()}>
-                              <IconButton
-                                aria-label="toggle password visibility"
-                                onMouseDown={() =>
-                                  handleClickShowUser(item, "add")
-                                }
-                                onMouseUp={() =>
-                                  handleClickShowUser(item, "delete")
-                                }
-                                key={Math.random()}
-                                edge="end"
-                              >
-                                {visibleUsers.includes(item) ? (
-                                  <VisibilityOff />
-                                ) : (
-                                  <Visibility />
-                                )}
-                              </IconButton>
-                            </InputAdornment>
-                          }
-                        />
-                      </div>
+                      <Typography key={Math.random()}>
+                        • {item || `User ${index}`}
+                      </Typography>
                     </MenuItem>
                     <Button
                       variant="contained"

@@ -173,7 +173,7 @@ const jsonSlice = createSlice({
     },
     updateFastDataMatrix(state, action) {
       const newFastDataMatrix = action.payload;
-      state.services.fastdata.customer.matrix = newFastDataMatrix;
+      state.services.fastdata.customer = newFastDataMatrix;
     },
     updateUserList(state, action) {
       const newCurrentUser = action.payload;

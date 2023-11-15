@@ -591,7 +591,7 @@ export default function Dashboard() {
                         <div>Fast Data Matrix</div>
                       </Grid>
                       <Grid item xs={6} sx={{ p: 1, textAlign: "center" }}>
-                        {plugins_status?.fastdata?.customer?.matrix?.running
+                        {plugins_status?.fastdata?.industrial?.matrix?.running
                           ? goodStatus()
                           : badStatus()}
                       </Grid>

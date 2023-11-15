@@ -330,7 +330,6 @@ export default function AddCAToIoTGateway(props) {
             })
         }
     }
-
     return (
         <><h2>Send Complex Array Tags</h2>
             <Box sx={{ width: '100%' }}>
@@ -379,9 +378,9 @@ export default function AddCAToIoTGateway(props) {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        {selectedDevice && <Button onClick={handleNext}>
+                        <Button onClick={handleNext} disabled={!selectedDevice}>
                             {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                        </Button>}
+                        </Button>
 
 
                     </Box>
@@ -426,10 +425,10 @@ export default function AddCAToIoTGateway(props) {
                             Back
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
-                        {complexArraysSelected?.length !== 0 &&
-                            <Button onClick={handleNext}>
-                                {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                            </Button>}
+
+                        <Button onClick={handleNext} disabled={complexArraysSelected?.length === 0}>
+                            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+                        </Button>
                     </Box>
                 </Fragment>)}
                 {activeStep === 2 && (<Fragment>
@@ -448,7 +447,7 @@ export default function AddCAToIoTGateway(props) {
                             setSelectedIoGateway(newValue);
                         }}
                         style={{ minWidth: 150 }}
-                        options={iotGatewaysList || []}
+                        options={iotGatewaysList?.filter((item) => !item?.includes("CA_REST_CLIENT")) || []}
                         renderInput={(params) => (
                             <TextField {...params} label="IoT Gateways enabled" />
                         )}
@@ -466,9 +465,9 @@ export default function AddCAToIoTGateway(props) {
                         </Button>
                         <Box sx={{ flex: '1 1 auto' }} />
 
-                        {selectedIotGateway && <Button onClick={handleNext}>
+                        <Button onClick={handleNext} disabled={!selectedIotGateway}>
                             {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
-                        </Button>}
+                        </Button>
                     </Box>
                 </Fragment>)}
 
@@ -486,7 +485,7 @@ export default function AddCAToIoTGateway(props) {
                         </Button>
                         <Box sx={{ display: 'flex', flexDirection: 'row', pt: 2 }}>
                             <Box sx={{ flex: '1 1 auto' }} />
-                            <Button onClick={handleReset}>Reset</Button>
+                            <Button onClick={handleNext}>Finish</Button>
                         </Box>
                     </Fragment>
                 )}
