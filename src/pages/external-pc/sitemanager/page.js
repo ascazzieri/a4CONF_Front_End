@@ -7,6 +7,7 @@ import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar
 import {
   agents_vendor_list,
   agent_vendor_device_type,
+  nonNullItemsCheck,
 } from "../../../utils/utils";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
 import BackButton from "../../../components/BackButton/BackButton";
@@ -192,6 +193,12 @@ export default function Sitemanager() {
       enableSorting: true,
     },
   ];
+  const agentValidation = {
+    agent: nonNullItemsCheck,
+    name: nonNullItemsCheck,
+    sn: nonNullItemsCheck,
+    cfg: nonNullItemsCheck,
+  };
   return (
     <ErrorCacher>
       <Container>
@@ -358,6 +365,7 @@ export default function Sitemanager() {
                 tableData={agentsTableData}
                 setTableData={setAgentTableData}
                 columnsData={agentsColumnData}
+                validationObject={agentValidation}
               />
 
               <Divider />

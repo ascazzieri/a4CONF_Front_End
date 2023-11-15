@@ -70,6 +70,7 @@ import {
   thingworx_manage_iot_desc,
   thingworx_remote_config_desc,
 } from "../../../utils/titles";
+import { nonNullItemsCheck } from "../../../utils/utils";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -150,9 +151,7 @@ export default function Thingworx() {
       return "Cannot resolve DNS!";
     } else if (agentDiagnosis?.server_ip_reachable === false) {
       return "Server is not reachable!";
-    } else if (
-      agentDiagnosis?.connection_error?.trim() !== "not_found"
-    ) {
+    } else if (agentDiagnosis?.connection_error?.trim() !== "not_found") {
       return agentDiagnosis?.reason;
     } else {
       return true;
@@ -393,6 +392,10 @@ export default function Thingworx() {
       enableSorting: true,
     },
   ];
+  const thingValidation = {
+    iot_gateway: nonNullItemsCheck,
+    thing_name: nonNullItemsCheck,
+  };
   /**
    * Extracts the value of the "thingName" parameter from the given input string.
    *
@@ -541,10 +544,10 @@ export default function Thingworx() {
               </FormLabel>
 
               <CustomTable
-                title={thingworx_remote_config_desc}
                 tableData={thingsTableData}
                 setTableData={setThingsTableData}
                 columnsData={thingsColumnData}
+                validationObject={thingValidation}
               />
 
               <Divider />

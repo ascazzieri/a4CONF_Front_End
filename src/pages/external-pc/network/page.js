@@ -493,6 +493,10 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
+  const validationRouteTableData = {
+    subnet: verifyIPCIDR,
+    gateway: verifyIP,
+  };
 
   const aliasColumnData = [
     {
@@ -512,6 +516,10 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
+  const validationAlias = {
+    alias: nonNullItemsCheck,
+    value: nonNullItemsCheck,
+  };
 
   const portsAllowedColumnData = [
     {
@@ -531,6 +539,10 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
+  const validationPortsAllowed = {
+    external_tcp_ports: nonNullItemsCheck,
+    source: nonNullItemsCheck,
+  };
 
   const portsAllowedSelectableObjectData = {
     enabled: true,
@@ -587,10 +599,6 @@ export default function ExternalNetwork() {
       size: 80,
     },
   ];
-  const validationRouteTableData = {
-    subnet: verifyIPCIDR,
-    gateway: verifyIP,
-  };
 
   const validationPortForwarding = {
     PORT_EXT: nonNullItemsCheck,
@@ -1210,6 +1218,7 @@ export default function ExternalNetwork() {
                 tableData={aliasTableData || []}
                 setTableData={setAliasTableData}
                 columnsData={aliasColumnData}
+                validationObject={validationAlias}
               />
 
               <Divider />
@@ -1227,6 +1236,7 @@ export default function ExternalNetwork() {
                 setTableData={setPortsAllowedTableData}
                 columnsData={portsAllowedColumnData}
                 selectableObjectData={portsAllowedSelectableObjectData}
+                validationObject={validationPortsAllowed}
               />
 
               <Divider />

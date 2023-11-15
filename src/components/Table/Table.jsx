@@ -57,7 +57,7 @@ export const CreateNewAccountModal = ({
       }
     })
     validationIterator?.forEach((item, index) => {
-      if (!validationAgents[index](item)) {
+      if (!validationAgents[index](item?.trim())) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
@@ -121,18 +121,12 @@ export const CreateNewAccountModal = ({
                           ? values[column.accessorKey]
                           : ""
                       } onChange={(e, newValue) => {
-                        console.log(newValue)
-                        console.log({
-                          ...values,
-                          [column.accessorKey]: newValue,
-                        })
                         setValues({
                           ...values,
                           [column.accessorKey]: newValue,
                         });
                       }}
                       onBlur={(event) => {
-                        console.log(event?.target?.value)
                         setValues({
                           ...values,
                           [column.accessorKey]: event?.target?.value,

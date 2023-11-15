@@ -526,7 +526,7 @@ export const removeDuplicates = (a) => {
   });
 };
 export const nonNullItemsCheck = (item) => {
-  if (item !== null && item !== undefined && item?.length !== 0) {
+  if (item !== null && item !== undefined && item?.trim()?.length !== 0) {
     return true;
   } else {
     return false;

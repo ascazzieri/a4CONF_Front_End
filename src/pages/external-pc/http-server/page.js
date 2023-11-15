@@ -53,6 +53,7 @@ import {
   http_security_desc,
   http_server_port_desc,
 } from "../../../utils/titles";
+import { nonNullItemsCheck } from "../../../utils/utils";
 
 export default function HTTPServer() {
   const http = useSelector((state) => state?.services?.http);
@@ -476,56 +477,9 @@ export default function HTTPServer() {
       enableSorting: false,
     },
   ];
-
-  /**
-   * This code snippet defines an array of objects named 'usersColumnData' that represents the column data for a table.
-   * Each object in the array represents a column and contains properties such as 'accessorKey', 'header', 'enableColumnOrdering',
-   * 'enableEditing', and 'enableSorting'.
-   *
-   * The 'accessorKey' property represents the key used to access the data for the column in each row of the table.
-   * The 'header' property represents the header text for the column.
-   * The 'enableColumnOrdering' property determines whether the column can be reordered by the user.
-   * The 'enableEditing' property determines whether the column is editable.
-   * The 'enableSorting' property determines whether the column can be sorted by the user.
-   *
-   * This code can be used to define the column data for a table in a React application.
-   *
-   * Example usage:
-   *
-   * const usersColumnData = [
-   *   {
-   *     accessorKey: "username",
-   *     header: "User",
-   *     enableColumnOrdering: true,
-   *     enableEditing: true, // disable editing on this column
-   *     enableSorting: true,
-   *   },
-   *   {
-   *     accessorKey: "password",
-   *     header: "Password",
-   *     enableColumnOrdering: true,
-   *     enableEditing: true, // disable editing on this column
-   *     enableSorting: true,
-   *   },
-   * ];
-   */
-
-  const usersColumnData = [
-    {
-      accessorKey: "username",
-      header: "User",
-      enableColumnOrdering: true,
-      enableEditing: true, // disable editing on this column
-      enableSorting: true,
-    },
-    {
-      accessorKey: "password",
-      header: "Password",
-      enableColumnOrdering: true,
-      enableEditing: true, // disable editing on this column
-      enableSorting: true,
-    },
-  ];
+  const iotGatewaysValidation = {
+    iot_gateway: nonNullItemsCheck,
+  }
 
   return (
     <ErrorCacher>
@@ -588,6 +542,7 @@ export default function HTTPServer() {
                 tableData={iotGatewaysFromTableData}
                 setTableData={setIotGatewaysFromTableData}
                 columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewaysValidation}
               />
 
               <Divider />
@@ -640,6 +595,7 @@ export default function HTTPServer() {
                 tableData={iotGatewaysToTableData}
                 setTableData={setIotGatewaysToTableData}
                 columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewaysValidation}
               />
 
               <Divider />

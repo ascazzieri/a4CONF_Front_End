@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import { getArrayOfObjects } from "../../../utils/utils";
+import { getArrayOfObjects, nonNullItemsCheck } from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
@@ -491,6 +491,9 @@ export default function OPCServer() {
       enableSorting: false,
     },
   ];
+  const iotGatewayValidation = {
+    iot_gateway: nonNullItemsCheck,
+  };
 
   /**
    * This code snippet defines an array of objects named 'usersColumnData' that represents the column data for a table.
@@ -541,6 +544,10 @@ export default function OPCServer() {
       enableSorting: true,
     },
   ];
+  const usersValidation = {
+    username: nonNullItemsCheck,
+    password: nonNullItemsCheck,
+  };
 
   return (
     <ErrorCacher>
@@ -604,6 +611,7 @@ export default function OPCServer() {
                 tableData={iotGatewaysFromTableData}
                 setTableData={setIotGatewaysFromTableData}
                 columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewayValidation}
               />
 
               <Divider />
@@ -655,6 +663,7 @@ export default function OPCServer() {
                 tableData={iotGatewaysToTableData}
                 setTableData={setIotGatewaysToTableData}
                 columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewayValidation}
               />
 
               <Divider />
@@ -973,6 +982,7 @@ export default function OPCServer() {
                     tableData={usersTableData}
                     setTableData={setUsersTableData}
                     columnsData={usersColumnData}
+                    validationObject={usersValidation}
                   />
 
                   <Divider />
