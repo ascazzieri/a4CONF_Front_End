@@ -12,6 +12,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
+import { LoadingContext } from "../../utils/context/Loading";
+import { getQueuePending } from "../../utils/utils";
 
 export default function ChangePassword() {
   const sectionArray = ["Change password"];
@@ -30,29 +32,31 @@ export default function ChangePassword() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-  const handleChangePassword = () => {
-    if (newPassword !== newPasswordConfirm) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `New password does not match with confirmation`,
-      });
-    } else {
-      if (
-        !userIsValid(username) ||
-        checkPasswordStrength(newPassword) !== 4 ||
-        username?.includes(" ") ||
-        newPassword?.includes(" ")
-      ) {
+  const loadingContext = useContext(LoadingContext);
+  const handleChangePassword = async () => {
+    try {
+      loadingContext[1](true);
+      if (newPassword !== newPasswordConfirm) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character. Do not use spaces.`,
+          message: `New password does not match with confirmation`,
         });
       } else {
-        (async () => {
+        if (
+          !userIsValid(username) ||
+          checkPasswordStrength(newPassword) !== 4 ||
+          username?.includes(" ") ||
+          newPassword?.includes(" ")
+        ) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character. Do not use spaces.`,
+          });
+        } else {
           try {
             const changePasswordData = {
               user: username,
@@ -88,7 +92,18 @@ export default function ChangePassword() {
               message: `An error occurred while trying to change password`,
             });
           }
-        })();
+        }
+      }
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to change password`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
       }
     }
   };
@@ -139,7 +154,7 @@ export default function ChangePassword() {
                   setCurrentTab={setCurrentTab}
                   navbarItems={sectionArray}
                 />
-                                <Divider />
+                <Divider />
                 <InputLabel>Enter your username:</InputLabel>
                 <OutlinedInput
                   type="text"

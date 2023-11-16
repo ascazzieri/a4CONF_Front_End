@@ -8,6 +8,7 @@ import {
   verifyIPCIDR,
   verifyIPnotbroadcast,
   verifyIP,
+  getQueuePending,
 } from "../../../utils/utils";
 import BackButton from "../../../components/BackButton/BackButton";
 import { getArrayOfObjects } from "../../../utils/utils";
@@ -160,51 +161,77 @@ export default function InternalNetwork() {
   };
 
   const handleResync = async () => {
-    const ntpSettings = {
-      update_from_B: updateNTPfromB,
-      ip_addresses: customNTPAddress,
-    };
-    loaderContext[1](true);
-    const res = await ntp_resinc(ntpSettings);
-    if (res) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `NTP Syncronized`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const ntpSettings = {
+        update_from_B: updateNTPfromB,
+        ip_addresses: customNTPAddress,
+      };
+
+      const res = await ntp_resinc(ntpSettings);
+      if (res) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `NTP Syncronized`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on NTP Syncronization`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occurred`,
+        message: `An error occurred on NTP Syncronization`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    loaderContext[1](false);
   };
   const handleStart = async () => {
-    const ntpSettings = {
-      update_from_B: updateNTPfromB,
-    };
-    loaderContext[1](true);
-    const res = await ntp_start(ntpSettings);
-    if (res) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `NTP Syncronized`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const ntpSettings = {
+        update_from_B: updateNTPfromB,
+      };
+
+      const res = await ntp_start(ntpSettings);
+      if (res) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `NTP Syncronized`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on NTP Syncronization`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occurred`,
+        message: `An error occurred on NTP Syncronization`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    loaderContext[1](false);
   };
 
   const handleIndustrialChange = (event) => {

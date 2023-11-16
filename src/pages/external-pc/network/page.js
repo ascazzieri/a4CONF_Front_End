@@ -288,42 +288,53 @@ export default function ExternalNetwork() {
     }
   };
   const handleTestConnection = async () => {
-    const testPingNumberInt = parseInt(testPingNumber);
-    if (!testPingNumber || !Number?.isInteger(testPingNumberInt)) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Please insert an integer number of pings to do`,
-      });
-      return;
-    }
-    loaderContext[1](true);
-    const connection = await test_connection({
-      n_ping: testPingNumberInt,
-      ip_addresses: hostList,
-    });
+    try {
+      loaderContext[1](true);
+      const testPingNumberInt = parseInt(testPingNumber);
+      if (!testPingNumber || !Number?.isInteger(testPingNumberInt)) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Please insert an integer number of pings to do`,
+        });
+        return;
+      }
 
-    console.log("test PCB connection");
-
-    if (connection) {
-      setConnectionTest(connection);
-      dispatch(updatePingResult(connection));
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Test results received`,
+      const connection = await test_connection({
+        n_ping: testPingNumberInt,
+        ip_addresses: hostList,
       });
-    } else {
+
+      console.log("test PCB connection");
+
+      if (connection) {
+        setConnectionTest(connection);
+        dispatch(updatePingResult(connection));
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Test results received`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on PCB connection test`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred on PCB connection test`,
       });
+    } finally {
+      loaderContext[1](false);
     }
-    loaderContext[1](false);
   };
   if (customerNetwork?.dhcp && customerNetwork?.static?.ip?.length === 0) {
     handleRequestFeedback({

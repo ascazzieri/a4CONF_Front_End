@@ -54,6 +54,7 @@ import {
   thingworx_board_desc,
   version_desc,
 } from "../../utils/titles";
+import { getQueuePending } from "../../utils/utils";
 
 export default function Dashboard() {
   const system = useSelector((state) => state?.system);
@@ -96,7 +97,10 @@ export default function Dashboard() {
     if (dashboardStatus && Object.keys(dashboardStatus).length === 0) {
       loaderContext[1](true); // Imposta lo stato di caricamento iniziale
     } else {
-      loaderContext[1](false); // Non è più in fase di caricamento
+      if(getQueuePending() === 0){
+        loaderContext[1](false); // Non è più in fase di caricamento
+      }
+      
     }
   }, [dashboardStatus, loaderContext]);
 

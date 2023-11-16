@@ -12,6 +12,7 @@ import CachedIcon from "@mui/icons-material/Cached";
 import { loadChannels, get_device_tags } from "../../utils/api";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
+import { getQueuePending } from "../../utils/utils";
 
 const steps = ['Select a Kepware Channel', 'Choose a Device from the Channel Selected', 'Import only the tag you need'];
 
@@ -39,44 +40,77 @@ export default function MultipleTagsToArrayComponent(props) {
     const [tagsSelectionDialog, setTagsSelectionDialog] = useState(false);
 
     const handleRefreshKepwareChannels = async () => {
-        loadingContext[1](true);
-        const kepwareChannels = await loadChannels();
-        console.log("get kepware channels");
+        try {
+            loadingContext[1](true);
+            const kepwareChannels = await loadChannels();
+            console.log("get kepware channels");
 
-        if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
-            setChannelList(kepwareChannels)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `Kepware channels loaded`,
-            });
-        } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
-            setChannelList(kepwareChannels)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `No Kepware Channel found`,
-            });
-        } else {
+            if (kepwareChannels && Object.keys(kepwareChannels)?.length !== 0) {
+                setChannelList(kepwareChannels)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "success",
+                    message: `Kepware channels loaded`,
+                });
+            } else if (kepwareChannels && Object.keys(kepwareChannels)?.length === 0) {
+                setChannelList(kepwareChannels)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `No Kepware Channel found`,
+                });
+            } else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred during Kepware Channels loading`,
+                });
+            }
+        } catch (e) {
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "error",
                 message: `An error occurred during Kepware Channels loading`,
             });
-        }
-        loadingContext[1](false);
-    }
-    const handleStartBrowsing = async () => {
-        loadingContext[1](true)
-        const tags = await get_device_tags(selectedChannel, selectedDevice);
-        if (tags) {
-            setDeviceTags(tags);
-            setTagsSelectionDialog(true);
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](false);
+            }
         }
 
+
+    }
+    const handleStartBrowsing = async () => {
+        try {
+            loadingContext[1](true)
+            const tags = await get_device_tags(selectedChannel, selectedDevice);
+            if (tags) {
+                setDeviceTags(tags);
+                setTagsSelectionDialog(true);
+            } else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `No Tags have been found`,
+                });
+            }
+        } catch (e) {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred during tag browsing`,
+            });
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](false)
+            }
+        }
     }
 
     const handleNext = () => {

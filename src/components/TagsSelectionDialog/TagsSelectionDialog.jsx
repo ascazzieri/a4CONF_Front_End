@@ -9,6 +9,8 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TransferComponent from "./TransferComponent/TransferComponent"
 import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { createiotgw } from '../../utils/api';
+import { getQueuePending } from '../../utils/utils';
+import { LoadingContext } from '../../utils/context/Loading';
 
 export default function MaxWidthDialog(props) {
     const { open, setOpen, deviceName, provider, endPoint, machine_ID, folder, publishRate, scanRate, samplingTime, samplingNumberStartIndex, samplingNumber, tags } = props
@@ -22,6 +24,7 @@ export default function MaxWidthDialog(props) {
     const handleRequestFeedback = (newState) => {
         snackBarContext[1]({ ...newState, open: true });
     };
+    const loadingContext = useContext(LoadingContext)
 
     const handleClose = () => {
         setOpen(false);
@@ -81,52 +84,67 @@ export default function MaxWidthDialog(props) {
     }
 
     const handleCreate = async (event) => {
-        const totalTagList = transformIotGatewayCart(tags, channel, device)
-        const finalTagList = findMatches(iotGatewayCart, totalTagList)
-        const response = await createiotgw(
-            provider,
-            channel,
-            device,
-            endPoint,
-            provider === "matrix" ? machine_ID?.replace('rt_', '') : null, //folder for matrix
-            provider === "matrix" ? folder?.replace('rt_', '') : null, //folder for matrix
-            provider === "matrix" ? publishRate : null, //publish rate for matrix
-            provider === "matrix" ? scanRate : null, //scan rate for matrix 
+        try {
+            loadingContext[1](true)
+            const totalTagList = transformIotGatewayCart(tags, channel, device)
+            const finalTagList = findMatches(iotGatewayCart, totalTagList)
+            const response = await createiotgw(
+                provider,
+                channel,
+                device,
+                endPoint,
+                provider === "matrix" ? machine_ID?.replace('rt_', '') : null, //folder for matrix
+                provider === "matrix" ? folder?.replace('rt_', '') : null, //folder for matrix
+                provider === "matrix" ? publishRate : null, //publish rate for matrix
+                provider === "matrix" ? scanRate : null, //scan rate for matrix 
 
-            provider === "matrix" ? samplingTime : null, //sampling time for matrix
-            provider === "matrix" ? samplingNumberStartIndex : null, //sampling time start index for matrix
-            provider === "matrix" ? samplingNumber : null, //sampling number for matrix 
-            finalTagList
-        );
-        let result = ""
-        if (event?.target?.name === "twa") {
-            result = "Thingworx";
-        } else if (event?.target?.name === "opcua_from") {
-            result = "OPCUA (Reading)";
-        } else if (event?.target?.name === "opcua_to") {
-            result = "OPCUA (Read and Write)";
-        } else if (event?.target?.name === "http_from") {
-            result = "HTTP (Read)";
-        } else if (event?.target?.name === "http_to") {
-            result = "HTTP (Read and Write)";
-        } else if (event?.target?.name === "matrix") {
-            result = "Matrix";
-        }
-        if (response?.iotgw && response?.time)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `IoT gateway ${response.iotgw} of device: ${device} for ${result} has been created in ${response.time} s`,
-            });
-        else {
+                provider === "matrix" ? samplingTime : null, //sampling time for matrix
+                provider === "matrix" ? samplingNumberStartIndex : null, //sampling time start index for matrix
+                provider === "matrix" ? samplingNumber : null, //sampling number for matrix 
+                finalTagList
+            );
+            let result = ""
+            if (event?.target?.name === "twa") {
+                result = "Thingworx";
+            } else if (event?.target?.name === "opcua_from") {
+                result = "OPCUA (Reading)";
+            } else if (event?.target?.name === "opcua_to") {
+                result = "OPCUA (Read and Write)";
+            } else if (event?.target?.name === "http_from") {
+                result = "HTTP (Read)";
+            } else if (event?.target?.name === "http_to") {
+                result = "HTTP (Read and Write)";
+            } else if (event?.target?.name === "matrix") {
+                result = "Matrix";
+            }
+            if (response?.iotgw && response?.time)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "success",
+                    message: `IoT gateway ${response.iotgw} of device: ${device} for ${result} has been created in ${response.time} s`,
+                });
+            else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred during creation of Iot Gateway`,
+                });
+            }
+        } catch (e) {
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "error",
                 message: `An error occurred during creation of Iot Gateway`,
             });
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](true)
+            }
         }
+
 
     };
 

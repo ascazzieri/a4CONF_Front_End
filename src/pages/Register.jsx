@@ -11,6 +11,8 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { send_register } from "../utils/api";
 import { SnackbarContext } from "../utils/context/SnackbarContext";
+import { getQueuePending } from "../utils/utils";
+import { LoadingContext } from "../utils/context/Loading";
 
 export default function Register(props) {
   const { setAuthenticated, firstUser, setFirstUser } = props
@@ -45,6 +47,8 @@ export default function Register(props) {
     snackBarContext[1]({ ...newState, open: true });
   };
 
+  const loadingContext = useContext(LoadingContext)
+
   useEffect(() => {
     if (!firstUser) {
       navigate("/");
@@ -52,23 +56,24 @@ export default function Register(props) {
   });
 
   const handleRegister = async () => {
-    if (
-      username.trim() !== "" &&
-      userIsValid(username) === true &&
-      password.trim() !== "" &&
-      checkPasswordStrength(password) === 4 &&
-      confirmPassword.trim() !== ""
-    ) {
-      if (password?.trim() !== confirmPassword?.trim()) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `password do not match`
-        });
-        return;
-      } else {
-        (async () => {
+    try {
+      loadingContext[1](true)
+      if (
+        username.trim() !== "" &&
+        userIsValid(username) === true &&
+        password.trim() !== "" &&
+        checkPasswordStrength(password) === 4 &&
+        confirmPassword.trim() !== ""
+      ) {
+        if (password?.trim() !== confirmPassword?.trim()) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `password do not match`
+          });
+          return;
+        } else {
           try {
             const result = await send_register({
               user: username,
@@ -93,18 +98,35 @@ export default function Register(props) {
               });
             }
           } catch (err) {
-            console.error(err);
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "error",
+              message: `An error occurred on create user creation`,
+            });
           }
-        })();
+        }
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`
+        });
       }
-    } else {
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character`
+        message: `An error occurred on create user creation`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false)
+      }
     }
+
   };
   function userIsValid(user) {
     var regex_email_valida =

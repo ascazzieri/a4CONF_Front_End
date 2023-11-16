@@ -12,7 +12,7 @@ import { LoadingContext } from "../utils/context/Loading";
 import applied_logo from "../media/img/applied_logo.png";
 import { useLocation } from "react-router-dom";
 import React from "react";
-import { togglePageSleep } from "../utils/utils";
+import { togglePageSleep, getQueuePending } from "../utils/utils";
 
 const applied_background = {
   position: "fixed",
@@ -58,7 +58,10 @@ const Layout = () => {
         }
         const confB = await get_confB();
         togglePageSleep('release')
-        loaderContext[1](false);
+        if(getQueuePending() === 0){
+          loaderContext[1](false);
+        }
+       
         verbose && console.log("get conf B");
         if (confB) {
           dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));

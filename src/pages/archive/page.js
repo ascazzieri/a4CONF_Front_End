@@ -21,6 +21,8 @@ import {
 } from "../../utils/api";
 import { useEffect } from "react";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
+import { LoadingContext } from "../../utils/context/Loading";
+import { getQueuePending } from "../../utils/utils";
 
 export default function Archive() {
   const [archive, setArchive] = useState();
@@ -32,6 +34,8 @@ export default function Archive() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+
+  const loadingContext = useContext(LoadingContext);
 
   const handleSave = (isAdding) => {
     const newArchive = { ...archive };
@@ -48,7 +52,7 @@ export default function Archive() {
     } else {
       newArchive[newTitle] = content;
     }
-    setOldTitle(null)
+    setOldTitle(null);
 
     if (title.trim() === "" || content.trim() === "") {
       handleRequestFeedback({
@@ -60,6 +64,7 @@ export default function Archive() {
     } else {
       (async () => {
         try {
+          loadingContext[1](true);
           const response = await send_archive(newArchive);
           if (response === true) {
             handleRequestFeedback({
@@ -78,6 +83,10 @@ export default function Archive() {
           }
         } catch (err) {
           console.log("Error occured when fetching archive elements");
+        } finally {
+          if (getQueuePending() === 0) {
+            loadingContext[1](false);
+          }
         }
       })();
       setArchive(newArchive);
@@ -96,24 +105,38 @@ export default function Archive() {
   const archiveKeys = archive ? Object.keys(archive) : [];
   const archiveValues = archive ? Object.values(archive) : [];
   const handleDelete = async (item) => {
-    const newArchive = { ...archive };
-    const response = await delete_archive_note(item);
-    if (response) {
-      delete newArchive[item];
-      setArchive(newArchive);
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Archive item correctly deleted`,
-      });
-    } else {
+    try {
+      const newArchive = { ...archive };
+      loadingContext[1](true);
+      const response = await delete_archive_note(item);
+      if (response) {
+        delete newArchive[item];
+        setArchive(newArchive);
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Archive item correctly deleted`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on item deletion`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occurred on delete item`,
+        message: `An error occurred on item deletion`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
+      }
     }
   };
   const [mod, setMod] = useState(false);
@@ -138,6 +161,7 @@ export default function Archive() {
   useEffect(() => {
     (async () => {
       try {
+        loadingContext[1](true)
         const response = await get_archive();
         if (response) {
           setArchive(response);
@@ -162,7 +186,10 @@ export default function Archive() {
           severity: "error",
           message: `An error occurred on change archive configuration`,
         });
-        console.error(err);
+      }finally{
+        if(getQueuePending() === 0){
+          loadingContext[1](false)
+        }
       }
     })();
   }, []);
@@ -170,6 +197,7 @@ export default function Archive() {
   const handleReload = async () => {
     (async () => {
       try {
+        loadingContext[1](true)
         const response = await get_archive();
         if (response) {
           setArchive(response);
@@ -194,6 +222,10 @@ export default function Archive() {
           severity: "error",
           message: `An error occurred on change archive configuration`,
         });
+      }finally{
+        if(getQueuePending() === 0){
+          loadingContext[1](false)
+        }
       }
     })();
   };

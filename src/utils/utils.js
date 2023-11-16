@@ -176,6 +176,9 @@ export const getArrayOfObjects = (data, key1, key2) => {
 
 const queue = new PQueue({ concurrency: 5 });
 
+export const getQueuePending = () => {
+  return queue?.pending
+}
 axiosRetry(axios, { retries: 5, retryDelay: axiosRetry.exponentialDelay });
 
 export async function fetchData(url, method, body, noToken) {

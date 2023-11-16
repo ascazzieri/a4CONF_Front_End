@@ -23,6 +23,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import IconButton from "@mui/material/IconButton";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { Cached } from "@mui/icons-material";
+import { getQueuePending } from "../../utils/utils";
+import { LoadingContext } from "../../utils/context/Loading";
 
 export default function ManageUsers() {
   const [userList, setUserList] = useState();
@@ -34,12 +36,15 @@ export default function ManageUsers() {
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
-  const handleClickShowPasswordConfirm = () =>
+  const handleClickShowPasswordConfirm = () => {
     setShowPasswordConfirm((show) => !show);
+  };
+  const loadingContext = useContext(LoadingContext);
 
   useEffect(() => {
     (async () => {
       try {
+        loadingContext[1](true);
         const response = await get_users();
         if (response) {
           setUserList(response?.length !== 0 ? [...new Set(response)] : []);
@@ -64,12 +69,17 @@ export default function ManageUsers() {
           severity: "error",
           message: `An error occurred on change users configuration`,
         });
+      } finally {
+        if (getQueuePending() === 0) {
+          loadingContext[1](false);
+        }
       }
     })();
   }, []);
 
   const handleReload = async () => {
     try {
+      loadingContext[1](true);
       const response = await get_users();
       if (response) {
         setUserList(response?.length !== 0 ? [...new Set(response)] : []);
@@ -94,6 +104,10 @@ export default function ManageUsers() {
         severity: "error",
         message: `An error occurred on change users configuration`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
+      }
     }
   };
 
@@ -106,29 +120,30 @@ export default function ManageUsers() {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
-  const handleCreate = () => {
-    if (password !== confirmPassword) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `pasword do not match`,
-      });
-    } else {
-      if (
-        !userIsValid(username) ||
-        checkPasswordStrength(password) !== 4 ||
-        username?.includes(" ") ||
-        password?.includes(" ")
-      ) {
+  const handleCreate = async () => {
+    try {
+      loadingContext[1](true);
+      if (password !== confirmPassword) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character. Do not use spaces.`,
+          message: `pasword do not match`,
         });
       } else {
-        (async () => {
+        if (
+          !userIsValid(username) ||
+          checkPasswordStrength(password) !== 4 ||
+          username?.includes(" ") ||
+          password?.includes(" ")
+        ) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Username or password not conformed. Username must have similar format: user@example.com . Paasword must includes at least:  8 caracters, a small letter, a capital letter, a number and a special character. Do not use spaces.`,
+          });
+        } else {
           try {
             const oldUserList = userList?.length !== 0 ? [...userList] : [];
             if (oldUserList?.includes(username)) {
@@ -171,15 +186,27 @@ export default function ManageUsers() {
               message: `An error occurred while trying to add new user`,
             });
           }
-        })();
-        handleClear();
-        setOpen(false);
+          handleClear();
+          setOpen(false);
+        }
+      }
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to add new user`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
       }
     }
   };
 
   const handleDelete = async (user) => {
     try {
+      loadingContext[1](true);
       const response = await delete_user(user);
       if (response) {
         handleRequestFeedback({
@@ -205,6 +232,10 @@ export default function ManageUsers() {
         severity: "error",
         message: `An error occurred while trying to delete user`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
+      }
     }
   };
   const handleAdd = () => {

@@ -16,6 +16,8 @@ import { ArrowBackIos } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { updateUserList } from "../utils/redux/reducers";
 import { SnackbarContext } from "../utils/context/SnackbarContext";
+import { LoadingContext } from "../utils/context/Loading";
+import { getQueuePending } from "../utils/utils";
 
 export default function Login(props) {
   const navigate = useNavigate();
@@ -34,6 +36,7 @@ export default function Login(props) {
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
+  const loadingContext = useContext(LoadingContext)
   const location = useLocation();
   const elevation = location.state?.elevation || false;
 
@@ -51,8 +54,8 @@ export default function Login(props) {
     setPassword(event.target.value);
   };
   const handleLogin = async () => {
-    if (username.trim() !== "" && password.trim() !== "") {
-      (async () => {
+    try {
+      if (username.trim() !== "" && password.trim() !== "") {
         try {
           const res = await send_login({
             user: username,
@@ -113,12 +116,34 @@ export default function Login(props) {
             });
           }
         } catch (err) {
-          console.log("Error occured when fetching books");
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred during authentication`,
+          });
         }
-      })();
-    } else {
-      alert("Do not use empty spaces");
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `login successful for admin`,
+        });
+      }
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during authentication`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false)
+      }
     }
+
   };
   return (
     <ErrorCacher>

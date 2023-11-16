@@ -1,6 +1,5 @@
 import { useState, Fragment } from "react"
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import Button from "@mui/material/Button"
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
@@ -16,7 +15,6 @@ import { useLocation } from "react-router-dom"
 import { downloadJSON } from "../../utils/api"
 import { useSelector } from "react-redux/es/hooks/useSelector";
 export default function ErroFallback(props) {
-    const { error, errorInfo } = props
 
     const config = useSelector(state => state)
 
@@ -32,7 +30,7 @@ export default function ErroFallback(props) {
     const content = [
         `The crashed page is ${errorPath}`,
         'Create an a4CONF JSON backup by clicking "download JSON" from the dialog menu at the bottom-right',
-        'Send an email to: a4gate.bug@applied.it explaining the problem sending "report.json" as attachment'
+        'Send an email to: subscription@applied.it explaining the problem sending "report.json" as attachment'
     ]
     const [activeStep, setActiveStep] = useState(0);
     const [skipped, setSkipped] = useState(new Set());

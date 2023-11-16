@@ -3,7 +3,11 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateOPCServer } from "../../../utils/redux/reducers";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
-import { getArrayOfObjects, nonNullItemsCheck } from "../../../utils/utils";
+import {
+  getArrayOfObjects,
+  getQueuePending,
+  nonNullItemsCheck,
+} from "../../../utils/utils";
 import { JSONTree } from "react-json-tree";
 import CustomTable from "../../../components/Table/Table";
 import { LoadingContext } from "../../../utils/context/Loading";
@@ -157,6 +161,120 @@ export default function OPCServer() {
 
   useEffect(() => {
     (async () => {
+      try {
+        loaderContext[1](true);
+        const iotGatewaysFromEnabled =
+          await get_iot_gtws_opcua_reading_enabled();
+        const iotGatewaysFromDisabled =
+          await get_iot_gtws_opcua_reading_disabled();
+        const iotGatewaysToEnabled =
+          await get_iot_gtws_opcua_reading_writing_enabled();
+        const iotGatewaysToDisabled =
+          await get_iot_gtws_opcua_reading_writing_disabled();
+        console.log("get IoT gateways");
+        if (
+          iotGatewaysFromEnabled?.length !== 0 ||
+          iotGatewaysToEnabled?.length !== 0
+        ) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `Kepware IoT gateways loaded`,
+          });
+        } else if (
+          iotGatewaysFromEnabled?.length === 0 &&
+          iotGatewaysToEnabled?.length === 0
+        ) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Kepware enabled IoT gateways not found`,
+          });
+        }
+        setIotGatewaysFromList(iotGatewaysFromEnabled);
+        setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
+        setIotGatewaysToList(iotGatewaysToEnabled);
+        setIotGatewaysToListDisabled(iotGatewaysToDisabled);
+      } catch (e) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An erro occurred while trying to load Kepware IoT gateways`,
+        });
+      } finally {
+        if (getQueuePending() === 0) {
+          loaderContext[1](false);
+        }
+      }
+    })();
+  }, []);
+
+  const handleShiftFromKepwareChange = (event) => {
+    setShiftFromKepware(event?.target?.value);
+  };
+  const handleShiftToKepwareChange = (event) => {
+    setShiftToKepware(event?.target?.value);
+  };
+  const handleCustomPortEnableChange = (event) => {
+    setCustomPortEnable(event?.target?.checked);
+  };
+  const handleCustomPortChange = (event) => {
+    setCustomPort(event?.target?.value);
+  };
+  const handleServerAuthChange = (event) => {
+    setServerAuth(event?.target?.checked);
+  };
+  const handleIotGatewaysReloadChange = async (direction) => {
+    try {
+      loaderContext[1](true);
+      let iotGateways = undefined;
+      if (direction === "from") {
+        iotGateways = await get_iot_gtws_opcua_reading_enabled();
+      } else if (direction === "to") {
+        iotGateways = await get_iot_gtws_opcua_reading_writing_enabled();
+      }
+      console.log("get IoT gateways");
+      if (iotGateways) {
+        if (direction === "from") {
+          setIotGatewaysFromList(iotGateways);
+        } else if (direction === "to") {
+          setIotGatewaysToList(iotGateways);
+        }
+        if (iotGateways?.length !== 0) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `Kepware IoT gateways loaded`,
+          });
+        } else {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Kepware IoT gateways not found`,
+          });
+        }
+      }
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to load Kepware IoT gateways`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
+    }
+  };
+
+  const handleRefreshAllIotGateways = async () => {
+    try {
       loaderContext[1](true);
       const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
       const iotGatewaysFromDisabled =
@@ -191,144 +309,78 @@ export default function OPCServer() {
       setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
       setIotGatewaysToList(iotGatewaysToEnabled);
       setIotGatewaysToListDisabled(iotGatewaysToDisabled);
-      loaderContext[1](false);
-    })();
-  }, []);
-
-  const handleShiftFromKepwareChange = (event) => {
-    setShiftFromKepware(event?.target?.value);
-  };
-  const handleShiftToKepwareChange = (event) => {
-    setShiftToKepware(event?.target?.value);
-  };
-  const handleCustomPortEnableChange = (event) => {
-    setCustomPortEnable(event?.target?.checked);
-  };
-  const handleCustomPortChange = (event) => {
-    setCustomPort(event?.target?.value);
-  };
-  const handleServerAuthChange = (event) => {
-    setServerAuth(event?.target?.checked);
-  };
-  const handleIotGatewaysReloadChange = async (direction) => {
-    loaderContext[1](true);
-    let iotGateways = undefined;
-    if (direction === "from") {
-      iotGateways = await get_iot_gtws_opcua_reading_enabled();
-    } else if (direction === "to") {
-      iotGateways = await get_iot_gtws_opcua_reading_writing_enabled();
-    }
-    console.log("get IoT gateways");
-    if (iotGateways) {
-      if (direction === "from") {
-        setIotGatewaysFromList(iotGateways);
-      } else if (direction === "to") {
-        setIotGatewaysToList(iotGateways);
-      }
-      if (iotGateways?.length !== 0) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "success",
-          message: `Kepware IoT gateways loaded`,
-        });
-      } else {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Kepware IoT gateways not found`,
-        });
-      }
-    }
-
-    loaderContext[1](false);
-  };
-
-  const handleRefreshAllIotGateways = async () => {
-    loaderContext[1](true);
-    const iotGatewaysFromEnabled = await get_iot_gtws_opcua_reading_enabled();
-    const iotGatewaysFromDisabled = await get_iot_gtws_opcua_reading_disabled();
-    const iotGatewaysToEnabled =
-      await get_iot_gtws_opcua_reading_writing_enabled();
-    const iotGatewaysToDisabled =
-      await get_iot_gtws_opcua_reading_writing_disabled();
-    console.log("get IoT gateways");
-    if (
-      iotGatewaysFromEnabled?.length !== 0 ||
-      iotGatewaysToEnabled?.length !== 0
-    ) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware IoT gateways loaded`,
-      });
-    } else if (
-      iotGatewaysFromEnabled?.length === 0 &&
-      iotGatewaysToEnabled?.length === 0
-    ) {
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Kepware enabled IoT gateways not found`,
+        message: `An error occurred while trying to load Kewpare IoT gateways`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    setIotGatewaysFromList(iotGatewaysFromEnabled);
-    setIotGatewaysFromListDisabled(iotGatewaysFromDisabled);
-    setIotGatewaysToList(iotGatewaysToEnabled);
-    setIotGatewaysToListDisabled(iotGatewaysToDisabled);
-    loaderContext[1](false);
   };
 
   const handleEnableIotGateway = async (name, permission) => {
-    if (permission === "from") {
-      loaderContext[1](true);
+    try {
+      if (permission === "from") {
+        loaderContext[1](true);
 
-      const result = await enable_http_client_iot_gateway(name);
-      loaderContext[1](false);
+        const result = await enable_http_client_iot_gateway(name);
 
-      if (result?.enabled !== true) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred while trying to enable IoT Gateway`,
-        });
-        return;
+        if (result?.enabled !== true) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred while trying to enable IoT Gateway`,
+          });
+          return;
+        }
+        let enabledIotGatewaysFromList =
+          iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
+        enabledIotGatewaysFromList.push(name);
+        setIotGatewaysFromList(Array.from(new Set(enabledIotGatewaysFromList)));
+        let disabledIotGatewaysFromList = iotGatewaysFromListDisabled?.filter(
+          (item) => item !== name
+        );
+        setIotGatewaysFromListDisabled(disabledIotGatewaysFromList);
+      } else if (permission === "to") {
+        loaderContext[1](true);
+
+        const result = await enable_http_server_iot_gateway(name);
+
+        if (result?.enabled !== true) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred while trying to enable IoT Gateway`,
+          });
+          return;
+        }
+        let enabledIotGatewaysToList =
+          iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
+        enabledIotGatewaysToList.push(name);
+        setIotGatewaysToList(Array.from(new Set(enabledIotGatewaysToList)));
+        let disabledIotGatewaysToList = iotGatewaysToListDisabled?.filter(
+          (item) => item !== name
+        );
+        setIotGatewaysToListDisabled(disabledIotGatewaysToList);
       }
-      let enabledIotGatewaysFromList =
-        iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
-      enabledIotGatewaysFromList.push(name);
-      setIotGatewaysFromList(Array.from(new Set(enabledIotGatewaysFromList)));
-      let disabledIotGatewaysFromList = iotGatewaysFromListDisabled?.filter(
-        (item) => item !== name
-      );
-      setIotGatewaysFromListDisabled(disabledIotGatewaysFromList);
-    } else if (permission === "to") {
-      loaderContext[1](true);
-
-      const result = await enable_http_server_iot_gateway(name);
-      loaderContext[1](false);
-
-      if (result?.enabled !== true) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred while trying to enable IoT Gateway`,
-        });
-        return;
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to manage IoT gateway`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
       }
-      let enabledIotGatewaysToList =
-        iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
-      enabledIotGatewaysToList.push(name);
-      setIotGatewaysToList(Array.from(new Set(enabledIotGatewaysToList)));
-      let disabledIotGatewaysToList = iotGatewaysToListDisabled?.filter(
-        (item) => item !== name
-      );
-      setIotGatewaysToListDisabled(disabledIotGatewaysToList);
     }
   };
 
@@ -340,58 +392,69 @@ export default function OPCServer() {
    * @returns {void}
    */
   const handleDisableIotGateway = async (name, permission) => {
-    if (permission === "from") {
-      loaderContext[1](true);
-      const result = await disable_http_client_iot_gateway(name);
-      loaderContext[1](false);
+    try {
+      if (permission === "from") {
+        loaderContext[1](true);
+        const result = await disable_http_client_iot_gateway(name);
 
-      if (result?.enabled !== false) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred while trying to disable IoT Gateway`,
-        });
-        return;
-      }
-      let disabledIotGatewaysFromList =
-        iotGatewaysFromListDisabled?.length !== 0
-          ? [...iotGatewaysFromListDisabled]
-          : [];
-      disabledIotGatewaysFromList.push(name);
-      setIotGatewaysFromListDisabled(
-        Array.from(new Set(disabledIotGatewaysFromList))
-      );
-      let enabledIotGatewaysFromList = iotGatewaysFromList?.filter(
-        (item) => item !== name
-      );
-      setIotGatewaysFromList(enabledIotGatewaysFromList);
-    } else if (permission === "to") {
-      loaderContext[1](true);
-      const result = await disable_http_server_iot_gateway(name);
-      loaderContext[1](false);
+        if (result?.enabled !== false) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred while trying to disable IoT Gateway`,
+          });
+          return;
+        }
+        let disabledIotGatewaysFromList =
+          iotGatewaysFromListDisabled?.length !== 0
+            ? [...iotGatewaysFromListDisabled]
+            : [];
+        disabledIotGatewaysFromList.push(name);
+        setIotGatewaysFromListDisabled(
+          Array.from(new Set(disabledIotGatewaysFromList))
+        );
+        let enabledIotGatewaysFromList = iotGatewaysFromList?.filter(
+          (item) => item !== name
+        );
+        setIotGatewaysFromList(enabledIotGatewaysFromList);
+      } else if (permission === "to") {
+        loaderContext[1](true);
+        const result = await disable_http_server_iot_gateway(name);
 
-      if (result?.enabled !== false) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `An error occurred while trying to disable IoT Gateway`,
-        });
-        return;
+        if (result?.enabled !== false) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred while trying to disable IoT Gateway`,
+          });
+          return;
+        }
+        let disabledIotGatewaysFromList =
+          iotGatewaysToListDisabled?.length !== 0
+            ? [...iotGatewaysToListDisabled]
+            : [];
+        disabledIotGatewaysFromList.push(name);
+        setIotGatewaysToListDisabled(
+          Array.from(new Set(disabledIotGatewaysFromList))
+        );
+        let enabledIotGatewaysToList = iotGatewaysToList?.filter(
+          (item) => item !== name
+        );
+        setIotGatewaysToList(enabledIotGatewaysToList);
       }
-      let disabledIotGatewaysFromList =
-        iotGatewaysToListDisabled?.length !== 0
-          ? [...iotGatewaysToListDisabled]
-          : [];
-      disabledIotGatewaysFromList.push(name);
-      setIotGatewaysToListDisabled(
-        Array.from(new Set(disabledIotGatewaysFromList))
-      );
-      let enabledIotGatewaysToList = iotGatewaysToList?.filter(
-        (item) => item !== name
-      );
-      setIotGatewaysToList(enabledIotGatewaysToList);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred while trying to manage IoT gateway`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
   };
 

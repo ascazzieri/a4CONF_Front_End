@@ -18,7 +18,7 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { SuperUserContext } from "../../utils/context/SuperUser";
-import { togglePageSleep } from "../../utils/utils";
+import { getQueuePending, togglePageSleep } from "../../utils/utils";
 
 export const StyledButton = styled("div")`
   && {
@@ -119,30 +119,43 @@ const ReloadInternal = () => {
   };
 
   const handleInternalReload = async () => {
-    loadingContext[1](true)
-    togglePageSleep('block')
-    const confA = await get_confA();
-    togglePageSleep('release')
-    console.log("get conf A")
+    try {
+      loadingContext[1](true)
+      togglePageSleep('block')
+      const confA = await get_confA();
+      togglePageSleep('release')
+      console.log("get conf A")
 
-    if (confA) {
-      dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
+      if (confA) {
+        dispatch(updateAll({ payload: confA, meta: { actionType: "fromA" } }));
 
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Configuration loaded from PCA`,
-      });
-    } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Configuration loaded from PCA`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Error on loading PCA configuration`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Error on loading PCA configuration`,
       });
+    } finally {
+      if (getQueuePending() === 0) { }
+      loadingContext[1](false)
     }
-    loadingContext[1](false)
+
+
   }
   return (
     <StyledButton onClick={handleInternalReload}>
@@ -168,28 +181,42 @@ const ReloadExternal = () => {
   };
 
   const handleExternalReload = async () => {
-    loadingContext[1](true)
-    togglePageSleep('block')
-    const confB = await get_confB();
-    togglePageSleep('release')
-    console.log("get conf B")
-    if (confB) {
-      dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Configuration loaded from PCB`,
-      });
-    } else {
+    try {
+      loadingContext[1](true)
+      togglePageSleep('block')
+      const confB = await get_confB();
+      togglePageSleep('release')
+      console.log("get conf B")
+      if (confB) {
+        dispatch(updateAll({ payload: confB, meta: { actionType: "fromB" } }));
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Configuration loaded from PCB`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Error on loading PCB configuration`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `Error on loading PCB configuration`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false)
+      }
     }
-    loadingContext[1](false)
+
+
 
   }
   return (
@@ -233,72 +260,85 @@ const UploadConfig = () => {
   };
 
   const handleFileUpload = async (event) => {
-    loadingContext[1](true)
-    const file = event.target.files[0];
-    togglePageSleep('block')
-    const fileContent = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      reader.readAsText(file);
-    });
-    togglePageSleep('release')
-
     try {
-      const jsonObject = JSON.parse(fileContent);
-      if (jsonObject?.crashed_page) {
-        delete jsonObject.crashed_page
-      }
-      if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === true) {
-        const response = await add_recovery_ip();
-        if (response) {
-          alert("Recovery IP key has been find inside loaded back up and it has been restored successfully")
-        } else {
-          handleRequestFeedback({
-            vertical: "bottom",
-            horizontal: "right",
-            severity: "error",
-            message: `Recovery IP key has been find inside back-up configuration but something wrong happed trying to restore it `,
-          });
-        }
-      } else if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === false) {
-        const response = await remove_recovery_ip();
-        if (response) {
-          handleRequestFeedback({
-            vertical: "bottom",
-            horizontal: "right",
-            severity: "success",
-            message: `Absence of Recovery IP key has been found inside back-up configuration and it has been removed correctly`,
-          });
-        } else {
-          handleRequestFeedback({
-            vertical: "bottom",
-            horizontal: "right",
-            severity: "error",
-            message: `Absence of recovery IP key has been found inside back-up configuration but something wrong happen trying to removing it`,
-          });
-        }
-      }
-      dispatch(updateAll({ payload: jsonObject, meta: { actionType: "fromBackup" } }));
-
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: "Uploaded JSON configuration",
+      loadingContext[1](true)
+      const file = event.target.files[0];
+      togglePageSleep('block')
+      const fileContent = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        reader.readAsText(file);
       });
-    } catch (error) {
+      togglePageSleep('release')
+
+      try {
+        const jsonObject = JSON.parse(fileContent);
+        if (jsonObject?.crashed_page) {
+          delete jsonObject.crashed_page
+        }
+        if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === true) {
+          const response = await add_recovery_ip();
+          if (response) {
+            alert("Recovery IP key has been find inside loaded back up and it has been restored successfully")
+          } else {
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "error",
+              message: `Recovery IP key has been find inside back-up configuration but something wrong happed trying to restore it `,
+            });
+          }
+        } else if (jsonObject?.system?.network?.industrial?.recovery_ip_needed === false) {
+          const response = await remove_recovery_ip();
+          if (response) {
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "success",
+              message: `Absence of Recovery IP key has been found inside back-up configuration and it has been removed correctly`,
+            });
+          } else {
+            handleRequestFeedback({
+              vertical: "bottom",
+              horizontal: "right",
+              severity: "error",
+              message: `Absence of recovery IP key has been found inside back-up configuration but something wrong happen trying to removing it`,
+            });
+          }
+        }
+        dispatch(updateAll({ payload: jsonObject, meta: { actionType: "fromBackup" } }));
+
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: "Uploaded JSON configuration",
+        });
+      } catch (error) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: "Error parsing JSON file",
+        });
+      }
+      const inputAnchor = document.getElementById("upload-backup-input")
+      inputAnchor.value = ""
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: "Error parsing JSON file",
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false)
+      }
     }
-    const inputAnchor = document.getElementById("upload-backup-input")
-    inputAnchor.value = ""
-    loadingContext[1](false)
+
 
   };
   return (
@@ -317,7 +357,7 @@ const UploadConfig = () => {
       <input
         type="file"
         accept=".json"
-        style={{ position: 'fixed', width: '120px', height: 50, right: 15, opacity: 0}}
+        style={{ position: 'fixed', width: '120px', height: 50, right: 15, opacity: 0 }}
         onChange={handleFileUpload}
         id="upload-backup-input"
       />

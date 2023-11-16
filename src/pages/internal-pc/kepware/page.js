@@ -81,6 +81,7 @@ import {
   kepware_project_desc,
   kepware_runtime_desc,
 } from "../../../utils/titles";
+import { getQueuePending } from "../../../utils/utils";
 
 const buildRows = (data) => {
   let channelsData = [];
@@ -296,134 +297,147 @@ const Row = (props) => {
     setRowData(updatedRowData);
   };
   const handleCreate = async (event, device) => {
-    if (
-      event?.target?.name === "twa" &&
-      (!device?.endpoint || device?.endpoint?.trim() === "")
-    ) {
-      handleButtonClickFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Device: ${device?.name} requires a non-null endpoint`,
-      });
-      return;
-    }
-    if (
-      event?.target?.name === "matrix" &&
-      (!device?.folder || !device?.machine_id)
-    ) {
-      handleButtonClickFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `Device: ${device?.name} requires a folder and a machine identification`,
-      });
-      return;
-    }
-    let endpoint = "";
-    if (event?.target?.name !== "matrix") {
-      if (!device?.endpoint?.includes("rt_")) {
-        endpoint = `rt_${device?.endpoint}`;
-      } else {
-        endpoint = device?.endpoint;
-      }
-    }
-    const channel = row?.name;
-    const deviceName = device?.name;
-
-    setEndPoint(endpoint);
-    setProvider(event?.target?.name);
-    setMachineID(device?.machine_id ? device?.machine_id : "machine_test");
-    setFolder(device?.folder ? device?.folder : "blob_test");
-    setScanRate(device?.scan_rate ? device?.scan_rate : 1000);
-    setPublishRate(device?.publish_rate ? device?.publish_rate : 1000);
-    setSamplingTime(device?.sampling_time ? device?.sampling_time : 16);
-    setSamplingNumberStartIndex(
-      device?.sampling_number_start_index
-        ? device?.sampling_number_start_index
-        : 0
-    );
-    setSamplingNumber(device?.sampling_number ? device?.sampling_number : 100);
-    if (device?.choose_tags) {
+    try {
       loaderContext[1](true);
-      const tags = await get_device_tags(row?.name, device?.name);
-      loaderContext[1](false);
-      setDeviceTags(tags);
-      setChannelDevice({ [channel]: deviceName });
-      setTagsSelectionDialog(true);
-    } else {
-      loaderContext[1](true);
-      const response = await createiotgw(
-        event?.target?.name, //type
-        row?.name, //channel name
-        device?.name, //device name
-        event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
-        event?.target?.name === "matrix"
-          ? device?.machine_id
-            ? device?.machine_id?.replace("rt_", "")
-            : null
-          : null, //machine id for matrix
-        event?.target?.name === "matrix"
-          ? device?.folder
-            ? device?.folder?.replace("rt_", "")
-            : null
-          : null, //folder for matrix
-        event?.target?.name === "matrix"
-          ? device?.scan_rate
-            ? device?.scan_rate
-            : 1000
-          : null, //scan rate for matrix
-        event?.target?.name === "matrix"
-          ? device?.publish_rate
-            ? device?.publish_rate
-            : 1000
-          : null, //publish rate for matrix
-        event?.target?.name === "matrix"
-          ? device?.sampling_time
-            ? device?.sampling_time
-            : 16
-          : null, //sampling time for matrix
-        event?.target?.name === "matrix"
-          ? device?.sampling_number_start_index
-            ? device?.sampling_number_start_index
-            : 0
-          : null, //sampling number start index for matrix
-        event?.target?.name === "matrix"
-          ? device?.sampling_number
-            ? device?.sampling_number
-            : 100
-          : null, //sampling number for matrix
-        []
-      );
-      loaderContext[1](false);
-      let result = "";
-      if (event?.target?.name === "twa") {
-        result = "Thingworx";
-      } else if (event?.target?.name === "opcua_from") {
-        result = "OPCUA (Reading)";
-      } else if (event?.target?.name === "opcua_to") {
-        result = "OPCUA (Read and Write)";
-      } else if (event?.target?.name === "http_from") {
-        result = "HTTP (Read)";
-      } else if (event?.target?.name === "http_to") {
-        result = "HTTP (Read and Write)";
-      } else if (event?.target?.name === "matrix") {
-        result = "Matrix";
-      }
-      if (response?.iotgw && response?.time)
-        handleButtonClickFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "success",
-          message: `IoT gateway ${response.iotgw} of device: ${device?.name} for ${result} has been created in ${response.time} s`,
-        });
-      else {
+      if (
+        event?.target?.name === "twa" &&
+        (!device?.endpoint || device?.endpoint?.trim() === "")
+      ) {
         handleButtonClickFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: `An error occurred during creation of Iot Gateway`,
+          message: `Device: ${device?.name} requires a non-null endpoint`,
         });
+        return;
+      }
+      if (
+        event?.target?.name === "matrix" &&
+        (!device?.folder || !device?.machine_id)
+      ) {
+        handleButtonClickFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Device: ${device?.name} requires a folder and a machine identification`,
+        });
+        return;
+      }
+      let endpoint = "";
+      if (event?.target?.name !== "matrix") {
+        if (!device?.endpoint?.includes("rt_")) {
+          endpoint = `rt_${device?.endpoint}`;
+        } else {
+          endpoint = device?.endpoint;
+        }
+      }
+      const channel = row?.name;
+      const deviceName = device?.name;
+
+      setEndPoint(endpoint);
+      setProvider(event?.target?.name);
+      setMachineID(device?.machine_id ? device?.machine_id : "machine_test");
+      setFolder(device?.folder ? device?.folder : "blob_test");
+      setScanRate(device?.scan_rate ? device?.scan_rate : 1000);
+      setPublishRate(device?.publish_rate ? device?.publish_rate : 1000);
+      setSamplingTime(device?.sampling_time ? device?.sampling_time : 16);
+      setSamplingNumberStartIndex(
+        device?.sampling_number_start_index
+          ? device?.sampling_number_start_index
+          : 0
+      );
+      setSamplingNumber(
+        device?.sampling_number ? device?.sampling_number : 100
+      );
+      if (device?.choose_tags) {
+        const tags = await get_device_tags(row?.name, device?.name);
+        setDeviceTags(tags);
+        setChannelDevice({ [channel]: deviceName });
+        setTagsSelectionDialog(true);
+      } else {
+        const response = await createiotgw(
+          event?.target?.name, //type
+          row?.name, //channel name
+          device?.name, //device name
+          event?.target?.name === "twa" ? device?.endpoint : null, //endpoint
+          event?.target?.name === "matrix"
+            ? device?.machine_id
+              ? device?.machine_id?.replace("rt_", "")
+              : null
+            : null, //machine id for matrix
+          event?.target?.name === "matrix"
+            ? device?.folder
+              ? device?.folder?.replace("rt_", "")
+              : null
+            : null, //folder for matrix
+          event?.target?.name === "matrix"
+            ? device?.scan_rate
+              ? device?.scan_rate
+              : 1000
+            : null, //scan rate for matrix
+          event?.target?.name === "matrix"
+            ? device?.publish_rate
+              ? device?.publish_rate
+              : 1000
+            : null, //publish rate for matrix
+          event?.target?.name === "matrix"
+            ? device?.sampling_time
+              ? device?.sampling_time
+              : 16
+            : null, //sampling time for matrix
+          event?.target?.name === "matrix"
+            ? device?.sampling_number_start_index
+              ? device?.sampling_number_start_index
+              : 0
+            : null, //sampling number start index for matrix
+          event?.target?.name === "matrix"
+            ? device?.sampling_number
+              ? device?.sampling_number
+              : 100
+            : null, //sampling number for matrix
+          []
+        );
+
+        let result = "";
+        if (event?.target?.name === "twa") {
+          result = "Thingworx";
+        } else if (event?.target?.name === "opcua_from") {
+          result = "OPCUA (Reading)";
+        } else if (event?.target?.name === "opcua_to") {
+          result = "OPCUA (Read and Write)";
+        } else if (event?.target?.name === "http_from") {
+          result = "HTTP (Read)";
+        } else if (event?.target?.name === "http_to") {
+          result = "HTTP (Read and Write)";
+        } else if (event?.target?.name === "matrix") {
+          result = "Matrix";
+        }
+        if (response?.iotgw && response?.time)
+          handleButtonClickFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `IoT gateway ${response.iotgw} of device: ${device?.name} for ${result} has been created in ${response.time} s`,
+          });
+        else {
+          handleButtonClickFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred during creation of Iot Gateway`,
+          });
+        }
+      }
+    } catch (e) {
+      handleButtonClickFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during creation of Iot Gateway`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
       }
     }
   };
@@ -1108,122 +1122,170 @@ export default function Kepware() {
   };
 
   const handleChannelRefresh = async () => {
-    loaderContext[1](true);
-    const kepwareChannels = await loadChannels();
-    console.log("refresh kepware channel");
-
-    if (kepwareChannels && Object.keys(kepwareChannels).lenght !== 0) {
-      setChannelRows(buildRows(kepwareChannels));
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware channels loaded`,
-      });
-    } else if (kepwareChannels && Object.keys(kepwareChannels).lenght === 0) {
-      setChannelRows(buildRows(kepwareChannels));
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `No Kepware Channel found`,
-      });
-    } else {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "error",
-        message: `An error occurred during Kepware Channels loading`,
-      });
-    }
-    loaderContext[1](false);
-  };
-  const handleUploadKepwareProject = async (event) => {
-    loadingContext[1](true);
-    const file = event.target.files[0];
-
-    const fileContent = await new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        resolve(event.target.result);
-      };
-      reader.readAsText(file);
-    });
-
     try {
-      const jsonObject = JSON.parse(fileContent);
-      if (jsonObject?.crashed_page) {
-        delete jsonObject.crashed_page;
-      }
-      const res = await uploadKepwareProject(jsonObject);
-      if (res) {
+      loaderContext[1](true);
+      const kepwareChannels = await loadChannels();
+      console.log("refresh kepware channel");
+
+      if (kepwareChannels && Object.keys(kepwareChannels).lenght !== 0) {
+        setChannelRows(buildRows(kepwareChannels));
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "success",
-          message: "Uploaded Kepware project",
+          message: `Kepware channels loaded`,
+        });
+      } else if (kepwareChannels && Object.keys(kepwareChannels).lenght === 0) {
+        setChannelRows(buildRows(kepwareChannels));
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `No Kepware Channel found`,
         });
       } else {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
-          message: "An error occurred on Kepware project upload",
+          message: `An error occurred during Kepware Channels loading`,
         });
       }
-    } catch (error) {
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: "Error parsing JSON file",
+        message: `An error occurred during Kepware Channels loading`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    const inputAnchor = document.getElementById("upload-backup-kepware");
-    inputAnchor.value = "";
-    loadingContext[1](false);
   };
+  const handleUploadKepwareProject = async (event) => {
+    try {
+      loadingContext[1](true);
+      const file = event.target.files[0];
 
-  const handleDownloadKepwareProject = async () => {
-    loaderContext[1](true);
-    const kepwareDownload = await downloadKepwareProject();
-    if (kepwareDownload) {
+      const fileContent = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          resolve(event.target.result);
+        };
+        reader.readAsText(file);
+      });
+
+      try {
+        const jsonObject = JSON.parse(fileContent);
+        if (jsonObject?.crashed_page) {
+          delete jsonObject.crashed_page;
+        }
+        const res = await uploadKepwareProject(jsonObject);
+        if (res) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: "Uploaded Kepware project",
+          });
+        } else {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: "An error occurred on Kepware project upload",
+          });
+        }
+      } catch (error) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: "Error parsing JSON file",
+        });
+      }
+      const inputAnchor = document.getElementById("upload-backup-kepware");
+      inputAnchor.value = "";
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
-        severity: "success",
-        message: `Kepware project saved successfully`,
+        severity: "error",
+        message: "An error occurred on Kepware project upload",
       });
-    } else {
+    } finally {
+      if (getQueuePending() === 0) {
+        loadingContext[1](false);
+      }
+    }
+  };
+
+  const handleDownloadKepwareProject = async () => {
+    try {
+      loaderContext[1](true);
+      const kepwareDownload = await downloadKepwareProject();
+      if (kepwareDownload) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware project saved successfully`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred during Kepware project download`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred during Kepware project download`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    loaderContext[1](false);
   };
 
   const handleReloadKepwareRuntime = async () => {
-    loaderContext[1](true);
-    const kepwareReload = await reload_kepware();
-    if (kepwareReload) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware runtime reloaded successfully`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const kepwareReload = await reload_kepware();
+      if (kepwareReload) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware runtime reloaded successfully`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred during Kepware runtime reload`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred during Kepware runtime reload`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    loaderContext[1](false);
   };
 
   const handleAddThingName = (event) => {

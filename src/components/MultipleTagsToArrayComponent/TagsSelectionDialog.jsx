@@ -10,6 +10,7 @@ import TransferComponent from "./TransferComponent/TransferComponent"
 import { LoadingContext } from '../../utils/context/Loading';
 import { SnackbarContext } from '../../utils/context/SnackbarContext';
 import { multi_tags_to_array } from '../../utils/api';
+import { getQueuePending } from '../../utils/utils';
 
 export default function MaxWidthDialog(props) {
     const { open, setOpen, channel, device, tags, setMemoryBasedList } = props
@@ -81,29 +82,43 @@ export default function MaxWidthDialog(props) {
     }
 
     const handleCreate = async (event) => {
-        const totalTagList = transformIotGatewayCart(tags, channel, device)
-        const finalTagList = findMatches(iotGatewayCart, totalTagList)
-        loading[1](true)
-        const response = await multi_tags_to_array(channel, device, finalTagList)
-        if (response) {
-            setMemoryBasedList(response)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `Complex array for channel: ${channel} of ${device} has been created correctly`,
-            });
-        }
-        else {
+        try {
+            const totalTagList = transformIotGatewayCart(tags, channel, device)
+            const finalTagList = findMatches(iotGatewayCart, totalTagList)
+            loading[1](true)
+            const response = await multi_tags_to_array(channel, device, finalTagList)
+            if (response) {
+                setMemoryBasedList(response)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "success",
+                    message: `Complex array for channel: ${channel} of ${device} has been created correctly`,
+                });
+            }
+            else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred during creation of complex array, please check Kepware configuration`,
+                });
+            }
+
+            setOpen(false)
+        } catch (e) {
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "error",
                 message: `An error occurred during creation of complex array, please check Kepware configuration`,
             });
+        } finally {
+            if (getQueuePending() === 0) {
+                loading[1](false)
+            }
         }
-        loading[1](false)
-        setOpen(false)
+
     };
 
     return (

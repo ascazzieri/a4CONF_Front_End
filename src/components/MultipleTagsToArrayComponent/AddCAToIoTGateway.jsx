@@ -20,6 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Divider from '@mui/material/Divider';
+import { getQueuePending } from "../../utils/utils";
 
 const steps = ['Choose the device', 'Select complex array tags', 'Select IoT Gateway', "Add Tags to the IoT Gateway selected"];
 
@@ -95,105 +96,10 @@ export default function AddCAToIoTGateway(props) {
     }, [memoryBasedList, selectedDevice, complexArraysSelected])
 
     const handleReloadMemoryBasedDevice = async () => {
-        loadingContext[1](true);
-        const deviceMemoryBased = await get_memory_based_tags();
-        console.log("get kepware device for complex array");
-
-        if (deviceMemoryBased && Object.keys(deviceMemoryBased).length !== 0) {
-            setMemoryBasedList(deviceMemoryBased)
-
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `Kepware complex array devices loaded correctly`,
-            });
-        } else if (deviceMemoryBased && Object.keys(deviceMemoryBased).length === 0) {
-            setMemoryBasedList(deviceMemoryBased)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `Kepware devices not found with complex arrays`,
-            });
-        } else {
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `An error occurred during Kepware complex array devices loading`,
-            });
-        }
-        loadingContext[1](false);
-    }
-
-    const handleReloadIoTGateways = async () => {
-        loadingContext[1](true);
-        const iotGateways = await get_iot_gtws_http_client_enabled()
-        console.log("get kepware iot gateways");
-
-        if (iotGateways && iotGateways?.length !== 0) {
-            setIoTGatewaysList(iotGateways)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `Kepware client IoT Gateway loaded correctly`,
-            });
-        } else if (iotGateways && iotGateways?.length === 0) {
-            setIoTGatewaysList(iotGateways)
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `No Kepware client IoT Gateway enabled found`
-            })
-        } else {
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "error",
-                message: `An error occurred on loading IoT Gateways from Kepware`
-            })
-        }
-
-        loadingContext[1](false);
-
-    }
-
-
-    useEffect(() => {
-        (async () => {
+        try {
             loadingContext[1](true);
             const deviceMemoryBased = await get_memory_based_tags();
-            const iotGateways = await get_iot_gtws_http_client_enabled()
-            console.log("get kepware channels");
-
-            if (iotGateways && iotGateways?.length !== 0) {
-                setIoTGatewaysList(iotGateways)
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "success",
-                    message: `Kepware client IoT Gateway loaded correctly`,
-                });
-            } else if (iotGateways && iotGateways?.length === 0) {
-                setIoTGatewaysList(iotGateways)
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "error",
-                    message: `No Kepware client IoT Gateway enabled found`
-                })
-            } else {
-                handleRequestFeedback({
-                    vertical: "bottom",
-                    horizontal: "right",
-                    severity: "error",
-                    message: `An error occurred on loading IoT Gateways from Kepware`
-                })
-            }
-
+            console.log("get kepware device for complex array");
 
             if (deviceMemoryBased && Object.keys(deviceMemoryBased).length !== 0) {
                 setMemoryBasedList(deviceMemoryBased)
@@ -220,7 +126,144 @@ export default function AddCAToIoTGateway(props) {
                     message: `An error occurred during Kepware complex array devices loading`,
                 });
             }
-            loadingContext[1](false);
+        } catch (e) {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred during Kepware complex array devices loading`,
+            });
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](false);
+            }
+        }
+
+
+    }
+
+    const handleReloadIoTGateways = async () => {
+        try {
+            loadingContext[1](true);
+            const iotGateways = await get_iot_gtws_http_client_enabled()
+            console.log("get kepware iot gateways");
+
+            if (iotGateways && iotGateways?.length !== 0) {
+                setIoTGatewaysList(iotGateways)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "success",
+                    message: `Kepware client IoT Gateway loaded correctly`,
+                });
+            } else if (iotGateways && iotGateways?.length === 0) {
+                setIoTGatewaysList(iotGateways)
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `No Kepware client IoT Gateway enabled found`
+                })
+            } else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred on loading IoT Gateways from Kepware`
+                })
+            }
+        } catch (e) {
+            handleRequestFeedback({
+                vertical: "bottom",
+                horizontal: "right",
+                severity: "error",
+                message: `An error occurred on loading IoT Gateways from Kepware`
+            })
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](false);
+            }
+        }
+
+
+
+
+    }
+
+
+    useEffect(() => {
+        (async () => {
+            try {
+                loadingContext[1](true);
+                const deviceMemoryBased = await get_memory_based_tags();
+                const iotGateways = await get_iot_gtws_http_client_enabled()
+                console.log("get kepware channels");
+
+                if (iotGateways && iotGateways?.length !== 0) {
+                    setIoTGatewaysList(iotGateways)
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "success",
+                        message: `Kepware client IoT Gateway loaded correctly`,
+                    });
+                } else if (iotGateways && iotGateways?.length === 0) {
+                    setIoTGatewaysList(iotGateways)
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `No Kepware client IoT Gateway enabled found`
+                    })
+                } else {
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `An error occurred on loading IoT Gateways from Kepware`
+                    })
+                }
+
+
+                if (deviceMemoryBased && Object.keys(deviceMemoryBased).length !== 0) {
+                    setMemoryBasedList(deviceMemoryBased)
+
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "success",
+                        message: `Kepware complex array devices loaded correctly`,
+                    });
+                } else if (deviceMemoryBased && Object.keys(deviceMemoryBased).length === 0) {
+                    setMemoryBasedList(deviceMemoryBased)
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `Kepware devices not found with complex arrays`,
+                    });
+                } else {
+                    handleRequestFeedback({
+                        vertical: "bottom",
+                        horizontal: "right",
+                        severity: "error",
+                        message: `An error occurred during Kepware complex array devices loading`,
+                    });
+                }
+            } catch (e) {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred during Kepware complex array devices loading`,
+                });
+            } finally {
+                if (getQueuePending() === 0) {
+                    loadingContext[1](false);
+                }
+            }
+
+
         })();
     }, []);
 
@@ -312,23 +355,38 @@ export default function AddCAToIoTGateway(props) {
         </Card>
     );
     const handleAddTags = async () => {
-        const response = await add_complex_arrays_to_iot_gateway(selectedIotGateway, selectedDevice, complexArraysSelected)
-        if (response) {
-            handleRequestFeedback({
-                vertical: "bottom",
-                horizontal: "right",
-                severity: "success",
-                message: `Complex array tags have been add to IoT Gateway ${selectedIotGateway} correctly`,
-            });
-        }
-        else {
+        try {
+            loadingContext[1](true)
+            const response = await add_complex_arrays_to_iot_gateway(selectedIotGateway, selectedDevice, complexArraysSelected)
+            if (response) {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "success",
+                    message: `Complex array tags have been add to IoT Gateway ${selectedIotGateway} correctly`,
+                });
+            }
+            else {
+                handleRequestFeedback({
+                    vertical: "bottom",
+                    horizontal: "right",
+                    severity: "error",
+                    message: `An error occurred while trying to add tags to iot gateway`
+                })
+            }
+        } catch (e) {
             handleRequestFeedback({
                 vertical: "bottom",
                 horizontal: "right",
                 severity: "error",
                 message: `An error occurred while trying to add tags to iot gateway`
             })
+        } finally {
+            if (getQueuePending() === 0) {
+                loadingContext[1](false)
+            }
         }
+
     }
     return (
         <><h2>Send Complex Array Tags</h2>

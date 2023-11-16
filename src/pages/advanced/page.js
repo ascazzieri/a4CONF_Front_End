@@ -31,6 +31,7 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
 import SaveButton from "../../components/SaveButton/SaveButton";
+import { getQueuePending } from "../../utils/utils";
 
 export default function Advanced() {
   const loaderContext = useContext(LoadingContext);
@@ -100,45 +101,70 @@ export default function Advanced() {
   const [dataColletorIP, setDataColletorIP] = useState("");
 
   const handleAddRecoveryIP = async () => {
-    loaderContext[1](true)
-    const response = await add_recovery_ip();
-    loaderContext[1](false)
-    if (response) {
-      setDataColletorIP("198.51.100.1");
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Recovery IP added correctly`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const response = await add_recovery_ip();
+
+      if (response) {
+        setDataColletorIP("198.51.100.1");
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Recovery IP added correctly`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to add recovery ip`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred while trying to add recovery ip`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
   };
   const handleRemoveRecoveryIP = async () => {
-    loaderContext[1](true)
-    const response = await remove_recovery_ip();
-    loaderContext[1](false)
-    if (response) {
-      setDataColletorIP();
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Recovery IP removed correctly`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const response = await remove_recovery_ip();
+      if (response) {
+        setDataColletorIP();
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Recovery IP removed correctly`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to remove recovery ip`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred while trying to remove recovery ip`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
   };
   const manageService = (service, cmd) => {
@@ -164,32 +190,48 @@ export default function Advanced() {
       } catch (error) {
         console.error("Error during service handling", error);
       } finally {
-        loaderContext[1](false);
+        if (getQueuePending() === 0) {
+          loaderContext[1](false);
+        }
       }
     })();
   };
 
   const handleRebootPCA = async () => {
-    const response = await reboot_PCA();
-    if (response) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Data Collector will reboot soon`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const response = await reboot_PCA();
+      if (response) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Data Collector will reboot soon`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred while trying to reboot data collector`,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred while trying to reboot data collector`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
   };
   const handleChangeDangerous = () => {
     if (jsonData) {
-      console.log(jsonData)
+      console.log(jsonData);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
@@ -257,7 +299,7 @@ export default function Advanced() {
                         >
                           Active Safe Mode
                         </Button>
-                       <Button
+                        <Button
                           onClick={handleChangeDangerous}
                           variant="contained"
                           size="large"

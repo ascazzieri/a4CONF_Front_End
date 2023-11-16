@@ -70,7 +70,7 @@ import {
   thingworx_manage_iot_desc,
   thingworx_remote_config_desc,
 } from "../../../utils/titles";
-import { nonNullItemsCheck } from "../../../utils/utils";
+import { getQueuePending, nonNullItemsCheck } from "../../../utils/utils";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -162,40 +162,52 @@ export default function Thingworx() {
 
   useEffect(() => {
     (async () => {
-      loaderContext[1](true);
-      const twxGatewaysEnabled = await get_twx_gtws_enabled();
-      const twxGatewaysDisabled = await get_twx_gtws_disabled();
-      const agentConnectionInfo = await twx_connection_diagnostic();
-      console.log("get IoT gateways");
+      try {
+        loaderContext[1](true);
+        const twxGatewaysEnabled = await get_twx_gtws_enabled();
+        const twxGatewaysDisabled = await get_twx_gtws_disabled();
+        const agentConnectionInfo = await twx_connection_diagnostic();
+        console.log("get IoT gateways");
 
-      if (twxGatewaysEnabled?.length !== 0) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "success",
-          message: `Kepware IoT gateways loaded`,
-        });
-      } else if (twxGatewaysEnabled?.length === 0) {
-        handleRequestFeedback({
-          vertical: "bottom",
-          horizontal: "right",
-          severity: "error",
-          message: `Kepware enabled IoT gateways not found`,
-        });
-      }
-      setTWXIotGatewaysList(twxGatewaysEnabled);
-      setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-      if (agentConnectionInfo?.thingworx?.diagnostic) {
-        setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
-      } else {
+        if (twxGatewaysEnabled?.length !== 0) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "success",
+            message: `Kepware IoT gateways loaded`,
+          });
+        } else if (twxGatewaysEnabled?.length === 0) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `Kepware enabled IoT gateways not found`,
+          });
+        }
+        setTWXIotGatewaysList(twxGatewaysEnabled);
+        setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
+        if (agentConnectionInfo?.thingworx?.diagnostic) {
+          setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
+        } else {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `An error occurred on Thingworx agent diagnosis `,
+          });
+        }
+      } catch (e) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
           severity: "error",
           message: `An error occurred on Thingworx agent diagnosis `,
         });
+      } finally {
+        if (getQueuePending() === 0) {
+          loaderContext[1](false);
+        }
       }
-      loaderContext[1](false);
     })();
   }, []);
 
@@ -230,119 +242,181 @@ export default function Thingworx() {
    * @returns {Promise<void>} - A promise that resolves once the enabled IoT gateways are reloaded.
    */
   const handleReloadEnabledIotGateway = async () => {
-    loaderContext[1](true);
-    const twxGatewaysEnabled = await get_twx_gtws_enabled();
-    console.log("get IoT gateways");
-    if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware IoT gateways loaded`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const twxGatewaysEnabled = await get_twx_gtws_enabled();
+      console.log("get IoT gateways");
+      if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware IoT gateways loaded`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Kepware enabled IoT gateways not found`,
+        });
+      }
+      setTWXIotGatewaysList(twxGatewaysEnabled);
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Kepware enabled IoT gateways not found`,
+        message: `An error occurred while trying to load Kepware IoT gateways`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    setTWXIotGatewaysList(twxGatewaysEnabled);
-    loaderContext[1](false);
   };
 
   const handleIotGatewaysReloadChange = async () => {
-    loaderContext[1](true);
-    const twxGatewaysEnabled = await get_twx_gtws_enabled();
-    const twxGatewaysDisabled = await get_twx_gtws_disabled();
-    console.log("get IoT gateways");
-    if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Kepware IoT gateways loaded`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const twxGatewaysEnabled = await get_twx_gtws_enabled();
+      const twxGatewaysDisabled = await get_twx_gtws_disabled();
+      console.log("get IoT gateways");
+      if (Object.keys(twxGatewaysEnabled)?.length !== 0) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware IoT gateways loaded`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `Kepware enabled IoT gateways not found`,
+        });
+      }
+      setTWXIotGatewaysList(twxGatewaysEnabled);
+      setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `Kepware enabled IoT gateways not found`,
+        message: `An error occurred while trying to load IoT gateways`,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    setTWXIotGatewaysList(twxGatewaysEnabled);
-    setTWXIotGatewaysListDisabled(twxGatewaysDisabled);
-    loaderContext[1](false);
   };
 
   const handleTestConnection = async () => {
-    loaderContext[1](true);
-    const agentConnectionInfo = await twx_connection_diagnostic();
-    console.log("get agents info");
-    if (agentConnectionInfo?.thingworx?.diagnostic) {
-      setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
-      handleRequestFeedback({
-        vertical: "bottom",
-        horizontal: "right",
-        severity: "success",
-        message: `Thingworx agent connection status requested`,
-      });
-    } else {
+    try {
+      loaderContext[1](true);
+      const agentConnectionInfo = await twx_connection_diagnostic();
+      console.log("get agents info");
+      if (agentConnectionInfo?.thingworx?.diagnostic) {
+        setAgentDiagnosis(agentConnectionInfo?.thingworx?.diagnostic);
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Thingworx agent connection status requested`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on Thingworx agent diagnosis `,
+        });
+      }
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
         message: `An error occurred on Thingworx agent diagnosis `,
       });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    loaderContext[1](false);
   };
 
   const handleEnableIotGateway = async (name) => {
-    loaderContext[1](true);
-    const result = await enable_http_client_iot_gateway(name);
-    loaderContext[1](false);
-    if (result?.enabled !== true) {
+    try {
+      loaderContext[1](true);
+      const result = await enable_http_client_iot_gateway(name);
+
+      if (result?.enabled !== true) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occured. Cannot enable IoT Gateway `,
+        });
+        return;
+      }
+      setTWXIotGatewaysList((prevData) => ({
+        ...prevData,
+        [`${name}`]: twxIotGatewaysListDisabled[`${name}`],
+      }));
+      let iotGatewaDisabledListDisabled = { ...twxIotGatewaysListDisabled };
+      delete iotGatewaDisabledListDisabled[`${name}`];
+      setTWXIotGatewaysListDisabled(iotGatewaDisabledListDisabled);
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occured. Cant't enable IoT Gateway `,
+        message: `An error occured. Cannot enable IoT Gateway `,
       });
-      return;
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    setTWXIotGatewaysList((prevData) => ({
-      ...prevData,
-      [`${name}`]: twxIotGatewaysListDisabled[`${name}`],
-    }));
-    let iotGatewaDisabledListDisabled = { ...twxIotGatewaysListDisabled };
-    delete iotGatewaDisabledListDisabled[`${name}`];
-    setTWXIotGatewaysListDisabled(iotGatewaDisabledListDisabled);
   };
 
   const handleDisableIotGateway = async (name) => {
-    let iotGatewaList = undefined;
-    loaderContext[1](true);
-    const result = await disable_http_client_iot_gateway(name);
-    loaderContext[1](false);
-    if (result?.enabled !== false) {
+    try {
+      let iotGatewaList = undefined;
+      loaderContext[1](true);
+      const result = await disable_http_client_iot_gateway(name);
+
+      if (result?.enabled !== false) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occured. Cannot disable IoT Gateway  `,
+        });
+        return;
+      }
+      setTWXIotGatewaysListDisabled((prevData) => ({
+        ...prevData,
+        [`${name}`]: twxIotGatewaysList[`${name}`],
+      }));
+      iotGatewaList = { ...twxIotGatewaysList };
+      delete iotGatewaList[`${name}`];
+      setTWXIotGatewaysList(iotGatewaList);
+    } catch (e) {
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",
         severity: "error",
-        message: `An error occured. Cant't disable IoT Gateway  `,
+        message: `An error occured. Cannot disable IoT Gateway  `,
       });
-      return;
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
     }
-    setTWXIotGatewaysListDisabled((prevData) => ({
-      ...prevData,
-      [`${name}`]: twxIotGatewaysList[`${name}`],
-    }));
-    iotGatewaList = { ...twxIotGatewaysList };
-    delete iotGatewaList[`${name}`];
-    setTWXIotGatewaysList(iotGatewaList);
   };
   const handleThingworxChange = (event) => {
     event.preventDefault();

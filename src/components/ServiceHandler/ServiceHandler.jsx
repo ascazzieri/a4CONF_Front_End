@@ -17,6 +17,7 @@ import {
   Button
 } from "@mui/material";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
+import { getQueuePending } from "../../utils/utils";
 
 export default function ServiceHandler() {
 
@@ -33,22 +34,28 @@ export default function ServiceHandler() {
   const [sitemanagerDialogOpen, setSitemanaerDialogOpen] = useState(false);
 
   const handleStopSitemanager = async () => {
-    const body = {
-      services: {
-        sitemanager: {
-          command: 'stop'
+    try {
+      loaderContext[1](true);
+      const body = {
+        services: {
+          sitemanager: {
+            command: 'stop'
+          }
         }
       }
-    }
-
-    loaderContext[1](true);
-    try {
       await send_conf({ body });
     } catch (error) {
-      console.error('Error during service handling', error);
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Error during service handling, ${error}`,
+      });
       // Gestisci l'errore come preferisci
     } finally {
-      loaderContext[1](false);
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
       setServiceCommand(undefined);
     }
   };
@@ -63,30 +70,30 @@ export default function ServiceHandler() {
     snackBarContext[1]({ ...newState, open: true });
   };
   const manageService = async (service, cmd) => {
-    if (service === 'sitemanager' && cmd === 'stop') {
-      setSitemanaerDialogOpen(true)
-      return
-    }
-    const middleFastDataKey = (service === 'ftp' || service === 'http') ? 'industrial' : null;
-
-    const body = isFastData
-      ? {
-        services: {
-          fastdata: {
-            ...(middleFastDataKey ? { [middleFastDataKey]: { [service]: { command: cmd } } } : { command: cmd })
-          }
-        }
-      }
-      : {
-        services: {
-          [service]: {
-            command: cmd
-          }
-        }
-      };
-    loaderContext[1](true);
 
     try {
+      loaderContext[1](true);
+      if (service === 'sitemanager' && cmd === 'stop') {
+        setSitemanaerDialogOpen(true)
+        return
+      }
+      const middleFastDataKey = (service === 'ftp' || service === 'http') ? 'industrial' : null;
+
+      const body = isFastData
+        ? {
+          services: {
+            fastdata: {
+              ...(middleFastDataKey ? { [middleFastDataKey]: { [service]: { command: cmd } } } : { command: cmd })
+            }
+          }
+        }
+        : {
+          services: {
+            [service]: {
+              command: cmd
+            }
+          }
+        };
       await send_conf(body);
       handleRequestFeedback({
         vertical: "bottom",
@@ -103,7 +110,10 @@ export default function ServiceHandler() {
       });
     }
     finally {
-      loaderContext[1](false);
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
+
       setServiceCommand(undefined);
     }
   };
