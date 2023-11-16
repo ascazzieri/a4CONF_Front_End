@@ -9,6 +9,7 @@ import MUITheme from "./MUITheme";
 import SnackbarProvider from "./utils/context/SnackbarContext";
 import LoadingProvider from "./utils/context/Loading";
 import SuperUserProvider from "./utils/context/SuperUser";
+import TerafenceProvider from "./utils/context/Terafence";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -17,8 +18,10 @@ root.render(
       <SuperUserProvider>
         <LoadingProvider>
           <SnackbarProvider>
-            <div className="page-blocker" id="page-blocker" />
-            <App />
+            <TerafenceProvider>
+              <div className="page-blocker" id="page-blocker" />
+              <App />
+            </TerafenceProvider>
           </SnackbarProvider>
         </LoadingProvider>
       </SuperUserProvider>

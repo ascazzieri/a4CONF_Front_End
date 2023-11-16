@@ -36,6 +36,9 @@ import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
 import { send_conf } from "../../utils/api";
 import styled_normal from 'styled-components';
+import { TerafenceContext } from "../../utils/context/Terafence";
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material"
+import { toFormData } from "axios";
 
 const drawerWidth = 240;
 
@@ -173,12 +176,14 @@ const ApplyChanges = () => {
   const config = useSelector((state) => state)
   const snackBarContext = React.useContext(SnackbarContext);
   const loadingContext = React.useContext(LoadingContext)
+  const terafenceServices = React.useContext(TerafenceContext)
+  const [applyDialog, setApplyDialog] = React.useState(false)
 
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
   };
 
-  const handleSendConf = async (event) => {
+  const applyChanges = async () => {
     try {
       loadingContext[1](true)
       togglePageSleep('block')
@@ -211,10 +216,22 @@ const ApplyChanges = () => {
         loadingContext[1](false)
       }
     }
+  }
 
-
+  const handleSendConf = () => {
+    const tfServicesStates = Object?.values(terafenceServices[0])
+    if (tfServicesStates?.every((status) => status === true)) {
+      applyChanges()
+    } else {
+      setApplyDialog(true)
+    }
   };
-  return (
+  const applyOnlyPCA = async () => {
+    await applyChanges()
+    setApplyDialog(false)
+  }
+
+  return (<>
     <ApplyButton onClick={handleSendConf}>
       <div className="img-wrapper-1">
         <div className="img-wrapper">
@@ -229,6 +246,28 @@ const ApplyChanges = () => {
       </div>
       <span>Apply</span>
     </ApplyButton>
+    <Dialog
+      open={applyDialog}
+      onClose={() => setApplyDialog(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">
+        It Seems some internal a4GATE services are not working correctly!
+      </DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          You can apply your configuration to a4GATE but only Data Collector will receive it! If this problem persist, reboot a4GATE with the physical button and wait every led to turn off before restarting it.
+        </DialogContentText>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setApplyDialog(false)}>Close</Button>
+        <Button variant="contained" color="error" onClick={applyOnlyPCA} >
+          Apply on Data Collector Only
+        </Button>
+      </DialogActions>
+    </Dialog></>
+
   );
 };
 

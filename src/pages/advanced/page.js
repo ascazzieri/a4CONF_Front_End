@@ -30,7 +30,6 @@ import {
 import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
-import SaveButton from "../../components/SaveButton/SaveButton";
 import { getQueuePending } from "../../utils/utils";
 
 export default function Advanced() {
@@ -58,40 +57,124 @@ export default function Advanced() {
     setJsonData(config);
   }, [config]);
 
+  const manageService = async (service, cmd) => {
+    loaderContext[1](true);
+    const tf_service = service?.replace("a4monitor", "a4monitor_tf");
+    try {
+      const response = await get_advanced(tf_service, cmd);
+      if (response) {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `${cmd?.toUpperCase()} ${service} service correctly`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred on service command`,
+        });
+      }
+    } catch (error) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
+    }
+  };
+
   const handleChangeA4monitor = (event) => {
-    const command = event.target.value;
-    const serviceName = event.target.name;
-    setServiceCommandA4monitor(command);
-    manageService(serviceName, command);
-    setServiceCommandA4monitor(undefined);
+    try {
+      const command = event.target.value;
+      const serviceName = event.target.name;
+      setServiceCommandA4monitor(command);
+      manageService(serviceName, command);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      setServiceCommandA4monitor(undefined);
+    }
   };
   const handleChangeBchnld = (event) => {
-    const command = event.target.value;
-    const serviceName = event.target.name;
-    setServiceCommandBchnld(command);
-    manageService(serviceName, command);
-    setServiceCommandBchnld(undefined);
+    try {
+      const command = event.target.value;
+      const serviceName = event.target.name;
+      setServiceCommandBchnld(command);
+      manageService(serviceName, command);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      setServiceCommandBchnld(undefined);
+    }
   };
   const handleChangeDataTranfer = (event) => {
-    const command = event.target.value;
-    const serviceName = event.target.name;
-    setServiceCommandDataTransfer(command);
-    manageService(serviceName, command);
-    setServiceCommandDataTransfer(undefined);
+    try {
+      const command = event.target.value;
+      const serviceName = event.target.name;
+      setServiceCommandDataTransfer(command);
+      manageService(serviceName, command);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      setServiceCommandDataTransfer(undefined);
+    }
   };
   const handleChangeConfiguration = (event) => {
-    const command = event.target.value;
-    const serviceName = event.target.name;
-    setServiceCommandConfiguration(command);
-    manageService(serviceName, command);
-    setServiceCommandConfiguration(undefined);
+    try {
+      const command = event.target.value;
+      const serviceName = event.target.name;
+      setServiceCommandConfiguration(command);
+      manageService(serviceName, command);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      setServiceCommandConfiguration(undefined);
+    }
   };
   const handleChangeBroker = (event) => {
-    const command = event.target.value;
-    const serviceName = event.target.name;
-    setServiceCommandBroker(command);
-    manageService(serviceName, command);
-    setServiceCommandBroker(undefined);
+    try {
+      const command = event.target.value;
+      const serviceName = event.target.name;
+      setServiceCommandBroker(command);
+      manageService(serviceName, command);
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred on service command`,
+      });
+    } finally {
+      setServiceCommandBroker(undefined);
+    }
   };
 
   const snackBarContext = useContext(SnackbarContext);
@@ -167,35 +250,6 @@ export default function Advanced() {
       }
     }
   };
-  const manageService = (service, cmd) => {
-    loaderContext[1](true);
-    (async () => {
-      try {
-        const response = await get_advanced(service, cmd);
-        if (response) {
-          handleRequestFeedback({
-            vertical: "bottom",
-            horizontal: "right",
-            severity: "success",
-            message: `${cmd} ${service} service correctly`,
-          });
-        } else {
-          handleRequestFeedback({
-            vertical: "bottom",
-            horizontal: "right",
-            severity: "error",
-            message: `An error occurred on send command`,
-          });
-        }
-      } catch (error) {
-        console.error("Error during service handling", error);
-      } finally {
-        if (getQueuePending() === 0) {
-          loaderContext[1](false);
-        }
-      }
-    })();
-  };
 
   const handleRebootPCA = async () => {
     try {
@@ -231,7 +285,6 @@ export default function Advanced() {
   };
   const handleChangeDangerous = () => {
     if (jsonData) {
-      console.log(jsonData);
       handleRequestFeedback({
         vertical: "bottom",
         horizontal: "right",

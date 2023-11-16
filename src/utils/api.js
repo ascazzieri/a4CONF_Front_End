@@ -215,6 +215,28 @@ export const get_iot_gtws_http_client_disabled = async () => {
     console.error(e);
   }
 };
+export const get_iot_gtws_enabled_fast_data_matrix = async () => {
+  try {
+    const res = await helper.fetchData(
+      "/iotgw/http/client/enabled/fastdata_matrix",
+      "GET"
+    );
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+export const get_iot_gtws_disabled_fast_data_matrix = async () => {
+  try {
+    const res = await helper.fetchData(
+      "/iotgw/http/client/disabled/fastdata_matrix",
+      "GET"
+    );
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
 export const twx_connection_diagnostic = async () => {
   try {
     const res = await helper.fetchData("/conf/twx/diagnostic", "GET");

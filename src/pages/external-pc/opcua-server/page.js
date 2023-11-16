@@ -339,6 +339,12 @@ export default function OPCServer() {
           });
           return;
         }
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `IoT Gateway: ${name} correctly enabled`,
+        });
         let enabledIotGatewaysFromList =
           iotGatewaysFromList?.length !== 0 ? [...iotGatewaysFromList] : [];
         enabledIotGatewaysFromList.push(name);
@@ -361,6 +367,12 @@ export default function OPCServer() {
           });
           return;
         }
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `IoT Gateway: ${name} correctly enabled`,
+        });
         let enabledIotGatewaysToList =
           iotGatewaysToList?.length !== 0 ? [...iotGatewaysToList] : [];
         enabledIotGatewaysToList.push(name);
@@ -406,6 +418,12 @@ export default function OPCServer() {
           });
           return;
         }
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `IoT Gateway: ${name} correctly disabled`,
+        });
         let disabledIotGatewaysFromList =
           iotGatewaysFromListDisabled?.length !== 0
             ? [...iotGatewaysFromListDisabled]
@@ -431,6 +449,12 @@ export default function OPCServer() {
           });
           return;
         }
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `IoT Gateway: ${name} correctly disabled`,
+        });
         let disabledIotGatewaysFromList =
           iotGatewaysToListDisabled?.length !== 0
             ? [...iotGatewaysToListDisabled]

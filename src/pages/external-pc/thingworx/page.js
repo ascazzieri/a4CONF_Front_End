@@ -362,6 +362,12 @@ export default function Thingworx() {
         });
         return;
       }
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `IoT Gateway: ${name} correctly enabled`,
+      });
       setTWXIotGatewaysList((prevData) => ({
         ...prevData,
         [`${name}`]: twxIotGatewaysListDisabled[`${name}`],
@@ -398,6 +404,12 @@ export default function Thingworx() {
         });
         return;
       }
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "success",
+        message: `IoT Gateway: ${name} correctly disabled`,
+      });
       setTWXIotGatewaysListDisabled((prevData) => ({
         ...prevData,
         [`${name}`]: twxIotGatewaysList[`${name}`],
@@ -630,8 +642,7 @@ export default function Thingworx() {
           {currentTab === 2 && (
             <>
               <FormLabel title={thingworx_manage_iot_desc}>
-                Kepware IoT Gateways list for OPCUA Server with read only
-                permission
+                Kepware IoT Gateways list for Thingworx
               </FormLabel>
               <Divider />
               <Button

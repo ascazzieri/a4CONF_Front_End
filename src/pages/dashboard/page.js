@@ -55,6 +55,7 @@ import {
   version_desc,
 } from "../../utils/titles";
 import { getQueuePending } from "../../utils/utils";
+import { TerafenceContext } from "../../utils/context/Terafence";
 
 export default function Dashboard() {
   const system = useSelector((state) => state?.system);
@@ -78,7 +79,7 @@ export default function Dashboard() {
     snackBarContext[1]({ ...newState, open: true });
   };
 
-  //const dashboardPage = currentURLArray.filter((item) => item === "dashboard");
+  const terafenceServices = useContext(TerafenceContext);
 
   const [hostName, setHostName] = useState(
     system?.hostname?.industrial === system?.hostname?.customer
@@ -86,6 +87,7 @@ export default function Dashboard() {
       : null
   );
   const [dashboardStatus, setDashboardStatus] = useState({});
+
   useEffect(() => {
     setHostName(
       system?.hostname?.industrial === system?.hostname?.customer
@@ -97,10 +99,9 @@ export default function Dashboard() {
     if (dashboardStatus && Object.keys(dashboardStatus).length === 0) {
       loaderContext[1](true); // Imposta lo stato di caricamento iniziale
     } else {
-      if(getQueuePending() === 0){
+      if (getQueuePending() === 0) {
         loaderContext[1](false); // Non è più in fase di caricamento
       }
-      
     }
   }, [dashboardStatus, loaderContext]);
 
@@ -194,10 +195,10 @@ export default function Dashboard() {
           ...prevState,
           is_B_ready: isBReady,
           bidir: checkBidir,
-          monitor_terafence_status: monitorLogsIsWorking,
           a4monitor_status: a4monitorStatus,
           machines: machinesConnected,
         }));
+        terafenceServices[1](monitorLogsIsWorking);
         setCount((prevCount) => prevCount + 1);
       }, 15000);
     }
@@ -445,12 +446,9 @@ export default function Dashboard() {
                       <div title={back_channel_desc}>Back Channel</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1.5 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
-                        null &&
-                      dashboardStatus?.monitor_terafence_status?.tf_bchnld !==
-                        undefined
-                        ? dashboardStatus?.monitor_terafence_status
-                            ?.tf_bchnld === true
+                      {terafenceServices[0]?.tf_bchnld !== null &&
+                      terafenceServices[0]?.tf_bchnld !== undefined
+                        ? terafenceServices[0]?.tf_bchnld === true
                           ? goodStatus()
                           : badStatus()
                         : "..."}
@@ -459,12 +457,9 @@ export default function Dashboard() {
                       <div title={data_transfer_desc}>Data Transfer</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1.5 }}>
-                      {dashboardStatus?.monitor_terafence_status
-                        ?.tf_http_xfer !== null &&
-                      dashboardStatus?.monitor_terafence_status
-                        ?.tf_http_xfer !== undefined
-                        ? dashboardStatus?.monitor_terafence_status
-                            ?.tf_http_xfer === true
+                      {terafenceServices[0]?.tf_http_xfer !== null &&
+                      terafenceServices[0]?.tf_http_xfer !== undefined
+                        ? terafenceServices[0]?.tf_http_xfer === true
                           ? goodStatus()
                           : badStatus()
                         : "..."}
@@ -473,12 +468,9 @@ export default function Dashboard() {
                       <div title={configuration_desc}>Configuration</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1.5 }}>
-                      {dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
-                        null &&
-                      dashboardStatus?.monitor_terafence_status?.tf_cfgmng !==
-                        undefined
-                        ? dashboardStatus?.monitor_terafence_status
-                            ?.tf_cfgmng === true
+                      {terafenceServices[0]?.tf_cfgmng !== null &&
+                      terafenceServices[0]?.tf_cfgmng !== undefined
+                        ? terafenceServices[0]?.tf_cfgmng === true
                           ? goodStatus()
                           : badStatus()
                         : "..."}
@@ -487,12 +479,9 @@ export default function Dashboard() {
                       <div title={broker_desc}>Broker</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1.5 }}>
-                      {dashboardStatus?.monitor_terafence_status?.mosquitto !==
-                        null &&
-                      dashboardStatus?.monitor_terafence_status?.mosquitto !==
-                        undefined
-                        ? dashboardStatus?.monitor_terafence_status
-                            ?.mosquitto === true
+                      {terafenceServices[0]?.mosquitto !== null &&
+                      terafenceServices[0]?.mosquitto !== undefined
+                        ? terafenceServices[0]?.mosquitto === true
                           ? goodStatus()
                           : badStatus()
                         : "..."}
