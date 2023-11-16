@@ -239,7 +239,7 @@ export default function Advanced() {
         message: `Local configuration has been changed correctly`,
       });
       dispatch(
-        updateAll({ payload: jsonData, meta: { actionType: "upload" } })
+        updateAll({ payload: jsonData, meta: { actionType: "fromBackup" } })
       );
     }
   };
