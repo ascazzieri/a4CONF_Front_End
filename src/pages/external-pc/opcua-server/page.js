@@ -525,13 +525,24 @@ export default function OPCServer() {
       );
     }
 
+    const parsedPort = parseInt(customPort);
+    if (!parsedPort) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `OPCUA server port is not a number`,
+      });
+      return;
+    }
+
     const newOPCUAServer = {
       ...opcua,
       shift_property_from_kepware: shiftFromKepware,
       shift_property_to_kepware: shiftToKepware,
       opcua: {
         custom_port_enable: customPortEnable,
-        custom_port: customPort,
+        custom_port: customPortEnable ? parsedPort : 4840,
         host: hostBinding,
       },
       iotgw: {

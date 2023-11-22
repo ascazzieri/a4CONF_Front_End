@@ -113,56 +113,30 @@ export default function FTP() {
     );
   }, [ftp]);
 
-  const handleServerIPChange = (event) => {
-    const ip = event?.target?.value;
-    if (ip) {
-      setServerIP(ip);
-    }
-  };
   const handleTypeChange = (value) => {
-    if (value) {
-      setServerType(value);
-    }
+    setServerType(value);
   };
   const handleCustomPortEnableChange = (event) => {
-    const customPort = event?.target?.checked;
-    if (customPort !== undefined) {
-      setCustomPortEnable(customPort);
-    }
+    setCustomPortEnable(event?.target?.checked);
   };
   const handleServerPortChange = (event) => {
-    const port = event?.target?.value;
-    if (port) {
-      setServerPort(port);
-    }
+    setServerPort(event?.target?.value);
   };
 
   const handleMaxConsChange = (event) => {
-    const cons = event?.target?.value;
-    if (cons) {
-      setMaxConnection(cons);
-    }
+    setMaxConnection(event?.target?.value);
   };
 
   const handleMaxConsPerIPChange = (event) => {
-    const cons = event?.target?.value;
-    if (cons) {
-      setMaxConnectionPerIP(cons);
-    }
+    setMaxConnectionPerIP(event?.target?.value);
   };
 
   const handleAddTimestampChange = (event) => {
-    const timestamp = event?.target?.checked;
-    if (timestamp !== undefined) {
-      setAddTimestamp(timestamp);
-    }
+    setAddTimestamp(event?.target?.checked);
   };
 
   const handleAddTimestampMilliseconds = (event) => {
-    const timestampMilliseconds = event?.target?.checked;
-    if (timestampMilliseconds !== undefined) {
-      setAddTimestampMilliseconds(timestampMilliseconds);
-    }
+    setAddTimestampMilliseconds(event?.target?.checked);
   };
 
   const handleFTPChange = (event) => {
@@ -175,15 +149,49 @@ export default function FTP() {
         })
       );
     }
+
+    const parsedPort = parseInt(serverPort);
+    if (!parsedPort) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `FTP server port is not a number`,
+      });
+      return;
+    }
+
+    const maxConnParsed = parseInt(maxConnection);
+    if (!maxConnParsed) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Maximum number of connection is not a number`,
+      });
+      return;
+    }
+
+    const maxConnPerIPParsed = parseInt(maxConnectionPerIP);
+    if (!maxConnPerIPParsed) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Maximum number of connection per IP is not a number`,
+      });
+      return;
+    }
+
     const newFTP = {
       ...ftp,
       server: {
         ip_address: serverIP,
         type: serverType,
         custom_port: customPortEnable,
-        port: serverPort,
-        max_cons: maxConnection,
-        max_cons_per_ip: maxConnectionPerIP,
+        port: customPortEnable ? parsedPort : 21,
+        max_cons: maxConnParsed,
+        max_cons_per_ip: maxConnPerIPParsed,
         users: usersTableData,
       },
       file_timestamp: {
@@ -227,11 +235,11 @@ export default function FTP() {
       size: 80,
     },
   ];
-  const usersValidation= {
+  const usersValidation = {
     username: nonNullItemsCheck,
     password: nonNullItemsCheck,
-    shared_folder: nonNullItemsCheck
-  }
+    shared_folder: nonNullItemsCheck,
+  };
   const blobColumnsData = [
     {
       accessorKey: "file_name",
@@ -252,8 +260,8 @@ export default function FTP() {
   ];
   const blobValidation = {
     file_name: nonNullItemsCheck,
-    blob_folder: nonNullItemsCheck
-  }
+    blob_folder: nonNullItemsCheck,
+  };
 
   return (
     <ErrorCacher>
@@ -274,16 +282,21 @@ export default function FTP() {
                   Binding IP address of FTP server:
                 </FormLabel>
 
-                <TextField
+                <Autocomplete
+                  disablePortal
                   title={ftp_ipaddress_desc}
-                  type="text"
-                  label="IP Address"
-                  helperText="FTP server address"
-                  value={serverIP || ""}
-                  required={true}
-                  onChange={handleServerIPChange}
+                  options={["127.0.0.1", "0.0.0.0"]}
+                  label="Host binding"
+                  value={serverIP || "0.0.0.0"}
+                  onChange={(event, newValue) => {
+                    setServerIP(newValue);
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="FTP server bind addresses" />
+                  )}
                 />
               </FormControl>
+
               <Divider />
 
               <FormControl fullWidth title={ftp_server_type_desc}>
@@ -333,7 +346,7 @@ export default function FTP() {
                       label="Port number"
                       /*  variant="outlined"
                                 size="small" */
-                      value={serverPort || 21}
+                      value={serverPort || ""}
                       onChange={handleServerPortChange}
                     />
                   </FormControl>
@@ -356,7 +369,7 @@ export default function FTP() {
                   label="Max connection"
                   /*  variant="outlined"
                                 size="small" */
-                  value={maxConnection || 5}
+                  value={maxConnection || ""}
                   onChange={handleMaxConsChange}
                 />
               </FormControl>
@@ -378,7 +391,7 @@ export default function FTP() {
                   label="Max connection with the same ip"
                   /*  variant="outlined"
                                 size="small" */
-                  value={maxConnectionPerIP || 5}
+                  value={maxConnectionPerIP || ""}
                   onChange={handleMaxConsPerIPChange}
                 />
               </FormControl>

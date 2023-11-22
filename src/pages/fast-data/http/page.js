@@ -1,7 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ErrorCacher from "../../../components/Errors/ErrorCacher";
-import { updateFastData, updateFastDataHTTP } from "../../../utils/redux/reducers";
+import {
+  updateFastData,
+  updateFastDataHTTP,
+} from "../../../utils/redux/reducers";
 import { JSONTree } from "react-json-tree";
 import SecondaryNavbar from "../../../components/SecondaryNavbar/SecondaryNavbar";
 import { SuperUserContext } from "../../../utils/context/SuperUser";
@@ -93,37 +96,22 @@ export default function FTP() {
     );
   }, [http]);
   const handleCustomPortEnableChange = (event) => {
-    const customPort = event?.target?.checked;
-    if (customPort !== undefined) {
-      setCustomPortEnable(customPort);
-    }
+    setCustomPortEnable(event?.target?.checked);
   };
   const handleServerPortChange = (event) => {
-    const port = event?.target?.value;
-    if (port) {
-      setServerPort(port);
-    }
+    setServerPort(event?.target?.value);
   };
 
   const handleServerPathChange = (event) => {
-    const path = event?.target?.value;
-    if (path) {
-      setServerPath(path);
-    }
+    setServerPath(event?.target?.value);
   };
 
   const handleAddSuffixEnableChange = (event) => {
-    const enable = event?.target?.checked;
-    if (enable !== undefined) {
-      setAddFileSuffixEnable(enable);
-    }
+    setAddFileSuffixEnable(event?.target?.checked);
   };
 
   const handleAddSuffixFormatChange = (event) => {
-    const format = event?.target?.value;
-    if (format) {
-      setAddFileSuffixFormat(format);
-    }
+    setAddFileSuffixFormat(event?.target?.value);
   };
 
   const handleHTTPChange = (event) => {
@@ -145,12 +133,23 @@ export default function FTP() {
         [fileName]: blobSettingsObject[fileName],
       })
     );
+    const parsedPort = parseInt(serverPort);
+    if (!parsedPort) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Maximum number of connection is not a number`,
+      });
+      return;
+    }
+
     const newHTTP = {
       ...http,
       http_server: {
         host: serverBind,
         custom_port: customPortEnable,
-        port: serverPort,
+        port: customPortEnable ? parsedPort : 8080,
         path: serverPath,
       },
       add_file_suffix: {
@@ -159,7 +158,6 @@ export default function FTP() {
       },
       blob_settings: blobSettingsArray,
     };
-    console.log(newHTTP);
     handleRequestFeedback({
       vertical: "bottom",
       horizontal: "right",
@@ -189,8 +187,8 @@ export default function FTP() {
   ];
   const blobValidation = {
     file_name: nonNullItemsCheck,
-    blob_folder: nonNullItemsCheck
-  }
+    blob_folder: nonNullItemsCheck,
+  };
 
   return (
     <ErrorCacher>
@@ -257,7 +255,7 @@ export default function FTP() {
                         pattern: "[0-9]*",
                       }}
                       label="Port number"
-                      value={serverPort || 8080}
+                      value={serverPort || ""}
                       onChange={handleServerPortChange}
                     />
                   </FormControl>
@@ -273,7 +271,7 @@ export default function FTP() {
                   type="text"
                   label="HTTP path"
                   helperText="Write http path in order to receive files from the sender agent"
-                  value={serverPath || "/csv"}
+                  value={serverPath || ""}
                   required={true}
                   onChange={handleServerPathChange}
                 />
@@ -309,7 +307,7 @@ export default function FTP() {
                       type="text"
                       label="File suffix"
                       helperText="Add file suffix"
-                      value={addFileSuffixFormat || "/csv"}
+                      value={addFileSuffixFormat || ""}
                       onChange={handleAddSuffixFormatChange}
                     />
                   </FormControl>

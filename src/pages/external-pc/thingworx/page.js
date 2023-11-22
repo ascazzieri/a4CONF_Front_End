@@ -487,6 +487,17 @@ export default function Thingworx() {
       return;
     }
 
+    const parsedPort = parseInt(proxyPort);
+    if (!parsedPort) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Proxy server port is not a number`,
+      });
+      return;
+    }
+
     const newThingworx = {
       ...thingworx,
       host: thingworxHost,
@@ -495,7 +506,7 @@ export default function Thingworx() {
       proxy: {
         enabled: proxyEnabled,
         host: proxyHost,
-        port: proxyPort,
+        port: parsedPort,
         username: proxyUsername,
         password: proxyPassword,
       },
@@ -1031,7 +1042,9 @@ export default function Thingworx() {
                       id="outlined-adornment-proxy-password"
                       type={showProxyPassword ? "text" : "password"}
                       value={proxyPassword || ""}
-                      onChange={(event) => setProxyPassword(event?.target?.value)}
+                      onChange={(event) =>
+                        setProxyPassword(event?.target?.value)
+                      }
                       endAdornment={
                         <InputAdornment position="end">
                           <IconButton

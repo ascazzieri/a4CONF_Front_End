@@ -505,10 +505,21 @@ export default function HTTPServer() {
       (item) => item?.iot_gateway
     );
 
+    const parsedPort = parseInt(customPort);
+    if (!parsedPort) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `HTTP server port is not a number`,
+      });
+      return;
+    }
+
     const newHTTPServer = {
       ...http,
       custom_port_enable: customPortEnable,
-      port: customPortEnable ? customPort : 8080,
+      port: customPortEnable ? parsedPort : 8080,
       enable_tls: enableTLS,
       authentication: {
         enabled: serverAuth,
