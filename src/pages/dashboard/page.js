@@ -183,6 +183,7 @@ export default function Dashboard() {
         const isBReady = await is_B_ready();
         const checkBidir = await check_bidir();
         if (system?.u2u?.firmware?.check === false) {
+          console.log(system.u2u.firmware.check)
           handleRequestFeedback({
             vertical: "bottom",
             horizontal: "right",
@@ -199,7 +200,7 @@ export default function Dashboard() {
         }));
         terafenceServices[1](monitorLogsIsWorking);
         setCount((prevCount) => prevCount + 1);
-      }, 15000);
+      }, 10000);
     }
 
     return () => {
@@ -214,7 +215,6 @@ export default function Dashboard() {
       setIsInDashboard(false);
     }
   }, [location.pathname]);
-
   return (
     <ErrorCacher>
       <Container sx={{ flexGrow: 1, mt: 0, pt: 0 }} disableGutters>

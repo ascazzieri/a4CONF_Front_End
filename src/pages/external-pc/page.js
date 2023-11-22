@@ -117,7 +117,7 @@ export default function ExternalPC() {
                         color="text.secondary"
                         sx={{ p: 1 }}
                       >
-                        Data Sender plant network
+                        Connect Data Sender to plant network
                       </Typography>
                     </CardContent>
                   </Card>
@@ -152,7 +152,7 @@ export default function ExternalPC() {
                           color="text.secondary"
                           sx={{ p: 1 }}
                         >
-                          Configure remote assistance
+                          Configure Secomea SW remote assistance
                         </Typography>
                       </CardContent>
                     </Card>
@@ -272,7 +272,7 @@ export default function ExternalPC() {
                           color="text.secondary"
                           sx={{ p: 1 }}
                         >
-                          Expose data via OPCUA server
+                          Expose data via OPCUA server plug-in
                         </Typography>
                       </CardContent>
                     </Card>
@@ -331,7 +331,7 @@ export default function ExternalPC() {
                           color="text.secondary"
                           sx={{ p: 1 }}
                         >
-                          Expose data via HTTP server
+                          Expose data via HTTP server plug-in
                         </Typography>
                       </CardContent>
                     </Card>

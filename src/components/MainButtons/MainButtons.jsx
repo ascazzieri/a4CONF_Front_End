@@ -23,7 +23,7 @@ import { getQueuePending, togglePageSleep } from "../../utils/utils";
 export const StyledButton = styled("div")`
   && {
     font-family: inherit;
-    font-size: 20px;
+    font-size: 17px;
     color: white;
     background-color: #3e4756;
     padding: 10px 120px;
@@ -73,7 +73,7 @@ export const StyledButton = styled("div")`
     }
 
     &:hover img {
-      transform: translateX(2.25em) rotate(45deg) scale(1.5);
+      transform: translateX(2.7em) rotate(45deg) scale(1.2);
     }
     &:hover .reload-icon {
       animation: rotate-1 1.2s ease-in-out infinite;
@@ -94,7 +94,7 @@ export const StyledButton = styled("div")`
       }
 
       to {
-        transform: translateY(-0.1em);
+        transform: translateY(-0.2em);
       }
     }
     @keyframes rotate-1 {

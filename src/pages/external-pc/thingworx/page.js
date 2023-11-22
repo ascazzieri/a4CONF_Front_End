@@ -70,7 +70,11 @@ import {
   thingworx_manage_iot_desc,
   thingworx_remote_config_desc,
 } from "../../../utils/titles";
-import { getQueuePending, nonNullItemsCheck } from "../../../utils/utils";
+import {
+  getQueuePending,
+  nonNullItemsCheck,
+  verifyIP,
+} from "../../../utils/utils";
 
 /**
  * Represents a React component for managing IoT gateways and remote things.
@@ -98,9 +102,16 @@ export default function Thingworx() {
         "Remote Things",
         "Manage Iot Gateways",
         "Agent Logs",
+        "Proxy settings",
         "JSON",
       ]
-    : ["Connection", "Remote Things", "Manage Iot Gateways", "Agent Logs"];
+    : [
+        "Connection",
+        "Remote Things",
+        "Manage Iot Gateways",
+        "Agent Logs",
+        "Proxy settings",
+      ];
 
   const getArrayFromThingObject = (thingObject) => {
     let arrayFromThingsObject = [];
@@ -130,10 +141,25 @@ export default function Thingworx() {
     getArrayFromThingObject(thingworx?.things, "iot_gateway", "thing_name")
   );
 
+  const [proxyEnabled, setProxyEnabled] = useState(thingworx?.proxy?.enabled);
+  const [proxyHost, setProxyHost] = useState(thingworx?.proxy?.host);
+  const [proxyPort, setProxyPort] = useState(thingworx?.proxy?.port);
+  const [proxyUsername, setProxyUsername] = useState(
+    thingworx?.proxy?.username
+  );
+  const [proxyPassword, setProxyPassword] = useState(
+    thingworx?.proxy?.password
+  );
+
   useEffect(() => {
     setThingworxHost(thingworx?.host);
     setThingworxAppkey(thingworx?.appkey);
     setThingsTableData(getArrayFromThingObject(thingworx?.things));
+    setProxyEnabled(thingworx?.proxy?.enabled);
+    setProxyHost(thingworx?.proxy?.host);
+    setProxyPort(thingworx?.proxy?.port);
+    setProxyUsername(thingworx?.proxy?.username);
+    setProxyPassword(thingworx?.proxy?.password);
   }, [thingworx]);
   const [agentDiagnosis, setAgentDiagnosis] = useState({});
 
@@ -159,6 +185,10 @@ export default function Thingworx() {
   };
   const [showAppkey, setShowAppkey] = useState(false);
   const handleClickShowPassword = () => setShowAppkey((show) => !show);
+
+  const [showProxyPassword, setShowProxyPassword] = useState(false);
+  const handleClickShowProxyPassword = () =>
+    setShowProxyPassword((show) => !show);
 
   useEffect(() => {
     (async () => {
@@ -447,11 +477,28 @@ export default function Thingworx() {
       }
     });
 
+    if (proxyEnabled && !verifyIP(proxyHost)) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Wrong format for proxy server ip address`,
+      });
+      return;
+    }
+
     const newThingworx = {
       ...thingworx,
       host: thingworxHost,
       appkey: thingworxAppkey,
       things: thingsTWX || {},
+      proxy: {
+        enabled: proxyEnabled,
+        host: proxyHost,
+        port: proxyPort,
+        username: proxyUsername,
+        password: proxyPassword,
+      },
     };
     handleRequestFeedback({
       vertical: "bottom",
@@ -533,7 +580,7 @@ export default function Thingworx() {
           setCurrentTab={setCurrentTab}
           navbarItems={navbarItems}
         />
-        {currentTab === 4 && superUser && <JSONTree data={thingworx} />}
+        {currentTab === 5 && superUser && <JSONTree data={thingworx} />}
 
         <form onSubmit={handleThingworxChange}>
           {currentTab === 0 && (
@@ -906,7 +953,112 @@ export default function Thingworx() {
               </Box>
             </>
           )}
-          {(currentTab === 0 || currentTab === 1) && <SaveButton />}
+          {currentTab === 4 && (
+            <>
+              <FormControl fullWidth>
+                <FormLabel>Proxy server:</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Disabled</Typography>
+
+                  <Switch
+                    checked={proxyEnabled}
+                    onChange={(event) =>
+                      setProxyEnabled(event?.target?.checked)
+                    }
+                  />
+
+                  <Typography>Enabled</Typography>
+                </Stack>
+              </FormControl>
+              <Divider />
+              {proxyEnabled && (
+                <>
+                  <FormControl fullWidth>
+                    <FormLabel title={thingworx_ipaddress_desc}>
+                      Host:
+                    </FormLabel>
+
+                    <TextField
+                      type="text"
+                      label="Proxy Server"
+                      helperText="Proxy server address"
+                      value={proxyHost || ""}
+                      required={proxyEnabled ? true : false}
+                      onChange={(event) => setProxyHost(event?.target?.value)}
+                    />
+                  </FormControl>
+                  <Divider />
+
+                  <FormControl fullWidth>
+                    <FormLabel>Proxy Server port:</FormLabel>
+
+                    <TextField
+                      type="number"
+                      inputProps={{
+                        inputMode: "numeric",
+                        pattern: "[0-9]*",
+                      }}
+                      label="Port"
+                      value={proxyPort || 3128}
+                      onChange={(event) => setProxyPort(event?.target?.value)}
+                    />
+                  </FormControl>
+                  <Divider />
+
+                  <FormControl fullWidth>
+                    <FormLabel title={thingworx_ipaddress_desc}>
+                      Username:
+                    </FormLabel>
+
+                    <TextField
+                      type="text"
+                      label="Username"
+                      helperText="Proxy server username"
+                      value={proxyUsername || ""}
+                      onChange={(event) =>
+                        setProxyUsername(event?.target?.value)
+                      }
+                    />
+                  </FormControl>
+                  <Divider />
+
+                  <FormControl fullWidth>
+                    <InputLabel htmlFor="outlined-adornment-proxy-password">
+                      Password:
+                    </InputLabel>
+                    <OutlinedInput
+                      id="outlined-adornment-proxy-password"
+                      type={showProxyPassword ? "text" : "password"}
+                      value={proxyPassword || ""}
+                      onChange={(event) => setProxyPassword(event?.target?.value)}
+                      endAdornment={
+                        <InputAdornment position="end">
+                          <IconButton
+                            aria-label="toggle password visibility"
+                            onMouseDown={handleClickShowProxyPassword}
+                            onMouseUp={handleClickShowProxyPassword}
+                            edge="end"
+                          >
+                            {showProxyPassword ? (
+                              <VisibilityOff />
+                            ) : (
+                              <Visibility />
+                            )}
+                          </IconButton>
+                        </InputAdornment>
+                      }
+                      label="Password"
+                    />
+                  </FormControl>
+                  <Divider />
+                </>
+              )}
+            </>
+          )}
+          {(currentTab === 0 || currentTab === 1 || currentTab === 4) && (
+            <SaveButton />
+          )}
         </form>
       </Container>
     </ErrorCacher>
