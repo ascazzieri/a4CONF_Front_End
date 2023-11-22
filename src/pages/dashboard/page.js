@@ -148,15 +148,6 @@ export default function Dashboard() {
   const [fastDataAnchor, setFastDataAnchor] = useState(null);
   const [versionWarningAnchor, setVersionWarningAnchor] = useState(null);
 
-  if (system?.u2u?.firmware?.check === false) {
-    handleRequestFeedback({
-      vertical: "bottom",
-      horizontal: "right",
-      severity: "error",
-      message: `U2U firmare version is not compatible! Please contact a4GATE support`,
-    });
-  }
-
   const handleOpenKepware = (event) => {
     setKepwareAnchor(event.currentTarget);
   };
@@ -191,6 +182,14 @@ export default function Dashboard() {
         const a4monitorStatus = await monitor_a4monitor_status();
         const isBReady = await is_B_ready();
         const checkBidir = await check_bidir();
+        if (system?.u2u?.firmware?.check === false) {
+          handleRequestFeedback({
+            vertical: "bottom",
+            horizontal: "right",
+            severity: "error",
+            message: `U2U firmare version is not compatible! Please contact a4GATE support`,
+          });
+        }
         setDashboardStatus((prevState) => ({
           ...prevState,
           is_B_ready: isBReady,
@@ -331,7 +330,7 @@ export default function Dashboard() {
                         KepServer
                       </Button>
                     </Grid>
-                    <Grid item xs={6} sx={{ p: 1.5 }}>
+                    <Grid item xs={6} sx={{ p: 2 }}>
                       {plugins_status?.kepware?.server_runtime &&
                       plugins_status?.kepware?.server_iotgateway &&
                       plugins_status?.kepware?.config_api_service
@@ -543,7 +542,7 @@ export default function Dashboard() {
                       Fast Data
                     </Button>
                   </Grid>
-                  <Grid item xs={6} sx={{ p: 1.5 }}>
+                  <Grid item xs={6} sx={{ p: 2.5 }}>
                     {plugins_status?.fastdata?.running
                       ? goodStatus()
                       : badStatus()}

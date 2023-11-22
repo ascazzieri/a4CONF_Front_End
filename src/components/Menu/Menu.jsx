@@ -34,11 +34,9 @@ import { getQueuePending, togglePageSleep } from "../../utils/utils"
 import { SuperUserContext } from "../../utils/context/SuperUser"
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
-import { send_conf } from "../../utils/api";
+import { send_conf, is_B_ready } from "../../utils/api";
 import styled_normal from 'styled-components';
-import { TerafenceContext } from "../../utils/context/Terafence";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material"
-import { toFormData } from "axios";
 
 const drawerWidth = 240;
 
@@ -176,7 +174,6 @@ const ApplyChanges = () => {
   const config = useSelector((state) => state)
   const snackBarContext = React.useContext(SnackbarContext);
   const loadingContext = React.useContext(LoadingContext)
-  const terafenceServices = React.useContext(TerafenceContext)
   const [applyDialog, setApplyDialog] = React.useState(false)
 
   const handleRequestFeedback = (newState) => {
@@ -218,9 +215,9 @@ const ApplyChanges = () => {
     }
   }
 
-  const handleSendConf = () => {
-    const tfServicesStates = Object?.values(terafenceServices[0])
-    if (tfServicesStates?.every((status) => status === true)) {
+  const handleSendConf = async () => {
+    const isBReady = await is_B_ready();
+    if (isBReady?.ready) {
       applyChanges()
     } else {
       setApplyDialog(true)

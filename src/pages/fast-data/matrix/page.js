@@ -338,7 +338,7 @@ export default function Matrix() {
           )}
           {currentTab === 1 && (
             <>
-              <FormLabel>Kepware IoT Gateways list for Thingworx</FormLabel>
+              <FormLabel>Kepware IoT Gateways list for Fast Data Matrix</FormLabel>
               <Divider />
               <Button
                 onClick={handleReloadAllIotGateway}
@@ -358,7 +358,7 @@ export default function Matrix() {
                   padding: "5px 20px",
                 }}
               >
-                <h3>Enable/Disable IoT Gateways for Thingworx</h3>
+                <h3>Enable/Disable IoT Gateways for Fast Data Matrix</h3>
 
                 <Divider />
                 <Grid
