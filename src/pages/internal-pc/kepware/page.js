@@ -6,6 +6,9 @@ import BackButton from "../../../components/BackButton/BackButton";
 import SaveButton from "../../../components/SaveButton/SaveButton";
 import CreateComplexArray from "../../../components/MultipleTagsToArrayComponent/CreateComplexArray";
 import AddCAToIoTGateway from "../../../components/MultipleTagsToArrayComponent/AddCAToIoTGateway";
+import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
+import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
+import QuestionMarkOutlinedIcon from "@mui/icons-material/QuestionMarkOutlined";
 import {
   loadChannels,
   createiotgw,
@@ -1014,6 +1017,18 @@ export default function Kepware() {
         "Advanced Operations",
       ];
 
+  const goodStatus = () => {
+    return (
+      <CheckCircleOutlineOutlinedIcon sx={{ color: "green", fontSize: 20 }} />
+    );
+  };
+  const badStatus = () => {
+    return <DangerousOutlinedIcon sx={{ color: "red", fontSize: 21 }} />;
+  };
+  const unknownStatus = () => {
+    return <QuestionMarkOutlinedIcon sx={{ color: "yellow", fontSize: 21 }} />;
+  };
+
   const [machineSerial, setMachineSerial] = useState();
 
   const [count, setCount] = useState(0);
@@ -1578,7 +1593,7 @@ export default function Kepware() {
             <>
               <Box sx={{ flexGrow: 1 }}>
                 <FormLabel title={kepware_device_desc}>
-                  Kepware channels info:
+                  Kepware machines connected info:
                 </FormLabel>
 
                 <Box component="main" sx={{ p: 3 }}>
@@ -1589,7 +1604,7 @@ export default function Kepware() {
                     sx={{ flexGrow: 1 }}
                     title={kepware_device_desc}
                   >
-                    Devices
+                    Kepware Channels
                   </Typography>
                   <List
                     sx={{
@@ -1633,6 +1648,7 @@ export default function Kepware() {
                                 deviceInside.length !== 0 &&
                                 deviceInside.map((insideItem, insideIndex) => {
                                   const deviceName = insideItem?.device;
+                                  const deviceStatus = insideItem?.connected;
                                   return (
                                     <Fragment key={Math.random()}>
                                       <ListItemButton
@@ -1665,6 +1681,24 @@ export default function Kepware() {
                                         unmountOnExit
                                       >
                                         <List component="div" disablePadding>
+                                          <ListItemButton sx={{ pl: 10 }}>
+                                            <ListItemIcon>
+                                              {deviceStatus === true
+                                                ? goodStatus()
+                                                : deviceStatus === false
+                                                ? badStatus()
+                                                : unknownStatus()}
+                                            </ListItemIcon>
+                                            <ListItemText
+                                              primary={`Status: ${
+                                                deviceStatus === true
+                                                  ? "connected"
+                                                  : deviceStatus === false
+                                                  ? "disconnected"
+                                                  : "unknown"
+                                              } `}
+                                            />
+                                          </ListItemButton>
                                           <ListItemButton sx={{ pl: 10 }}>
                                             <ListItemIcon>
                                               <BorderColorIcon />
