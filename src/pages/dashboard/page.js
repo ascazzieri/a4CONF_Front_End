@@ -5,6 +5,7 @@ import ErrorCacher from "../../components/Errors/ErrorCacher";
 import { LoadingContext } from "../../utils/context/Loading";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import DangerousOutlinedIcon from "@mui/icons-material/DangerousOutlined";
+import QuestionMarkOutlinedIcon from '@mui/icons-material/QuestionMarkOutlined';
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import {
   machines_connected,
@@ -141,6 +142,10 @@ export default function Dashboard() {
   const badStatus = () => {
     return <DangerousOutlinedIcon sx={{ color: "red", fontSize: 21 }} />;
   };
+  const unknownStatus = () => {
+    return <QuestionMarkOutlinedIcon sx={{ color: "yellow", fontSize: 21 }} />;
+  };
+
 
   const [count, setCount] = useState(0);
   const [isInDashboard, setIsInDashboard] = useState(false);
@@ -625,7 +630,7 @@ export default function Dashboard() {
                                   {`${item?.channel}.${item?.device}`}
                                 </TableCell>
                                 <TableCell align="center">
-                                  {item?.connected ? goodStatus() : badStatus()}
+                                  {item?.connected === true ? goodStatus() : (item?.connected === false ? badStatus() : unknownStatus())}
                                 </TableCell>
                               </TableRow>
                             );
