@@ -456,6 +456,17 @@ export const uploadKepwareProject = async (file) => {
     helper.togglePageSleep("release");
   }
 };
+export const uploadKepwareDefaultProject = async () => {
+  try {
+    helper.togglePageSleep("block");
+    const res = await helper.fetchData("/kepware/upload/default", "GET");
+    return res;
+  } catch (e) {
+    console.error(e);
+  } finally {
+    helper.togglePageSleep("release");
+  }
+};
 export const downloadKepwareProject = async () => {
   try {
     helper.togglePageSleep("block");

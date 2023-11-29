@@ -15,6 +15,7 @@ import {
   machines_connected,
   downloadKepwareProject,
   uploadKepwareProject,
+  uploadKepwareDefaultProject,
   reload_kepware,
   get_device_tags,
 } from "../../../utils/api";
@@ -51,6 +52,11 @@ import {
   ListItemIcon,
   ListItemButton,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  DialogContentText,
 } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import FormLabel from "@mui/material/FormLabel";
@@ -998,6 +1004,11 @@ export default function Kepware() {
   const [memoryBasedList, setMemoryBasedList] = useState({});
   const [expandedListChannels, setExpandedListChannels] = useState([]);
   const [expandedListDevices, setExpandedListDevices] = useState([]);
+  const [kepwareDefaultProjectDialogOpen, setKepwareDefaultProjectDialogOpen] =
+    useState();
+  const [kepwareDefaultProjectResponse, setKepwareDefaultProjectResponse] =
+    useState();
+
   const navbarItems = superUser
     ? [
         "Local Things",
@@ -1270,6 +1281,41 @@ export default function Kepware() {
     }
   };
 
+  const handleDownloadKepwareDefaultProject = async () => {
+    try {
+      loaderContext[1](true);
+      const response = await uploadKepwareDefaultProject();
+      if (response && response[0] == true) {
+        setKepwareDefaultProjectDialogOpen(true);
+        setKepwareDefaultProjectResponse(response);
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "success",
+          message: `Kepware project saved successfully`,
+        });
+      } else {
+        handleRequestFeedback({
+          vertical: "bottom",
+          horizontal: "right",
+          severity: "error",
+          message: `An error occurred during Kepware default project uploading`,
+        });
+      }
+    } catch (e) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `An error occurred during Kepware default project uploading`,
+      });
+    } finally {
+      if (getQueuePending() === 0) {
+        loaderContext[1](false);
+      }
+    }
+  };
+
   const handleReloadKepwareRuntime = async () => {
     try {
       loaderContext[1](true);
@@ -1397,6 +1443,38 @@ export default function Kepware() {
     : [];
   return (
     <ErrorCacher>
+      <Dialog
+        open={kepwareDefaultProjectDialogOpen}
+        onClose={() => {
+          setKepwareDefaultProjectDialogOpen(false);
+          setKepwareDefaultProjectResponse();
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Kepware default project has been loaded successfully
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {kepwareDefaultProjectResponse &&
+            kepwareDefaultProjectResponse[1] === true
+              ? `Your previous Kepware project in runtime has been saved correctly. You can find it inside '${kepwareDefaultProjectResponse[2]}' folder on your Desktop with filename: '${kepwareDefaultProjectResponse[3]}'`
+              : `Unfortunately something wrong happen during saving process of your previously project in runtime and it may have been lost`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            onClick={() => {
+              setKepwareDefaultProjectDialogOpen(false);
+              setKepwareDefaultProjectResponse();
+            }}
+          >
+            Ok
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Container>
         <BackButton pageTitle="Kepware" />
         <SecondaryNavbar
@@ -1549,6 +1627,12 @@ export default function Kepware() {
                     onClick={handleDownloadKepwareProject}
                   >
                     Download
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleDownloadKepwareDefaultProject}
+                  >
+                    Load default project
                   </Button>
                 </Stack>
               </FormControl>
