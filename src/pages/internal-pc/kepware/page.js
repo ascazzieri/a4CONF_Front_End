@@ -1459,7 +1459,7 @@ export default function Kepware() {
           <DialogContentText id="alert-dialog-description">
             {kepwareDefaultProjectResponse &&
             kepwareDefaultProjectResponse[1] === true
-              ? `Your previous Kepware project in runtime has been saved correctly. You can find it inside '${kepwareDefaultProjectResponse[2]}' folder on your Desktop with filename: '${kepwareDefaultProjectResponse[3]}'`
+              ? `Your previous Kepware project in runtime has been saved correctly. You can find it inside '${kepwareDefaultProjectResponse[2]}' folder on Data Collector Desktop with filename: '${kepwareDefaultProjectResponse[3]}'`
               : `Unfortunately something wrong happen during saving process of your previously project in runtime and it may have been lost`}
           </DialogContentText>
         </DialogContent>
