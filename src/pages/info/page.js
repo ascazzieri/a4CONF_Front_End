@@ -9,10 +9,15 @@ import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
 
 export default function Info() {
   const a4gateHelp = [
+    "Dashboard Guide",
     "Change a4GATE Hostname",
     "Connect to machine network",
     "Connect to plant network",
-    "Dashboard Guide",
+    "Add a Static Route",
+    "Use NTP custom server",
+    "Test connection",
+    "Create OPCUA IoT Gateway",
+    "FTP Server configuration"
   ];
   const [currentTab, setCurrentTab] = useState(0);
 
@@ -46,9 +51,9 @@ export default function Info() {
                     borderRadius: 10,
                   }}
                 >
-                  {currentTab === 0 && (
+                   {currentTab === 0 && (
                     <iframe
-                      src="/img/info/change-hostname.html"
+                      src="/img/info/dashboard-guide.html"
                       height="500px"
                       width="900px"
                       allowFullScreen
@@ -58,6 +63,16 @@ export default function Info() {
                   )}
                   {currentTab === 1 && (
                     <iframe
+                      src="/img/info/change-hostname.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to change hostname"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 2 && (
+                    <iframe
                       src="/img/info/connect-to-machine-network.html"
                       height="500px"
                       width="900px"
@@ -66,13 +81,63 @@ export default function Info() {
                       style={{ overflowY: "scroll" }}
                     ></iframe>
                   )}
-                  {currentTab === 2 && (
+                  {currentTab === 3 && (
                     <iframe
                       src="/img/info/connect-to-plant-network.html"
                       height="500px"
                       width="900px"
                       allowFullScreen
                       title="How to connect to machine network"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 4 && (
+                    <iframe
+                      src="/img/info/add-static-route.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to Add a Static Route"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 5 && (
+                    <iframe
+                      src="/img/info/ntp-settings.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to use NTP custom server"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 6 && (
+                    <iframe
+                      src="/img/info/test-connection.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to do Test connection"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                  {currentTab === 7 && (
+                    <iframe
+                      src="/img/info/create-opcua-gateway.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to create an OPCUA IoT Gateway"
+                      style={{ overflowY: "scroll" }}
+                    ></iframe>
+                  )}
+                   {currentTab === 8 && (
+                    <iframe
+                      src="/img/info/ftp-server.html"
+                      height="500px"
+                      width="900px"
+                      allowFullScreen
+                      title="How to create an OPCUA IoT Gateway"
                       style={{ overflowY: "scroll" }}
                     ></iframe>
                   )}
