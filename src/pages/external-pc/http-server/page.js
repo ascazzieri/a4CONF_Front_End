@@ -625,7 +625,7 @@ export default function HTTPServer() {
               </Stack>
 
               <FormLabel title={http_remote_things_desc}>
-                IoT gateways exposed for HTTP server
+                IoT Gateway exposed in read only mode
               </FormLabel>
 
               <CustomTable
@@ -679,7 +679,7 @@ export default function HTTPServer() {
               </Stack>
 
               <FormLabel title={http_remote_things_desc}>
-                Remote Things configuration
+                IoT Gateway exposed in read and write mode
               </FormLabel>
 
               <CustomTable
@@ -687,7 +687,7 @@ export default function HTTPServer() {
                 setTableData={setIotGatewaysToTableData}
                 columnsData={iotGatewaysColumnData}
                 validationObject={iotGatewaysValidation}
-                staticValue = "read & write"
+                staticValue="read & write"
               />
 
               <Divider />

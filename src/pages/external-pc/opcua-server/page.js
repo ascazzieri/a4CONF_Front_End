@@ -702,7 +702,7 @@ export default function OPCServer() {
               </Stack>
 
               <FormLabel title={opcua_rt_configuration}>
-                IoT Gateway read mode exposed
+                IoT Gateway exposed in read only mode
               </FormLabel>
 
               <CustomTable
@@ -755,7 +755,7 @@ export default function OPCServer() {
               </Stack>
 
               <FormLabel title={opcua_rt_configuration}>
-                IoT Gateway read and write mode exposed
+              IoT Gateway exposed in read and write mode
               </FormLabel>
 
               <CustomTable
