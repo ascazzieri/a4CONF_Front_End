@@ -25,7 +25,8 @@ export const CreateNewAccountModal = ({
   onSubmit,
   selectableObjectData,
   validationFields,
-  validationAgents
+  validationAgents,
+  staticValue,
 }) => {
   const [values, setValues] = useState(() =>
     columns?.reduce((acc, column) => {
@@ -39,7 +40,7 @@ export const CreateNewAccountModal = ({
   };
 
   const handleSubmit = () => {
-    let validationResult = true
+    let validationResult = true;
 
     if (!values) {
       handleRequestFeedback({
@@ -48,14 +49,14 @@ export const CreateNewAccountModal = ({
         severity: "error",
         message: `Unable to perform actions on null data`,
       });
-      return
+      return;
     }
-    let validationIterator = []
+    let validationIterator = [];
     validationFields?.forEach((item) => {
       if (Object.keys(values)?.some((accessorKey) => accessorKey === item)) {
-        validationIterator?.push(values[item])
+        validationIterator?.push(values[item]);
       }
-    })
+    });
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item?.trim())) {
         handleRequestFeedback({
@@ -64,17 +65,14 @@ export const CreateNewAccountModal = ({
           severity: "error",
           message: `Error on ${item}, it doeas not satisfy the requested parameters`,
         });
-        validationResult = false
+        validationResult = false;
       }
-    })
+    });
     if (validationResult) {
-
       onSubmit(values);
-      setValues()
+      setValues();
       onClose();
     }
-
-
   };
   let MenuItemIterator = [];
   if (
@@ -88,7 +86,9 @@ export const CreateNewAccountModal = ({
     selectableObjectData &&
     selectableObjectData?.internal_key === undefined
   ) {
-    selectableObjectData?.data?.map((item, index) => MenuItemIterator?.push(item));
+    selectableObjectData?.data?.map((item, index) =>
+      MenuItemIterator?.push(item)
+    );
   }
 
   return (
@@ -107,7 +107,9 @@ export const CreateNewAccountModal = ({
 
               if (
                 selectableObjectData?.enabled &&
-                selectableObjectData?.accessorKey?.some((item) => item === column?.accessorKey)
+                selectableObjectData?.accessorKey?.some(
+                  (item) => item === column?.accessorKey
+                )
               ) {
                 return (
                   <Fragment key={Math.random()}>
@@ -117,10 +119,11 @@ export const CreateNewAccountModal = ({
                       key={index}
                       sx={{ minWidth: 400 }}
                       defaultValue={
-                        (values && values[column.accessorKey])
+                        values && values[column.accessorKey]
                           ? values[column.accessorKey]
                           : ""
-                      } onChange={(e, newValue) => {
+                      }
+                      onChange={(e, newValue) => {
                         setValues({
                           ...values,
                           [column.accessorKey]: newValue,
@@ -131,36 +134,41 @@ export const CreateNewAccountModal = ({
                           ...values,
                           [column.accessorKey]: event?.target?.value,
                         });
-
-                      }
-                      }
+                      }}
                       options={MenuItemIterator}
                       renderInput={(params) => (
                         <TextField {...params} label={column?.header} />
-                      )} />
+                      )}
+                    />
                     <Divider />
                   </Fragment>
-
-
                 );
               } else {
-                return (<Fragment key={Math.random()}>
-                  <TextField
-                    key={index}
-                    label={column?.header}
-                    name={column?.accessorKey}
-                    type={isPasswordColumn ? "password" : "text"}
-                    sx={{ minWidth: 400 }}
-                    defaultValue={values ? values[column?.accessorKey] : ""}
-                    onBlur={(e) => {
-                      setValues({
-                        ...values,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                  />
-                  <Divider />
-                </Fragment>
+                return (
+                  <Fragment key={Math.random()}>
+                    <TextField
+                      key={index}
+                      label={column?.header}
+                      name={column?.accessorKey}
+                      type={isPasswordColumn ? "password" : "text"}
+                      disabled={!column.enableEditing}
+                      sx={{ minWidth: 400 }}
+                      defaultValue={
+                        !column.enableEditing
+                          ? staticValue
+                          : values
+                          ? values[column?.accessorKey]
+                          : ""
+                      }
+                      onBlur={(e) => {
+                        setValues({
+                          ...values,
+                          [e.target.name]: e.target.value,
+                        });
+                      }}
+                    />
+                    <Divider />
+                  </Fragment>
                 );
               }
             })}
@@ -178,23 +186,30 @@ export const CreateNewAccountModal = ({
 };
 
 const Table = (props) => {
-  const { tableData, setTableData, columnsData, selectableObjectData, validationObject } = props;
+  const {
+    tableData,
+    setTableData,
+    columnsData,
+    selectableObjectData,
+    validationObject,
+    staticValue,
+  } = props;
 
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const validationFields = validationObject && Object.keys(validationObject)
-  const validationAgents = validationObject && Object.values(validationObject)
+  const validationFields = validationObject && Object.keys(validationObject);
+  const validationAgents = validationObject && Object.values(validationObject);
 
   const checkObject = (item, values) => {
-    const itemKeys = Object?.keys(values)
-    let result = false
+    const itemKeys = Object?.keys(values);
+    let result = false;
     if (itemKeys.every((element) => item[element] === values[element])) {
-      result = true
+      result = true;
     }
-    return result
-  }
+    return result;
+  };
 
   const handleCreateNewRow = (values) => {
-    const newTableData = tableData?.length !== 0 ? [...tableData] : []
+    const newTableData = tableData?.length !== 0 ? [...tableData] : [];
     if (newTableData?.some((item) => checkObject(item, values))) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -202,9 +217,15 @@ const Table = (props) => {
         severity: "error",
         message: `The row has not been added due to the existance of an exact copy inside previous data`,
       });
-      return
+      return;
     }
-    newTableData.push(values);
+    let updatedValues = values && values?.length !== 0 && { ...values };
+    columnsData?.forEach((columnItem) => {
+      if (columnItem?.enableEditing === false) {
+        updatedValues[columnItem.accessorKey] = staticValue
+      }
+    });
+    newTableData.push(updatedValues);
     setTableData(newTableData);
   };
   const snackBarContext = useContext(SnackbarContext);
@@ -212,7 +233,7 @@ const Table = (props) => {
     snackBarContext[1]({ ...newState, open: true });
   };
   const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-    let validationResult = true
+    let validationResult = true;
     if (!values) {
       handleRequestFeedback({
         vertical: "bottom",
@@ -220,14 +241,14 @@ const Table = (props) => {
         severity: "error",
         message: `Unable to perform actions on null data`,
       });
-      return
+      return;
     }
-    let validationIterator = []
+    let validationIterator = [];
     validationFields?.forEach((item) => {
       if (Object.keys(values).some((accessorKey) => accessorKey === item)) {
-        validationIterator?.push(values[item])
+        validationIterator?.push(values[item]);
       }
-    })
+    });
     validationIterator?.forEach((item, index) => {
       if (!validationAgents[index](item)) {
         handleRequestFeedback({
@@ -236,9 +257,9 @@ const Table = (props) => {
           severity: "error",
           message: `Error on ${item}, it doeas not satisfy the requested parameters`,
         });
-        validationResult = false
+        validationResult = false;
       }
-    })
+    });
     if (validationResult) {
       // Crea una copia dell'array
       const updatedTableData = tableData?.length !== 0 ? [...tableData] : [];
@@ -250,7 +271,7 @@ const Table = (props) => {
           severity: "error",
           message: `The row cannot be created due to the existance of an exact copy inside previous data`,
         });
-        return
+        return;
       }
       // Assegna il nuovo valore all'elemento specifico
       updatedTableData[row.index] = values;
@@ -260,18 +281,16 @@ const Table = (props) => {
       // Invia/receive le chiamate API qui, quindi refetch o aggiorna i dati della tabella locale per il re-render
       exitEditingMode(); // Richiesto per uscire dalla modalità di modifica e chiudere la modale di modifica */
     }
-
   };
-  const handleDeleteRow =
-    (row) => {
-      if (tableData?.length === 0) {
-        setTableData([])
-        return
-      }
-      const newData = [...tableData]
-      newData?.splice(row.index, 1);
-      setTableData(newData);
+  const handleDeleteRow = (row) => {
+    if (tableData?.length === 0) {
+      setTableData([]);
+      return;
     }
+    const newData = [...tableData];
+    newData?.splice(row.index, 1);
+    setTableData(newData);
+  };
   const csvOptions = {
     fieldSeparator: ",",
     quoteStrings: '"',
@@ -350,6 +369,7 @@ const Table = (props) => {
         selectableObjectData={selectableObjectData}
         validationFields={validationFields}
         validationAgents={validationAgents}
+        staticValue={staticValue}
       />
     </div>
   );

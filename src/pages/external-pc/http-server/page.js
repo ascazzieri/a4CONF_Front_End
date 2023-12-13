@@ -633,6 +633,7 @@ export default function HTTPServer() {
                 setTableData={setIotGatewaysFromTableData}
                 columnsData={iotGatewaysColumnData}
                 validationObject={iotGatewaysValidation}
+                staticValue="read only"
               />
 
               <Divider />
@@ -686,6 +687,7 @@ export default function HTTPServer() {
                 setTableData={setIotGatewaysToTableData}
                 columnsData={iotGatewaysColumnData}
                 validationObject={iotGatewaysValidation}
+                staticValue = "read & write"
               />
 
               <Divider />

@@ -710,6 +710,7 @@ export default function OPCServer() {
                 setTableData={setIotGatewaysFromTableData}
                 columnsData={iotGatewaysColumnData}
                 validationObject={iotGatewayValidation}
+                staticValue="read only"
               />
 
               <Divider />
@@ -762,6 +763,7 @@ export default function OPCServer() {
                 setTableData={setIotGatewaysToTableData}
                 columnsData={iotGatewaysColumnData}
                 validationObject={iotGatewayValidation}
+                staticValue="read & write"
               />
 
               <Divider />
