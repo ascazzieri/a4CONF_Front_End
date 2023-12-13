@@ -202,6 +202,16 @@ export default function ExternalNetwork() {
     setNATFeatures(customerNetwork?.nat);
     setMachineToInternet(customerNetwork?.machine_to_internet);
     setConnection(customerNetwork?.dhcp ? "dhcp" : "static");
+
+    if (customerNetwork?.dhcp && customerNetwork?.static?.ip?.length === 0) {
+      handleRequestFeedback({
+        vertical: "bottom",
+        horizontal: "right",
+        severity: "error",
+        message: `Unable to acquire ip address for data sender `,
+      });
+    }
+    
     setConnectionType(customerNetwork?.if_wan_medium || "ethernet");
     setSsid(
       customerNetwork?.wireless &&
@@ -336,14 +346,6 @@ export default function ExternalNetwork() {
       loaderContext[1](false);
     }
   };
-  if (customerNetwork?.dhcp && customerNetwork?.static?.ip?.length === 0) {
-    handleRequestFeedback({
-      vertical: "bottom",
-      horizontal: "right",
-      severity: "error",
-      message: `Unable to acquire ip address for data sender `,
-    });
-  }
 
   const handleAddHostList = () => {
     const newHost = currentHost ? currentHost : undefined;
