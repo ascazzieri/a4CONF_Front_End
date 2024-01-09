@@ -105,8 +105,10 @@ export default function Login(props) {
       });
     }
   };
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
     try {
+      e.preventDefault();
+      loadingContext[1](true);
       if (username.trim() !== "" && password.trim() !== "") {
         try {
           const res = await send_login({
@@ -231,71 +233,73 @@ export default function Login(props) {
           >
             <Box>
               <h2 style={{ textAlign: "center" }}>Login</h2>
-              <FormControl fullWidth>
-                <TextField
-                  label="Username"
-                  value={username}
-                  onChange={handleUsernameChange}
-                  style={{ margin: 0, padding: 0 }}
-                />
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="outlined-adornment-password">
-                  Password
-                </InputLabel>
-                <OutlinedInput
-                  id="outlined-adornment-password"
-                  type={showPassword ? "text" : "password"}
-                  value={password || ""}
-                  onChange={handlePasswordChange}
-                  endAdornment={
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onMouseDown={handleClickShowPassword}
-                        onMouseUp={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  }
-                  label="Password"
-                />
-              </FormControl>
-              <Stack
-                direction="row"
-                spacing={2}
-                justifyContent="flex-end"
-                alignItems="center"
-                style={{ width: "100%" }}
-              >
-                {elevation ? (
-                  <>
-                    <Stack direction="row" spacing={4} alignItems="center">
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        startIcon={<ArrowBackIos />}
-                        onClick={() => {
-                          navigate("/");
-                        }}
-                      >
-                        Back
-                      </Button>
-                      <Button variant="contained" onClick={handleLogin}>
+              <form onSubmit={handleLogin}>
+                <FormControl fullWidth>
+                  <TextField
+                    label="Username"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    style={{ margin: 0, padding: 0 }}
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel htmlFor="outlined-adornment-password">
+                    Password
+                  </InputLabel>
+                  <OutlinedInput
+                    id="outlined-adornment-password"
+                    type={showPassword ? "text" : "password"}
+                    value={password || ""}
+                    onChange={handlePasswordChange}
+                    endAdornment={
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onMouseDown={handleClickShowPassword}
+                          onMouseUp={handleClickShowPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    }
+                    label="Password"
+                  />
+                </FormControl>
+                <Stack
+                  direction="row"
+                  spacing={2}
+                  justifyContent="flex-end"
+                  alignItems="center"
+                  style={{ width: "100%" }}
+                >
+                  {elevation ? (
+                    <>
+                      <Stack direction="row" spacing={4} alignItems="center">
+                        <Button
+                          variant="outlined"
+                          color="secondary"
+                          startIcon={<ArrowBackIos />}
+                          onClick={() => {
+                            navigate("/");
+                          }}
+                        >
+                          Back
+                        </Button>
+                        <Button variant="contained" type="submit">
+                          Login
+                        </Button>
+                      </Stack>
+                    </>
+                  ) : (
+                    <FormControl fullWidth>
+                      <Button variant="contained" type="submit">
                         Login
                       </Button>
-                    </Stack>
-                  </>
-                ) : (
-                  <FormControl fullWidth>
-                    <Button variant="contained" onClick={handleLogin}>
-                      Login
-                    </Button>
-                  </FormControl>
-                )}
-              </Stack>
+                    </FormControl>
+                  )}
+                </Stack>
+              </form>
             </Box>
           </Grid>
         </Grid>

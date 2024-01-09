@@ -98,7 +98,6 @@ export default function Archive() {
   };
 
   const handleClear = () => {
-    setTitle("");
     setContent("");
   };
 
