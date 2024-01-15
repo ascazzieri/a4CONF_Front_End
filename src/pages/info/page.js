@@ -1,11 +1,9 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Container, Card, Divider, CardContent } from "@mui/material";
 import ErrorCacher from "../../components/Errors/ErrorCacher";
-import BackButton from "../../components/BackButton/BackButton";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import SecondaryNavbar from "../../components/SecondaryNavbar/SecondaryNavbar";
+import { SuperUserContext } from "../../utils/context/SuperUser";
 
 export default function Info() {
   const a4gateHelp = [
@@ -14,7 +12,15 @@ export default function Info() {
     "Connect to plant network",
     "Dashboard Guide",
   ];
+  const adminHelp = [
+    "AGGIUNGERE QUI TUTTI I TITOLI DELLE TAB VISIBILI SOLO PER ADMIN",
+  ];
+
   const [currentTab, setCurrentTab] = useState(0);
+
+  const [currentAdminTab, setCurrentAdminTab] = useState(0);
+
+  const superUser = useContext(SuperUserContext);
 
   return (
     <ErrorCacher>
@@ -77,6 +83,31 @@ export default function Info() {
                     ></iframe>
                   )}
                 </div>
+                <h3 style={{ fontWeight: 800, fontSize: 20 }}>Admin section</h3>
+
+                {superUser[0] && (
+                  <>
+                    <SecondaryNavbar
+                      currentTab={currentAdminTab}
+                      setCurrentTab={setCurrentAdminTab}
+                      navbarItems={adminHelp}
+                    />
+                    <div
+                      style={{
+                        backgroundColor: "white",
+                        display: "flex",
+                        justifyContent: "center",
+                        borderRadius: 10,
+                      }}
+                    >
+                      {currentAdminTab === 0 && (
+                        <h1>
+                          "INSERIRE QUA DENTRO GLI IFRAME CON DENTRO I PDF"
+                        </h1>
+                      )}
+                    </div>
+                  </>
+                )}
               </Container>
             </Box>
           </CardContent>
