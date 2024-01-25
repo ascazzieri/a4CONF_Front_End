@@ -123,7 +123,8 @@ export default function InternalNetwork() {
       return;
     }
     if (
-      (superUser && !verifyIPCIDR(currentScanException)) ||
+      superUser &&
+      !verifyIPCIDR(currentScanException) ||
       !verifyIPnotbroadcast(currentScanException)
     ) {
       handleRequestFeedback({

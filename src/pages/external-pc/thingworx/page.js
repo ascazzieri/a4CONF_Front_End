@@ -100,7 +100,7 @@ export default function Thingworx() {
     ? [
         "Connection",
         "Remote Things",
-        "Manage Iot Gateways",
+        "Manage IoT Gateways",
         "Agent Logs",
         "Proxy settings",
         "JSON",
@@ -108,7 +108,7 @@ export default function Thingworx() {
     : [
         "Connection",
         "Remote Things",
-        "Manage Iot Gateways",
+        "Manage IoT Gateways",
         "Agent Logs",
         "Proxy settings",
       ];

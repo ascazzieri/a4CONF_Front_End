@@ -71,14 +71,14 @@ export default function HTTPServer() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
-        "Expose Iot Gateway",
-        "Manage Iot Gateways",
+        "Expose IoT Gateway",
+        "Manage IoT Gateways",
         "Host",
         "Port",
         "Security",
         "JSON",
       ]
-    : ["Expose Iot Gateway", "Manage Iot Gateways", "Host", "Port", "Security"];
+    : ["Expose IoT Gateway", "Manage IoT Gateways", "Host", "Port", "Security"];
 
   const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];

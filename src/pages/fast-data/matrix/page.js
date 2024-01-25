@@ -47,8 +47,8 @@ export default function Matrix() {
   const superUser = useContext(SuperUserContext)[0];
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
-    ? ["Matrix management", "Manage Iot Gateways", "JSON"]
-    : ["Matrix management", "Manage Iot Gateways"];
+    ? ["Matrix management", "Manage IoT Gateways", "JSON"]
+    : ["Matrix management", "Manage IoT Gateways"];
 
   const [matrixDataManagement, setMatrixDataManagement] = useState(
     customer?.matrix_data_managment || []
@@ -105,9 +105,10 @@ export default function Matrix() {
           message: `An error occurred while trying to load Kepware Iot gateways for matrix`,
         });
       } finally {
-        if (getQueuePending === 0) {
-          loaderContext[1](false);
-        }
+          if (getQueuePending() === 0) {
+            loaderContext[1](false);
+          }
+        
       }
     })();
   }, []);
@@ -146,7 +147,7 @@ export default function Matrix() {
         message: `An error occurred while trying to load Kepware Iot gateways for matrix`,
       });
     } finally {
-      if (getQueuePending === 0) {
+      if (getQueuePending() === 0) {
         loaderContext[1](false);
       }
     }
@@ -338,7 +339,9 @@ export default function Matrix() {
           )}
           {currentTab === 1 && (
             <>
-              <FormLabel>Kepware IoT Gateways list for Fast Data Matrix</FormLabel>
+              <FormLabel>
+                Kepware IoT Gateways list for Fast Data Matrix
+              </FormLabel>
               <Divider />
               <Button
                 onClick={handleReloadAllIotGateway}

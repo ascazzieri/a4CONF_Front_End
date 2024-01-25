@@ -177,8 +177,8 @@ export const getArrayOfObjects = (data, key1, key2) => {
 const queue = new PQueue({ concurrency: 5 });
 
 export const getQueuePending = () => {
-  return queue?.pending
-}
+  return queue?.pending;
+};
 axiosRetry(axios, { retries: 5, retryDelay: axiosRetry.exponentialDelay });
 
 export async function fetchData(url, method, body, noToken) {
@@ -321,45 +321,6 @@ export const confToHTML = (conf) => {
 
   return conf;
 };
-export const validate_input = () => {
-  /*
-    *
-    *lista delle validazioni da fare:
--controlla che non ci siano duplicati all'interno di array
--verifica dell'ip attraverso verifyIPCIDR() e verifyIPnotbroadcast(), inoltre assicurati che non ci siano duplicati, in tal caso rimuovili
--fai la stessa verifica anche per le rotte => check se il gateway inserito per una rotta fa parte della subnet corrispondente; check se per la subnet inserita nelle rotte si ha almeno un IP sulla scheda di rete del pc A appartenente a quella rete
--verifyIPCIDR sull'indirizzo delle networkscan
--verifyIPCIDR e verifyIPnotbroadcast anche sugli ip del PCB
--verifyIP sui dns e sui default gateway del PCB
--per tutti gli ip inseriti, verificare se almeno uno degli ip è nella stessa subnet del gateway
--verifyIP sull' ntp server
--gli alias del firewall non devono essere vuoti e non devono essere dei numeri. I vaori degli alias possono essere: an empty string (accepted here, then ignored by a4firewall)
-          //  a port number, so a number between 1 and 65535 (if that, parseInt is used to avoid floats) => isPortNumber()
-          //  an IP address => verifyIP()
-          //  a network in CIDR notation => verifyIPCIDR()
--tcp input table: EXTERNAL_tcp_PORT
-          // port (or alias for port) must be an integer between 1 and 65535 => isPortNumber()
-          // could be an alias controlla se la stringa inserita è presente negli alias
-          SOURCE
-          //potrebbe essere un ip in CIDR notation => verifyIPCIDR()
-          //potrebbe essere a sua volta un alias, nel caso in cui è un alias controlla che l'alias sia un ip in CIDR notation => verifyIPCIDR()
--forward tcp table:
-        //controlla che solamente externak IP ( o è vuoto oppure verifyIP()) e destination port ( o è vuoto oppure isPortNumber()) possono essere vuoti, gli altri no
-        //IP_DIST => verifyIP() potrebbe anche essere un alias, in tal caso fai lo stesso controllo su di esso
-        //PORT_DIST => isPortNumber() potrebbe essere un alias, in tal caso fai lo stesso controllo su di esso
-        //Source => verifyIPCIDR() potrebbe essere un alias, in tal caso fai lo stesso controllo su di esso
--sitemanager:
-        //domain e server non possono essere vuoti
-        //se name as hostname è false, il name di sitemanager diventa required
--thingworx:
-        //host ed appkey devono essere required?
-        //iotgateway e things non devono essere vuoti
--opcua:
-        //se la custom port è abilitata constrolla che non sia vuota e che sia un numero
-        //se l'autenticazione è abilitata, controlla che users e password non siano ""
-
-    */
-};
 export const confToJSON = () => {
   //funzione per fare il download del JSON di configurazione
 };
@@ -394,6 +355,10 @@ export const verifyIPCIDR = (text) => {
   try {
     const input = text.trim().split("/");
     if (input.length !== 2) return false;
+    const subnetNumber = Number(input[1]);
+    if (!subnetNumber) {
+      return false;
+    }
     if (input[1] < 0 || input[1] > 32) return false;
     return verifyIP(input[0]);
   } catch (e) {

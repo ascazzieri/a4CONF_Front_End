@@ -72,8 +72,8 @@ export default function OPCServer() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
-        "Expose Iot Gateway",
-        "Manage Iot Gateways",
+        "Expose IoT Gateway",
+        "Manage IoT Gateways",
         "Shift nodes",
         "Host",
         "Port",
@@ -81,8 +81,8 @@ export default function OPCServer() {
         "JSON",
       ]
     : [
-        "Expose Iot Gateway",
-        "Manage Iot Gateways",
+        "Expose IoT Gateway",
+        "Manage IoT Gateways",
         "Shift nodes",
         "Host",
         "Port",

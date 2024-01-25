@@ -130,7 +130,7 @@ export default function ServiceHandler() {
   };
   return (<>
     <FormControl>
-      <Typography title={service_command_desc}>{serviceName && serviceName.charAt(0).toUpperCase() + serviceName.slice(1)} service commands:</Typography>
+      <Typography title={service_command_desc}>{serviceName && serviceName?.charAt(0)?.toUpperCase() + serviceName?.slice(1)?.replace("-", " ")?.replace("pcua", "PCUA")?.replace("ttp", "TTP")?.replace("tp", "TP")} service commands:</Typography>
       <RadioGroup
         row
         name="position"

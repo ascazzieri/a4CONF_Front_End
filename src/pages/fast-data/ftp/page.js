@@ -26,9 +26,7 @@ import {
 } from "@mui/material";
 import {
   ftp_blob_table_desc,
-  ftp_connection_ftp,
   ftp_connection_ftp_desc,
-  ftp_connection_ip,
   ftp_connection_ip_desc,
   ftp_custom_port_desc,
   ftp_ipaddress_desc,
@@ -356,7 +354,7 @@ export default function FTP() {
 
               <FormControl fullWidth>
                 <FormLabel title={ftp_connection_ftp_desc}>
-                  Maximum number of connection to ftp server:
+                  Maximum number of connection to FTP server:
                 </FormLabel>
 
                 <TextField
@@ -377,7 +375,7 @@ export default function FTP() {
 
               <FormControl fullWidth>
                 <FormLabel title={ftp_connection_ip_desc}>
-                  Maximum number of connection to ftp server from the same IP
+                  Maximum number of connection to FTP server from the same IP
                   address:
                 </FormLabel>
 
