@@ -275,7 +275,7 @@ export default function MiniDrawer(props) {
   const { children } = props;
   const superUser = useContext(SuperUserContext)[0]
 
-  const secondaryMenuList = superUser ? ["Info", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Info", "User-Settings"]
+  const secondaryMenuList = superUser ? ["Help", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Help", "User-Settings"]
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();

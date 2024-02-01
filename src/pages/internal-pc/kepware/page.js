@@ -1025,7 +1025,6 @@ export default function Kepware() {
         "Kepware configuration",
         "License",
         "Machines Configured",
-        "Advanced Operations",
       ];
 
   const goodStatus = () => {

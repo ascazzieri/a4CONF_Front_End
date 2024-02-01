@@ -50,6 +50,7 @@ export default function Info() {
                 bgcolor: "background.paper",
                 display: "flex",
                 pb: 2,
+                minHeight:'80vh'
               }}
             >
               <Container>
@@ -72,8 +73,8 @@ export default function Info() {
                   {currentTab === 0 && (
                     <iframe
                       src="/img/info/DashboardGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Dashboard Guide"
                       style={{ overflowY: "scroll" }}
@@ -82,8 +83,8 @@ export default function Info() {
                   {currentTab === 1 && (
                     <iframe
                       src="/img/info/UpdateHostname.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Update Hostname"
                       style={{ overflowY: "scroll" }}
@@ -92,8 +93,8 @@ export default function Info() {
                   {currentTab === 2 && (
                     <iframe
                       src="/img/info/DataCollectorNetworkGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Data Collector Network Guide"
                       style={{ overflowY: "scroll" }}
@@ -102,8 +103,8 @@ export default function Info() {
                   {currentTab === 3 && (
                     <iframe
                       src="/img/info/KepwareGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Kepware Guide"
                       style={{ overflowY: "scroll" }}
@@ -112,8 +113,8 @@ export default function Info() {
                   {currentTab === 4 && (
                     <iframe
                       src="/img/info/CreateThingworxIoTGateway.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Create Thingworx IoT Gateway"
                       style={{ overflowY: "scroll" }}
@@ -122,8 +123,8 @@ export default function Info() {
                   {currentTab === 5 && (
                     <iframe
                       src="/img/info/CreateOPCUAIoTGateway.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Create OPCUA IoT Gateway"
                       style={{ overflowY: "scroll" }}
@@ -132,8 +133,8 @@ export default function Info() {
                   {currentTab === 6 && (
                     <iframe
                       src="/img/info/CreateHTTPIoTGateway.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Create HTTP IoT Gateway"
                       style={{ overflowY: "scroll" }}
@@ -142,8 +143,8 @@ export default function Info() {
                   {currentTab === 7 && (
                     <iframe
                       src="/img/info/CreateMatrixIoTGateway.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Create Matrix IoT Gateway"
                       style={{ overflowY: "scroll" }}
@@ -152,8 +153,8 @@ export default function Info() {
                   {currentTab === 8 && (
                     <iframe
                       src="/img/info/DataSenderNetworkGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Data Sender Network Guide"
                       style={{ overflowY: "scroll" }}
@@ -162,8 +163,8 @@ export default function Info() {
                   {currentTab === 9 && (
                     <iframe
                       src="/img/info/SitemanagerGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Sitemanager Guide"
                       style={{ overflowY: "scroll" }}
@@ -172,8 +173,8 @@ export default function Info() {
                   {currentTab === 10 && (
                     <iframe
                       src="/img/info/ThingworxGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Thingworx Guide"
                       style={{ overflowY: "scroll" }}
@@ -182,8 +183,8 @@ export default function Info() {
                   {currentTab === 11 && (
                     <iframe
                       src="/img/info/HTTPServerGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="HTTP Server Guide"
                       style={{ overflowY: "scroll" }}
@@ -192,8 +193,8 @@ export default function Info() {
                   {currentTab === 12 && (
                     <iframe
                       src="/img/info/OPCUADataSenderGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="OPCUA Server Guide"
                       style={{ overflowY: "scroll" }}
@@ -202,8 +203,8 @@ export default function Info() {
                   {currentTab === 13 && (
                     <iframe
                       src="/img/info/Fast-DataFTPGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="FTP Guide"
                       style={{ overflowY: "scroll" }}
@@ -212,8 +213,8 @@ export default function Info() {
                   {currentTab === 14 && (
                     <iframe
                       src="/img/info/Fast-DataHTTPGuide.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="Fast-Data HTTP Guide"
                       style={{ overflowY: "scroll" }}
@@ -222,8 +223,8 @@ export default function Info() {
                   {currentTab === 15 && (
                     <iframe
                       src="/img/info/'...'functions.html"
-                      height="500px"
-                      width="900px"
+                      height="700px"
+                      width="1000px"
                       allowFullScreen
                       title="'...' functions"
                       style={{ overflowY: "scroll" }}
@@ -251,8 +252,8 @@ export default function Info() {
                       {currentAdminTab === 0 && (
                         <iframe
                           src="/img/info/MatrixGuide.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Matrix Guide"
                           style={{ overflowY: "scroll" }}
@@ -261,8 +262,8 @@ export default function Info() {
                       {currentAdminTab === 1 && (
                         <iframe
                           src="/img/info/AdvancedGuide.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Advanced Guide"
                           style={{ overflowY: "scroll" }}
@@ -271,8 +272,8 @@ export default function Info() {
                        {currentAdminTab === 2 && (
                         <iframe
                           src="/img/info/ManageUsers.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Manage Users"
                           style={{ overflowY: "scroll" }}
@@ -281,8 +282,8 @@ export default function Info() {
                        {currentAdminTab === 3 && (
                         <iframe
                           src="/img/info/Back-ChannelGuide.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Back-Channel Guide"
                           style={{ overflowY: "scroll" }}
@@ -291,8 +292,8 @@ export default function Info() {
                        {currentAdminTab === 4 && (
                         <iframe
                           src="/img/info/ArchiveGuide.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Archive Guide"
                           style={{ overflowY: "scroll" }}
@@ -301,8 +302,8 @@ export default function Info() {
                       {currentAdminTab === 5 && (
                         <iframe
                           src="/img/info/NetworkScanException.html"
-                          height="500px"
-                          width="900px"
+                          height="700px"
+                          width="1000px"
                           allowFullScreen
                           title="Network Scan Exception"
                           style={{ overflowY: "scroll" }}

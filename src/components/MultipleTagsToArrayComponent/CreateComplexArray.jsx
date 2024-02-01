@@ -142,6 +142,7 @@ export default function MultipleTagsToArrayComponent(props) {
             )}
             <Box sx={{ width: '100%' }}>
                 <h3>Enclose multiple tags in a single Kepware array</h3>
+                <h4 style={{color: 'orange'}}>Warning!! All tags selected that will be put into the complex array must not be strings!</h4>
                 <Stepper activeStep={activeStep}>
                     {steps.map((label, index) => {
                         const stepProps = {};
