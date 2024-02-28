@@ -1005,7 +1005,7 @@ export default function Kepware() {
   const [expandedListChannels, setExpandedListChannels] = useState([]);
   const [expandedListDevices, setExpandedListDevices] = useState([]);
   const [kepwareDefaultProjectDialogOpen, setKepwareDefaultProjectDialogOpen] =
-    useState();
+    useState(false);
   const [kepwareDefaultProjectResponse, setKepwareDefaultProjectResponse] =
     useState();
 
@@ -1025,7 +1025,6 @@ export default function Kepware() {
         "Kepware configuration",
         "License",
         "Machines Configured",
-        "Advanced Operations",
       ];
 
   const goodStatus = () => {

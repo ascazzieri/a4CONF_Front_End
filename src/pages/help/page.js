@@ -73,7 +73,7 @@ export default function Help() {
                   {currentTab === 0 && (
                     <iframe
                       src="/img/help/DashboardGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Dashboard Guide"
@@ -83,7 +83,7 @@ export default function Help() {
                   {currentTab === 1 && (
                     <iframe
                       src="/img/help/UpdateA4GATEHostname.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Update Hostname"
@@ -93,7 +93,7 @@ export default function Help() {
                   {currentTab === 2 && (
                     <iframe
                       src="/img/help/DataCollectorNetworkGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Data Collector Network Guide"
@@ -103,7 +103,7 @@ export default function Help() {
                   {currentTab === 3 && (
                     <iframe
                       src="/img/help/KepwareGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Kepware Guide"
@@ -113,7 +113,7 @@ export default function Help() {
                   {currentTab === 4 && (
                     <iframe
                       src="/img/help/CreateThingworxIoTGateway.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Create Thingworx IoT Gateway"
@@ -123,7 +123,7 @@ export default function Help() {
                   {currentTab === 5 && (
                     <iframe
                       src="/img/help/CreateOPCUAIoTGateway.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Create OPCUA IoT Gateway"
@@ -133,7 +133,7 @@ export default function Help() {
                   {currentTab === 6 && (
                     <iframe
                       src="/img/help/CreateHTTPIoTGateway.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Create HTTP IoT Gateway"
@@ -143,7 +143,7 @@ export default function Help() {
                   {currentTab === 7 && (
                     <iframe
                       src="/img/help/CreateMatrixIoTGateway.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Create Matrix IoT Gateway"
@@ -153,7 +153,7 @@ export default function Help() {
                   {currentTab === 8 && (
                     <iframe
                       src="/img/help/DataSenderNetworkGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Data Sender Network Guide"
@@ -163,7 +163,7 @@ export default function Help() {
                   {currentTab === 9 && (
                     <iframe
                       src="/img/help/SitemanagerGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Sitemanager Guide"
@@ -173,7 +173,7 @@ export default function Help() {
                   {currentTab === 10 && (
                     <iframe
                       src="/img/help/ThingworxGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Thingworx Guide"
@@ -183,7 +183,7 @@ export default function Help() {
                   {currentTab === 11 && (
                     <iframe
                       src="/img/help/HTTPServerGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="HTTP Server Guide"
@@ -193,7 +193,7 @@ export default function Help() {
                   {currentTab === 12 && (
                     <iframe
                       src="/img/help/OPCUADataSenderGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="OPCUA Server Guide"
@@ -203,7 +203,7 @@ export default function Help() {
                   {currentTab === 13 && (
                     <iframe
                       src="/img/help/Fast-DataFTPGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="FTP Guide"
@@ -213,7 +213,7 @@ export default function Help() {
                   {currentTab === 14 && (
                     <iframe
                       src="/img/help/Fast-DataHTTPGuide.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="Fast-Data HTTP Guide"
@@ -223,7 +223,7 @@ export default function Help() {
                   {currentTab === 15 && (
                     <iframe
                       src="/img/help/ReloadFunctions.html"
-                      height="500px"
+                      height="800px"
                       width="900px"
                       allowFullScreen
                       title="'...' functions"
@@ -252,7 +252,7 @@ export default function Help() {
                       {currentAdminTab === 0 && (
                         <iframe
                           src="/img/help/Fast-DataMatrixGuide.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Matrix Guide"
@@ -262,7 +262,7 @@ export default function Help() {
                       {currentAdminTab === 1 && (
                         <iframe
                           src="/img/help/AdvancedGuide.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Advanced Guide"
@@ -272,7 +272,7 @@ export default function Help() {
                        {currentAdminTab === 2 && (
                         <iframe
                           src="/img/help/ManageUsersGuide.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Manage Users"
@@ -282,7 +282,7 @@ export default function Help() {
                        {currentAdminTab === 3 && (
                         <iframe
                           src="/img/help/Back-ChannelGuide.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Back-Channel Guide"
@@ -292,7 +292,7 @@ export default function Help() {
                        {currentAdminTab === 4 && (
                         <iframe
                           src="/img/help/ArchiveGuide.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Archive Guide"
@@ -302,7 +302,7 @@ export default function Help() {
                       {currentAdminTab === 5 && (
                         <iframe
                           src="/img/help/NetworkScanException.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Network Scan Exception"
@@ -312,7 +312,7 @@ export default function Help() {
                       {currentAdminTab === 6 && (
                         <iframe
                           src="/img/help/KepwareAdvancedOperations.html"
-                          height="500px"
+                          height="800px"
                           width="900px"
                           allowFullScreen
                           title="Kepware Advanced Operations"
