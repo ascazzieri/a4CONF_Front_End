@@ -51,6 +51,7 @@ export default function Help() {
                 bgcolor: "background.paper",
                 display: "flex",
                 pb: 2,
+                minHeight:'80vh'
               }}
             >
               <Container>

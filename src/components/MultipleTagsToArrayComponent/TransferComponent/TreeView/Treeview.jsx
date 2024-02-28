@@ -35,9 +35,9 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
         },
     },
     [`& .${treeItemClasses.group}`]: {
-        marginLeft: 0,
+        marginLeft: theme.spacing(3),
         [`& .${treeItemClasses.content}`]: {
-            paddingLeft: theme.spacing(2),
+            paddingLeft: theme.spacing(3),
         },
     },
 }));
@@ -157,7 +157,7 @@ const createStyledTreeItems = (data, parentPath, channelCart, setChannelCart) =>
                             key={key + insideKey}
                             nodeId={key + insideKey}
                             labelText={insideKey}
-                            labelIcon={FolderIcon} // Replace with the appropriate icon based on your data
+                            labelIcon={FolderIcon}
                             childTags={numChildTags}
                             childNodes={numChildNodes}
                             absolutePath={currentPath}
@@ -185,9 +185,11 @@ const createStyledTreeItems = (data, parentPath, channelCart, setChannelCart) =>
 };
 
 
+
 export default function IconTreeView(props) {
 
     const { tags, channelCart, setChannelCart } = props
+    console.log(createStyledTreeItems(tags, '', channelCart, setChannelCart))
     return (
         <TreeView
             aria-label="icon"
