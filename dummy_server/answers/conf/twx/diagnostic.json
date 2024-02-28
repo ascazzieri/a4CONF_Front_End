@@ -1,0 +1,52 @@
+{
+  "thingworx": {
+      "diagnostic": {
+          "TW_is_connected": true,
+          "Error_Message": "",
+          "Thingworx_Configuration": {
+              "Tunneling_": false,
+              "Pipe_Count_": 1,
+              "Block_Size_": 81920,
+              "Max_Message_Size_": "1000000 byte",
+              "Duty_Cycle_Period_": "120 s",
+              "Queue_Size_": 1000,
+              "Min_Threads_": 4,
+              "Duty_Cycle_Connected_Percentage_": 100,
+              "Connection_Timeout_": "10000 ms",
+              "Uri_": "wss://development.iotdataroom.com:443/Thingworx/WS",
+              "Ignore_SSL_": true,
+              "Proxy": {
+                  "Proxy_Port_": 0
+              },
+              "Reconnect_Interval_": "60 s",
+              "Idle_Ping_Rate_": "45 s",
+              "Ping_timeout_": "10000 ms",
+              "Max_Threads_": 10,
+              "Thread_Timeout_": "10000 ms",
+              "Max_File_Size_": 800000000
+          },
+          "Bound_Thing_Properties": [
+              {
+                  "A4Gate_pippo": {
+                      "TW_Bound_Properties": 0,
+                      "Ingestion_Properties": 32,
+                      "Pending_Updates": 0
+                  }
+              },
+              {
+                  "rt_testFede": {
+                      "TW_Bound_Properties": 99,
+                      "Ingestion_Properties": 60,
+                      "Pending_Updates": 6
+                  }
+              }
+          ],
+          "Agent_version": "2.9",
+          "MQTT_is_connected": true,
+          "server_name_dns_resolve": true,
+          "server_ip_reachable": true,
+          "connection_error": "not_found",
+          "reason": "not_found"
+      }
+  }
+}

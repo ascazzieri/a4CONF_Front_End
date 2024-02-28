@@ -1,0 +1,479 @@
+{
+  "timestamp": 1687765996,
+
+  "system": {
+    "hostname": {
+      "customer": "A207020000-0030"
+    },
+
+    "a4updater_version": {
+      "customer": "20220301"
+    },
+
+    "network": {
+      "customer": {
+        "dhcp": false,
+
+        "static": {
+          "ip": ["192.168.111.33/24"],
+
+          "dns": ["10.10.90.40"],
+          "gateway": "192.168.111.1",
+          "connected": true,
+          "mac": "00:60:e9:29:c1:01"
+        },
+        "if_wan_medium": "ethernet",
+        "nat": true,
+        "machine_to_internet": true,
+
+        "ntp": ["127.123.123.123"],
+
+        "routes": {
+          "192.168.100.0/24": "192.0.2.1",
+          "192.168.17.0/24": "192.0.2.1",
+          "192.168.112.0/24": "192.0.2.1"
+        },
+
+        "wireless": {
+          "Galaxy A40AD26": "punq6219"
+        },
+        "IF_WAN": "eth1",
+        "firewall_enabled": true,
+
+        "PORTS_TCP_SERVER_WAN": {
+          "3389": ["any_ip"],
+
+          "PORT_ALTSSH": ["any_ip"],
+
+          "PORT_OPCUA": ["any_ip"],
+
+          "vscode_server": ["any_ip"],
+
+          "PORT_OPCUA_TLS": ["any_ip"],
+
+          "PORT_SSH": ["any_ip"]
+        },
+
+        "PORTS_UDP_SERVER_WAN": {},
+
+        "PORTS_UDP_CLIENT_WAN": {
+          "PORT_DNS": ["any_ip"],
+
+          "PORT_NTP": ["any_ip"]
+        },
+
+        "IPS_PING_SERVER_WAN": ["any_ip"],
+
+        "PORTS_UDP_CLIENT_WAN_ONLY_OUTPUT": {},
+
+        "INPUT_NAT": [
+          {
+            "IP_EXT": "",
+            "PORT_EXT": 3389,
+            "IP_DST": "192.0.2.1",
+            "PORT_DST": "",
+
+            "SOURCE": ["any_ip"]
+          },
+          {
+            "IP_EXT": "",
+            "PORT_EXT": 8080,
+            "IP_DST": "192.0.2.2",
+            "PORT_DST": "",
+
+            "SOURCE": ["any_ip"]
+          }
+        ],
+        
+        "IF_MACHINE": "eth0",
+        "IF_MACHINE_NET": "192.0.2.0/24",
+        "IF_MACHINE_IP": "192.0.2.2",
+        "IF_MACHINE_IP_A": "192.0.2.1",
+        "IF_GUEST": "wlan0",
+        "IF_GUEST_NET": "192.168.8.0/24",
+        "IF_GUEST_IP": "192.168.8.1",
+
+        "ALIAS": {
+          "any_ip": "0.0.0.0/0",
+          "syslog_server": "",
+          "PORT_SSH": 22,
+          "PORT_DNS": 53,
+          "PORT_DHCP": 67,
+          "PORT_BOOTP": 68,
+          "PORT_HTTP": 80,
+          "PORT_NTP": 123,
+          "PORT_HTTPS": 443,
+          "PORT_SMB": 445,
+          "PORT_SYSLOG": 514,
+          "PORT_ALTSSH": 1022,
+          "PORT_OPCUA": 4840,
+          "PORT_ALTHTTP": 8080,
+          "PORT_ALTHTTPS": 8443,
+          "PORT_OPCUA_TLS": 4843,
+          "vscode_server": 8765
+        },
+
+        "PORTS_UDP_SERVER_TRANSPORT": ["PORT_DNS", "PORT_NTP"],
+
+        "PORTS_UDP_SERVER_BROADCAST_TRANSPORT": [
+          "PORT_ALTHTTP",
+          51101,
+          51102,
+          "PORT_SYSLOG"
+        ],
+        "essid": ["wireless1", "wireless2", "wireless3"]
+      }
+    }
+  },
+
+  "services": {
+    "thingworx": {
+      "host": "development.iotdataroom.com",
+      "appkey": "31aa0349-6f2b-4275-ae5a-cf665ac3bf96",
+      "thing_names": [
+        "rt_testFede",
+        "rt_testFede1",
+        "rt_testFede2",
+        "rt_testFede3"
+      ],
+
+      "things": {
+        "rt_testFede": {
+          "test_opcua": "fromkepware/rt_testFede"
+        }
+      },
+
+      "proxy": {
+        "enabled": true,
+        "host": "192.168.111.1",
+        "port": 3128,
+        "username": "",
+        "password": ""
+      },
+      "enabled": true,
+      "connected": true,
+      "diagnostic": {
+        "TW is connected": true,
+        "appkey_NOT_set": false,
+        "server_NOT_set": false,
+        "server_name_dns_resolve": true,
+        "server_ip_reachable": true,
+        "connection_error": "Problem",
+        "Thingworx Configuration": {
+          "Tunneling: ": false,
+          "Pipe Count: ": 1,
+          "Block Size: ": 81920,
+          "Max Message Size: ": "1000000 byte",
+          "Duty Cycle Period: ": "120 s",
+          "Queue Size: ": 1000,
+          "Min Threads: ": 4,
+          "Duty Cycle Connected Percentage: ": 100,
+          "Connection Timeout: ": "10000 ms",
+          "Uri: ": "wss://dataroom-qa.cloud.thingworx.com:443/Thingworx/WS",
+          "Ignore SSL: ": true,
+          "Proxy": {
+            "Proxy Port: ": 0
+          },
+          "Reconnect Interval: ": "60 s",
+          "Idle Ping Rate: ": "45 s",
+          "Ping timeout: ": "10000 ms",
+          "Max Threads: ": 10,
+          "Thread Timeout: ": "10000 ms",
+          "Max File Size: ": 800000000
+        },
+        "Bound Thing Properties": [
+          {
+            "rt_N_8178_V2": {
+              "TW Bound Properties": 2494,
+              "Ingestion Properties": 2494,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "A4Gate_A207020000_0014": {
+              "TW Bound Properties": 25,
+              "Ingestion Properties": 0,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_G0011012": {
+              "TW Bound Properties": 294,
+              "Ingestion Properties": 288,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_test_N_8186": {
+              "TW Bound Properties": 173,
+              "Ingestion Properties": 167,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_51725V0": {
+              "TW Bound Properties": 65,
+              "Ingestion Properties": 59,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_54271O0": {
+              "TW Bound Properties": 41,
+              "Ingestion Properties": 35,
+              "Pending Updates": 0
+            }
+          },
+          {
+            "rt_G068": {
+              "TW Bound Properties": 39,
+              "Ingestion Properties": 33,
+              "Pending Updates": 0
+            }
+          }
+        ],
+        "Agent version": "2.9",
+        "MQTT is connected": true
+      }
+    },
+
+    "sitemanager": {
+      "connected": false,
+      "enabled": true,
+      "server": "gm.ima.it 10.10.83.66 81.208.52.93",
+      "domain": "Talea.Devices.A4Gate",
+      "name": "A207020000-0030",
+
+      "agents": {
+        "Agent1": {
+          "agent": "GENERIC:Desktop PC",
+          "name": "Full Access",
+          "sn": "#A1",
+          "cfg": "PC"
+        },
+
+        "Agent2": {
+          "agent": "GENERIC:All ports, 1-way NAT",
+          "name": "PC A",
+          "sn": "#02",
+          "cfg": "192.0.2.1"
+        },
+
+        "Agent3": {
+          "agent": "GENERIC:Desktop PC",
+          "name": "sysprep",
+          "sn": "#03",
+          "cfg": "10.2.10.17"
+        }
+      },
+      "onlybidir": false,
+      "nameashostname": true,
+      "usentp": true
+    },
+
+    "opcua": {
+      "enabled": true,
+      "running": true,
+      "file_from_kepware": "from_kepware.csv.simulate",
+      "file_to_kepware": "to_kepware.csv",
+      "shift_property_from_kepware": "0",
+      "shift_property_to_kepware": "0",
+
+      "security": {
+        "tls": false,
+        "cert_file": "server.crt.pem",
+        "key_file": "server.key.pem",
+        "user_auth": false,
+
+        "users": {
+          "pippo": "pippo",
+          "pluto": "pluto"
+        }
+      },
+
+      "opcua": {
+        "custom_port_enable": false,
+        "custom_port": 4841,
+        "host": "0.0.0.0"
+      },
+      "iotgw": {
+        "from": ["from1", "from2", "from3"],
+        "to": ["to1", "to2", "to3"]
+      },
+      "server_name": "OPC-UA-SERVER",
+      "namespace": "A4Gate"
+    },
+
+    "fastdata": {
+      "enabled": true,
+      "running": true,
+      "customer": {
+        "blob_connection": {
+          "azure_url": "https://x0storage.blob.core.windows.net/iot-default",
+          "azure_sas": "?sv=2020-02-10&st=2023-03-24T10%3A06%3A32Z&se=2053-03-25T10%3A06%3A00Z&sr=c&sp=racwdlm&sig=gXK0kFw%2FX11xV9hXC9rCzxoB75eNJo54V7S5Go6BZ3U%3D"
+        },
+        "matrix": {
+          "enabled": true,
+          "http_server": {
+            "host": "127.0.0.1",
+            "port": 11002
+          },
+          "matrix_data_managment": [
+            {
+              "id": "7Q910A0",
+              "grouping_files": 10,
+              "matrix_delimiter": {
+                "start": "[",
+                "mid": ",",
+                "end": "]"
+              },
+              "source_object_ID_column_name": "Engine_ID",
+              "source_objects_properties": [
+                "RefPosition",
+                "TrackingDeviation",
+                "RefVelocity",
+                "ActualVelocity",
+                "RefAcceleration",
+                "ActualCurrent"
+              ],
+              "each_source_object_properties": {
+                "engine_1": [1, 2, 3, 4, 5, 6],
+                "engine_2": [7, 8, 9, 10, 11, 12],
+                "engine_3": [13, 14, 15, 16, 17, 18],
+                "engine_4": [19, 20, 21, 22, 23, 24],
+                "engine_5": [25, 26, 27, 28, 29, 30]
+              },
+              "timestamp": {
+                "db_timestamp_column_name": "Timestamp",
+                "get_timestamp_from_matrix": {
+                  "enabled": false,
+                  "matrix_index_number": 0
+                }
+              },
+              "machine_id_column": {
+                "enabled": true,
+                "machine_id_column_name": "machine_id"
+              },
+              "custom_columns": {
+                "dynamic_columns": {
+                  "enabled": false,
+                  "columns": {
+                    "MasterRefPosition": 26,
+                    "Counter": 0
+                  }
+                }
+              }
+            },
+            {
+              "id": "7Q810A0",
+              "grouping_files": 10,
+              "matrix_delimiter": {
+                "start": "[",
+                "mid": ",",
+                "end": "]"
+              },
+              "source_object_ID_column_name": "Engine_ID",
+              "source_objects_properties": [
+                "RefPosition",
+                "TrackingDeviation",
+                "RefVelocity",
+                "ActualVelocity",
+                "RefAcceleration",
+                "ActualCurrent"
+              ],
+              "each_source_object_properties": {
+                "engine_1": [1, 2, 3, 4, 5, 6],
+                "engine_2": [7, 8, 9, 10, 11, 12],
+                "engine_3": [13, 14, 15, 16, 17, 18],
+                "engine_4": [19, 20, 21, 22, 23, 24],
+                "engine_5": [25, 26, 27, 28, 29, 30]
+              },
+              "timestamp": {
+                "db_timestamp_column_name": "Timestamp",
+                "get_timestamp_from_matrix": {
+                  "enabled": false,
+                  "matrix_index_number": 0
+                }
+              },
+              "machine_id_column": {
+                "enabled": true,
+                "machine_id_column_name": "machine_id"
+              },
+              "custom_columns": {
+                "dynamic_columns": {
+                  "enabled": false,
+                  "columns": {
+                    "MasterRefPosition": 26,
+                    "Counter": 0
+                  }
+                }
+              }
+            },
+            {
+              "id": "7Q610A0",
+              "grouping_files": 10,
+              "matrix_delimiter": {
+                "start": "[",
+                "mid": ",",
+                "end": "]"
+              },
+              "source_object_ID_column_name": "Engine_ID",
+              "source_objects_properties": [
+                "RefPosition",
+                "TrackingDeviation",
+                "RefVelocity",
+                "ActualVelocity",
+                "RefAcceleration",
+                "ActualCurrent"
+              ],
+              "each_source_object_properties": {
+                "engine_1": [1, 2, 3, 4, 5, 6],
+                "engine_2": [7, 8, 9, 10, 11, 12],
+                "engine_3": [13, 14, 15, 16, 17, 18],
+                "engine_4": [19, 20, 21, 22, 23, 24],
+                "engine_5": [25, 26, 27, 28, 29, 30]
+              },
+              "timestamp": {
+                "db_timestamp_column_name": "Timestamp",
+                "get_timestamp_from_matrix": {
+                  "enabled": false,
+                  "matrix_index_number": 0
+                }
+              },
+              "machine_id_column": {
+                "enabled": true,
+                "machine_id_column_name": "machine_id"
+              },
+              "custom_columns": {
+                "dynamic_columns": {
+                  "enabled": false,
+                  "columns": {
+                    "MasterRefPosition": 26,
+                    "Counter": 0
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "http": {
+      "enabled": false,
+      "running": true,
+      "port":8080,
+      "authentication": {
+        "enabled": true,
+        "username": "pippo",
+        "password": "pluto"
+      },
+      "enable_tls": false,
+      "host": "0.0.0.0",
+
+      "iotgw": {
+        "from": ["from1", "from2", "from3"],
+        "to": ["to1", "to2", "to3"]
+      }
+    }
+  }
+}

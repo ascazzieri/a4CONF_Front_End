@@ -1,0 +1,67 @@
+{
+  "name": "a4conf",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/lab": "^5.0.0-alpha.137",
+    "@mui/material": "^5.13.3",
+    "@reduxjs/toolkit": "^1.9.5",
+    "antd": "^5.7.3",
+    "axios": "^1.5.1",
+    "axios-retry": "^3.8.0",
+    "eslint": "8.40.0",
+    "eslint-config-react-app": "^7.0.1",
+    "export-to-csv": "^0.2.1",
+    "jsoneditor": "^9.10.3",
+    "lodash": "^4.17.21",
+    "material-react-table": "^1.12.0",
+    "p-queue": "^7.4.1",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-download-link": "^2.3.0",
+    "react-json-editor-viewer": "^1.0.7",
+    "react-json-pretty": "^2.2.0",
+    "react-json-tree": "^0.18.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.11.2",
+    "react-scripts": "5.0.1",
+    "redux": "^4.2.1",
+    "styled-components": "^6.0.8",
+    "vercel": "^32.3.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "concurrently \"react-scripts start\" \"python dummy_server/server.py\"",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "start_https": "set HTTPS=true&&react-scripts start"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "concurrently": "^8.2.2",
+    "redux-devtools-extension": "^2.13.9"
+  }
+}

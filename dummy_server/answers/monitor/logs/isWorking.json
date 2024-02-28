@@ -1,0 +1,6 @@
+{
+  "mosquitto": true,
+  "tf_bchnld": true,
+  "tf_http_xfer": true,
+  "tf_cfgmng": true
+}

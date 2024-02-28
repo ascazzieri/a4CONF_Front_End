@@ -1,0 +1,5 @@
+{
+    "HTTP_codesys_PLC_thingworx_disabled": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q610A0",
+    "HTTP_codesys_HMI_thingworx_disabled": "http://127.0.0.1:8001/fromkepware?thingName=rt_7Q810A0"
+  }
+  
