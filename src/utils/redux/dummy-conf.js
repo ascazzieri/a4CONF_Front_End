@@ -81,6 +81,7 @@ let dummy_config = {
         custom_port: null,
       },
       security: {
+        tls:null,
         user_auth: null,
         users: null,
       },
