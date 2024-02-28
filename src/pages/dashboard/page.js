@@ -306,7 +306,7 @@ export default function Dashboard() {
                       {pcb_is_connected?.connected ? goodStatus() : badStatus()}
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
-                      <div title={bidir_desc}>Bidir.</div>
+                      <div title={bidir_desc}>Bidirectionality</div>
                     </Grid>
                     <Grid item xs={6} sx={{ p: 1 }}>
                       {dashboardStatus?.bidir !== undefined &&

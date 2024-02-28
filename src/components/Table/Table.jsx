@@ -291,21 +291,6 @@ const Table = (props) => {
     newData?.splice(row.index, 1);
     setTableData(newData);
   };
-  const csvOptions = {
-    fieldSeparator: ",",
-    quoteStrings: '"',
-    decimalSeparator: ".",
-    showLabels: true,
-    useBom: true,
-    useKeysAsHeaders: false,
-    headers: columnsData.map((c) => c.header),
-  };
-
-  const csvExporter = new ExportToCsv(csvOptions);
-
-  const handleExportData = () => {
-    csvExporter?.generateCsv(tableData);
-  };
   return (
     <div style={{ marginTop: 15, marginBottom: 15 }}>
       <MaterialReactTable
@@ -330,17 +315,6 @@ const Table = (props) => {
             <Button onClick={() => setCreateModalOpen(true)}>
               <Add />
             </Button>
-            {tableData && Object.keys(tableData).length !== 0 && (
-              <Button
-                color="primary"
-                //export all data that is currently in the table (ignore pagination, sorting, filtering, etc.)
-                onClick={handleExportData}
-                startIcon={<FileDownload />}
-                variant="contained"
-              >
-                Export Table Data
-              </Button>
-            )}
           </Box>
         )}
         renderRowActions={({ row, table }) => (

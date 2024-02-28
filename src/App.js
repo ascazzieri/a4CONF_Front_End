@@ -28,7 +28,7 @@ import PrivateRoute from "./components/PrivateRoute/PrivateRoute";
 import Advanced from "./pages/advanced/page";
 import { check_credentials } from "./utils/api";
 import { getAuthToken } from "./utils/utils";
-import Info from "./pages/info/page";
+import Help from "./pages/help/page";
 
 const host = window?.location?.hostname;
 const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
@@ -260,10 +260,10 @@ export default function App({ Component, pageProps }) {
               }
             />
             <Route
-              path="/info"
+              path="/help"
               element={
                 <PrivateRoute authenticated={authenticated}>
-                  <Info />
+                  <Help />
                 </PrivateRoute>
               }
             />

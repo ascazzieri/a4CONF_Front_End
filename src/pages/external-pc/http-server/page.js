@@ -71,14 +71,14 @@ export default function HTTPServer() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
-        "Expose IoT Gateway",
         "Manage IoT Gateways",
+        "Expose IoT Gateway",
         "Host",
         "Port",
         "Security",
         "JSON",
       ]
-    : ["Expose IoT Gateway", "Manage IoT Gateways", "Host", "Port", "Security"];
+    : [ "Manage IoT Gateways","Expose IoT Gateway", "Host", "Port", "Security"];
 
   const getArrayOfObjectsHTTP = (data, key1, key2) => {
     let arrayOfObjects = [];
@@ -583,117 +583,8 @@ export default function HTTPServer() {
         {currentTab === 5 && superUser && <JSONTree data={http} />}
 
         <form onSubmit={handleHTTPServerChange}>
+          
           {currentTab === 0 && (
-            <>
-              <FormLabel title={http_gateway_read_desc}>
-                Expose IoT gateways with HTTP Server only in read mode
-              </FormLabel>
-              <Stack
-                direction="row"
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FormControl fullWidth>
-                  <Autocomplete
-                    disablePortal
-                    options={iotGatewaysFromList}
-                    onChange={(event, newValue) => {
-                      setIotGatewayFrom(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        title={http_gateway_read_desc}
-                        {...params}
-                        label="IoT Gateways for HTTP server read only list"
-                      />
-                    )}
-                  />
-                </FormControl>
-                <IconButton
-                  onClick={() => {
-                    handleIotGatewaysReloadChange("from");
-                  }}
-                  aria-label="reload"
-                  className="rotate-on-hover"
-                >
-                  <CachedIcon />
-                </IconButton>
-                <Button onClick={handleAddIotGatewayFrom} variant="contained">
-                  Add
-                </Button>
-              </Stack>
-
-              <FormLabel title={http_remote_things_desc}>
-                IoT Gateway exposed in read only mode
-              </FormLabel>
-
-              <CustomTable
-                tableData={iotGatewaysFromTableData}
-                setTableData={setIotGatewaysFromTableData}
-                columnsData={iotGatewaysColumnData}
-                validationObject={iotGatewaysValidation}
-                staticValue="read only"
-              />
-
-              <Divider />
-
-              <FormLabel title={http_gateway_write_desc}>
-                Expose IoT gateways with HTTP Server in read and write mode
-              </FormLabel>
-              <Stack
-                direction="row"
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FormControl fullWidth>
-                  <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    options={iotGatewaysToList}
-                    onChange={(event, newValue) => {
-                      setIotGatewayTo(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        title={http_gateway_write_desc}
-                        {...params}
-                        label="IoT Gateways for HTTP server read and write list"
-                      />
-                    )}
-                  />
-                </FormControl>
-                <IconButton
-                  onClick={() => {
-                    handleIotGatewaysReloadChange("to");
-                  }}
-                  aria-label="reload"
-                  className="rotate-on-hover"
-                >
-                  <CachedIcon />
-                </IconButton>
-                <Button onClick={handleAddIotGatewayTo} variant="contained">
-                  Add
-                </Button>
-              </Stack>
-
-              <FormLabel title={http_remote_things_desc}>
-                IoT Gateway exposed in read and write mode
-              </FormLabel>
-
-              <CustomTable
-                tableData={iotGatewaysToTableData}
-                setTableData={setIotGatewaysToTableData}
-                columnsData={iotGatewaysColumnData}
-                validationObject={iotGatewaysValidation}
-                staticValue="read & write"
-              />
-
-              <Divider />
-            </>
-          )}
-          {currentTab === 1 && (
             <>
               <FormLabel title={http_manage_desc}>
                 Kepware IoT Gateways list for HTTP Server with read only
@@ -869,6 +760,116 @@ export default function HTTPServer() {
                   </TableContainer>
                 </Grid>
               </Grid>
+            </>
+          )}
+          {currentTab === 1 && (
+            <>
+              <FormLabel title={http_gateway_read_desc}>
+                Expose IoT gateways with HTTP Server only in read mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    options={iotGatewaysFromList}
+                    onChange={(event, newValue) => {
+                      setIotGatewayFrom(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={http_gateway_read_desc}
+                        {...params}
+                        label="IoT Gateways for HTTP server read only list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("from");
+                  }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayFrom} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel title={http_remote_things_desc}>
+                IoT Gateway exposed in read only mode
+              </FormLabel>
+
+              <CustomTable
+                tableData={iotGatewaysFromTableData}
+                setTableData={setIotGatewaysFromTableData}
+                columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewaysValidation}
+                staticValue="read only"
+              />
+
+              <Divider />
+
+              <FormLabel title={http_gateway_write_desc}>
+                Expose IoT gateways with HTTP Server in read and write mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={iotGatewaysToList}
+                    onChange={(event, newValue) => {
+                      setIotGatewayTo(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={http_gateway_write_desc}
+                        {...params}
+                        label="IoT Gateways for HTTP server read and write list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("to");
+                  }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayTo} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel title={http_remote_things_desc}>
+                IoT Gateway exposed in read and write mode
+              </FormLabel>
+
+              <CustomTable
+                tableData={iotGatewaysToTableData}
+                setTableData={setIotGatewaysToTableData}
+                columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewaysValidation}
+                staticValue="read & write"
+              />
+
+              <Divider />
             </>
           )}
           {currentTab === 2 && (

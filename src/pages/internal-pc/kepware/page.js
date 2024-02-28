@@ -531,7 +531,7 @@ const Row = (props) => {
                       <FormControlLabel
                         value="matrix"
                         control={<Radio />}
-                        label="Matrix"
+                        label="Matrix (Fast-Data only)"
                       />
                     </RadioGroup>
                   </FormControl>

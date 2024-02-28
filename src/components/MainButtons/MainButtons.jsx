@@ -164,7 +164,7 @@ const ReloadInternal = () => {
           <CachedIcon className="reload-icon" color="primary" />
         </div>
       </div>
-      <span>ReloadA</span>
+      <span>Reload</span>
     </StyledButton>
 
   );
@@ -226,7 +226,7 @@ const ReloadExternal = () => {
           <CachedIcon className="reload-icon" color="primary" />
         </div>
       </div>
-      <span>ReloadB</span>
+      <span>Reload</span>
     </StyledButton>
   );
 };
@@ -397,13 +397,13 @@ export default function SpeedDialTooltipOpen() {
     const handleCloseBottom = () => setOpenBottom(false); */
 
   const upperActions = superUser[0] ? [
-    { icon: <ReloadInternal />, name: "reload PCA" },
-    { icon: <ReloadExternal />, name: "reload PCB" },
+    { icon: <ReloadInternal />, name: "Data Collector" },
+    { icon: <ReloadExternal />, name: "Data Sender" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
   ] : [
-    { icon: <ReloadInternal />, name: "reload PCA" },
-    { icon: <ReloadExternal />, name: "reload PCB" },
+    { icon: <ReloadInternal />, name: "Data Collector" },
+    { icon: <ReloadExternal />, name: "Data Sender" },
     { icon: <DownloadConfig />, name: "download JSON" },
     { icon: <UploadConfig />, name: "upload JSON" },
     { icon: <AdminEl />, name: "admin elevation" },

@@ -638,7 +638,6 @@ export const delete_archive_note = async (title) => {
 export const send_login = async (data) => {
   try {
     const res = await helper.fetchData("/conf/login", "POST", data, true);
-
     if (res && res.access_token) {
       localStorage.setItem("jwtToken", res.access_token);
     }

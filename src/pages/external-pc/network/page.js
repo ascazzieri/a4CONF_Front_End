@@ -1261,7 +1261,7 @@ export default function ExternalNetwork() {
               {NATFeatures ? (
                 <>
                   <FormLabel title={network_forwarding_desc}>
-                    Foreward TCP port:
+                    Forwarded TCP port:
                   </FormLabel>
 
                   <CustomTable

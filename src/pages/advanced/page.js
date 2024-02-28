@@ -41,7 +41,7 @@ export default function Advanced() {
   const [jsonData, setJsonData] = useState(config);
 
   const [currentTab, setCurrentTab] = useState(0);
-  const navbarItems = ["Configuration", "Terafence", "Recovery IP", "More"];
+  const navbarItems = ["Configuration", "Services", "Recovery IP", "More"];
 
   const [dangerousMode, setDangerousMode] = useState(false);
 
@@ -504,7 +504,7 @@ export default function Advanced() {
               {currentTab === 2 && (
                 <>
                   <FormLabel>
-                    Add or remove the recovery IP Address of data collector
+                    Add or remove the recovery IP Address (198.51.100.1) of data collector
                   </FormLabel>
                   <Stack
                     direction="row"

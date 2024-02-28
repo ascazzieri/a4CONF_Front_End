@@ -99,16 +99,16 @@ export default function Thingworx() {
   const navbarItems = superUser
     ? [
         "Connection",
-        "Remote Things",
         "Manage IoT Gateways",
+        "Remote Things",
         "Agent Logs",
         "Proxy settings",
         "JSON",
       ]
     : [
         "Connection",
-        "Remote Things",
         "Manage IoT Gateways",
+        "Remote Things",
         "Agent Logs",
         "Proxy settings",
       ];
@@ -648,57 +648,6 @@ export default function Thingworx() {
           )}
           {currentTab === 1 && (
             <>
-              <FormLabel>Connect a Local Thing to a Remote Thing</FormLabel>
-              <Stack
-                direction="row"
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FormControl fullWidth>
-                  <Autocomplete
-                    disablePortal
-                    options={Object.keys(twxIotGatewaysList) || {}}
-                    onChange={(event, newValue) => {
-                      setIotGateway(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        title={thingworx_iotkep_desc}
-                        {...params}
-                        label="IoT Gateways for Thingworx enabled"
-                      />
-                    )}
-                  />
-                </FormControl>
-                <IconButton
-                  onClick={handleReloadEnabledIotGateway}
-                  aria-label="reload"
-                  className="rotate-on-hover"
-                >
-                  <CachedIcon />
-                </IconButton>
-                <Button onClick={handleAddRemoteThing} variant="contained">
-                  Add
-                </Button>
-              </Stack>
-
-              <FormLabel title={thingworx_remote_config_desc}>
-                Remote Things configuration
-              </FormLabel>
-
-              <CustomTable
-                tableData={thingsTableData}
-                setTableData={setThingsTableData}
-                columnsData={thingsColumnData}
-                validationObject={thingValidation}
-              />
-
-              <Divider />
-            </>
-          )}
-          {currentTab === 2 && (
-            <>
               <FormLabel title={thingworx_manage_iot_desc}>
                 Kepware IoT Gateways list for Thingworx
               </FormLabel>
@@ -786,6 +735,57 @@ export default function Thingworx() {
                   </TableContainer>
                 </Grid>
               </Grid>
+            </>
+          )}
+          {currentTab === 2 && (
+            <>
+              <FormLabel>Connect a Local Thing to a Remote Thing</FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    options={Object.keys(twxIotGatewaysList) || {}}
+                    onChange={(event, newValue) => {
+                      setIotGateway(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={thingworx_iotkep_desc}
+                        {...params}
+                        label="IoT Gateways for Thingworx enabled"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={handleReloadEnabledIotGateway}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddRemoteThing} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel title={thingworx_remote_config_desc}>
+                Remote Things configuration
+              </FormLabel>
+
+              <CustomTable
+                tableData={thingsTableData}
+                setTableData={setThingsTableData}
+                columnsData={thingsColumnData}
+                validationObject={thingValidation}
+              />
+
+              <Divider />
             </>
           )}
           {currentTab === 3 && (

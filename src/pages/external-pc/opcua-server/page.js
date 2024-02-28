@@ -72,8 +72,8 @@ export default function OPCServer() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
-        "Expose IoT Gateway",
-        "Manage IoT Gateways",
+        "Manage IoT Gateway",
+        "Expose IoT Gateways",
         "Shift nodes",
         "Host",
         "Port",
@@ -81,8 +81,8 @@ export default function OPCServer() {
         "JSON",
       ]
     : [
-        "Expose IoT Gateway",
-        "Manage IoT Gateways",
+        "Manage IoT Gateway",
+        "Expose IoT Gateways",
         "Shift nodes",
         "Host",
         "Port",
@@ -101,7 +101,7 @@ export default function OPCServer() {
     }
     return arrayOfObjects;
   };
-
+  const [enableTLS, setEnableTLS] = useState(opcua?.security?.tls);
   const [iotGatewaysFromList, setIotGatewaysFromList] = useState([]);
   const [iotGatewaysFromListDisabled, setIotGatewaysFromListDisabled] =
     useState([]);
@@ -152,6 +152,7 @@ export default function OPCServer() {
     setShiftToKepware(opcua?.shift_property_to_kepware);
     setCustomPortEnable(opcua?.opcua?.custom_port_enable);
     setCustomPort(opcua?.opcua?.custom_port);
+    setEnableTLS(opcua?.security?.tls);
     setServerAuth(opcua?.security?.user_auth);
     setHostBinding(opcua?.opcua?.host);
     setUsersTableData(
@@ -223,6 +224,9 @@ export default function OPCServer() {
   };
   const handleCustomPortChange = (event) => {
     setCustomPort(event?.target?.value);
+  };
+  const handleEnableTLSChange = (event) => {
+    setEnableTLS(event?.target?.checked);
   };
   const handleServerAuthChange = (event) => {
     setServerAuth(event?.target?.checked);
@@ -550,6 +554,7 @@ export default function OPCServer() {
         to: iot_gateway_to ? iot_gateway_to : [],
       },
       security: {
+        tls: enableTLS,
         user_auth: serverAuth,
         users: usersData,
       },
@@ -660,116 +665,6 @@ export default function OPCServer() {
 
         <form onSubmit={handleOPCUAServerChange}>
           {currentTab === 0 && (
-            <>
-              <FormLabel title={opcua_iot_gateway_desc}>
-                Expose IoT gateways with OPCUA Server only in read mode
-              </FormLabel>
-              <Stack
-                direction="row"
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FormControl fullWidth>
-                  <Autocomplete
-                    disablePortal
-                    id="combo-box-demo"
-                    options={iotGatewaysFromList || []}
-                    onChange={(event, newValue) => {
-                      setIotGatewayFrom(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        title={opcua_iot_gateway_desc}
-                        {...params}
-                        label="IoT Gateways for OPCUA server read only list"
-                      />
-                    )}
-                  />
-                </FormControl>
-                <IconButton
-                  onClick={() => {
-                    handleIotGatewaysReloadChange("from");
-                  }}
-                  aria-label="reload"
-                  className="rotate-on-hover"
-                >
-                  <CachedIcon />
-                </IconButton>
-                <Button onClick={handleAddIotGatewayFrom} variant="contained">
-                  Add
-                </Button>
-              </Stack>
-
-              <FormLabel title={opcua_rt_configuration}>
-                IoT Gateway exposed in read only mode
-              </FormLabel>
-
-              <CustomTable
-                tableData={iotGatewaysFromTableData}
-                setTableData={setIotGatewaysFromTableData}
-                columnsData={iotGatewaysColumnData}
-                validationObject={iotGatewayValidation}
-                staticValue="read only"
-              />
-
-              <Divider />
-
-              <FormLabel title={opcua_iot_gateway_write_desc}>
-                Expose IoT gateways with OPCUA Server in read and write mode
-              </FormLabel>
-              <Stack
-                direction="row"
-                spacing={3}
-                justifyContent="center"
-                alignItems="center"
-              >
-                <FormControl fullWidth>
-                  <Autocomplete
-                    disablePortal
-                    options={iotGatewaysToList || []}
-                    onChange={(event, newValue) => {
-                      setIotGatewayTo(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <TextField
-                        title={opcua_iot_gateway_write_desc}
-                        {...params}
-                        label="IoT Gateways for OPCUA server read and write list"
-                      />
-                    )}
-                  />
-                </FormControl>
-                <IconButton
-                  onClick={() => {
-                    handleIotGatewaysReloadChange("to");
-                  }}
-                  aria-label="reload"
-                  className="rotate-on-hover"
-                >
-                  <CachedIcon />
-                </IconButton>
-                <Button onClick={handleAddIotGatewayTo} variant="contained">
-                  Add
-                </Button>
-              </Stack>
-
-              <FormLabel title={opcua_rt_configuration}>
-              IoT Gateway exposed in read and write mode
-              </FormLabel>
-
-              <CustomTable
-                tableData={iotGatewaysToTableData}
-                setTableData={setIotGatewaysToTableData}
-                columnsData={iotGatewaysColumnData}
-                validationObject={iotGatewayValidation}
-                staticValue="read & write"
-              />
-
-              <Divider />
-            </>
-          )}
-          {currentTab === 1 && (
             <>
               <FormLabel title={opcua_manage_readgate_desc}>
                 Kepware IoT Gateways list for OPCUA Server with read only
@@ -945,6 +840,116 @@ export default function OPCServer() {
               </Grid>
             </>
           )}
+          {currentTab === 1 && (
+            <>
+              <FormLabel title={opcua_iot_gateway_desc}>
+                Expose IoT gateways with OPCUA Server only in read mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    id="combo-box-demo"
+                    options={iotGatewaysFromList || []}
+                    onChange={(event, newValue) => {
+                      setIotGatewayFrom(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={opcua_iot_gateway_desc}
+                        {...params}
+                        label="IoT Gateways for OPCUA server read only list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("from");
+                  }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayFrom} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel title={opcua_rt_configuration}>
+                IoT Gateway exposed in read only mode
+              </FormLabel>
+
+              <CustomTable
+                tableData={iotGatewaysFromTableData}
+                setTableData={setIotGatewaysFromTableData}
+                columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewayValidation}
+                staticValue="read only"
+              />
+
+              <Divider />
+
+              <FormLabel title={opcua_iot_gateway_write_desc}>
+                Expose IoT gateways with OPCUA Server in read and write mode
+              </FormLabel>
+              <Stack
+                direction="row"
+                spacing={3}
+                justifyContent="center"
+                alignItems="center"
+              >
+                <FormControl fullWidth>
+                  <Autocomplete
+                    disablePortal
+                    options={iotGatewaysToList || []}
+                    onChange={(event, newValue) => {
+                      setIotGatewayTo(newValue);
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        title={opcua_iot_gateway_write_desc}
+                        {...params}
+                        label="IoT Gateways for OPCUA server read and write list"
+                      />
+                    )}
+                  />
+                </FormControl>
+                <IconButton
+                  onClick={() => {
+                    handleIotGatewaysReloadChange("to");
+                  }}
+                  aria-label="reload"
+                  className="rotate-on-hover"
+                >
+                  <CachedIcon />
+                </IconButton>
+                <Button onClick={handleAddIotGatewayTo} variant="contained">
+                  Add
+                </Button>
+              </Stack>
+
+              <FormLabel title={opcua_rt_configuration}>
+              IoT Gateway exposed in read and write mode
+              </FormLabel>
+
+              <CustomTable
+                tableData={iotGatewaysToTableData}
+                setTableData={setIotGatewaysToTableData}
+                columnsData={iotGatewaysColumnData}
+                validationObject={iotGatewayValidation}
+                staticValue="read & write"
+              />
+
+              <Divider />
+            </>
+          )}
           {currentTab === 2 && (
             <>
               <FormControl fullWidth>
@@ -1054,6 +1059,21 @@ export default function OPCServer() {
 
           {currentTab === 5 && (
             <>
+              <FormControl fullWidth>
+                <FormLabel>Enable/Disable Transport Layer Security:</FormLabel>
+
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Typography>Disable TLS</Typography>
+
+                  <Switch
+                    checked={enableTLS}
+                    onChange={handleEnableTLSChange}
+                  />
+
+                  <Typography>Enable TLS</Typography>
+                </Stack>
+              </FormControl>
+              <Divider />
               <FormControl fullWidth>
                 <FormLabel title={opcua_security_desc}>
                   Enable/Disable OPCUA Server authentication:
