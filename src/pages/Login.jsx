@@ -184,8 +184,8 @@ export default function Login(props) {
         handleRequestFeedback({
           vertical: "bottom",
           horizontal: "right",
-          severity: "success",
-          message: `login successful for admin`,
+          severity: "error",
+          message: `Username or password field is empty`,
         });
       }
     } catch (e) {

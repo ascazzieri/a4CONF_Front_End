@@ -6,6 +6,7 @@ export const get_version = async () => {
     const res = await helper.fetchData("/version", "GET");
     const version = res.replace("\n", "").replace("\r", "");
     const version_string = "Version: " + version;
+    verbose && console.log(res);
     return version_string;
   } catch (error) {
     console.error(error);
@@ -16,6 +17,7 @@ export const get_ready = async () => {
   //aggiungi il timer al componente che la chiama
   try {
     const res = await helper.fetchData("/ready", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -24,6 +26,7 @@ export const get_ready = async () => {
 export const get_confA = async () => {
   try {
     const res = await helper.fetchData("/confA", "GET");
+    verbose && console.log(res);
     const conf = helper.confToHTML(res);
     return conf;
   } catch (e) {
@@ -34,6 +37,7 @@ export const get_confB = async () => {
   //ricordati di far chiamare questa funzione con un delay
   try {
     const res = await helper.fetchData("/confB", "GET");
+    verbose && console.log(res);
     const conf = helper.confToHTML(res);
     return conf;
   } catch (e) {
@@ -43,6 +47,7 @@ export const get_confB = async () => {
 export const send_conf = async (data) => {
   try {
     const res = await helper.fetchData("/post", "POST", data);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -89,6 +94,7 @@ export const createiotgw = async (
       "POST",
       tags_list
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -107,6 +113,7 @@ export const multi_tags_to_array = async (channel, device, tags_list) => {
       "POST",
       data
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -119,6 +126,7 @@ export const get_device_tags = async (channel, device) => {
       `/channel/device/tags/tree?channel=${channel}&device=${device}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -132,6 +140,7 @@ export const loadiotgws = async (direction) => {
       return res;
     } else {
       const res = await helper.fetchData("/iotgwhttpserver", "GET");
+      verbose && console.log(res);
       return res;
     }
   } catch (e) {
@@ -144,7 +153,7 @@ export const get_twx_gtws_enabled = async () => {
       "/iotgw/http/client/twx/endpoint/enabled",
       "GET"
     );
-
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -156,7 +165,7 @@ export const get_memory_based_tags = async () => {
       "/channel/device/tags/tree/memorybased",
       "GET"
     );
-
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -174,6 +183,7 @@ export const add_complex_arrays_to_iot_gateway = async (
       "POST",
       data
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -182,7 +192,7 @@ export const add_complex_arrays_to_iot_gateway = async (
 export const get_all_iot_gateways_client = async () => {
   try {
     const res = await helper.fetchData("/iotgwhttp", "GET");
-
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -194,6 +204,7 @@ export const get_twx_gtws_disabled = async () => {
       "/iotgw/http/client/twx/endpoint/disabled",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -202,6 +213,7 @@ export const get_twx_gtws_disabled = async () => {
 export const get_iot_gtws_http_client_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/enabled", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -210,6 +222,7 @@ export const get_iot_gtws_http_client_enabled = async () => {
 export const get_iot_gtws_http_client_disabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/client/disabled", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -221,6 +234,7 @@ export const get_iot_gtws_enabled_fast_data_matrix = async () => {
       "/iotgw/http/client/enabled/fastdata_matrix",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -232,6 +246,7 @@ export const get_iot_gtws_disabled_fast_data_matrix = async () => {
       "/iotgw/http/client/disabled/fastdata_matrix",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -240,6 +255,7 @@ export const get_iot_gtws_disabled_fast_data_matrix = async () => {
 export const twx_connection_diagnostic = async () => {
   try {
     const res = await helper.fetchData("/conf/twx/diagnostic", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -248,6 +264,7 @@ export const twx_connection_diagnostic = async () => {
 export const get_iot_gtws_http_server_enabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/enabled", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -256,6 +273,7 @@ export const get_iot_gtws_http_server_enabled = async () => {
 export const get_iot_gtws_http_server_disabled = async () => {
   try {
     const res = await helper.fetchData("/iotgw/http/server/disabled", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -267,6 +285,7 @@ export const get_iot_gtws_for_http_server_enabled_read = async () => {
       "/iotgw/http/client/enabled/httpserver_from",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -278,6 +297,7 @@ export const get_iot_gtws_for_http_server_disabled_read = async () => {
       "/iotgw/http/client/disabled/httpserver_from",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -290,6 +310,7 @@ export const get_iot_gtws_for_http_server_enabled_write = async () => {
       "/iotgw/http/client/enabled/httpserver_to",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -301,6 +322,7 @@ export const get_iot_gtws_for_http_server_disabled_write = async () => {
       "/iotgw/http/client/disabled/httpserver_to",
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -310,6 +332,7 @@ export const get_iot_gtws_for_http_server_disabled_write = async () => {
 export const machines_connected = async () => {
   try {
     const res = await helper.fetchData(`/machine/connections`, "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -318,6 +341,7 @@ export const machines_connected = async () => {
 export const monitor_logs_isWorking = async () => {
   try {
     const res = await helper.fetchData(`/monitor/logs/isWorking`, "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -326,6 +350,7 @@ export const monitor_logs_isWorking = async () => {
 export const monitor_a4monitor_status = async () => {
   try {
     const res = await helper.fetchData(`/monitor/logs/status`, "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -334,6 +359,7 @@ export const monitor_a4monitor_status = async () => {
 export const is_B_ready = async () => {
   try {
     const res = await helper.fetchData(`/ready`, "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -345,6 +371,7 @@ export const get_iot_gtws_opcua_reading_enabled = async () => {
       `/iotgw/http/client/enabled/opcua_from`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -356,6 +383,7 @@ export const get_iot_gtws_opcua_reading_disabled = async () => {
       `/iotgw/http/client/disabled/opcua_from`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -367,6 +395,7 @@ export const get_iot_gtws_opcua_reading_writing_enabled = async () => {
       `/iotgw/http/server/enabled/opcua_to`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -378,6 +407,7 @@ export const enable_http_client_iot_gateway = async (name) => {
       `/iotgw/http/client/enable?iotgw_name=${name}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -389,6 +419,7 @@ export const disable_http_client_iot_gateway = async (name) => {
       `/iotgw/http/client/disable?iotgw_name=${name}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -400,6 +431,7 @@ export const enable_http_server_iot_gateway = async (name) => {
       `/iotgw/http/server/enable?iotgw_name=${name}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -411,6 +443,7 @@ export const disable_http_server_iot_gateway = async (name) => {
       `/iotgw/http/server/disable?iotgw_name=${name}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -431,6 +464,7 @@ export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
       `/iotgw/http/server/disabled/opcua_to`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -439,6 +473,7 @@ export const get_iot_gtws_opcua_reading_writing_disabled = async () => {
 export const check_bidir = async () => {
   try {
     const res = await helper.fetchData(`/a4gate/bidir`, "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -449,6 +484,7 @@ export const uploadKepwareProject = async (file) => {
   try {
     helper.togglePageSleep("block");
     const res = await helper.fetchData("/kepware/upload", "POST", file);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -460,6 +496,7 @@ export const uploadKepwareDefaultProject = async () => {
   try {
     helper.togglePageSleep("block");
     const res = await helper.fetchData("/kepware/upload/default", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -502,6 +539,7 @@ export const get_a4monitor_logs = async () => {
     );
     const res_table = await helper.fetchData("/monitor/logs/table", "GET");
     const a4logs = { is_working: res_isWorking, table: res_table };
+    verbose && console.log(a4logs);
     return a4logs;
   } catch (e) {
     console.error(e);
@@ -511,6 +549,7 @@ export const get_a4monitor_logs = async () => {
 export const a4monitorStatus = async () => {
   try {
     const res = await helper.fetchData("/monitor/logs/status", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -519,6 +558,7 @@ export const a4monitorStatus = async () => {
 export const reloadA4monitor = async () => {
   try {
     const res = await helper.fetchData("/monitor/logs/reload", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -527,6 +567,7 @@ export const reloadA4monitor = async () => {
 export const loadChannels = async () => {
   try {
     const res = await helper.fetchData("/kepwaredevices", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -535,6 +576,7 @@ export const loadChannels = async () => {
 export const get_bidir_info = async () => {
   try {
     const res = await helper.fetchData("/a4gate/bidir", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -543,6 +585,7 @@ export const get_bidir_info = async () => {
 export const reload_kepware = async () => {
   try {
     const res = await helper.fetchData("/reload_kepware_now", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -551,6 +594,7 @@ export const reload_kepware = async () => {
 export const reboot_PCA = async () => {
   try {
     const res = await helper.fetchData("/pca/reboot", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -559,6 +603,7 @@ export const reboot_PCA = async () => {
 export const add_recovery_ip = async () => {
   try {
     const res = await helper.fetchData("/pca/recovery_ip_address/set", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -567,6 +612,7 @@ export const add_recovery_ip = async () => {
 export const remove_recovery_ip = async () => {
   try {
     const res = await helper.fetchData("/pca/recovery_ip_address/unset", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -610,6 +656,7 @@ export const downloadJSON = (object, reportName, hostname) => {
 export const get_archive = async () => {
   try {
     const res = await helper.fetchData("/conf/archive", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -618,6 +665,7 @@ export const get_archive = async () => {
 export const send_archive = async (data) => {
   try {
     const res = await helper.fetchData("/conf/archive/set", "POST", data);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -630,6 +678,7 @@ export const delete_archive_note = async (title) => {
       "/conf/archive/del" + title_param,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -641,6 +690,7 @@ export const send_login = async (data) => {
     if (res && res.access_token) {
       localStorage.setItem("jwtToken", res.access_token);
     }
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -653,6 +703,7 @@ export const send_register = async (data) => {
     if (res && res.access_token) {
       localStorage.setItem("jwtToken", res.access_token);
     }
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -666,6 +717,7 @@ export const check_credentials = async () => {
       null,
       true
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -674,6 +726,7 @@ export const check_credentials = async () => {
 export const test_connection = async (data) => {
   try {
     const res = await helper.fetchData("/external/network/ping", "POST", data);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -682,6 +735,7 @@ export const test_connection = async (data) => {
 export const get_matrix = async () => {
   try {
     const res = await helper.fetchData("/fast-data/matrix", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -690,6 +744,7 @@ export const get_matrix = async () => {
 export const get_users = async () => {
   try {
     const res = await helper.fetchData("/conf/users", "GET");
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -703,6 +758,7 @@ export const delete_user = async (user) => {
       "/conf/users/delete" + user_param,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -712,6 +768,7 @@ export const delete_user = async (user) => {
 export const add_user = async (data) => {
   try {
     const res = await helper.fetchData("/conf/users/create", "POST", data);
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -724,6 +781,7 @@ export const change_password = async (data) => {
       "POST",
       data
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -737,6 +795,7 @@ export const ntp_start = async (data) => {
       "POST",
       data
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -749,6 +808,7 @@ export const ntp_resinc = async (data) => {
       "POST",
       data
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);
@@ -760,6 +820,7 @@ export const get_advanced = async (service, command) => {
       `/pca/services/action?service=${service}&command=${command}`,
       "GET"
     );
+    verbose && console.log(res);
     return res;
   } catch (e) {
     console.error(e);

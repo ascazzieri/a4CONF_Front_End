@@ -210,6 +210,12 @@ export async function fetchData(url, method, body, noToken) {
       const data = response.data;
       return data;
     } catch (error) {
+      if (error?.response?.status === 403) {
+        const message = error?.response?.data?.detail
+        alert(message);
+        window.location.replace("/login")
+      }
+
       throw new Error(response?.detail || error.message);
     }
   };
@@ -250,68 +256,6 @@ export async function fetchData(url, method, body, noToken) {
     }
   }
 }
-
-/* export async function fetchData(url, method, body, noToken) {
-  const axiosConfig = {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    httpsAgent: {
-      rejectUnauthorized: false,
-    },
-  };
-
-  if (method === "POST") {
-    axiosConfig.data = body;
-  }
-  if (noToken) {
-    try {
-      const path = window.location.origin;
-      const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-      const completePath = encodeURIComponent(pathWithoutPort + url);
-      const compatibleEncodedUrl = decodeURIComponent(completePath);
-
-      console.log(compatibleEncodedUrl);
-
-      const response = await axios(compatibleEncodedUrl, axiosConfig);
-
-      // Axios handles non-2xx status codes as errors automatically
-      const data = response.data;
-      return data;
-    } catch (error) {
-      throw new Error(`Axios error: ${error.message}`);
-    }
-  } else {
-    const token = getAuthToken() || null;
-    if (!token && !is_local) {
-      console.error("User not authenticated");
-      window.location.replace("/login");
-    } else {
-      try {
-        const path = window.location.origin;
-        const pathWithoutPort = path.substring(0, path.indexOf(":", 6));
-        const completePath = encodeURIComponent(pathWithoutPort + url);
-        const compatibleEncodedUrl = decodeURIComponent(completePath);
-        const response = await axios(compatibleEncodedUrl, {
-          ...axiosConfig,
-          headers: {
-            ...axiosConfig.headers,
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        const data = response.data;
-        return data;
-      } catch (error) {
-        if (error?.message?.includes("401")) {
-          localStorage.removeItem("jwtToken");
-          window.location.replace("/login");
-        }
-        console.error(`Axios error: ${error.message}`);
-      }
-    }
-  }
-}  */
 
 export const confToHTML = (conf) => {
   //in futuro puoi inserire quì dentro eventuali check del contenuto corretto delle chiavi

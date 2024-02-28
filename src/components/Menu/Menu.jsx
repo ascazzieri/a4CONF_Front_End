@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import classes from "./Menu.module.css"
+import classes from "./Menu.module.css";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -16,27 +16,34 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import LowPriorityIcon from '@mui/icons-material/LowPriority';
-import MessageIcon from '@mui/icons-material/Message';
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
+import LowPriorityIcon from "@mui/icons-material/LowPriority";
+import MessageIcon from "@mui/icons-material/Message";
 import GridViewIcon from "@mui/icons-material/GridView";
-import MergeIcon from '@mui/icons-material/Merge';
-import TuneIcon from '@mui/icons-material/Tune';
+import MergeIcon from "@mui/icons-material/Merge";
+import TuneIcon from "@mui/icons-material/Tune";
 import SpeedIcon from "@mui/icons-material/Speed";
-import CallSplitIcon from '@mui/icons-material/CallSplit';
+import CallSplitIcon from "@mui/icons-material/CallSplit";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Grid } from "@mui/material";
-import MainButtons from "../MainButtons/MainButtons"
+import MainButtons from "../MainButtons/MainButtons";
 import applied_logo_cropped from "../../media/img/applied_logo_cropped.png";
-import { getQueuePending, togglePageSleep } from "../../utils/utils"
-import { SuperUserContext } from "../../utils/context/SuperUser"
+import { getQueuePending, togglePageSleep } from "../../utils/utils";
+import { SuperUserContext } from "../../utils/context/SuperUser";
 import { SnackbarContext } from "../../utils/context/SnackbarContext";
 import { LoadingContext } from "../../utils/context/Loading";
 import { send_conf, is_B_ready } from "../../utils/api";
-import styled_normal from 'styled-components';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material"
+import styled_normal from "styled-components";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -110,12 +117,12 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 const floatingLogo = {
-  animationName: 'fly-1', // Since animation-name cannot be set via inline style directly
-  animationDuration: '0.6s',
-  animationTimingFunction: 'ease-in-out',
-  animationIterationCount: 'infinite',
-  animationDirection: 'alternate',
-}
+  animationName: "fly-1", // Since animation-name cannot be set via inline style directly
+  animationDuration: "0.6s",
+  animationTimingFunction: "ease-in-out",
+  animationIterationCount: "infinite",
+  animationDirection: "alternate",
+};
 const ApplyButton = styled_normal.button`
   position: relative;
   transition: all 0.3s ease-in-out;
@@ -171,10 +178,10 @@ const ApplyButton = styled_normal.button`
   }
 `;
 const ApplyChanges = () => {
-  const config = useSelector((state) => state)
+  const config = useSelector((state) => state);
   const snackBarContext = React.useContext(SnackbarContext);
-  const loadingContext = React.useContext(LoadingContext)
-  const [applyDialog, setApplyDialog] = React.useState(false)
+  const loadingContext = React.useContext(LoadingContext);
+  const [applyDialog, setApplyDialog] = React.useState(false);
 
   const handleRequestFeedback = (newState) => {
     snackBarContext[1]({ ...newState, open: true });
@@ -182,10 +189,10 @@ const ApplyChanges = () => {
 
   const applyChanges = async () => {
     try {
-      loadingContext[1](true)
-      togglePageSleep('block')
-      const res = await send_conf(config)
-      togglePageSleep('release')
+      loadingContext[1](true);
+      togglePageSleep("block");
+      const res = await send_conf(config);
+      togglePageSleep("release");
       if (res) {
         handleRequestFeedback({
           vertical: "bottom",
@@ -210,72 +217,74 @@ const ApplyChanges = () => {
       });
     } finally {
       if (getQueuePending() === 0) {
-        loadingContext[1](false)
+        loadingContext[1](false);
       }
     }
-  }
+  };
 
   const handleSendConf = async () => {
     const isBReady = await is_B_ready();
     if (isBReady?.ready) {
-      applyChanges()
+      applyChanges();
     } else {
-      setApplyDialog(true)
+      setApplyDialog(true);
     }
   };
   const applyOnlyPCA = async () => {
-    await applyChanges()
-    setApplyDialog(false)
-  }
+    await applyChanges();
+    setApplyDialog(false);
+  };
 
-  return (<>
-    <ApplyButton onClick={handleSendConf}>
-      <div className="img-wrapper-1">
-        <div className="img-wrapper">
-          <img
-            src={applied_logo_cropped}
-            height="24"
-            width="24"
-            alt="applied main button icon"
-            className="icon"
-          />
+  return (
+    <>
+      <ApplyButton onClick={handleSendConf}>
+        <div className="img-wrapper-1">
+          <div className="img-wrapper">
+            <img
+              src={applied_logo_cropped}
+              height="24"
+              width="24"
+              alt="applied main button icon"
+              className="icon"
+            />
+          </div>
         </div>
-      </div>
-      <span>Apply</span>
-    </ApplyButton>
-    <Dialog
-      open={applyDialog}
-      onClose={() => setApplyDialog(false)}
-      aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description"
-    >
-      <DialogTitle id="alert-dialog-title">
-        It Seems some internal a4GATE services are not working correctly!
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText id="alert-dialog-description">
-          You can apply your configuration to a4GATE but only Data Collector will receive it! If this problem persist, reboot a4GATE with the physical button and wait every led to turn off before restarting it.
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setApplyDialog(false)}>Close</Button>
-        <Button variant="contained" color="error" onClick={applyOnlyPCA} >
-          Apply on Data Collector Only
-        </Button>
-      </DialogActions>
-    </Dialog></>
-
+        <span>Apply</span>
+      </ApplyButton>
+      <Dialog
+        open={applyDialog}
+        onClose={() => setApplyDialog(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          It Seems some internal a4GATE services are not working correctly!
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            You can apply your configuration to a4GATE but only Data Collector
+            will receive it! If this problem persist, reboot a4GATE with the
+            physical button and wait every led to turn off before restarting it.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setApplyDialog(false)}>Close</Button>
+          <Button variant="contained" color="error" onClick={applyOnlyPCA}>
+            Apply on Data Collector Only
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
-
-
-
 export default function MiniDrawer(props) {
   const { children } = props;
-  const superUser = useContext(SuperUserContext)[0]
+  const superUser = useContext(SuperUserContext)[0];
 
-  const secondaryMenuList = superUser ? ["Help", "Back-Channel", "Archive", "Manage-Users", "Advanced"] : ["Help", "User-Settings"]
+  const secondaryMenuList = superUser
+    ? ["Help", "Back-Channel", "Archive", "Manage-Users", "Advanced"]
+    : ["Help", "User-Settings"];
   const [open, setOpen] = React.useState(false);
 
   const navigate = useNavigate();
@@ -285,9 +294,11 @@ export default function MiniDrawer(props) {
 
   const mainSectionTitle = currentURLArray[1].replace("-", " ").toUpperCase();
 
-
   const handleDrawerOpen = () => {
-    if (location.pathname.includes("login") || location.pathname.includes("register")) {
+    if (
+      location.pathname.includes("login") ||
+      location.pathname.includes("register")
+    ) {
       setOpen(false);
     } else {
       setOpen(true);
@@ -342,7 +353,7 @@ export default function MiniDrawer(props) {
                 style={{ paddingTop: 5, paddingBottom: 0, minWidth: 250 }}
               >
                 <img
-                  src='/img/a4GATE-logo.png'
+                  src="/img/a4GATE-logo.png"
                   alt="a4GATE logo"
                   width="230"
                   height="70"
@@ -350,93 +361,121 @@ export default function MiniDrawer(props) {
               </Title>
             </Grid>
             <Grid item xs={2} sx={{ textAlign: "center" }}>
-              <ApplyChanges />
-
+              {!location.pathname.includes("login") &&
+                !location.pathname.includes("register") && <ApplyChanges />}
             </Grid>
             <Grid item xs={1} sx={{ textAlign: "center" }}>
-
-              {!currentURLArray.includes('login') && !currentURLArray.includes('register') && <MainButtons />}
-
+              {!currentURLArray.includes("login") &&
+                !currentURLArray.includes("register") && <MainButtons />}
             </Grid>
           </Grid>
         </Toolbar>
       </AppBar>
-      {!currentURLArray.includes('login') && !currentURLArray.includes('register') && <Drawer variant="permanent" open={open} onMouseOver={handleDrawerOpen} onMouseLeave={handleDrawerClose}>
-        <DrawerHeader style={{ justifyContent: 'center' }}>
-          <p style={{ fontWeight: 'bolder' }}><img src="/img/applied_logo_cropped.png" alt="menu icon" width={35} height={35} style={floatingLogo} /> a4CONF</p>
-        </DrawerHeader>
-        <Divider />
-        <List>
-          {["Dashboard", "Data-Collector", "Data-Sender"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                name={text}
-                onClick={() => {
-                  navigate(`/${text?.toLowerCase()}`);
-                }}
-              >
-                <ListItemIcon className={classes.hoverIcons}>
-                  {index !== 0 ? (
-                    index === 1 ? (
-                      <MergeIcon name="internal-pc" />
-                    ) : (
-                      <CallSplitIcon name="external-pc" />
-                    )
-                  ) : (
-                    <GridViewIcon name="dashboard" />
-                  )}
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {["Fast-Data"].map((text, index) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton
-                name={text}
-                onClick={() => {
+      {!currentURLArray.includes("login") &&
+        !currentURLArray.includes("register") && (
+          <Drawer
+            variant="permanent"
+            open={open}
+            onMouseOver={handleDrawerOpen}
+            onMouseLeave={handleDrawerClose}
+          >
+            <DrawerHeader style={{ justifyContent: "center" }}>
+              <p style={{ fontWeight: "bolder" }}>
+                <img
+                  src="/img/applied_logo_cropped.png"
+                  alt="menu icon"
+                  width={35}
+                  height={35}
+                  style={floatingLogo}
+                />{" "}
+                a4CONF
+              </p>
+            </DrawerHeader>
+            <Divider />
+            <List>
+              {["Dashboard", "Data-Collector", "Data-Sender"].map(
+                (text, index) => (
+                  <ListItem key={text} disablePadding>
+                    <ListItemButton
+                      name={text}
+                      onClick={() => {
+                        navigate(`/${text?.toLowerCase()}`);
+                      }}
+                    >
+                      <ListItemIcon className={classes.hoverIcons}>
+                        {index !== 0 ? (
+                          index === 1 ? (
+                            <MergeIcon name="internal-pc" />
+                          ) : (
+                            <CallSplitIcon name="external-pc" />
+                          )
+                        ) : (
+                          <GridViewIcon name="dashboard" />
+                        )}
+                      </ListItemIcon>
+                      <ListItemText primary={text} />
+                    </ListItemButton>
+                  </ListItem>
+                )
+              )}
+            </List>
+            <Divider />
+            <List>
+              {["Fast-Data"].map((text, index) => (
+                <ListItem key={text} disablePadding>
+                  <ListItemButton
+                    name={text}
+                    onClick={() => {
+                      navigate(`/${text?.toLowerCase()}`);
+                    }}
+                  >
+                    <ListItemIcon className={classes.hoverIcons}>
+                      <SpeedIcon />
+                    </ListItemIcon>
+                    <ListItemText primary={text} />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+            <List>
+              {secondaryMenuList.map((text, index) => (
+                <ListItem key={text} disablePadding sx={{ display: "block" }}>
+                  <ListItemButton
+                    name={text}
+                    onClick={() => {
+                      navigate(`/${text?.toLowerCase()}`);
+                    }}
+                  >
+                    <ListItemIcon className={classes.hoverIcons}>
+                      {index === 0 && <InfoOutlinedIcon />}
+                      {index === 1 &&
+                        (superUser ? (
+                          <LowPriorityIcon />
+                        ) : (
+                          <ManageAccountsIcon />
+                        ))}
+                      {index === 2 && <MessageIcon />}
+                      {index === 3 && <PersonAddIcon />}
+                      {index === 4 && <TuneIcon />}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={text}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+            <Divider />
+          </Drawer>
+        )}
 
-
-                  navigate(`/${text?.toLowerCase()}`);
-
-
-                }}>
-                <ListItemIcon className={classes.hoverIcons}>
-                  <SpeedIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {secondaryMenuList.map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                name={text}
-                onClick={() => {
-                  navigate(`/${text?.toLowerCase()}`);
-                }}>
-                <ListItemIcon className={classes.hoverIcons}>
-                  {index === 0 && <InfoOutlinedIcon />}
-                  {index === 1 && (superUser ? <LowPriorityIcon /> : <ManageAccountsIcon />)}
-                  {index === 2 && <MessageIcon />}
-                  {index === 3 && <PersonAddIcon />}
-                  {index === 4 && <TuneIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-      </Drawer>}
-
-      <Container component="main" sx={{ flexGrow: 1 }} style={{ marginTop: 100 }}>
+      <Container
+        component="main"
+        sx={{ flexGrow: 1 }}
+        style={{ marginTop: 100 }}
+      >
         {children}
       </Container>
     </Box>
