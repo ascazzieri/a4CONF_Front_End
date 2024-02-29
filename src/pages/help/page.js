@@ -72,7 +72,7 @@ export default function Help() {
                 >
                   {currentTab === 0 && (
                     <iframe
-                      src="/img/help/DashboardGuide.html"
+                      src="/img/info/DashboardGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -82,7 +82,7 @@ export default function Help() {
                   )}
                   {currentTab === 1 && (
                     <iframe
-                      src="/img/help/UpdateA4GATEHostname.html"
+                      src="/img/info/UpdateA4GATEHostname.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -92,7 +92,7 @@ export default function Help() {
                   )}    
                   {currentTab === 2 && (
                     <iframe
-                      src="/img/help/DataCollectorNetworkGuide.html"
+                      src="/img/info/DataCollectorNetworkGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -102,7 +102,7 @@ export default function Help() {
                   )}
                   {currentTab === 3 && (
                     <iframe
-                      src="/img/help/KepwareGuide.html"
+                      src="/img/info/KepwareGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -112,7 +112,7 @@ export default function Help() {
                   )}
                   {currentTab === 4 && (
                     <iframe
-                      src="/img/help/CreateThingworxIoTGateway.html"
+                      src="/img/info/CreateThingworxIoTGateway.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -122,7 +122,7 @@ export default function Help() {
                   )}
                   {currentTab === 5 && (
                     <iframe
-                      src="/img/help/CreateOPCUAIoTGateway.html"
+                      src="/img/info/CreateOPCUAIoTGateway.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -132,7 +132,7 @@ export default function Help() {
                   )}
                   {currentTab === 6 && (
                     <iframe
-                      src="/img/help/CreateHTTPIoTGateway.html"
+                      src="/img/info/CreateHTTPIoTGateway.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -142,7 +142,7 @@ export default function Help() {
                   )}
                   {currentTab === 7 && (
                     <iframe
-                      src="/img/help/CreateMatrixIoTGateway.html"
+                      src="/img/info/CreateMatrixIoTGateway.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -152,7 +152,7 @@ export default function Help() {
                   )}
                   {currentTab === 8 && (
                     <iframe
-                      src="/img/help/DataSenderNetworkGuide.html"
+                      src="/img/info/DataSenderNetworkGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -162,7 +162,7 @@ export default function Help() {
                   )}
                   {currentTab === 9 && (
                     <iframe
-                      src="/img/help/SitemanagerGuide.html"
+                      src="/img/info/SitemanagerGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -172,7 +172,7 @@ export default function Help() {
                   )}
                   {currentTab === 10 && (
                     <iframe
-                      src="/img/help/ThingworxGuide.html"
+                      src="/img/info/ThingworxGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -182,7 +182,7 @@ export default function Help() {
                   )}
                   {currentTab === 11 && (
                     <iframe
-                      src="/img/help/HTTPServerGuide.html"
+                      src="/img/info/HTTPServerGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -192,7 +192,7 @@ export default function Help() {
                   )}
                   {currentTab === 12 && (
                     <iframe
-                      src="/img/help/OPCUADataSenderGuide.html"
+                      src="/img/info/OPCUADataSenderGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -202,7 +202,7 @@ export default function Help() {
                   )}
                   {currentTab === 13 && (
                     <iframe
-                      src="/img/help/Fast-DataFTPGuide.html"
+                      src="/img/info/Fast-DataFTPGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -212,7 +212,7 @@ export default function Help() {
                   )}
                   {currentTab === 14 && (
                     <iframe
-                      src="/img/help/Fast-DataHTTPGuide.html"
+                      src="/img/info/Fast-DataHTTPGuide.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -222,7 +222,7 @@ export default function Help() {
                   )}
                   {currentTab === 15 && (
                     <iframe
-                      src="/img/help/ReloadFunctions.html"
+                      src="/img/info/ReloadFunctions.html"
                       height="800px"
                       width="900px"
                       allowFullScreen
@@ -251,7 +251,7 @@ export default function Help() {
                     >
                       {currentAdminTab === 0 && (
                         <iframe
-                          src="/img/help/Fast-DataMatrixGuide.html"
+                          src="/img/info/Fast-DataMatrixGuide.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -261,7 +261,7 @@ export default function Help() {
                       )}
                       {currentAdminTab === 1 && (
                         <iframe
-                          src="/img/help/AdvancedGuide.html"
+                          src="/img/info/AdvancedGuide.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -271,7 +271,7 @@ export default function Help() {
                       )}
                        {currentAdminTab === 2 && (
                         <iframe
-                          src="/img/help/ManageUsersGuide.html"
+                          src="/img/info/ManageUsersGuide.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -281,7 +281,7 @@ export default function Help() {
                       )}
                        {currentAdminTab === 3 && (
                         <iframe
-                          src="/img/help/Back-ChannelGuide.html"
+                          src="/img/info/Back-ChannelGuide.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -291,7 +291,7 @@ export default function Help() {
                       )}
                        {currentAdminTab === 4 && (
                         <iframe
-                          src="/img/help/ArchiveGuide.html"
+                          src="/img/info/ArchiveGuide.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -301,7 +301,7 @@ export default function Help() {
                       )}
                       {currentAdminTab === 5 && (
                         <iframe
-                          src="/img/help/NetworkScanException.html"
+                          src="/img/info/NetworkScanException.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
@@ -311,7 +311,7 @@ export default function Help() {
                       )}
                       {currentAdminTab === 6 && (
                         <iframe
-                          src="/img/help/KepwareAdvancedOperations.html"
+                          src="/img/info/KepwareAdvancedOperations.html"
                           height="800px"
                           width="900px"
                           allowFullScreen
