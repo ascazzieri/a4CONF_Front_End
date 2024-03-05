@@ -72,7 +72,7 @@ export default function OPCServer() {
   const [currentTab, setCurrentTab] = useState(0);
   const navbarItems = superUser
     ? [
-        "Manage IoT Gateway",
+        "Manage IoT Gateways",
         "Expose IoT Gateways",
         "Shift nodes",
         "Host",
@@ -81,7 +81,7 @@ export default function OPCServer() {
         "JSON",
       ]
     : [
-        "Manage IoT Gateway",
+        "Manage IoT Gateways",
         "Expose IoT Gateways",
         "Shift nodes",
         "Host",
@@ -1110,8 +1110,7 @@ export default function OPCServer() {
               )}
             </>
           )}
-console.log("a")
-          {currentTab !== 1 && currentTab !== 6 && <SaveButton />}
+          {currentTab !== 0 && currentTab !== 6 && <SaveButton />}
         </form>
       </Container>
     </ErrorCacher>
