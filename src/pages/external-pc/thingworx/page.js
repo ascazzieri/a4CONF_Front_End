@@ -1069,7 +1069,7 @@ export default function Thingworx() {
               )}
             </>
           )}
-          {(currentTab === 0 || currentTab === 1 || currentTab === 4) && (
+          {(currentTab === 0 || currentTab === 2 || currentTab === 4) && (
             <SaveButton />
           )}
         </form>
