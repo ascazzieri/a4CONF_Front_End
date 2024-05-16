@@ -26,7 +26,13 @@ const applied_background = {
   backgroundPosition: "right",
 };
 const verbose = window.location.href.includes("verbose");
-
+/**
+ * Handles the layout of the application.
+ * 
+ * This function is responsible for rendering the layout of the application. It includes the main components such as the MiniDrawer, ErrorCacher, Loader, and Snackbar. It also handles the resizing of the window and displays a message if the viewport is too small for the application.
+ * 
+ * @returns {JSX.Element} The rendered layout of the application.
+ */
 const Layout = () => {
 
   const dispatch = useDispatch();
@@ -100,7 +106,11 @@ const Layout = () => {
       //setBReady(true)
     })();
   }, []);
-
+/**
+ * Handles the resize event of the window.
+ * If the inner width of the window is less than or equal to 740, sets the mobileViewport state to true.
+ * Otherwise, sets the mobileViewport state to false.
+ */
   const handleResize = () => {
     if (window.innerWidth <= 740) {
       setMobileViewport(true);

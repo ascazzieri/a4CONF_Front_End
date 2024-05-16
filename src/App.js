@@ -30,9 +30,27 @@ import { check_credentials } from "./utils/api";
 import { getAuthToken } from "./utils/utils";
 import Help from "./pages/help/page";
 
+/**
+ * This code snippet defines two variables, 'host' and 'is_local'.
+ * 
+ * - 'host' is assigned the value of the hostname of the current window location, if it exists. Otherwise, it is assigned 'undefined'.
+ * - 'is_local' is assigned a boolean value indicating whether the 'host' variable includes the strings "localhost" or "127.0.0.1".
+ * 
+ * @type {string|undefined} host - The hostname of the current window location, or 'undefined' if it doesn't exist.
+ * @type {boolean} is_local - A boolean value indicating whether the 'host' variable includes the strings "localhost" or "127.0.0.1".
+ */
+
 const host = window?.location?.hostname;
 const is_local = host?.includes("localhost") || host?.includes("127.0.0.1");
 
+/**
+ * The App function is the main component of the application.
+ * It handles the authentication logic and renders different routes based on the user's authentication status.
+ * 
+ * @param {Object} Component - The component to be rendered.
+ * @param {Object} pageProps - The props passed to the component.
+ * @returns {JSX.Element} The rendered component.
+ */
 export default function App({ Component, pageProps }) {
   const [authenticated, setAuthenticated] = useState(
     is_local || getAuthToken() !== null

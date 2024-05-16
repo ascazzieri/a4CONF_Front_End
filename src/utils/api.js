@@ -1,6 +1,13 @@
 import * as helper from "./utils";
 const verbose = window.location.href.includes("#verbose");
 
+/**
+ * Retrieves the version number from the server.
+ * 
+ * @returns {Promise<string>} A promise that resolves to the version number.
+ * @throws {Error} If there is an error retrieving the version number.
+ */
+
 export const get_version = async () => {
   try {
     const res = await helper.fetchData("/version", "GET");
@@ -13,6 +20,12 @@ export const get_version = async () => {
     // Gestisci l'errore come desiderato
   }
 };
+/**
+ * Asynchronous function that retrieves data from the "/ready" endpoint.
+ * 
+ * @returns {Promise} A promise that resolves to the response from the "/ready" endpoint.
+ * @throws {Error} If an error occurs during the data retrieval process.
+ */
 export const get_ready = async () => {
   //aggiungi il timer al componente che la chiama
   try {
