@@ -197,13 +197,14 @@ This component is used to render JSON elements in an interactive way
 
 ## Loader
 
-The loader is just a visual component with its .css to spin
+The loader is just a visual component with its .css to spin.
+
 ![Loader image](./doc-img/loader.PNG "Loader")
 
 ## MainButtons
 This component is actually made of 5 different components.
 
-![Main buttons image](./doc-img/main-buttons.PNG "Main Buttons")
+![Main buttons image](./doc-img/main-buttons.png "Main Buttons")
 
 ### StyledButton Component
 
@@ -296,7 +297,7 @@ Displays the main content area and provides navigation functionality to differen
 * `navigate`: Navigates to different sections of the application based on user interaction.
 This component is typically used as the layout for the main section of the application, providing navigation and content organization.
 
-![Main menu image](./doc-img/menu.PNG "Main menu")
+![Main menu image](./doc-img/menu.png "Main menu")
 
 
 ## Multipletagstoarray
